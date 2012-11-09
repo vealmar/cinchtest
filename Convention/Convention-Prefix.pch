@@ -1,0 +1,30 @@
+//
+// Prefix header for all source files of the 'Convention' target in the 'Convention' project
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_4_0
+#warning "This project uses features only available in iOS SDK 4.0 and later."
+#endif
+
+#ifdef DEBUG
+#   define DLog(__FORMAT__, ...) NSLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+#else
+#   define DLog(...) do {} while (0)
+#endif
+// ALog always displays output regardless of the DEBUG setting
+#define ALog(__FORMAT__, ...) NSLog((@"%s [Line %d] " __FORMAT__), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
+
+#define AS(A,B)    [(A) stringByAppendingString:(B)]
+
+#ifdef __OBJC__
+    #import <UIKit/UIKit.h>
+    #import <Foundation/Foundation.h>
+    #import <CoreData/CoreData.h>
+    #import <SystemConfiguration/SystemConfiguration.h>
+    #import <MobileCoreServices/MobileCoreServices.h>
+#endif
+
+
+#define GROUP_NAME @"groupName"
