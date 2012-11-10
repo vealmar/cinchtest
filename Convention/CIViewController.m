@@ -156,11 +156,11 @@
         [signout setRequestMethod:@"DELETE"];
         
         [signout setCompletionBlock:^{
-            DLog(@"Signout:%@",[signout responseString]); 
+            //DLog(@"Signout:%@",[signout responseString]);
         }];
         
         [signout setFailedBlock:^{
-            DLog(@"Signout Error:%@",[signout error]); 
+           // DLog(@"Signout Error:%@",[signout error]);
         }];
         
         [signout startAsynchronous];
@@ -178,11 +178,11 @@
         [signout setRequestMethod:@"DELETE"];
         
         [signout setCompletionBlock:^{
-            DLog(@"Signout:%@",[signout responseString]); 
+            //DLog(@"Signout:%@",[signout responseString]);
         }];
         
         [signout setFailedBlock:^{
-            DLog(@"Signout Error:%@",[signout error]); 
+            //DLog(@"Signout Error:%@",[signout error]);
         }];
         
         [signout startAsynchronous];
@@ -237,7 +237,7 @@
                     
                     masterViewController.vendorGroup = vendorGroup;
                     
-                    [self presentModalViewController:masterViewController animated:YES];
+                    [self presentViewController:masterViewController animated:YES completion:nil];
                     //[self.view addSubview:splitViewController.view];
                     //[self logout];
                     self.password.text = @"";
@@ -254,7 +254,7 @@
     }];//completion block
     
     [request setFailedBlock:^{
-        DLog(@"error:%@",[request error]);
+        //DLog(@"error:%@",[request error]);
         dispatch_async(dispatch_get_main_queue(), ^{
             if (request.responseString) {
                 DLog(@"returned:%@",request.responseString);

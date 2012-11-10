@@ -118,7 +118,7 @@
                 ci.delegate = self;
                 ci.authToken = self.authToken;
                 [ci setCustomerData:self.customerDB];
-                [self presentModalViewController:ci animated:NO];
+                [self presentViewController:ci animated:NO completion:nil];
             });});
         };
         backFromCart =NO;
@@ -211,7 +211,7 @@
     }];
     
     [request setFailedBlock:^{
-        DLog(@"error:%@", [request error]); 
+        //DLog(@"error:%@", [request error]);
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got error:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         [loadProductsHUD hide:NO];
     }];
@@ -554,12 +554,12 @@
     [signout setRequestMethod:@"DELETE"];
     
     [signout setCompletionBlock:^{
-        DLog(@"Signout:%@",[signout responseString]); 
-        [self dismissModalViewControllerAnimated:YES];
+        //DLog(@"Signout:%@",[signout responseString]);
+        [self dismissViewControllerAnimated:YES completion:nil];
     }];
     
     [signout setFailedBlock:^{
-        DLog(@"Signout Error:%@",[signout error]); 
+        //DLog(@"Signout Error:%@",[signout error]);
     }];
     
     [signout startAsynchronous];
@@ -581,7 +581,7 @@
         sleep(1);
         dispatch_async(dispatch_get_main_queue(), ^{
             [loading hide:YES];
-            [self dismissModalViewControllerAnimated:YES];
+            [self dismissViewControllerAnimated:YES completion:nil];
         });
     });
 }
@@ -692,7 +692,7 @@
     
     [request setCompletionBlock:^{
         [submit hide:YES];
-        DLog(@"Order complete:%@",[request responseString]); 
+        //DLog(@"Order complete:%@",[request responseString]);
         if (![[request responseString] objectFromJSONString]) {
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Something odd happened. Please try submitting your order again from the Cart!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
             return;
@@ -710,14 +710,14 @@
                     [self.delegate Return];
                     //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
                 }
-                [self dismissModalViewControllerAnimated:NO];
+                [self dismissViewControllerAnimated:NO completion:nil];
             });
         });
     }];
     
     [request setFailedBlock:^{
         [submit hide:YES];
-        DLog(@"Order Error:%@",[request error]); 
+       // DLog(@"Order Error:%@",[request error]);
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got the following error on submittion:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
     }];
     
@@ -733,7 +733,7 @@
     if (self.delegate) {
         [self.delegate Return];
     }
-    [self dismissModalViewControllerAnimated:NO];
+    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (IBAction)finishOrder:(id)sender {
@@ -773,7 +773,7 @@
     cart.multiStore = multiStore;
     cart.modalPresentationStyle = UIModalPresentationFullScreen;
 //    cart.modalTransitionStyle = UIModalTransitionStylePartialCurl;
-    [self presentModalViewController:cart  animated:YES];
+    [self presentViewController:cart  animated:YES completion:nil];
 }
 
 - (IBAction)vendorTouch:(id)sender {
@@ -798,7 +798,7 @@
             __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
             [request setNumberOfTimesToRetryOnTimeout:3];
             [request setCompletionBlock:^{
-                DLog(@"success got:%@",[request responseString]);
+                //DLog(@"success got:%@",[request responseString]);
                 
                 NSArray* results = [[request responseString] objectFromJSONString];
                 if (!results||![results objectAtIndex:0]||![[results objectAtIndex:0] objectForKey:@"vendors"]) {
@@ -922,7 +922,7 @@
     calView.cancelTouched = ^{
         DLog(@"calender canceled");
         self.backFromCart = YES;
-        [calView dismissModalViewControllerAnimated:NO];
+        [calView dismissViewControllerAnimated:NO completion:nil];
     };
     
     calView.doneTouched = ^(NSArray* dates){
@@ -956,7 +956,7 @@
         [selectedIdx removeAllObjects];
         self.backFromCart = YES;
         [self.products reloadData];
-        [calView dismissModalViewControllerAnimated:NO];
+        [calView dismissViewControllerAnimated:NO completion:nil];
     };
     
     __block NSMutableArray* selectedArr = [NSMutableArray array];
@@ -990,7 +990,7 @@
                 calView.calendarView.avalibleDates = [[final allObjects] mutableCopy];
                 calView.calendarView.selectedDates = [selectedArr mutableCopy];
             };
-            [self presentModalViewController:calView animated:NO];
+            [self presentViewController:calView animated:NO completion:nil];
 //            DLog(@"presented");
         }
     }else{
@@ -1003,7 +1003,7 @@
             };
             
 //            DLog(@"copied");
-            [self presentModalViewController:calView animated:NO];
+            [self presentViewController:calView animated:NO completion:nil];
 //            DLog(@"presented");
         }else{
             DLog(@"empty date range... er... shite");
@@ -1042,8 +1042,8 @@
     
     [request setFailedBlock:^{
         self.customerDB = nil;
-        [self dismissModalViewControllerAnimated:YES];
-        DLog(@"error:%@", [request error]); 
+        [self dismissViewControllerAnimated:YES completion:nil];
+        //DLog(@"error:%@", [request error]);
     }];
     
     [request startAsynchronous];

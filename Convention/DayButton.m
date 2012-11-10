@@ -16,7 +16,7 @@
 	self = [super initWithFrame:buttonFrame];
 	
     if (self) {
-        self.titleLabel.textAlignment = UITextAlignmentRight;
+        self.titleLabel.textAlignment = NSTextAlignmentRight;
         self.backgroundColor = [UIColor clearColor];
         [self setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         [self setTitleColor:[UIColor redColor] forState:UIControlStateSelected];

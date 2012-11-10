@@ -62,7 +62,7 @@
 }
 
 - (IBAction)back:(id)sender {
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
     DLog(@"see me?");
 //    if (self.delegate) {
 //        [self.delegate Cancel:nil];
@@ -131,7 +131,7 @@
             DLog(@"info to send:%@",dict);
             [self.delegate setCustomerInfo:[dict copy]];
             [self.delegate submit:nil];
-            [self dismissModalViewControllerAnimated:NO];
+            [self dismissViewControllerAnimated:NO completion:nil];
         }
     }
     else{

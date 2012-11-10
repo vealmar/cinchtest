@@ -11,17 +11,11 @@
 		335A4305164D749E007B872A /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 335A4303164D749E007B872A /* Model.xcdatamodeld */; };
 		335A4307164D7529007B872A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 335A4306164D7529007B872A /* Settings.bundle */; };
 		335A430A164D75C0007B872A /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A4309164D75C0007B872A /* Order.m */; };
-		33B70474164DD29F00CF2E96 /* StringManipulation.h in Sources */ = {isa = PBXBuildFile; fileRef = 335A4301164D7455007B872A /* StringManipulation.h */; };
 		33B70475164DD29F00CF2E96 /* StringManipulation.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A4302164D7455007B872A /* StringManipulation.m */; };
-		33B70476164DD29F00CF2E96 /* DateUtil.h in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FA164D743E007B872A /* DateUtil.h */; };
 		33B70477164DD29F00CF2E96 /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FB164D743E007B872A /* DateUtil.m */; };
-		33B70478164DD29F00CF2E96 /* ErrorHandler.h in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FC164D743E007B872A /* ErrorHandler.h */; };
 		33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FD164D743E007B872A /* ErrorHandler.m */; };
-		33B7047A164DD29F00CF2E96 /* SettingsManager.h in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FE164D743E007B872A /* SettingsManager.h */; };
 		33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FF164D743E007B872A /* SettingsManager.m */; };
-		33B7047C164DD29F00CF2E96 /* GroupedObject.h in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F5164D740A007B872A /* GroupedObject.h */; };
 		33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F6164D740A007B872A /* GroupedObject.m */; };
-		33B7047E164DD29F00CF2E96 /* CoreDataUtil.h in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F7164D740A007B872A /* CoreDataUtil.h */; };
 		33B7047F164DD29F00CF2E96 /* CoreDataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F8164D740A007B872A /* CoreDataUtil.m */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
 		6414A6F11496B9A10088586B /* bluebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6F01496B9A10088586B /* bluebutton.png */; };
@@ -802,17 +796,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				33B70474164DD29F00CF2E96 /* StringManipulation.h in Sources */,
 				33B70475164DD29F00CF2E96 /* StringManipulation.m in Sources */,
-				33B70476164DD29F00CF2E96 /* DateUtil.h in Sources */,
 				33B70477164DD29F00CF2E96 /* DateUtil.m in Sources */,
-				33B70478164DD29F00CF2E96 /* ErrorHandler.h in Sources */,
 				33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */,
-				33B7047A164DD29F00CF2E96 /* SettingsManager.h in Sources */,
 				33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */,
-				33B7047C164DD29F00CF2E96 /* GroupedObject.h in Sources */,
 				33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */,
-				33B7047E164DD29F00CF2E96 /* CoreDataUtil.h in Sources */,
 				33B7047F164DD29F00CF2E96 /* CoreDataUtil.m in Sources */,
 				6E118572145F2F2200568ED1 /* main.m in Sources */,
 				6E118576145F2F2200568ED1 /* CIAppDelegate.m in Sources */,
@@ -947,10 +935,7 @@
 				GCC_PREFIX_HEADER = "Convention/Convention-Prefix.pch";
 				INFOPLIST_FILE = "Convention/Convention-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Convention/SamTheSpider\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_CFLAGS = "-DDEBUG=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -969,10 +954,7 @@
 				GCC_PREFIX_HEADER = "Convention/Convention-Prefix.pch";
 				INFOPLIST_FILE = "Convention/Convention-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/Convention/SamTheSpider\"",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";

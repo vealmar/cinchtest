@@ -64,7 +64,7 @@
     }];
     
     [request setFailedBlock:^{
-        DLog(@"error:%@", [request error]); 
+       // DLog(@"error:%@", [request error]);
     }];
     
     [request startAsynchronous];
@@ -212,7 +212,7 @@
     }
     
     DLog(@"Vendor Name:%@, navTitle:%@",[venderInfo objectForKey:kName],page.navBar.topItem.title);
-    [self presentModalViewController:page animated:YES];
+    [self presentViewController:page animated:YES completion:nil];
 }
 -(void)logout
 {
@@ -227,12 +227,12 @@
     [signout setRequestMethod:@"DELETE"];
     
     [signout setCompletionBlock:^{
-        DLog(@"Signout:%@",[signout responseString]); 
-        [self dismissModalViewControllerAnimated:YES];
+         //DLog(@"Signout:%@",[signout responseString]);
+        [self dismissViewControllerAnimated:YES completion:nil];
     }];
     
     [signout setFailedBlock:^{
-        DLog(@"Signout Error:%@",[signout error]); 
+        //DLog(@"Signout Error:%@",[signout error]);
     }];
     
     [signout startAsynchronous];

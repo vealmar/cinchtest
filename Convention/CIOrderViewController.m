@@ -116,7 +116,7 @@
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     DLog(@"Sending %@",url);
-    __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    __weak ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request setNumberOfTimesToRetryOnTimeout:3];
     
     [request setCompletionBlock:^{
@@ -134,7 +134,7 @@
     }];
     
     [request setFailedBlock:^{
-        DLog(@"error:%@", [request error]); 
+        //DLog(@"error:%@", [request error]);
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         [order hide:YES];
     }];
@@ -373,6 +373,11 @@
 
 #pragma mark - UITableView Delegate methods
 
+-(void)QtyChange:(double)qty forIndex:(int)idx {
+	
+	//Not Imlemented
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
         self.EditorView.hidden = NO;
@@ -404,12 +409,12 @@
         
         NSString* url = [NSString stringWithFormat:@"%@?%@=%@",[NSString stringWithFormat:kDBORDEREDIT(cell.tag)],kAuthToken,self.authToken];
 //        DLog(@"Sending edit order %@",url);
-        __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+        __weak ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
 //        [request setTimeOutSeconds:10.f];
         [request setNumberOfTimesToRetryOnTimeout:3];
         
         [request setCompletionBlock:^{
-            DLog(@"order response:%@",[request responseString]);
+            //DLog(@"order response:%@",[request responseString]);
             //dispatch_async(dispatch_get_main_queue(), ^{
             self.itemsDB = [[request responseString] objectFromJSONString];
             NSArray* arr = [self.itemsDB objectForKey:kItems];
@@ -594,7 +599,7 @@
         url = [NSString stringWithFormat:@"%@?%@=%@",kDBMasterORDER,kAuthToken,self.authToken];
     }
     DLog(@"Sending %@",url);
-    __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    __weak ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request setNumberOfTimesToRetryOnTimeout:3];
     
     [request setCompletionBlock:^{
@@ -646,7 +651,7 @@
         
         DLog(@"Vendor Name:%@, navTitle:%@",[[venderInfo objectAtIndex:currentVender] objectForKey:kName],page.navBar.topItem.title);
     }
-    [self presentModalViewController:page animated:NO];
+    [self presentViewController:page animated:NO completion:nil];
 }
 -(void)logout
 {
@@ -658,16 +663,16 @@
         
         DLog(@"Signout url:%@",url);
         
-        __block ASIHTTPRequest* signout = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+        __weak  ASIHTTPRequest* signout = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
         [signout setRequestMethod:@"DELETE"];
         
         [signout setCompletionBlock:^{
-            DLog(@"Signout:%@",[signout responseString]); 
-            [self dismissModalViewControllerAnimated:YES];
+           // DLog(@"Signout:%@",[signout responseString]);
+            [self dismissViewControllerAnimated:YES completion:nil];
         }];
         
         [signout setFailedBlock:^{
-            DLog(@"Signout Error:%@",[signout error]); 
+            //DLog(@"Signout Error:%@",[signout error]);
             [[[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"There was an error logging out please try again! Error:%@",[signout error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         }];
         
@@ -682,16 +687,16 @@
         
         DLog(@"Signout url:%@",url);
         
-        __block ASIHTTPRequest* signout = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+        __weak ASIHTTPRequest* signout = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
         [signout setRequestMethod:@"DELETE"];
         
         [signout setCompletionBlock:^{
-            DLog(@"Signout:%@",[signout responseString]); 
-            [self dismissModalViewControllerAnimated:YES];
+            //DLog(@"Signout:%@",[signout responseString]);
+            [self dismissViewControllerAnimated:YES completion:nil];
         }];
         
         [signout setFailedBlock:^{
-            DLog(@"Signout Error:%@",[signout error]);  
+            //DLog(@"Signout Error:%@",[signout error]);
             [[[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"There was an error logging out please try again! Error:%@",[signout error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         }];
         
@@ -704,7 +709,7 @@
 }
 
 - (IBAction)Save:(id)sender {
-    UIButton* btn = (UIButton*)sender;
+    //UIButton* btn = (UIButton*)sender;
 //    DLog(@"tag going into save is:%d, save:%d, current:%d",EditorView.tag,btn.tag, currentOrderID);
     if (currentOrderID == 0) {
         return;
@@ -755,7 +760,7 @@
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@",[NSString stringWithFormat:kDBORDEREDITS(currentOrderID)],kAuthToken,self.authToken];
     DLog(@"final URL:%@\n JSON:%@",url,[final JSONString]);
     
-    __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    __weak  ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request addRequestHeader:@"Accept" value:@"application/json"];
     [request addRequestHeader:@"Content-Type" value:@"application/json"];
     //[request appendPostData:[dataContent dataUsingEncoding:NSUTF8StringEncoding]];
@@ -772,7 +777,7 @@
 //    DLog(@"pure:%@",[final JSONString]);
     
     [request setCompletionBlock:^{
-        DLog(@"Order complete:%@",[request responseString]); 
+        //DLog(@"Order complete:%@",[request responseString]);
         //[self dismissModalViewControllerAnimated:YES];
         NSDictionary* results = [[request responseString] objectFromJSONString];
         if (results) {
@@ -787,7 +792,7 @@
     
     [request setFailedBlock:^{
         [self Return];
-        DLog(@"Order Error:%@",[request error]);
+        //DLog(@"Order Error:%@",[request error]);
         if (request.error.code == 2) {
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Update timed out, please try again!" delegate:self cancelButtonTitle:@"OK!" otherButtonTitles: nil] show];
         }else{
@@ -811,7 +816,7 @@
         CIPrintViewController* print = [[CIPrintViewController alloc] initWithNibName:@"CIPrintViewController" bundle:nil];
         print.modalPresentationStyle = UIModalPresentationFormSheet;
         print.orderID = [NSString stringWithFormat:@"%@",[self.itemsDB objectForKey:@"id"]];
-        [self presentModalViewController:print animated:YES];
+        [self presentViewController:print animated:YES completion:nil];
     }else{
         [[[UIAlertView alloc]initWithTitle:@"Oops!" message:@"Please select an order to print!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
     }
@@ -975,7 +980,7 @@
         }];
         
         [request setFailedBlock:^{
-            DLog(@"request Error:%@",[request error]); 
+            //DLog(@"request Error:%@",[request error]);
             [venderHud hide:YES];
         }];
         
@@ -1099,17 +1104,20 @@
     }
     
     calView.startDate = startDate;
-    
+    __weak CICalendarViewController *calViewW = calView;
     calView.cancelTouched = ^{
         DLog(@"calender canceled");
-        [calView dismissModalViewControllerAnimated:YES];
+        [calViewW dismissViewControllerAnimated:YES completion:nil];
+		 
         [self.itemsTable reloadData];
+		
     };
     
     calView.doneTouched = ^(NSArray* dates){
         [self.itemsShipDates removeObjectAtIndex:idx];
         [self.itemsShipDates insertObject:[dates copy] atIndex:idx];
-        [calView dismissModalViewControllerAnimated:YES];
+        [calViewW dismissViewControllerAnimated:YES completion:nil];
+		 
         [self.itemsTable reloadData];
         [self UpdateTotal];
     };
@@ -1121,7 +1129,7 @@
         DLog(@"dates:%@ what it got:%@",dates, calView.calendarView.selectedDates);
     };
     
-    [self presentModalViewController:calView animated:YES];
+    [self presentViewController:calView animated:YES completion:nil];
 }
 
 -(void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex{
@@ -1148,7 +1156,7 @@
             }];
             
             [request setFailedBlock:^{
-                DLog(@"request Error:%@",[request error]);
+               // DLog(@"request Error:%@",[request error]);
                 [deleteHUD hide:YES];
             }];
             

@@ -40,7 +40,7 @@
 		CGRect monthLabelFrame = CGRectMake(cellWidth, 0, calendarWidth - 2*cellWidth, cellHeight);
 		monthLabel = [[UILabel alloc] initWithFrame:monthLabelFrame];
 		monthLabel.font = [UIFont fontWithName:calendarFontName size:24];
-		monthLabel.textAlignment = UITextAlignmentCenter;
+		monthLabel.textAlignment = NSTextAlignmentCenter;
 		monthLabel.backgroundColor = [UIColor clearColor];
 		monthLabel.textColor = [UIColor blackColor];
 		
@@ -55,7 +55,7 @@
 			CGRect dayLabelFrame = CGRectMake(i*cellWidth, cellHeight, cellWidth, cellHeight);
 			UILabel *dayLabel = [[UILabel alloc] initWithFrame:dayLabelFrame];
 			dayLabel.text = [NSString stringWithFormat:@"%s", days[i]];
-			dayLabel.textAlignment = UITextAlignmentCenter;
+			dayLabel.textAlignment = NSTextAlignmentCenter;
 			dayLabel.backgroundColor = [UIColor clearColor];
 			dayLabel.font = [UIFont fontWithName:calendarFontName size:22];
 			dayLabel.textColor = [UIColor darkGrayColor];
@@ -110,7 +110,7 @@
 		CGRect monthLabelFrame = CGRectMake(cellWidth, 0, calendarWidth - 2*cellWidth, cellHeight);
 		monthLabel = [[UILabel alloc] initWithFrame:monthLabelFrame];
 		monthLabel.font = [UIFont fontWithName:calendarFontName size:18];
-		monthLabel.textAlignment = UITextAlignmentCenter;
+		monthLabel.textAlignment = NSTextAlignmentCenter;
 		monthLabel.backgroundColor = [UIColor clearColor];
 		monthLabel.textColor = [UIColor blackColor];
 		
@@ -125,7 +125,7 @@
 			CGRect dayLabelFrame = CGRectMake(i*cellWidth, cellHeight, cellWidth, cellHeight);
 			UILabel *dayLabel = [[UILabel alloc] initWithFrame:dayLabelFrame];
 			dayLabel.text = [NSString stringWithFormat:@"%s", days[i]];
-			dayLabel.textAlignment = UITextAlignmentCenter;
+			dayLabel.textAlignment = NSTextAlignmentCenter;
 			dayLabel.backgroundColor = [UIColor clearColor];
 			dayLabel.font = [UIFont fontWithName:calendarFontName size:22];
 			dayLabel.textColor = [UIColor darkGrayColor];

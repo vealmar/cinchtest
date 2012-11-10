@@ -279,7 +279,7 @@ MBProgressHUD* loading;
         sleep(1);
         dispatch_async(dispatch_get_main_queue(), ^{
             [loading hide:YES];
-            [self dismissModalViewControllerAnimated:YES];
+            [self dismissViewControllerAnimated:YES completion:nil];
             
         });
     });
@@ -348,19 +348,19 @@ MBProgressHUD* loading;
     //DLog(@"pure:%@",[request postBody]);
     
     [request setCompletionBlock:^{
-        DLog(@"Order complete:%@",[request responseString]); 
+        //DLog(@"Order complete:%@",[request responseString]);
         dispatch_async(dispatch_get_main_queue(), ^{
             if (self.delegate != nil) {
                 [self.delegate Return];
                 //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
                 [self.delegate setBackFromCart:YES];
             }
-            [self dismissModalViewControllerAnimated:YES];
+            [self dismissViewControllerAnimated:YES completion:nil];
         });
     }];
     
     [request setFailedBlock:^{
-        DLog(@"Order Error:%@",[request error]); 
+        //DLog(@"Order Error:%@",[request error]);
         [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",request.error] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
     }];
     
@@ -398,7 +398,7 @@ MBProgressHUD* loading;
 //    else if(self.finishTheOrder){
 //        self.finishTheOrder();
     //    }
-    [self dismissModalViewControllerAnimated:NO];
+    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 -(void) getCustomers{
@@ -414,8 +414,8 @@ MBProgressHUD* loading;
     
     [request setFailedBlock:^{
         self.customerDB = nil;
-        [self dismissModalViewControllerAnimated:YES];
-        DLog(@"error:%@", [request error]); 
+        [self dismissViewControllerAnimated:YES completion:nil];
+        //DLog(@"error:%@", [request error]);
     }];
     
     [request startAsynchronous];

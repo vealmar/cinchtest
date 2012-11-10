@@ -30,7 +30,6 @@
 @property (nonatomic, strong) NSMutableDictionary* productData;
 @property (nonatomic, strong) NSDictionary* customer;
 @property (nonatomic, strong) NSString* authToken;
-@property (nonatomic, strong) NSString* title;
 @property (nonatomic, strong) NSArray* customerDB;
 @property (nonatomic, strong) NSMutableDictionary* productCart;
 @property (nonatomic) BOOL showPrice;

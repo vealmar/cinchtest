@@ -93,7 +93,7 @@
 }
 
 - (IBAction)back:(id)sender {
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
     DLog(@"see me?");
     if (self.delegate) {
         [self.delegate Cancel:nil];
@@ -157,7 +157,7 @@
     }];
     
     [request setFailedBlock:^{
-        DLog(@"error:%@", [request error]); 
+        //DLog(@"error:%@", [request error]);
         [[[UIAlertView alloc] initWithTitle:@"Oops" message:[NSString stringWithFormat:@"Couldn't refresh customer list do to following error:%@", [request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         [refreshing hide:NO];
     }];
@@ -230,7 +230,7 @@
 //                        NSDictionary* arr = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",custid],kOrderCustID, nil];//, self.shippingNotes.text,kShipNotes,self.Notes.text,kNotes,self.Authorizer.text,kAuthorizedBy,@"0",kSendEmail,@"",kEmail
                         DLog(@"info to send:%@",results);
                         [self.delegate setCustomerInfo:results];
-                        [self dismissModalViewControllerAnimated:YES];
+                        [self dismissViewControllerAnimated:YES completion:nil];
 //                    }
                 }
             }

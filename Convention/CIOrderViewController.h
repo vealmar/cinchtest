@@ -12,7 +12,7 @@
 #import "CIStoreQtyTableViewController.h"
 
 
-@interface CIOrderViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,CIItemEditDelegate,CIProductViewDelegate, UITextFieldDelegate, UITextViewDelegate,CIStoreQtyDelegate,UIAlertViewDelegate>{
+@interface CIOrderViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,CIItemEditDelegate,CIProductViewDelegate, UITextFieldDelegate, UITextViewDelegate,CIStoreQtyTableDelegate, CIStoreQtyDelegate,UIAlertViewDelegate>{
     
 }
 @property (nonatomic, strong) NSArray* orders;

@@ -12,7 +12,6 @@
     NSArray* orders;
 }
 @property (nonatomic, strong) NSString* authToken;
-@property (nonatomic, strong) NSString* title;
 @property (nonatomic) BOOL showPrice;
 @property (unsafe_unretained, nonatomic) IBOutlet UINavigationBar *navBar;
 @property (nonatomic, strong) NSDictionary* venderInfo;

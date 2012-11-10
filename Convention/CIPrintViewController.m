@@ -72,7 +72,7 @@
 }
 
 - (IBAction)cancel:(id)sender {
-    [self dismissModalViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)submit:(id)sender {
@@ -101,7 +101,7 @@
                 if ([temp objectForKey:@"created_at"]) {
                     DLog(@"good stuff... look up^");
                     [hud hide:NO];
-                    [self dismissModalViewControllerAnimated:YES];
+                    [self dismissViewControllerAnimated:YES completion:nil];
                     return;
                 }
             }
@@ -116,7 +116,7 @@
     }];//completion block
     
     [request setFailedBlock:^{
-        DLog(@"error:%@",[request error]);
+        //DLog(@"error:%@",[request error]);
         dispatch_async(dispatch_get_main_queue(), ^{
             if (request.responseString) {
                 DLog(@"ERROR:%@",[[request.responseString objectFromJSONString] objectForKey:kError]);
