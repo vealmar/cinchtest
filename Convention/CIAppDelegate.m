@@ -9,6 +9,7 @@
 #import "CIAppDelegate.h"
 
 #import "CIViewController.h"
+#import "SettingsManager.h"
 
 @implementation CIAppDelegate
 
@@ -30,6 +31,8 @@
     }
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
+	
+	[[SettingsManager sharedManager] initialize];
     return YES;
 }
 
