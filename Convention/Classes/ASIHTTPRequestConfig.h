@@ -12,9 +12,9 @@
 // ======
 
 // If defined will use the specified function for debug logging
-// Otherwise use DLog
+// Otherwise use NSLog
 #ifndef ASI_DEBUG_LOG
-    #define ASI_DEBUG_LOG DLog
+    #define ASI_DEBUG_LOG NSLog
 #endif
 
 // When set to 1 ASIHTTPRequests will print information about what a request is doing

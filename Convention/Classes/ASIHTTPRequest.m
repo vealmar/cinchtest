@@ -392,7 +392,7 @@ static NSOperationQueue *sharedQueue = nil;
 	[connectionInfo release];
 	[requestID release];
 	[dataDecompressor release];
-	[userAgent release];
+	[userAgentString release];
 
 	#if NS_BLOCKS_AVAILABLE
 	[self releaseBlocksOnMainThread];
@@ -459,6 +459,11 @@ static NSOperationQueue *sharedQueue = nil;
 		[blocks addObject:authenticationNeededBlock];
 		[authenticationNeededBlock release];
 		authenticationNeededBlock = nil;
+	}
+	if (requestRedirectedBlock) {
+		[blocks addObject:requestRedirectedBlock];
+		[requestRedirectedBlock release];
+		requestRedirectedBlock = nil;
 	}
 	[[self class] performSelectorOnMainThread:@selector(releaseBlocks:) withObject:blocks waitUntilDone:[NSThread isMainThread]];
 }
@@ -843,18 +848,20 @@ static NSOperationQueue *sharedQueue = nil;
 		
 		#if TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
 		if ([ASIHTTPRequest isMultitaskingSupported] && [self shouldContinueWhenAppEntersBackground]) {
-			backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-				// Synchronize the cleanup call on the main thread in case
-				// the task actually finishes at around the same time.
-				dispatch_async(dispatch_get_main_queue(), ^{
-					if (backgroundTask != UIBackgroundTaskInvalid)
-					{
-						[[UIApplication sharedApplication] endBackgroundTask:backgroundTask];
-						backgroundTask = UIBackgroundTaskInvalid;
-						[self cancel];
-					}
-				});
-			}];
+            if (!backgroundTask || backgroundTask == UIBackgroundTaskInvalid) {
+                backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+                    // Synchronize the cleanup call on the main thread in case
+                    // the task actually finishes at around the same time.
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (backgroundTask != UIBackgroundTaskInvalid)
+                        {
+                            [[UIApplication sharedApplication] endBackgroundTask:backgroundTask];
+                            backgroundTask = UIBackgroundTaskInvalid;
+                            [self cancel];
+                        }
+                    });
+                }];
+            }
 		}
 		#endif
 
@@ -1081,12 +1088,12 @@ static NSOperationQueue *sharedQueue = nil;
 	
 	// Build and set the user agent string if the request does not already have a custom user agent specified
 	if (![[self requestHeaders] objectForKey:@"User-Agent"]) {
-		NSString *userAgentString = [self userAgent];
-		if (!userAgentString) {
-			userAgentString = [ASIHTTPRequest defaultUserAgentString];
+		NSString *tempUserAgentString = [self userAgentString];
+		if (!tempUserAgentString) {
+			tempUserAgentString = [ASIHTTPRequest defaultUserAgentString];
 		}
-		if (userAgentString) {
-			[self addRequestHeader:@"User-Agent" value:userAgentString];
+		if (tempUserAgentString) {
+			[self addRequestHeader:@"User-Agent" value:tempUserAgentString];
 		}
 	}
 	
@@ -1214,6 +1221,7 @@ static NSOperationQueue *sharedQueue = nil;
             CFReadStreamSetProperty((CFReadStreamRef)[self readStream], 
                                     kCFStreamPropertySSLSettings, 
                                     (CFTypeRef)sslProperties);
+            [sslProperties release];
         } 
         
         // Tell CFNetwork to use a client certificate
@@ -3507,7 +3515,7 @@ static NSOperationQueue *sharedQueue = nil;
 		
 	// If request has asked delegate or ASIAuthenticationDialog for credentials
 	} else if ([self authenticationNeeded]) {
-		CFRunLoopStop(CFRunLoopGetCurrent());
+        // Do nothing.
 	}
 
 }
@@ -3546,8 +3554,6 @@ static NSOperationQueue *sharedQueue = nil;
         [self didChangeValueForKey:@"isExecuting"];
     if (!wasFinished)
         [self didChangeValueForKey:@"isFinished"];
-
-	CFRunLoopStop(CFRunLoopGetCurrent());
 
 	#if TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_4_0
 	if ([ASIHTTPRequest isMultitaskingSupported] && [self shouldContinueWhenAppEntersBackground]) {
@@ -4787,7 +4793,7 @@ static NSOperationQueue *sharedQueue = nil;
     BOOL runAlways = YES; // Introduced to cheat Static Analyzer
 	while (runAlways) {
 		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-		CFRunLoopRun();
+        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e10, true);
 		[pool drain];
 	}
 
@@ -4993,7 +4999,7 @@ static NSOperationQueue *sharedQueue = nil;
 
 @synthesize username;
 @synthesize password;
-@synthesize userAgent;
+@synthesize userAgentString;
 @synthesize domain;
 @synthesize proxyUsername;
 @synthesize proxyPassword;
