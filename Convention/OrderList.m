@@ -11,6 +11,7 @@
 #import "ASIHTTPRequest.h"
 #import "CIProductViewController.h"
 #import "JSONKit.h"
+#import "SettingsManager.h"
 
 @implementation OrderList
 @synthesize authToken;
@@ -50,20 +51,20 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
-    NSLog(@"Sending %@",url);
+    DLog(@"Sending %@",url);
     __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     
     [request setCompletionBlock:^{
-        //NSLog(@"response:%@",[request responseString]);
+        //DLog(@"response:%@",[request responseString]);
         dispatch_async(dispatch_get_main_queue(), ^{
         orders = [[request responseString] objectFromJSONString];
-        NSLog(@"orders Json:%@",orders);
+        DLog(@"orders Json:%@",orders);
         [self.table reloadData];
         });
     }];
     
     [request setFailedBlock:^{
-        NSLog(@"error:%@", [request error]); 
+        DLog(@"error:%@", [request error]); 
     }];
     
     [request startAsynchronous];
@@ -131,7 +132,7 @@
     
     // Configure the cell...
     NSDictionary* data = [orders objectAtIndex:[indexPath row]];
-    NSLog(@"data:%@",data);
+    DLog(@"data:%@",data);
     cell.textLabel.text = [NSString stringWithFormat:@"%@,%@,%@,%@,%@",[data objectForKey:kCustID],[[data objectForKey:@"customer"] objectForKey:kBillName],[data objectForKey:kAuthorizedBy],[data objectForKey:kItemCount],[data objectForKey:kTotal]];
     
     return cell;
@@ -210,7 +211,7 @@
         }
     }
     
-    NSLog(@"Vendor Name:%@, navTitle:%@",[venderInfo objectForKey:kName],page.navBar.topItem.title);
+    DLog(@"Vendor Name:%@, navTitle:%@",[venderInfo objectForKey:kName],page.navBar.topItem.title);
     [self presentModalViewController:page animated:YES];
 }
 -(void)logout
@@ -220,18 +221,18 @@
         url = [NSString stringWithFormat:@"%@?%@=%@",kDBLOGOUT,kAuthToken,authToken];
     }
     
-    NSLog(@"Signout url:%@",url);
+    DLog(@"Signout url:%@",url);
     
     __block ASIHTTPRequest* signout = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [signout setRequestMethod:@"DELETE"];
     
     [signout setCompletionBlock:^{
-        NSLog(@"Signout:%@",[signout responseString]); 
+        DLog(@"Signout:%@",[signout responseString]); 
         [self dismissModalViewControllerAnimated:YES];
     }];
     
     [signout setFailedBlock:^{
-        NSLog(@"Signout Error:%@",[signout error]); 
+        DLog(@"Signout Error:%@",[signout error]); 
     }];
     
     [signout startAsynchronous];

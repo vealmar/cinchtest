@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "CIProductViewController.h"
 
-@interface CIViewController : UIViewController
+@interface CIViewController : UIViewController <UITextFieldDelegate>
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *email;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *password;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextView *error;

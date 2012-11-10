@@ -42,7 +42,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        NSLog(@"is called?");
+        DLog(@"is called?");
         oldPrice = @"";
         oldVoucher = @"";
     }
@@ -60,7 +60,7 @@
     oldVoucher = self.voucher.text;
     if (self.delegate) {
         [self.delegate VoucherChange:dprice forIndex:self.tag];
-//        NSLog(@"vframe:%@",NSStringFromCGRect(self.frame));
+//        DLog(@"vframe:%@",NSStringFromCGRect(self.frame));
     }
 }
 
@@ -74,12 +74,12 @@
     oldPrice = self.price.text;
     if (self.delegate) {
         [self.delegate PriceChange:dprice forIndex:self.tag];
-//        NSLog(@"pframe:%@",NSStringFromCGRect(self.frame));
+//        DLog(@"pframe:%@",NSStringFromCGRect(self.frame));
     }
 }
 
 - (IBAction)voucherDidEnd:(id)sender {
-    NSLog(@"trigger end");
+    DLog(@"trigger end");
     double dprice = [self.voucher.text doubleValue];
     
     NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
@@ -92,13 +92,13 @@
     oldVoucher = self.voucher.text;
     if (self.delegate) {
         [self.delegate VoucherChange:dprice forIndex:self.tag];
-//        NSLog(@"pframe:%@",NSStringFromCGRect(self.frame));
+//        DLog(@"pframe:%@",NSStringFromCGRect(self.frame));
     }
 }
 
 
 - (IBAction)priceDidEnd:(id)sender {
-    NSLog(@"trigger end");
+    DLog(@"trigger end");
     double dprice = [self.price.text doubleValue];
     
     NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
@@ -111,7 +111,7 @@
     oldPrice = self.price.text;
     if (self.delegate) {
         [self.delegate PriceChange:dprice forIndex:self.tag];
-//        NSLog(@"pframe:%@",NSStringFromCGRect(self.frame));
+//        DLog(@"pframe:%@",NSStringFromCGRect(self.frame));
     }
 }
 
@@ -120,7 +120,7 @@
     if (self.delegate) {
         [self.delegate QtyChange:[self.quantity.text doubleValue] forIndex:self.tag];
     }
-//    NSLog(@"qframe:%@",NSStringFromCGRect(self.frame));
+//    DLog(@"qframe:%@",NSStringFromCGRect(self.frame));
 }
 
 - (IBAction)addToCart:(id)sender {
@@ -153,17 +153,17 @@
 }
 
 -(void)textFieldDidEndEditing:(UITextField *)textField{
-    NSLog(@"textFieldDidEndEditing");
+    DLog(@"textFieldDidEndEditing");
     if (self.delegate) {
-//        NSLog(@"end frame:%@",NSStringFromCGRect(self.frame));
+//        DLog(@"end frame:%@",NSStringFromCGRect(self.frame));
         [self.delegate textEditEndWithFrame:self.frame];
     }
 }
 
 -(void)textFieldDidBeginEditing:(UITextField *)textField{
-    NSLog(@"textFieldDidBeginEditing");
+    DLog(@"textFieldDidBeginEditing");
     if (self.delegate) {
-//        NSLog(@"begin frame:%@",NSStringFromCGRect(self.frame));
+//        DLog(@"begin frame:%@",NSStringFromCGRect(self.frame));
         [self.delegate textEditBeginWithFrame:self.frame];
     }
     //[textField resignFirstResponder];

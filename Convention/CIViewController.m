@@ -14,6 +14,7 @@
 #import "Macros.h"
 #import "CIOrderViewController.h"
 #import "MBProgressHUD.h"
+#import "SettingsManager.h"
 
 @implementation CIViewController
 @synthesize email;
@@ -48,8 +49,8 @@
     authToken = nil;
     
     //for testing
-//    self.email.text = @"afc-testing";
-//    self.password.text = @"1234";
+	self.email.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
+    self.password.text = [[SettingsManager sharedManager] lookupSettingByString:@"password"];
 //    
 //    self.email.text = @"afc-mer58982";
 //    self.password.text = @"2210";
@@ -96,11 +97,11 @@
     self.password.font = [UIFont fontWithName:kFontName size:14.f];
     self.lblVersion.font = [UIFont fontWithName:kFontName size:14.f];
     
-    NSLog(@"%@,%@",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"],[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
+    DLog(@"%@,%@",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"],[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
     
     self.lblVersion.text = [NSString stringWithFormat:@"CI %@",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
     
-//    NSLog(@"fonts:%@ %@ %@",[UIFont fontWithName:kFontName size:14.f],[UIFont fontWithName:@"bebas" size:14.f],[UIFont fontWithName:@"Bebas" size:14.f]);
+//    DLog(@"fonts:%@ %@ %@",[UIFont fontWithName:kFontName size:14.f],[UIFont fontWithName:@"bebas" size:14.f],[UIFont fontWithName:@"Bebas" size:14.f]);
     
     [super viewWillAppear:animated];
 }
@@ -126,25 +127,40 @@
     return (UIInterfaceOrientationIsLandscape(interfaceOrientation));
 }
 
+
+- (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
+    if (theTextField == self.email) {
+        [theTextField resignFirstResponder];
+		[self.password becomeFirstResponder];
+    } else if (theTextField == self.password) {
+        [self login:nil];
+    }
+    return YES;
+}
+
+
 -(void)logout
 {
+	
+	 
+	
     if (!masterVender) {
         NSString* url = kDBLOGOUT;
         if (authToken) {
             url = [NSString stringWithFormat:@"%@?%@=%@",kDBLOGOUT,kAuthToken,authToken];
         }
         
-        NSLog(@"Signout url:%@",url);
+        DLog(@"Signout url:%@",url);
         
         __block ASIHTTPRequest* signout = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
         [signout setRequestMethod:@"DELETE"];
         
         [signout setCompletionBlock:^{
-            NSLog(@"Signout:%@",[signout responseString]); 
+            DLog(@"Signout:%@",[signout responseString]); 
         }];
         
         [signout setFailedBlock:^{
-            NSLog(@"Signout Error:%@",[signout error]); 
+            DLog(@"Signout Error:%@",[signout error]); 
         }];
         
         [signout startAsynchronous];
@@ -156,17 +172,17 @@
             url = [NSString stringWithFormat:@"%@?%@=%@",kDBMasterLOGOUT,kAuthToken,authToken];
         }
         
-        NSLog(@"Signout url:%@",url);
+        DLog(@"Signout url:%@",url);
         
         __block ASIHTTPRequest* signout = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
         [signout setRequestMethod:@"DELETE"];
         
         [signout setCompletionBlock:^{
-            NSLog(@"Signout:%@",[signout responseString]); 
+            DLog(@"Signout:%@",[signout responseString]); 
         }];
         
         [signout setFailedBlock:^{
-            NSLog(@"Signout Error:%@",[signout error]); 
+            DLog(@"Signout Error:%@",[signout error]); 
         }];
         
         [signout startAsynchronous];
@@ -188,7 +204,7 @@
     [email becomeFirstResponder];
     [email resignFirstResponder];
     
-    NSLog(@"Login URL:%@",kDBLOGIN);
+    DLog(@"Login URL:%@",kDBLOGIN);
     
     __block ASIFormDataRequest* request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:kDBLOGIN]];
     
@@ -198,20 +214,20 @@
 //    [request setNumberOfTimesToRetryOnTimeout:3];
     
     [request setCompletionBlock:^{
-        //NSLog(@"good:cookies%@, headers:%@, string:%@", [request responseCookies], [request responseHeaders], [request responseString]);
+        //DLog(@"good:cookies%@, headers:%@, string:%@", [request responseCookies], [request responseHeaders], [request responseString]);
         dispatch_async(dispatch_get_main_queue(), ^{
             if([[[request responseHeaders] objectForKey:@"Content-Type"] isEqualToString:@"application/json; charset=utf-8"])
             {
-                //NSLog(@"Got JSON. Response %@",[request responseStatusMessage]);
+                //DLog(@"Got JSON. Response %@",[request responseStatusMessage]);
                 NSDictionary* temp = [[request responseString] objectFromJSONString];
-                NSLog(@"JSON:%@",temp);
+                DLog(@"JSON:%@",temp);
                 if ([[temp objectForKey:kResponse] isEqualToString:kOK]) {
                     authToken = [temp objectForKey:kAuthToken];
                     [venderInfo addObject:temp];
                     if ([temp objectForKey:kVendorGroupID]&&[[temp objectForKey:kVendorGroupID] objectForKey:@"id"]) {
                         vendorGroup = [[[temp objectForKey:kVendorGroupID] objectForKey:@"id"] stringValue]; 
                     }
-                    NSLog(@"Response OK:%@ w/ vendorinfo:%@ and VGID:%@",authToken,venderInfo,vendorGroup);
+                    DLog(@"Response OK:%@ w/ vendorinfo:%@ and VGID:%@",authToken,venderInfo,vendorGroup);
                     
                     CIOrderViewController *masterViewController = [[CIOrderViewController alloc] initWithNibName:@"CIOrderViewController" bundle:nil];
                     masterViewController.authToken = authToken;
@@ -229,7 +245,7 @@
             }
             else
             {
-                NSLog(@"Got JSON. Response %@, full:%@",[request responseStatusMessage], request.responseString);
+                DLog(@"Got JSON. Response %@, full:%@",[request responseStatusMessage], request.responseString);
                 [self logout];
             }
             [loginHud hide:YES]; 
@@ -238,10 +254,10 @@
     }];//completion block
     
     [request setFailedBlock:^{
-        NSLog(@"error:%@",[request error]);
+        DLog(@"error:%@",[request error]);
         dispatch_async(dispatch_get_main_queue(), ^{
             if (request.responseString) {
-                NSLog(@"returned:%@",request.responseString);
+                DLog(@"returned:%@",request.responseString);
                 self.error.text = [[request.responseString objectFromJSONString] objectForKey:kError];
 //                __block ASIFormDataRequest* mvrequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:kDBMasterLOGIN]];
 //                
@@ -249,13 +265,13 @@
 //                [mvrequest setPostValue:Password forKey:kPasswordMasterKey];
 //                
 //                [mvrequest setCompletionBlock:^{
-//                    //NSLog(@"good:cookies%@, headers:%@, string:%@", [request responseCookies], [request responseHeaders], [request responseString]);
+//                    //DLog(@"good:cookies%@, headers:%@, string:%@", [request responseCookies], [request responseHeaders], [request responseString]);
 //                    dispatch_async(dispatch_get_main_queue(), ^{
 //                        if([[[mvrequest responseHeaders] objectForKey:@"Content-Type"] isEqualToString:@"application/json; charset=utf-8"])
 //                        {
-//                            //NSLog(@"Got JSON. Response %@",[request responseStatusMessage]);
+//                            //DLog(@"Got JSON. Response %@",[request responseStatusMessage]);
 //                            NSDictionary* temp = [[mvrequest responseString] objectFromJSONString];
-//                            NSLog(@"JSON:%@",temp);
+//                            DLog(@"JSON:%@",temp);
 //                            if ([[temp objectForKey:kResponse] isEqualToString:kOK]) {
 //                                authToken = [temp objectForKey:kAuthToken];
 //                                //[venderInfo addObject:temp];
@@ -281,14 +297,14 @@
 //                }];
 //                
 //                [mvrequest setFailedBlock:^{
-//                    NSLog(@"error:%@",[mvrequest error]);
+//                    DLog(@"error:%@",[mvrequest error]);
 //                    dispatch_async(dispatch_get_main_queue(), ^{
 //                        if (mvrequest.responseString) {
 //                            self.error.text = [[mvrequest.responseString objectFromJSONString] objectForKey:kError];                        }
 //                        else {
 //                            self.error.text = [[mvrequest error] description];
 //                        }
-//                        NSLog(@"returned:%@",mvrequest.responseString);
+//                        DLog(@"returned:%@",mvrequest.responseString);
                         [loginHud hide:YES]; 
 //                    });
 //                }];

@@ -16,6 +16,7 @@
 #import "CICustomerInfoViewController.h"
 #import "MBProgressHUD.h"
 #import "Macros.h"
+#import "SettingsManager.h"
 
 @interface CICartViewController (){
 MBProgressHUD* loading;
@@ -53,9 +54,9 @@ MBProgressHUD* loading;
         tOffset =0;
         productCart = [NSMutableDictionary dictionary];
         
-        NSLog(@"self class:%@",NSStringFromClass([self class]));
+        DLog(@"self class:%@",NSStringFromClass([self class]));
         if (self.delegate) {
-            NSLog(@"delegate class:%@",NSStringFromClass([self.delegate class]));
+            DLog(@"delegate class:%@",NSStringFromClass([self.delegate class]));
         }
     }
     return self;
@@ -75,15 +76,15 @@ MBProgressHUD* loading;
 - (void)viewWillAppear:(BOOL)animated
 {
     // register for keyboard notifications
-    NSLog(@"in view will appear... need CI");
+    DLog(@"in view will appear... need CI");
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:self.view.window];
     [self.products reloadData];
     [self.indicator stopAnimating];
     self.indicator.hidden = YES;
     
-    NSLog(@"self class:%@",NSStringFromClass([self class]));
+    DLog(@"self class:%@",NSStringFromClass([self class]));
     if (self.delegate) {
-        NSLog(@"delegate class:%@",NSStringFromClass([self.delegate class]));
+        DLog(@"delegate class:%@",NSStringFromClass([self.delegate class]));
     }
 }
 
@@ -153,7 +154,7 @@ MBProgressHUD* loading;
     }
     
     NSString* key = [[self.productData allKeys] objectAtIndex:indexPath.row];
-    NSLog(@"data:%@",[self.productData objectForKey:key]);
+    DLog(@"data:%@",[self.productData objectForKey:key]);
     
     //idx, invtid, descr, partnbr, uom, showprc, caseqty, dirship, linenbr, new, adv, discount
     if ([[self.productData objectForKey:key] objectForKey:@"idx"]&&![[[self.productData objectForKey:key] objectForKey:@"idx"] isKindOfClass:[NSNull class]]) {
@@ -199,7 +200,7 @@ MBProgressHUD* loading;
     }
     cell.New.text = ([[self.productData objectForKey:key] objectForKey:@"new"]?@"Y":@"N");
     cell.Adv.text = ([[self.productData objectForKey:key] objectForKey:@"adv"]?@"Y":@"N");
-    //NSLog(@"regPrc:%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:@"regprc"]);
+    //DLog(@"regPrc:%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:@"regprc"]);
 //    cell.regPrc.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[[[self.productData objectForKey:key] objectForKey:@"regprc"] doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
     cell.regPrc.text = ([[[self.productData objectForKey:key] objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]]?[NSString stringWithFormat:@"%d",((NSArray*)[[self.productData objectForKey:key] objectForKey:kOrderItemShipDates]).count]:@"0");
     cell.quantity.hidden = YES;
@@ -241,7 +242,7 @@ MBProgressHUD* loading;
         //NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
         //[nf setNumberStyle:NSNumberFormatterCurrencyStyle];
         //double price = [[nf numberFromString:cell.price.text] doubleValue];
-        //NSLog(@"price:%f",price);
+        //DLog(@"price:%f",price);
     }
     else
         cell.price.text = @"0.00";
@@ -255,7 +256,7 @@ MBProgressHUD* loading;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //NSLog(@"product details:%@",[self.productData objectForKey:[NSNumber numberWithInteger:[indexPath row]]]);
+    //DLog(@"product details:%@",[self.productData objectForKey:[NSNumber numberWithInteger:[indexPath row]]]);
 }
 
 
@@ -306,7 +307,7 @@ MBProgressHUD* loading;
         NSString* productID = [[self.productData objectForKey:i] objectForKey:@"id"];
         NSMutableDictionary* dict = [self.productCart objectForKey:i];
         NSInteger num = [[dict objectForKey:kEditableQty] integerValue];
-        NSLog(@"q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
+        DLog(@"q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
         if (num>0) {
             NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[NSString stringWithFormat:@"%d",num],kOrderItemNum,[dict objectForKey:kEditablePrice],kOrderItemPRICE,[dict objectForKey:kEditableVoucher],kOrderItemVoucher, nil];
             [arr addObject:(id)proDict];
@@ -315,7 +316,7 @@ MBProgressHUD* loading;
     
     [arr removeObjectIdenticalTo:nil];
     
-    NSLog(@"array:%@",arr);
+    DLog(@"array:%@",arr);
     NSDictionary* order;
     //if ([info objectForKey:kOrderCustID]) {
     if (!self.customer) {
@@ -329,7 +330,7 @@ MBProgressHUD* loading;
     NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:order,kOrder, nil];
     
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
-    NSLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
+    DLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
     
     __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request addRequestHeader:@"Accept" value:@"application/json"];
@@ -344,10 +345,10 @@ MBProgressHUD* loading;
     //[request.postBody appendData:[final JSONData]];
     [request appendPostData:[[final JSONString] dataUsingEncoding:NSUTF8StringEncoding]];
     
-    //NSLog(@"pure:%@",[request postBody]);
+    //DLog(@"pure:%@",[request postBody]);
     
     [request setCompletionBlock:^{
-        NSLog(@"Order complete:%@",[request responseString]); 
+        DLog(@"Order complete:%@",[request responseString]); 
         dispatch_async(dispatch_get_main_queue(), ^{
             if (self.delegate != nil) {
                 [self.delegate Return];
@@ -359,11 +360,11 @@ MBProgressHUD* loading;
     }];
     
     [request setFailedBlock:^{
-        NSLog(@"Order Error:%@",[request error]); 
+        DLog(@"Order Error:%@",[request error]); 
         [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",request.error] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
     }];
     
-    NSLog(@"request content-type:%@",request.requestHeaders);
+    DLog(@"request content-type:%@",request.requestHeaders);
     
     [request startAsynchronous];
     
@@ -383,8 +384,8 @@ MBProgressHUD* loading;
 //    //    [ci setCustomerData:self.customerDB];
 //    [self presentModalViewController:ci animated:NO];
     
-    NSLog(@"FO self class:%@",NSStringFromClass([self class]));
-    NSLog(@"FO delegate class:%@",NSStringFromClass([self.delegate class]));
+    DLog(@"FO self class:%@",NSStringFromClass([self class]));
+    DLog(@"FO delegate class:%@",NSStringFromClass([self.delegate class]));
     if ([self.delegate respondsToSelector:@selector(setFinishOrder:)]&&[self.delegate respondsToSelector:@selector(setBackFromCart:)]) {
         [self.delegate setProductCart:self.productCart];
         [self.delegate setBackFromCart:YES];
@@ -392,7 +393,7 @@ MBProgressHUD* loading;
 //        [self.delegate finishOrder:nil];
     }
     else{
-        NSLog(@"no delegate class at all");
+        DLog(@"no delegate class at all");
     }
 //    else if(self.finishTheOrder){
 //        self.finishTheOrder();
@@ -402,19 +403,19 @@ MBProgressHUD* loading;
 
 -(void) getCustomers{
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
-    NSLog(@"Sending %@",url);
+    DLog(@"Sending %@",url);
     __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     
     [request setCompletionBlock:^{
         self.customerDB = [[request responseString] objectFromJSONString];
-        // NSLog(@"Json:%@",self.customerDB);
+        // DLog(@"Json:%@",self.customerDB);
         customersReady = YES;
     }];
     
     [request setFailedBlock:^{
         self.customerDB = nil;
         [self dismissModalViewControllerAnimated:YES];
-        NSLog(@"error:%@", [request error]); 
+        DLog(@"error:%@", [request error]); 
     }];
     
     [request startAsynchronous];
@@ -424,7 +425,7 @@ MBProgressHUD* loading;
     NSString* key = [[self.productData allKeys] objectAtIndex:idx];
     NSMutableDictionary* dict = [self.productCart objectForKey:key];
     [dict setObject:[NSNumber numberWithDouble:price] forKey:kEditableVoucher];
-    NSLog(@"voucher change to %@ for index %@ (idx:%d)",[NSNumber numberWithDouble:price],key,idx);
+    DLog(@"voucher change to %@ for index %@ (idx:%d)",[NSNumber numberWithDouble:price],key,idx);
 }
 
 -(void)PriceChange:(double)price forIndex:(int)idx{
@@ -442,7 +443,7 @@ MBProgressHUD* loading;
     }
     
     [dict setObject:[NSNumber numberWithDouble:qty] forKey:kEditableQty];
-    NSLog(@"qty change to %@ for index %@",[NSNumber numberWithDouble:qty],key);
+    DLog(@"qty change to %@ for index %@",[NSNumber numberWithDouble:qty],key);
 }
 
 -(void)QtyTouchForIndex:(int)idx{
@@ -459,10 +460,10 @@ MBProgressHUD* loading;
             NSMutableDictionary* stores = [NSMutableDictionary dictionaryWithCapacity:storeNums.count+1];
             
             [stores setValue:[NSNumber numberWithInt:0] forKey:[customer objectForKey:kCustID]];
-            NSLog(@"setting %@ to %@ so stores is now:%@",[customer objectForKey:kCustID],[NSNumber numberWithInt:0],stores);
+            DLog(@"setting %@ to %@ so stores is now:%@",[customer objectForKey:kCustID],[NSNumber numberWithInt:0],stores);
             for(int i = 0; i<storeNums.count;i++){
                 [stores setValue:[NSNumber numberWithInt:0] forKey:[[storeNums objectAtIndex:i] stringValue]];
-                //                NSLog(@"setting %@ to %@ so stores is now:%@",[storeNums objectAtIndex:i],[NSNumber numberWithInt:0],stores);
+                //                DLog(@"setting %@ to %@ so stores is now:%@",[storeNums objectAtIndex:i],[NSNumber numberWithInt:0],stores);
             }
             
             NSString* JSON = [stores JSONString];
@@ -474,7 +475,7 @@ MBProgressHUD* loading;
         storeQtysPO.delegate = self;
         CGRect frame = [self.products rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
         frame = CGRectOffset(frame, 750, 0);
-        NSLog(@"pop from frame:%@",NSStringFromCGRect(frame));
+        DLog(@"pop from frame:%@",NSStringFromCGRect(frame));
         popoverController = [[UIPopoverController alloc] initWithContentViewController:storeQtysPO];
         [popoverController presentPopoverFromRect:frame inView:self.products permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
@@ -512,19 +513,19 @@ MBProgressHUD* loading;
 
 -(void)textEditBeginWithFrame:(CGRect)frame{
     int offset = frame.origin.y - self.products.contentOffset.y;
-    NSLog(@"cell edit begin, %d", offset);
+    DLog(@"cell edit begin, %d", offset);
     if (offset>=340) {
         [self setViewMovedUp:YES];
     }
     else{
         tOffset = self.products.contentOffset.y;
-        NSLog(@"offset to %d",tOffset);
+        DLog(@"offset to %d",tOffset);
         [self setViewMovedUp:NO];
     }
 }
 
 -(void)textEditEndWithFrame:(CGRect)frame{
-    NSLog(@"cell edit end");
+    DLog(@"cell edit end");
     [self setViewMovedUp:NO];
 }
 

@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>Title</key>
-			<string>Group</string>
+			<string>Connection Information</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -16,43 +16,53 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string></string>
+			<string>CW-510</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
-			<string>name_preference</string>
+			<string>username</string>
 			<key>KeyboardType</key>
 			<string>Alphabet</string>
 			<key>Title</key>
-			<string>Name</string>
+			<string>Username</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
 			<key>DefaultValue</key>
+			<string>123456</string>
+			<key>IsSecure</key>
 			<true/>
 			<key>Key</key>
-			<string>enabled_preference</string>
+			<string>password</string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
 			<key>Title</key>
-			<string>Enabled</string>
+			<string>Password</string>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSTextFieldSpecifier</string>
 		</dict>
 		<dict>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
 			<key>DefaultValue</key>
-			<real>0.5</real>
+			<string>http://10.0.6.187</string>
+			<key>IsSecure</key>
+			<false/>
 			<key>Key</key>
-			<string>slider_preference</string>
-			<key>MaximumValue</key>
-			<integer>1</integer>
-			<key>MaximumValueImage</key>
-			<string></string>
-			<key>MinimumValue</key>
-			<integer>0</integer>
-			<key>MinimumValueImage</key>
-			<string></string>
+			<string>server</string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+			<key>Title</key>
+			<string>Server</string>
 			<key>Type</key>
-			<string>PSSliderSpecifier</string>
+			<string>PSTextFieldSpecifier</string>
 		</dict>
 	</array>
 	<key>StringsTable</key>

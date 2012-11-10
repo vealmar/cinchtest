@@ -18,6 +18,7 @@
 #import "MBProgressHUD.h"
 #import "Macros.h"
 #import "CICalendarViewController.h"
+#import "SettingsManager.h"
 
 @interface CIProductViewController (){
     MBProgressHUD* loading;
@@ -94,7 +95,7 @@
     self.searchBar.backgroundImage = [UIImage imageNamed:@"itemcode.png"];//[UIColor clearColor];
     
     // register for keyboard notifications
-    NSLog(@"in view will appear... need CI");
+    DLog(@"in view will appear... need CI");
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:self.view.window];
     loadCustomers = nil;
     
@@ -122,7 +123,7 @@
         };
         backFromCart =NO;
     }else if(finishOrder){
-        NSLog(@"Back from cart");
+        DLog(@"Back from cart");
         dispatch_queue_t myQueue;
         myQueue = dispatch_queue_create("myQueue", NULL);
         dispatch_async(myQueue, ^{
@@ -159,7 +160,7 @@
 }
 
 -(NSMutableDictionary*)createIfDoesntExist:(NSMutableDictionary*) dict orig:(NSDictionary*)odict{
-    NSLog(@"test this:%@",dict);
+    DLog(@"test this:%@",dict);
     if (dict&&[dict objectForKey:kEditablePrice]&&[dict objectForKey:kEditableVoucher]&&[dict objectForKey:kEditableQty]) {
         return nil;
     }
@@ -180,26 +181,26 @@
     [loadProductsHUD show:NO];
     
     // Do any additional setup after loading the view from its nib.
-    NSLog(@"Sending %@",url);
+    DLog(@"Sending %@",url);
     __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request setNumberOfTimesToRetryOnTimeout:3];
     
     [request setCompletionBlock:^{
-        //NSLog(@"response:%@",[request responseString]);
+        //DLog(@"response:%@",[request responseString]);
         NSArray* data = [[request responseString] objectFromJSONString];
-//        NSLog(@"data:%@",data);
+//        DLog(@"data:%@",data);
         self.productData = [data mutableCopy];
 //PW---        if (showPrice) {
         for( int i=0;i< self.productData.count;i++){
             NSMutableDictionary* dict = [[self.productData objectAtIndex:i] mutableCopy];
             
-            //            NSLog(@"invtid:%@",[dict objectForKey:kProductInvtid]);
+            //            DLog(@"invtid:%@",[dict objectForKey:kProductInvtid]);
             
             [self.productData removeObjectAtIndex:i];
             [self.productData insertObject:dict atIndex:i];
         }
 //        }
-//        NSLog(@"Json:%@",self.productData);
+//        DLog(@"Json:%@",self.productData);
         self.resultData = [self.productData mutableCopy];
         [self.products reloadData];
         [loadProductsHUD hide:NO];
@@ -210,7 +211,7 @@
     }];
     
     [request setFailedBlock:^{
-        NSLog(@"error:%@", [request error]); 
+        DLog(@"error:%@", [request error]); 
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got error:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         [loadProductsHUD hide:NO];
     }];
@@ -268,7 +269,7 @@
     
     
     if (myTableView==self.vendorTable) {
-//        NSLog(@"vendor table");
+//        DLog(@"vendor table");
         static NSString* CellId = @"CIVendorCell";
         UITableViewCell* cell = [myTableView dequeueReusableCellWithIdentifier:CellId];
         
@@ -309,7 +310,7 @@
         NSMutableDictionary* dict = [self.resultData objectAtIndex:[indexPath row]];
         NSMutableDictionary* editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
         
-//        NSLog(@"data(%d):%@",indexPath.row,dict);
+//        DLog(@"data(%d):%@",indexPath.row,dict);
         
         //idx, invtid, descr, partnbr, uom, showprc, caseqty, dirship, linenbr, new, adv, discount
         if ([dict objectForKey:@"idx"]&&![[dict objectForKey:@"idx"] isKindOfClass:[NSNull class]]) {
@@ -326,7 +327,7 @@
             [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
             NSDate* date = [[NSDate alloc]init];
             date = [df dateFromString:[dict objectForKey:kProductShipDate1]];
-//            NSLog(@"date(%@):%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:kProductShipDate1],date);
+//            DLog(@"date(%@):%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:kProductShipDate1],date);
             [df setDateFormat:@"yyyy-MM-dd"];
             cell.PartNbr.text = [df stringFromDate:date];
         }else
@@ -358,7 +359,7 @@
         
         cell.New.text = ([dict objectForKey:@"new"]?@"Y":@"N");
         cell.Adv.text = ([dict objectForKey:@"adv"]?@"Y":@"N");
-        //NSLog(@"regPrc:%@",[dict objectForKey:@"regprc"]);
+        //DLog(@"regPrc:%@",[dict objectForKey:@"regprc"]);
         
 //        cell.regPrc.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[[dict objectForKey:@"regprc"] doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
         
@@ -418,7 +419,7 @@
             //NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
             //[nf setNumberStyle:NSNumberFormatterCurrencyStyle];
             //double price = [[nf numberFromString:cell.price.text] doubleValue];
-            //NSLog(@"price:%f",price);
+            //DLog(@"price:%f",price);
         }
         else if([dict objectForKey:kProductShowPrice]){
             NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
@@ -448,19 +449,19 @@
         
         //if you want it to highlight based on shipdates uncomment this:
 //        if ([[editableDict objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]]&&((NSArray*)[editableDict objectForKey:kOrderItemShipDates]).count>0) {
-////            NSLog(@"highlight");
+////            DLog(@"highlight");
 //            UIView* view = [[UIView alloc] initWithFrame:cell.frame];
 //            view.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
 //            cell.backgroundView = view;
 //        }else{
-////            NSLog(@"no highlight");
+////            DLog(@"no highlight");
 //            cell.backgroundView = nil;
 //        }
         
         
         //if you want it to highlight based on qty uncomment this:
         if (multiStore&&editableDict&&[[editableDict objectForKey:kEditableQty] isKindOfClass:[NSString class]]&&[[[editableDict objectForKey:kEditableQty] objectFromJSONString] isKindOfClass:[NSDictionary class]]&&((NSDictionary*)[[editableDict objectForKey:kEditableQty] objectFromJSONString]).allKeys.count>0) {
-//            NSLog(@"first");
+//            DLog(@"first");
             BOOL hasQty = NO;
             for(NSNumber* n in [[[editableDict objectForKey:kEditableQty] objectFromJSONString] allObjects]){
                 if(n>0)
@@ -472,19 +473,19 @@
                 cell.backgroundView = view;
             }
         }else if (editableDict&&[editableDict objectForKey:kEditableQty]&&[[editableDict objectForKey:kEditableQty] isKindOfClass:[NSString class]]&&[[editableDict objectForKey:kEditableQty] integerValue] >0){
-//            NSLog(@"second");
-            //            NSLog(@"highlight");
+//            DLog(@"second");
+            //            DLog(@"highlight");
             UIView* view = [[UIView alloc] initWithFrame:cell.frame];
             view.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
             cell.backgroundView = view;
         }else if (editableDict&&[editableDict objectForKey:kEditableQty]&&[[editableDict objectForKey:kEditableQty] isKindOfClass:[NSNumber class]]&&[[editableDict objectForKey:kEditableQty] intValue] > 0){
-            //            NSLog(@"highlight");
+            //            DLog(@"highlight");
             UIView* view = [[UIView alloc] initWithFrame:cell.frame];
             view.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
             cell.backgroundView = view;
         }else{
-//            NSLog(@"nil");
-            //            NSLog(@"no highlight");
+//            DLog(@"nil");
+            //            DLog(@"no highlight");
             cell.backgroundView = nil;
         }
         
@@ -501,7 +502,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (tableView == self.products) {
-        NSLog(@"product details:%@",[self.resultData objectAtIndex:[indexPath row]]);
+        DLog(@"product details:%@",[self.resultData objectAtIndex:[indexPath row]]);
         if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]) {
             [selectedIdx removeObject:[NSNumber numberWithInteger:[indexPath row]]];
             //            [[tableView cellForRowAtIndexPath:indexPath] setSelected:NO];
@@ -547,25 +548,25 @@
         url = [NSString stringWithFormat:@"%@?%@=%@",kDBLOGOUT,kAuthToken,authToken];
     }
     
-    NSLog(@"Signout url:%@",url);
+    DLog(@"Signout url:%@",url);
     
     __block ASIHTTPRequest* signout = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [signout setRequestMethod:@"DELETE"];
     
     [signout setCompletionBlock:^{
-        NSLog(@"Signout:%@",[signout responseString]); 
+        DLog(@"Signout:%@",[signout responseString]); 
         [self dismissModalViewControllerAnimated:YES];
     }];
     
     [signout setFailedBlock:^{
-        NSLog(@"Signout Error:%@",[signout error]); 
+        DLog(@"Signout Error:%@",[signout error]); 
     }];
     
     [signout startAsynchronous];
 }
 
 -(void)Cancel{
-    NSLog(@"cancel");
+    DLog(@"cancel");
     if (self.delegate != nil) {
         [self.delegate Return];
     }
@@ -598,7 +599,7 @@
     [loading hide:YES];
     [self.products reloadData];
     self.customer = [info copy];
-    NSLog(@"set customerinfo:%@",self.customer);
+    DLog(@"set customerinfo:%@",self.customer);
     
     //if they want Billname displayed uncomment this
     if ([self.customer objectForKey:kBillName]) {
@@ -624,7 +625,7 @@
         
         NSInteger num = 0;
         if (!multiStore) {
-            NSLog(@"!multiStore:%@",[dict objectForKey:kEditableQty]);
+            DLog(@"!multiStore:%@",[dict objectForKey:kEditableQty]);
             num = [[dict objectForKey:kEditableQty] integerValue];
         }else{
             NSMutableDictionary* qty = [[dict objectForKey:kEditableQty] objectFromJSONString];
@@ -638,7 +639,7 @@
                 }
             }
         }
-        NSLog(@"orig yo q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
+        DLog(@"orig yo q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
         if (num>0) {
                 
                 NSArray* dates = [dict objectForKey:kOrderItemShipDates];
@@ -657,7 +658,7 @@
     
     [arr removeObjectIdenticalTo:nil];
     
-    NSLog(@"array:%@",arr);
+    DLog(@"array:%@",arr);
     NSDictionary* order;
     //if ([info objectForKey:kOrderCustID]) {
     if (!self.customer) {
@@ -671,7 +672,7 @@
     NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:order,kOrder, nil];
     
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
-    NSLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
+    DLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
     
     __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request addRequestHeader:@"Accept" value:@"application/json"];
@@ -687,11 +688,11 @@
     //[request.postBody appendData:[final JSONData]];
     [request appendPostData:[[final JSONString] dataUsingEncoding:NSUTF8StringEncoding]];
     
-    //NSLog(@"pure:%@",[request postBody]);
+    //DLog(@"pure:%@",[request postBody]);
     
     [request setCompletionBlock:^{
         [submit hide:YES];
-        NSLog(@"Order complete:%@",[request responseString]); 
+        DLog(@"Order complete:%@",[request responseString]); 
         if (![[request responseString] objectFromJSONString]) {
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Something odd happened. Please try submitting your order again from the Cart!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
             return;
@@ -702,9 +703,9 @@
         
         dispatch_async(dispatch_get_current_queue(), ^{
             [NSThread sleepForTimeInterval:1];
-            NSLog(@"tap");
+            DLog(@"tap");
             dispatch_async(dispatch_get_main_queue(), ^{
-                NSLog(@"tap2");
+                DLog(@"tap2");
                 if (self.delegate != nil) {
                     [self.delegate Return];
                     //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
@@ -716,11 +717,11 @@
     
     [request setFailedBlock:^{
         [submit hide:YES];
-        NSLog(@"Order Error:%@",[request error]); 
+        DLog(@"Order Error:%@",[request error]); 
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got the following error on submittion:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
     }];
     
-    NSLog(@"request content-type:%@",request.requestHeaders);
+    DLog(@"request content-type:%@",request.requestHeaders);
     
     [request startAsynchronous];
     
@@ -797,7 +798,7 @@
             __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
             [request setNumberOfTimesToRetryOnTimeout:3];
             [request setCompletionBlock:^{
-                NSLog(@"success got:%@",[request responseString]);
+                DLog(@"success got:%@",[request responseString]);
                 
                 NSArray* results = [[request responseString] objectFromJSONString];
                 if (!results||![results objectAtIndex:0]||![[results objectAtIndex:0] objectForKey:@"vendors"]) {
@@ -838,7 +839,7 @@
             vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any",kVendorUsername,@"0",@"id", nil], nil];
         
             [self.vendorTable reloadData];
-            NSLog(@"reloading vendor table");
+            DLog(@"reloading vendor table");
         }
     }
     
@@ -864,27 +865,27 @@
     
     
     NSMutableArray* ranges = [NSMutableArray arrayWithCapacity:selectedIdx.count];
-    NSLog(@"# selectedIdx(%d):%@",selectedIdx.count,selectedIdx);
+    DLog(@"# selectedIdx(%d):%@",selectedIdx.count,selectedIdx);
     
     
     for(NSNumber* idx in selectedIdx){
-        NSLog(@"starting %@",idx);
+        DLog(@"starting %@",idx);
 //        CIProductCell* cell = (CIProductCell*)[self.products cellForRowAtIndexPath:[NSIndexPath indexPathForRow:[idx integerValue] inSection:0]];
         NSDictionary* dict = [self.resultData objectAtIndex:idx.intValue];
         if ([[dict objectForKey:@"invtid"] isEqualToString:@"0"]) {
             continue;
         }
-        NSLog(@"not in cell");
+        DLog(@"not in cell");
         
         NSDateFormatter* df = [[NSDateFormatter alloc] init];
-        //            NSLog(@"date(%@):%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:kProductShipDate1],date);
+        //            DLog(@"date(%@):%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:kProductShipDate1],date);
         //        [df setDateFormat:@"yyyy-MM-dd"];
         [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
         
         NSDate* startDate = [[NSDate alloc]init];
         NSDate* endDate = [[NSDate alloc]init];
         
-        NSLog(@"about to get data from cell");
+        DLog(@"about to get data from cell");
         if([dict objectForKey:kProductShipDate1]&&![[dict objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]){
             startDate = [df dateFromString:[dict objectForKey:kProductShipDate1]];
         }
@@ -893,7 +894,7 @@
             endDate = [df dateFromString:[dict objectForKey:kProductShipDate2]];
         }
         
-        NSLog(@"got %@(%@) - %@(%@)",startDate,[dict objectForKey:kProductShipDate1],endDate,[dict objectForKey:kProductShipDate2]);
+        DLog(@"got %@(%@) - %@(%@)",startDate,[dict objectForKey:kProductShipDate1],endDate,[dict objectForKey:kProductShipDate2]);
         
         NSMutableArray *dateList = [NSMutableArray array];
         NSCalendar *currentCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
@@ -909,17 +910,17 @@
             currentDate = [currentCalendar dateByAddingComponents:comps toDate:currentDate  options:0];
         }
         
-        NSLog(@"adding %@",idx);
+        DLog(@"adding %@",idx);
         [ranges addObject:dateList];
-        NSLog(@"finished %@",idx);
+        DLog(@"finished %@",idx);
     }
-    NSLog(@"ranges:%@",ranges);
+    DLog(@"ranges:%@",ranges);
 
     __block CICalendarViewController* calView = [[CICalendarViewController alloc] initWithNibName:@"CICalendarViewController" bundle:nil];
     calView.modalPresentationStyle = UIModalPresentationFormSheet;
     
     calView.cancelTouched = ^{
-        NSLog(@"calender canceled");
+        DLog(@"calender canceled");
         self.backFromCart = YES;
         [calView dismissModalViewControllerAnimated:NO];
     };
@@ -937,17 +938,17 @@
                 edict = editableDict;
             }
             
-            NSLog(@"after done touch(should never be nil):%@ vs orig%@",edict,editableDict);
+            DLog(@"after done touch(should never be nil):%@ vs orig%@",edict,editableDict);
             
             [edict setObject:dates forKey:kOrderItemShipDates];
             [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
             
-            NSLog(@"done Touch idx(%@) iedict:%@ full data is now:%@",idx,edict,[editableData objectForKey:[dict objectForKey:@"id"]]);
+            DLog(@"done Touch idx(%@) iedict:%@ full data is now:%@",idx,edict,[editableData objectForKey:[dict objectForKey:@"id"]]);
             
-            NSLog(@"DT cart data:%@",self.productCart);
+            DLog(@"DT cart data:%@",self.productCart);
             
             if ([self.productCart objectForKey:[dict objectForKey:@"id"]]) {
-                NSLog(@"index(%@) shipdates updated to: %@",idx,dates);
+                DLog(@"index(%@) shipdates updated to: %@",idx,dates);
                 NSMutableDictionary* dict2 = [self.productCart objectForKey:[dict objectForKey:@"id"]];
                 [dict2 setObject:dates forKey:kOrderItemShipDates];
             }
@@ -973,42 +974,42 @@
     
     
     if (ranges.count>1) {
-//        NSLog(@"more then one range");
+//        DLog(@"more then one range");
         NSMutableSet* final = [NSMutableSet setWithArray:[ranges objectAtIndex:0]];
         for (int i = 1; i<ranges.count; i++) {
             NSSet* tempset = [NSSet setWithArray:[ranges objectAtIndex:i]];
             [final intersectSet:tempset];
-//            NSLog(@"current set:%@", final);
+//            DLog(@"current set:%@", final);
         }
         if (final.count <= 0) {
             [[[UIAlertView alloc] initWithTitle:@"Oops" message:@"We couldn't find any dates that could be used for all of the items you have selected! Please de-select some and then try again!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         }else{
             calView.startDate = [[final allObjects] objectAtIndex:0];
-//            NSLog(@"presenting multi range");
+//            DLog(@"presenting multi range");
             calView.afterLoad =^{
                 calView.calendarView.avalibleDates = [[final allObjects] mutableCopy];
                 calView.calendarView.selectedDates = [selectedArr mutableCopy];
             };
             [self presentModalViewController:calView animated:NO];
-//            NSLog(@"presented");
+//            DLog(@"presented");
         }
     }else{
         if (ranges&&ranges.count == 1) {
             calView.startDate = [[ranges objectAtIndex:0] objectAtIndex:0];
-//            NSLog(@"presenting single range:%@",[ranges objectAtIndex:0]);
+//            DLog(@"presenting single range:%@",[ranges objectAtIndex:0]);
             calView.afterLoad =^{
                 calView.calendarView.avalibleDates =[[ranges objectAtIndex:0] mutableCopy];
                 calView.calendarView.selectedDates = [selectedArr mutableCopy];
             };
             
-//            NSLog(@"copied");
+//            DLog(@"copied");
             [self presentModalViewController:calView animated:NO];
-//            NSLog(@"presented");
+//            DLog(@"presented");
         }else{
-            NSLog(@"empty date range... er... shite");
+            DLog(@"empty date range... er... shite");
         }
     }
-//    NSLog(@"don't need thinking loader anymore");
+//    DLog(@"don't need thinking loader anymore");
     [thinking hide:NO];
 }
 
@@ -1026,7 +1027,7 @@
     }
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
-    NSLog(@"Sending %@",url);
+    DLog(@"Sending %@",url);
     __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request setNumberOfTimesToRetryOnTimeout:3];
     
@@ -1035,14 +1036,14 @@
         
         [self.customerDB writeToFile:path atomically:YES];
         
-        NSLog(@"customers Json:%@",self.customerDB);
+        DLog(@"customers Json:%@",self.customerDB);
         customersReady = YES;
     }];
     
     [request setFailedBlock:^{
         self.customerDB = nil;
         [self dismissModalViewControllerAnimated:YES];
-        NSLog(@"error:%@", [request error]); 
+        DLog(@"error:%@", [request error]); 
     }];
     
     [request startAsynchronous];
@@ -1060,7 +1061,7 @@
         edict = editableDict;
     }
     
-    NSLog(@"after done touch(should never be nil):%@",edict);
+    DLog(@"after done touch(should never be nil):%@",edict);
     [edict setObject:[NSNumber numberWithDouble:price] forKey:kEditableVoucher];
     [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
 }
@@ -1077,7 +1078,7 @@
         edict = editableDict;
     }
     
-    NSLog(@"after done touch(should never be nil):%@",edict);
+    DLog(@"after done touch(should never be nil):%@",edict);
     [edict setObject:[NSNumber numberWithDouble:price] forKey:kEditablePrice];
     [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
 }
@@ -1088,13 +1089,13 @@
     
     NSMutableDictionary* edict = [self createIfDoesntExist:editableDict orig:dict];
     
-    NSLog(@"is it nil:%@ editableData:%@",edict,editableData);
+    DLog(@"is it nil:%@ editableData:%@",edict,editableData);
     
     if (edict == nil ) {
         edict = editableDict;
     }
     
-    NSLog(@"after done touch(should never be nil):%@",edict);
+    DLog(@"after done touch(should never be nil):%@",edict);
     [edict setObject:[NSNumber numberWithDouble:qty] forKey:kEditableQty];
     [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
     if (qty > 0) {
@@ -1102,12 +1103,12 @@
     }else {
         [self.productCart removeObjectForKey:key];
     }
-    NSLog(@"qty change to %@ for index %@",[NSNumber numberWithDouble:qty],[NSNumber numberWithInt:idx]);
+    DLog(@"qty change to %@ for index %@",[NSNumber numberWithDouble:qty],[NSNumber numberWithInt:idx]);
 }
 
 -(void)AddToCartForIndex:(int)idx{
     NSString* key = [[self.resultData objectAtIndex:idx] objectForKey:@"id"];
-    NSLog(@"add item at %d to cart",idx);
+    DLog(@"add item at %d to cart",idx);
     NSMutableDictionary* dict = [[self.resultData objectAtIndex:idx] mutableCopy];
     NSMutableDictionary* editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
     
@@ -1119,9 +1120,9 @@
     
     [dict addEntriesFromDictionary:edict];
     
-    NSLog(@"after done touch(should never be nil):%@ vs %@ dict now:%@",edict, editableDict,dict);
+    DLog(@"after done touch(should never be nil):%@ vs %@ dict now:%@",edict, editableDict,dict);
     [self.productCart setObject:dict forKey:key];
-    NSLog(@"cart now:%@",self.productCart);
+    DLog(@"cart now:%@",self.productCart);
 }
 
 -(void)QtyTouchForIndex:(int)idx{
@@ -1140,7 +1141,7 @@
             edict = editableDict;
         }
         
-        NSLog(@"after done touch(should never be nil):%@",edict);
+        DLog(@"after done touch(should never be nil):%@",edict);
         if ([[edict objectForKey:kEditableQty] isKindOfClass:[NSNumber class]]) {
             NSArray* storeNums = [[customer objectForKey:kStores] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
                 NSNumber* n1 = (NSNumber*)obj1;NSNumber* n2 = (NSNumber*)obj2;
@@ -1151,23 +1152,23 @@
             NSMutableDictionary* stores = [NSMutableDictionary dictionaryWithCapacity:storeNums.count+1];
             
             [stores setValue:[NSNumber numberWithInt:0] forKey:[customer objectForKey:kCustID]];
-            NSLog(@"setting %@ to %@ so stores is now:%@",[customer objectForKey:kCustID],[NSNumber numberWithInt:0],stores);
+            DLog(@"setting %@ to %@ so stores is now:%@",[customer objectForKey:kCustID],[NSNumber numberWithInt:0],stores);
             for(int i = 0; i<storeNums.count;i++){
                 [stores setValue:[NSNumber numberWithInt:0] forKey:[[storeNums objectAtIndex:i] stringValue]];
-//                NSLog(@"setting %@ to %@ so stores is now:%@",[storeNums objectAtIndex:i],[NSNumber numberWithInt:0],stores);
+//                DLog(@"setting %@ to %@ so stores is now:%@",[storeNums objectAtIndex:i],[NSNumber numberWithInt:0],stores);
             }
             
             NSString* JSON = [stores JSONString];
             [edict setObject:JSON forKey:kEditableQty];
         }
         storeQtysPO.stores = [[[edict objectForKey:kEditableQty] objectFromJSONString] mutableCopy];
-        NSLog(@"stores = %@",storeQtysPO.stores);
+        DLog(@"stores = %@",storeQtysPO.stores);
         [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
         storeQtysPO.tag = idx;
         storeQtysPO.delegate = self;
         CGRect frame = [self.products rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
         frame = CGRectOffset(frame, 750, 0);
-//        NSLog(@"pop from frame:%@",NSStringFromCGRect(frame));
+//        DLog(@"pop from frame:%@",NSStringFromCGRect(frame));
         popoverController = [[UIPopoverController alloc] initWithContentViewController:storeQtysPO];
         [popoverController presentPopoverFromRect:frame inView:self.products permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
@@ -1175,7 +1176,7 @@
 
 -(void)QtyTableChange:(NSMutableDictionary *)qty forIndex:(int)idx{
     NSString* JSON = [qty JSONString];
-    NSLog(@"setting qtys on index(%d) to %@",idx,JSON);
+    DLog(@"setting qtys on index(%d) to %@",idx,JSON);
     
     NSString* key = [[self.resultData objectAtIndex:idx] objectForKey:@"id"];
     
@@ -1188,9 +1189,9 @@
         edict = editableDict;
     }
     
-    NSLog(@"after done touch(should never be nil):%@",edict);
+    DLog(@"after done touch(should never be nil):%@",edict);
     [edict setValue:JSON forKey:kEditableQty];
-    NSLog(@"row now set to %@",edict);
+    DLog(@"row now set to %@",edict);
     [editableData setObject:edict forKey:key];
     
     int highestQty = -1;
@@ -1205,7 +1206,7 @@
         }
     }
     
-    NSLog(@"in qty %@ the qty picked is %d",qty,highestQty);
+    DLog(@"in qty %@ the qty picked is %d",qty,highestQty);
     
     if (highestQty > 0) {
         [self AddToCartForIndex:idx];
@@ -1247,19 +1248,19 @@
 
 -(void)textEditBeginWithFrame:(CGRect)frame{
     int offset = frame.origin.y - self.products.contentOffset.y;
-    NSLog(@"cell edit begin, %d", offset);
+    DLog(@"cell edit begin, %d", offset);
     if (offset>=340) {
         [self setViewMovedUp:YES];
     }
     else{
         tOffset = self.products.contentOffset.y;
-        NSLog(@"offset to %d",tOffset);
+        DLog(@"offset to %d",tOffset);
         [self setViewMovedUp:NO];
     }
 }
 
 -(void)textEditEndWithFrame:(CGRect)frame{
-    NSLog(@"cell edit end");
+    DLog(@"cell edit end");
 //    [self setViewMovedUp:NO];
     [self.products reloadData];
 }
@@ -1272,14 +1273,14 @@
 #pragma mark - Search Delegate stuff
 
 -(void)searchBarTextDidBeginEditing:(UISearchBar *)sBar{
-//    NSLog(@"search did begin:%@",sBar.text);
+//    DLog(@"search did begin:%@",sBar.text);
     if (self.productData == nil||[self.productData isKindOfClass:[NSNull class]]) {
         return;
     }
 //    if (sBar == self.searchBar) {
         if ([sBar.text isEqualToString:@""]) {
             self.resultData = [self.productData mutableCopy];
-            NSLog(@"string is empty");
+            DLog(@"string is empty");
         }else{
             
             NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
@@ -1292,7 +1293,7 @@
                 }else{
                     invtid = @"";
                 }
-//                NSLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
+//                DLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
                  
                 
                 return [invtid hasPrefix:sBar.text];
@@ -1300,21 +1301,21 @@
             
             self.resultData = [[self.productData filteredArrayUsingPredicate:pred] mutableCopy];
             [selectedIdx removeAllObjects];
-            NSLog(@"results count:%d", self.resultData.count);
+            DLog(@"results count:%d", self.resultData.count);
         }
         [self.products reloadData];
 //    }
 }
 
 -(void)searchBarTextDidEndEditing:(UISearchBar *)sBar{
-//    NSLog(@"search did end:%@",sBar.text);
+//    DLog(@"search did end:%@",sBar.text);
     if (self.productData == nil||[self.productData isKindOfClass:[NSNull class]]) {
         return;
     }
 //    if (sBar == self.searchBar) {
         if ([sBar.text isEqualToString:@""]) {
             self.resultData = [self.productData mutableCopy];
-            NSLog(@"string is empty");
+            DLog(@"string is empty");
         }else{
             
             NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
@@ -1327,28 +1328,28 @@
                 }else{
                     invtid = @"";
                 }
-//                NSLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
+//                DLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
                 
                 return [invtid hasPrefix:sBar.text];
             }];
             
             self.resultData = [[self.productData filteredArrayUsingPredicate:pred] mutableCopy];
             [selectedIdx removeAllObjects];
-            NSLog(@"results count:%d", self.resultData.count);
+            DLog(@"results count:%d", self.resultData.count);
         }
         [self.products reloadData];
 //    }
 }
 
 -(void)searchBar:(UISearchBar *)sBar textDidChange:(NSString *)searchText{
-//    NSLog(@"search did change:%@ - %@",sBar.text,searchText);
+//    DLog(@"search did change:%@ - %@",sBar.text,searchText);
     if (self.productData == nil||[self.productData isKindOfClass:[NSNull class]]) {
         return;
     }
 //    if (sBar == self.searchBar) {
         if ([searchText isEqualToString:@""]) {
             self.resultData = [self.productData mutableCopy];
-            NSLog(@"string is empty");
+            DLog(@"string is empty");
         }else{
             
             NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
@@ -1361,14 +1362,14 @@
                 }else{
                     invtid = @"";
                 }
-//                NSLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
+//                DLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
                 
                 return [invtid hasPrefix:searchText];
             }];
             
             self.resultData = [[self.productData filteredArrayUsingPredicate:pred] mutableCopy];
             [selectedIdx removeAllObjects];
-            NSLog(@"results count:%d", self.resultData.count);
+            DLog(@"results count:%d", self.resultData.count);
         }
         [self.products reloadData];
 //    }

@@ -11,6 +11,7 @@
 #import "MBProgressHUD.h"
 #import "ASIFormDataRequest.h"
 #import "JSONKit.h"
+#import "SettingsManager.h"
 
 @interface CIPrintViewController ()
 
@@ -90,15 +91,15 @@
     [request setPostValue:self.orderID forKey:kReportPrintOrderId];
     
     [request setCompletionBlock:^{
-        //NSLog(@"good:cookies%@, headers:%@, string:%@", [request responseCookies], [request responseHeaders], [request responseString]);
+        //DLog(@"good:cookies%@, headers:%@, string:%@", [request responseCookies], [request responseHeaders], [request responseString]);
         dispatch_async(dispatch_get_main_queue(), ^{
             if([[[request responseHeaders] objectForKey:@"Content-Type"] isEqualToString:@"application/json; charset=utf-8"])
             {
-                //NSLog(@"Got JSON. Response %@",[request responseStatusMessage]);
+                //DLog(@"Got JSON. Response %@",[request responseStatusMessage]);
                 NSDictionary* temp = [[request responseString] objectFromJSONString];
-                NSLog(@"JSON:%@",temp);
+                DLog(@"JSON:%@",temp);
                 if ([temp objectForKey:@"created_at"]) {
-                    NSLog(@"good stuff... look up^");
+                    DLog(@"good stuff... look up^");
                     [hud hide:NO];
                     [self dismissModalViewControllerAnimated:YES];
                     return;
@@ -106,7 +107,7 @@
             }
             else
             {
-                NSLog(@"got error response:%@",request.responseString);
+                DLog(@"got error response:%@",request.responseString);
                 [[[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Something very bad happened... you should probably tell someone >.>" delegate:self cancelButtonTitle:@"I'll go find someone" otherButtonTitles: nil] show];
             }
             [hud hide:YES];
@@ -115,22 +116,22 @@
     }];//completion block
     
     [request setFailedBlock:^{
-        NSLog(@"error:%@",[request error]);
+        DLog(@"error:%@",[request error]);
         dispatch_async(dispatch_get_main_queue(), ^{
             if (request.responseString) {
-                NSLog(@"ERROR:%@",[[request.responseString objectFromJSONString] objectForKey:kError]);
+                DLog(@"ERROR:%@",[[request.responseString objectFromJSONString] objectForKey:kError]);
                 [hud hide:YES]; 
             }
             else {
                 if ([[request error] code]==1) {
-                    NSLog(@"There seems to be an issue connecting to our servers. Please double check you have an internet connection and try again!");
+                    DLog(@"There seems to be an issue connecting to our servers. Please double check you have an internet connection and try again!");
                 }
                 else{
-                    NSLog(@"srsly error:%@",[[request error] description]);
+                    DLog(@"srsly error:%@",[[request error] description]);
                 }
                 [hud hide:YES]; 
             }
-            NSLog(@"returned:%@",request.responseString);
+            DLog(@"returned:%@",request.responseString);
         });
     }];
     

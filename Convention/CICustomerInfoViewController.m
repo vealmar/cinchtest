@@ -13,6 +13,7 @@
 #import "MBProgressHUD.h"
 #import "Macros.h"
 #import "config.h"
+#import "SettingsManager.h"
 
 @implementation CICustomerInfoViewController
 @synthesize tablelayer;
@@ -32,7 +33,7 @@
     if (self) {
         // Custom initialization
         self.tableData = [NSArray array];
-        //NSLog(@"CI init'd");
+        //DLog(@"CI init'd");
     }
     return self;
 }
@@ -73,11 +74,11 @@
     //NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:@"New Customer",kCustID,@"New Customer",kBillName,@"0",kID, nil];
     //[arr addObject:dict];
     for (int i=0; i<[customerData count]; i++) {
-        //NSLog(@"Loading bn:%@,cusID:%@,id:%@",[[customerData objectAtIndex:i] objectForKey:kBillName],[[customerData objectAtIndex:i] objectForKey:kCustID],[[customerData objectAtIndex:i] objectForKey:kID]);
+        //DLog(@"Loading bn:%@,cusID:%@,id:%@",[[customerData objectAtIndex:i] objectForKey:kBillName],[[customerData objectAtIndex:i] objectForKey:kCustID],[[customerData objectAtIndex:i] objectForKey:kID]);
         if (i==0) {
-            NSLog(@"search before:%@",self.search.text);
+            DLog(@"search before:%@",self.search.text);
             self.search.text = [[customerData objectAtIndex:0] objectForKey:kCustID];
-            NSLog(@"search after:%@, %@",self.search.text,[[customerData objectAtIndex:0] objectForKey:kCustID]);
+            DLog(@"search after:%@, %@",self.search.text,[[customerData objectAtIndex:0] objectForKey:kCustID]);
         }
         NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:[[customerData objectAtIndex:i] objectForKey:kCustID],kCustID,[[customerData objectAtIndex:i] objectForKey:kBillName],kBillName,[[customerData objectAtIndex:i] objectForKey:kID],kID,[[customerData objectAtIndex:i] objectForKey:kEmail],kEmail,[[customerData objectAtIndex:i] objectForKey:kStores],kStores, nil];
         [arr addObject:dict];
@@ -88,12 +89,12 @@
     self.tableData = [arr copy];
     self.filteredtableData = [arr mutableCopy];
     [self.custTable reloadData];
-    NSLog(@"Load customer data");
+    DLog(@"Load customer data");
 }
 
 - (IBAction)back:(id)sender {
     [self dismissModalViewControllerAnimated:YES];
-    NSLog(@"see me?");
+    DLog(@"see me?");
     if (self.delegate) {
         [self.delegate Cancel:nil];
     }
@@ -110,7 +111,7 @@
     NSURL* docs = [fm URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&err];
     
     if(err){
-        NSLog(@"error getting directory in customer refresh:%@",err);
+        DLog(@"error getting directory in customer refresh:%@",err);
     }
     
     err = nil;
@@ -118,7 +119,7 @@
     __block NSString* path = [docs URLByAppendingPathComponent:kCustomerFile].path; 
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
-    NSLog(@"Sending %@",url);
+    DLog(@"Sending %@",url);
     __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     
     [request setCompletionBlock:^{
@@ -127,7 +128,7 @@
         if ([fm fileExistsAtPath:path]) {
             [fm removeItemAtURL:[NSURL URLWithString:path] error:&err];
             if (err) {
-                NSLog(@"Error deleting existing file in Custom Refresh:%@",err);
+                DLog(@"Error deleting existing file in Custom Refresh:%@",err);
             }
         }
         
@@ -137,11 +138,11 @@
         //NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:@"New Customer",kCustID,@"New Customer",kBillName,@"0",kID, nil];
         //[arr addObject:dict];
         for (int i=0; i<[customerData count]; i++) {
-            //NSLog(@"Loading bn:%@,cusID:%@,id:%@",[[customerData objectAtIndex:i] objectForKey:kBillName],[[customerData objectAtIndex:i] objectForKey:kCustID],[[customerData objectAtIndex:i] objectForKey:kID]);
+            //DLog(@"Loading bn:%@,cusID:%@,id:%@",[[customerData objectAtIndex:i] objectForKey:kBillName],[[customerData objectAtIndex:i] objectForKey:kCustID],[[customerData objectAtIndex:i] objectForKey:kID]);
             if (i==0) {
-                NSLog(@"search before:%@",self.search.text);
+                DLog(@"search before:%@",self.search.text);
                 self.search.text = [[customerData objectAtIndex:0] objectForKey:kCustID];
-                NSLog(@"search after:%@, %@",self.search.text,[[customerData objectAtIndex:0] objectForKey:kCustID]);
+                DLog(@"search after:%@, %@",self.search.text,[[customerData objectAtIndex:0] objectForKey:kCustID]);
             }
             NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:[[customerData objectAtIndex:i] objectForKey:kCustID],kCustID,[[customerData objectAtIndex:i] objectForKey:kBillName],kBillName,[[customerData objectAtIndex:i] objectForKey:kID],kID,[[customerData objectAtIndex:i] objectForKey:kEmail],kEmail,[[customerData objectAtIndex:i] objectForKey:kStores],kStores, nil];
             [arr addObject:dict];
@@ -156,7 +157,7 @@
     }];
     
     [request setFailedBlock:^{
-        NSLog(@"error:%@", [request error]); 
+        DLog(@"error:%@", [request error]); 
         [[[UIAlertView alloc] initWithTitle:@"Oops" message:[NSString stringWithFormat:@"Couldn't refresh customer list do to following error:%@", [request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         [refreshing hide:NO];
     }];
@@ -219,7 +220,7 @@
 //                        else
 //                        {
 //                            NSDictionary* arr = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",custid],kOrderCustID, self.shippingNotes.text,kShipNotes,self.Notes.text,kNotes,self.Authorizer.text,kAuthorizedBy,@"1",kSendEmail,self.email.text,kEmail, nil];
-//                            NSLog(@"info to send:%@",arr);
+//                            DLog(@"info to send:%@",arr);
 //                            [self.delegate setCustomerInfo:arr];
 //                            [self dismissModalViewControllerAnimated:YES];
 //                        }
@@ -227,7 +228,7 @@
 //                    else
 //                    {
 //                        NSDictionary* arr = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",custid],kOrderCustID, nil];//, self.shippingNotes.text,kShipNotes,self.Notes.text,kNotes,self.Authorizer.text,kAuthorizedBy,@"0",kSendEmail,@"",kEmail
-                        NSLog(@"info to send:%@",results);
+                        DLog(@"info to send:%@",results);
                         [self.delegate setCustomerInfo:results];
                         [self dismissModalViewControllerAnimated:YES];
 //                    }
@@ -289,7 +290,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"customer details:%@",[self.filteredtableData objectAtIndex:[indexPath row]]);
+    DLog(@"customer details:%@",[self.filteredtableData objectAtIndex:[indexPath row]]);
     //self.customerID.text = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
     self.search.text = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
 }
@@ -432,7 +433,7 @@
         self.search.text = [[self.filteredtableData objectAtIndex:0] objectForKey:kCustID];
     }
     @catch(NSException *e){
-        NSLog(@"Exception:%@",e);
+        DLog(@"Exception:%@",e);
     }
     [searchBar resignFirstResponder];
     //searchBar.text = @"";

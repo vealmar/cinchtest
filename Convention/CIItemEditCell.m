@@ -55,10 +55,10 @@
     
     double q = 0;
     if (err) {
-        NSLog(@"UT JSON error:%@",err);
+        DLog(@"UT JSON error:%@",err);
         q = [self.qty.text doubleValue];
     }else{
-        NSLog(@"UT JSon got:%@", dict);
+        DLog(@"UT JSon got:%@", dict);
         for (NSString* key in dict.allKeys) {
             q += [[dict objectForKey:key] doubleValue];
         }
@@ -66,7 +66,7 @@
     
     double p = [self.priceLbl.text doubleValue];
     
-    NSLog(@"%f*%f should be %f",q,p,(q*p));
+    DLog(@"%f*%f should be %f",q,p,(q*p));
     
     self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(q*p)] numberStyle:NSNumberFormatterCurrencyStyle];
 }

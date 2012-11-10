@@ -31,7 +31,7 @@
     if (self) {
         // Custom initialization
 //        self.tableData = [NSArray array];
-        //NSLog(@"CI init'd");
+        //DLog(@"CI init'd");
     }
     return self;
 }
@@ -58,12 +58,12 @@
 
 -(void) setCustomerData:(NSArray *)customerData
 {
-    NSLog(@"Load customer data");
+    DLog(@"Load customer data");
 }
 
 - (IBAction)back:(id)sender {
     [self dismissModalViewControllerAnimated:YES];
-    NSLog(@"see me?");
+    DLog(@"see me?");
 //    if (self.delegate) {
 //        [self.delegate Cancel:nil];
 //    }
@@ -92,7 +92,7 @@
     if (!IS_EMPTY_STRING(self.Authorizer.text)) {
         if (self.delegate) {
             NSMutableDictionary* dict = [[self.delegate getCustomerInfo] mutableCopy];
-            NSLog(@"customer data:%@",dict);
+            DLog(@"customer data:%@",dict);
             if (dict == nil) {
                 return;
             }
@@ -128,7 +128,7 @@
             [dict setObject:self.Authorizer.text forKey:kAuthorizedBy];
             [dict setObject:sdEmail forKey:kSendEmail];  
             [dict setObject:semail forKey:kEmail];
-            NSLog(@"info to send:%@",dict);
+            DLog(@"info to send:%@",dict);
             [self.delegate setCustomerInfo:[dict copy]];
             [self.delegate submit:nil];
             [self dismissModalViewControllerAnimated:NO];
@@ -254,7 +254,7 @@
     
     if (self.delegate) {
         NSDictionary* dict = [self.delegate getCustomerInfo];
-        NSLog(@"trying to load email:%@",dict);
+        DLog(@"trying to load email:%@",dict);
         if ([dict objectForKey:kEmail]&&![[dict objectForKey:kEmail] isKindOfClass:[NSNull class]]) {
             self.email.text = [dict objectForKey:kEmail];
         }else {

@@ -9,9 +9,13 @@
 #ifndef Convention_config_h
 #define Convention_config_h
 
+
 //#define kBASEURL @"http://afc.conventioninnovations.com"
 //#define kBASEURL @"http://conventioninnovations.herokuapp.com"
-#define kBASEURL @"http://10.0.6.187"
+//#define kBASEURL @"http://10.0.6.187"
+#define SERVER @"server"
+#define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
+
 //#define kBASEURL @"http://:3000"
 #define kShowID @"1"
 #define kDBLOGIN [NSString stringWithFormat:@"%@//vendors/sign_in.json",kBASEURL]

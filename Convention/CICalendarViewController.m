@@ -61,7 +61,7 @@
     
     NSDateComponents* comps = [calendar components:(NSMonthCalendarUnit|NSYearCalendarUnit) fromDate:startDate];
     [calendarView updateCalendarForMonth:[comps month] forYear:[comps year]];
-//    NSLog(@"avalible = %@",calendarView.avalibleDates);
+//    DLog(@"avalible = %@",calendarView.avalibleDates);
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

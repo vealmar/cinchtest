@@ -8,7 +8,7 @@
 
 #import "CoreDataUtil.h"
 #import "GroupedObject.h"
-#import "HSAppDelegate.h"
+#import "CIAppDelegate.h"
  
 
 
@@ -35,7 +35,7 @@ static CoreDataUtil * sharedInstance;
 
 -(NSManagedObject *) createNewEntity:(NSString *)entityDescription {
 	
-	HSAppDelegate *delegate = (HSAppDelegate *)[UIApplication sharedApplication].delegate;
+	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
 	
 	return [NSEntityDescription
 						
@@ -49,7 +49,7 @@ static CoreDataUtil * sharedInstance;
 
 -(NSArray *) fetchObjects:(NSString *)entityDescription sortField:(NSString *)sortField {
 	
-	HSAppDelegate *delegate = (HSAppDelegate *)[UIApplication sharedApplication].delegate;
+	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
 	NSManagedObjectContext *context = delegate.managedObjectContext;
 	NSError *error;
 	
@@ -78,7 +78,7 @@ static CoreDataUtil * sharedInstance;
 										  sortField:(NSString *)sortField 
 										 withPredicate:(NSPredicate *)predicate  {
 	
-	HSAppDelegate *delegate = (HSAppDelegate *)[UIApplication sharedApplication].delegate;
+	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
 
 	NSManagedObjectContext *context = delegate.managedObjectContext;
 	//NSError *error;
@@ -130,7 +130,7 @@ static CoreDataUtil * sharedInstance;
 				   withPredicate:(NSPredicate *)predicate {
 	
 	
-	HSAppDelegate *delegate = (HSAppDelegate *)[UIApplication sharedApplication].delegate;
+	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
 	NSManagedObjectContext *context = delegate.managedObjectContext;
 	NSError *error;
 	
@@ -161,7 +161,7 @@ static CoreDataUtil * sharedInstance;
 				   withPredicate:(NSPredicate *)predicate {
 	
 	
-	HSAppDelegate *delegate = (HSAppDelegate *)[UIApplication sharedApplication].delegate;
+	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
 
 	NSManagedObjectContext *context = delegate.managedObjectContext;
 	NSError *error;
@@ -192,7 +192,7 @@ static CoreDataUtil * sharedInstance;
 
 - (void) deleteAllObjects: (NSString *) entityDescription  {
 	
-	HSAppDelegate *delegate = (HSAppDelegate *)[UIApplication sharedApplication].delegate;
+	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
 
 	
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -216,7 +216,7 @@ static CoreDataUtil * sharedInstance;
 
 - (void) deleteObject: (NSManagedObject *) managedObject  {
 	
-	HSAppDelegate *delegate = (HSAppDelegate *)[UIApplication sharedApplication].delegate;
+	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
 	  NSError *error;
 	
 	 

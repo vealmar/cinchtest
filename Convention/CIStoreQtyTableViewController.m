@@ -73,7 +73,7 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-//    NSLog(@"numberOfSections with stores:%@",stores);
+//    DLog(@"numberOfSections with stores:%@",stores);
     // Return the number of sections.
     return 1;
 }
@@ -81,7 +81,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-//    NSLog(@"numberOfRowsInSection with stores:%@",stores);
+//    DLog(@"numberOfRowsInSection with stores:%@",stores);
     if (stores&&([stores isKindOfClass:[NSMutableDictionary class]]||[stores isKindOfClass:[NSDictionary class]])) {
         return stores.allKeys.count;
     }
@@ -90,7 +90,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-//    NSLog(@"cellForRowAtIndexPath with stores:%@",stores);
+//    DLog(@"cellForRowAtIndexPath with stores:%@",stores);
     if(stores == nil||![stores isKindOfClass:[NSMutableDictionary class]])
         return nil;
     
@@ -109,15 +109,15 @@
         return [n1 compare:n2];
     }];
     
-//    NSLog(@"keys: %@",keys);
+//    DLog(@"keys: %@",keys);
     
     NSString* key = [keys objectAtIndex:indexPath.row];
-//    NSLog(@"key:%@ value:%@",key, [stores objectForKey:key]);
+//    DLog(@"key:%@ value:%@",key, [stores objectForKey:key]);
     cell.Key.text = key;
     cell.Qty.text = [[stores objectForKey:key] stringValue];
     cell.lblQty.text = cell.Qty.text;
     if (!self.editable) {
-//        NSLog(@"tap");
+//        DLog(@"tap");
         cell.Qty.hidden = YES;
     }
     

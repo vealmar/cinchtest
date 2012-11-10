@@ -220,12 +220,12 @@
                 button.avalible = NO;
                 button.selected = NO;
                 if (self.selectedDates&&self.selectedDates.count>0&&[self.selectedDates containsObject:buttonDate]) {
-//                    NSLog(@"%@ selected",buttonDate);
+//                    DLog(@"%@ selected",buttonDate);
                     button.selected = YES;
                 }
                 
                 if (self.avalibleDates&&self.avalibleDates.count>0&&[self.avalibleDates containsObject:buttonDate]) {
-//                    NSLog(@"%@ avalible",buttonDate);
+//                    DLog(@"%@ avalible",buttonDate);
                     button.avalible = YES;
                 }else{
                     button.avalible = NO;
@@ -303,10 +303,10 @@
     }
     
 //    self.avalibleDates = [[self.avalibleDates arrayByAddingObjectsFromArray:dates] mutableCopy];
-//    NSLog(@"dates:%@ aval:%@",dates, self.avalibleDates);
+//    DLog(@"dates:%@ aval:%@",dates, self.avalibleDates);
     
     for (NSDate* date in dates){
-//        NSLog(@"date:%@",date);
+//        DLog(@"date:%@",date);
         NSDateComponents* comps = [calendar components:(NSDayCalendarUnit|NSMonthCalendarUnit|NSYearCalendarUnit) fromDate:date];
         int month = [comps month];
         int year = [comps year];
@@ -323,7 +323,7 @@
         }
         
         if (month == currentMonth&&year == currentYear) {
-//            NSLog(@"month and year good");
+//            DLog(@"month and year good");
             [dayButtons enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                 DayButton* btn = (DayButton*)obj;
                 if (btn.buttonDate == nil) {
@@ -331,7 +331,7 @@
                 }
                 NSDateComponents* comps = [calendar components:(NSDayCalendarUnit) fromDate:btn.buttonDate];
                 if (day == [comps day]) {
-//                    NSLog(@"found one:%@",btn.buttonDate);
+//                    DLog(@"found one:%@",btn.buttonDate);
                     btn.avalible = YES;
                     *stop = YES;
                 }
