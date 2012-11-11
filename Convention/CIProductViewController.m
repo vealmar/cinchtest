@@ -19,6 +19,7 @@
 #import "Macros.h"
 #import "CICalendarViewController.h"
 #import "SettingsManager.h"
+#import "DateUtil.h"
 
 @interface CIProductViewController (){
     MBProgressHUD* loading;
@@ -100,26 +101,30 @@
     loadCustomers = nil;
     
     if(!backFromCart){
-        loadCustomers = ^{
-        loading = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
-        loading.labelText = @"Loading...";
-        [loading show:NO];
         
-        dispatch_queue_t myQueue;
-        myQueue = dispatch_queue_create("myQueue", NULL);
-        dispatch_async(myQueue, ^{
-//            sleep(1);
-//            while (!customersReady) {}
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [loading hide:NO];
-                CICustomerInfoViewController* ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
-                ci.modalPresentationStyle = UIModalPresentationFormSheet;
-                ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-                ci.delegate = self;
-                ci.authToken = self.authToken;
-                [ci setCustomerData:self.customerDB];
-                [self presentViewController:ci animated:NO completion:nil];
-            });});
+        CIProductViewController __weak *weakSelf = self;
+        
+        loadCustomers = ^{
+            CIProductViewController *strongSelf = weakSelf;
+            loading = [MBProgressHUD showHUDAddedTo:strongSelf.view animated:NO];
+            loading.labelText = @"Loading...";
+            [loading show:NO];
+        
+            dispatch_queue_t myQueue;
+            myQueue = dispatch_queue_create("myQueue", NULL);
+            dispatch_async(myQueue, ^{
+                //            sleep(1);
+                //            while (!customersReady) {}
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [loading hide:NO];
+                    CICustomerInfoViewController* ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
+                    ci.modalPresentationStyle = UIModalPresentationFormSheet;
+                    ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+                    ci.delegate = self;
+                    ci.authToken = self.authToken;
+                    [ci setCustomerData:self.customerDB];
+                    [strongSelf presentViewController:ci animated:NO completion:nil];
+                });});
         };
         backFromCart =NO;
     }else if(finishOrder){
@@ -182,15 +187,19 @@
     
     // Do any additional setup after loading the view from its nib.
     DLog(@"Sending %@",url);
-    __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request setNumberOfTimesToRetryOnTimeout:3];
     
+    ASIHTTPRequest __weak *weakRequest = request;
     [request setCompletionBlock:^{
+        ASIHTTPRequest *strongRequest = weakRequest;
+        
         //DLog(@"response:%@",[request responseString]);
-        NSArray* data = [[request responseString] objectFromJSONString];
-//        DLog(@"data:%@",data);
+        NSArray* data = [[strongRequest responseString] objectFromJSONString];
+        
+        //        DLog(@"data:%@",data);
         self.productData = [data mutableCopy];
-//PW---        if (showPrice) {
+        //PW---        if (showPrice) {
         for( int i=0;i< self.productData.count;i++){
             NSMutableDictionary* dict = [[self.productData objectAtIndex:i] mutableCopy];
             
@@ -199,8 +208,8 @@
             [self.productData removeObjectAtIndex:i];
             [self.productData insertObject:dict atIndex:i];
         }
-//        }
-//        DLog(@"Json:%@",self.productData);
+        //        }
+        //        DLog(@"Json:%@",self.productData);
         self.resultData = [self.productData mutableCopy];
         [self.products reloadData];
         [loadProductsHUD hide:NO];
@@ -212,7 +221,8 @@
     
     [request setFailedBlock:^{
         //DLog(@"error:%@", [request error]);
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got error:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+        ASIHTTPRequest *strongRequest = weakRequest;
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got error:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         [loadProductsHUD hide:NO];
     }];
     
@@ -641,15 +651,19 @@
         }
         DLog(@"orig yo q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
         if (num>0) {
+            
+            NSArray* dates = [dict objectForKey:kOrderItemShipDates];
+            NSMutableArray* strs = [NSMutableArray array];
+            
+            for(int i = 0; i < dates.count; i++){
+                NSDateFormatter* df = [[NSDateFormatter alloc] init];
+//                NSLocale *usLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US"];
+//                [df setLocale:usLocale];
                 
-                NSArray* dates = [dict objectForKey:kOrderItemShipDates];
-                NSMutableArray* strs = [NSMutableArray array];
-                for(NSString* date in dates){
-                    NSDateFormatter* df = [[NSDateFormatter alloc] init];
-                    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-                    NSString* str = [df stringFromDate:date];
-                    [strs addObject:str];
-                }
+                [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
+                NSString* str = [df stringFromDate:[dates objectAtIndex:i]];
+                [strs addObject:str];
+            }
             
             NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[dict objectForKey:kEditableQty],kOrderItemNum,[dict objectForKey:kEditablePrice],kOrderItemPRICE,[dict objectForKey:kEditableVoucher],kOrderItemVoucher,strs,kOrderItemShipDates, nil];
             [arr addObject:(id)proDict];
@@ -674,7 +688,7 @@
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     DLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
     
-    __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request addRequestHeader:@"Accept" value:@"application/json"];
     [request addRequestHeader:@"Content-Type" value:@"application/json"];
     //[request appendPostData:[dataContent dataUsingEncoding:NSUTF8StringEncoding]];
@@ -690,10 +704,15 @@
     
     //DLog(@"pure:%@",[request postBody]);
     
+    ASIHTTPRequest __weak *weakRequest = request;
+    
     [request setCompletionBlock:^{
+        
+        ASIHTTPRequest* strongRequest = weakRequest;
+        
         [submit hide:YES];
         //DLog(@"Order complete:%@",[request responseString]);
-        if (![[request responseString] objectFromJSONString]) {
+        if (![[strongRequest responseString] objectFromJSONString]) {
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Something odd happened. Please try submitting your order again from the Cart!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
             return;
         }
@@ -701,7 +720,9 @@
         self.productCart = [NSMutableDictionary dictionary];
         [self.products reloadData];
         
-        dispatch_async(dispatch_get_current_queue(), ^{
+        dispatch_queue_t tapQueue;
+        tapQueue = dispatch_queue_create("tapQueue", NULL);
+        dispatch_async(tapQueue, ^{
             [NSThread sleepForTimeInterval:1];
             DLog(@"tap");
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -716,9 +737,10 @@
     }];
     
     [request setFailedBlock:^{
+        ASIHTTPRequest* strongRequest = weakRequest;
         [submit hide:YES];
-       // DLog(@"Order Error:%@",[request error]);
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got the following error on submittion:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+        // DLog(@"Order Error:%@",[request error]);
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got the following error on submittion:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
     }];
     
     DLog(@"request content-type:%@",request.requestHeaders);
@@ -747,7 +769,7 @@
     ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     ci.delegate = self;
 //    [ci setCustomerData:self.customerDB];
-    [self presentModalViewController:ci animated:YES];
+    [self presentViewController:ci animated:YES completion:nil];
 }
 
 - (IBAction)reviewCart:(id)sender {
@@ -795,12 +817,13 @@
         
         if (self.vendorGroup&&![self.vendorGroup isKindOfClass:[NSNull class]]) {
             NSString* url = [NSString stringWithFormat:@"%@&%@=%@",kDBGETVENDORSWithVG(self.vendorGroup),kAuthToken,self.authToken];
-            __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
             [request setNumberOfTimesToRetryOnTimeout:3];
+            __weak ASIHTTPRequest* weakRequest = request;
             [request setCompletionBlock:^{
                 //DLog(@"success got:%@",[request responseString]);
-                
-                NSArray* results = [[request responseString] objectFromJSONString];
+                ASIHTTPRequest* strongRequest = weakRequest;
+                NSArray* results = [[strongRequest responseString] objectFromJSONString];
                 if (!results||![results objectAtIndex:0]||![[results objectAtIndex:0] objectForKey:@"vendors"]) {
                     [venderLoading hide:YES];
                     [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Something weird happened! If this problem persists people notify Convention Innovations!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
@@ -823,7 +846,8 @@
             }];
             
             [request setFailedBlock:^{
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got error retrieving vendors for vendor group:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+                ASIHTTPRequest* strongRequest = weakRequest;
+                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got error retrieving vendors for vendor group:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
                 
                 vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any",kVendorUsername,@"0",@"id", nil], nil];
                 
@@ -916,16 +940,20 @@
     }
     DLog(@"ranges:%@",ranges);
 
-    __block CICalendarViewController* calView = [[CICalendarViewController alloc] initWithNibName:@"CICalendarViewController" bundle:nil];
+    CICalendarViewController* calView = [[CICalendarViewController alloc] initWithNibName:@"CICalendarViewController" bundle:nil];
     calView.modalPresentationStyle = UIModalPresentationFormSheet;
+    
+    CICalendarViewController __weak *weakCalView = calView;
     
     calView.cancelTouched = ^{
         DLog(@"calender canceled");
         self.backFromCart = YES;
-        [calView dismissViewControllerAnimated:NO completion:nil];
+        CICalendarViewController *strongCalView = weakCalView;
+        [strongCalView dismissViewControllerAnimated:NO completion:nil];
     };
     
     calView.doneTouched = ^(NSArray* dates){
+        CICalendarViewController *strongCalView = weakCalView;
         [selectedIdx enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
             NSNumber* idx = (NSNumber*)obj;
             
@@ -956,7 +984,7 @@
         [selectedIdx removeAllObjects];
         self.backFromCart = YES;
         [self.products reloadData];
-        [calView dismissViewControllerAnimated:NO completion:nil];
+        [strongCalView dismissViewControllerAnimated:NO completion:nil];
     };
     
     __block NSMutableArray* selectedArr = [NSMutableArray array];

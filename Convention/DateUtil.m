@@ -69,12 +69,19 @@ static DateUtil *sharedInstance;
 
 -(NSDateFormatter *) createFormatter {
 
+//	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+//	//[dateFormat setTimeStyle:NSDateFormatterNoStyle];
+//	//[dateFormat setDateStyle:NSDateFormatterShortStyle];
+//	[dateFormat setDateFormat:@"MM/dd/yyyy hh:mm:ss a"];
+//
+//    return dateFormat;
+    
+    return [self createFormatter:@"MM/dd/yyyy hh:mm:ss a"];
+}
 
-	NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
-	//[dateFormat setTimeStyle:NSDateFormatterNoStyle];
-	//[dateFormat setDateStyle:NSDateFormatterShortStyle];
-	[dateFormat setDateFormat:@"MM/dd/yyyy hh:mm:ss a"];
-
+-(NSDateFormatter *) createFormatter:(NSString *)format {
+    NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:format];
     return dateFormat;
 }
 

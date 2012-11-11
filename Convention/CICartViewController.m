@@ -165,7 +165,7 @@ MBProgressHUD* loading;
     cell.InvtID.text = [[self.productData objectForKey:key] objectForKey:@"invtid"];
     cell.descr.text = [[self.productData objectForKey:key] objectForKey:@"descr"];
     
-    cell.delegate = self;
+    cell.delegate = (id<CIProductCellDelegate>) self;
     
     //PW -- swapping out partnbr and UOM for Ship date range
     if([[self.productData objectForKey:key] objectForKey:kProductShipDate1]&&![[[self.productData objectForKey:key] objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]){
@@ -246,7 +246,7 @@ MBProgressHUD* loading;
     }
     else
         cell.price.text = @"0.00";
-    cell.delegate = self;
+    cell.delegate = (id<CIProductCellDelegate>) self;
     cell.tag = [indexPath row];
     cell.cartBtn.hidden = YES;
     //cell.subtitle.text = [[[self.productData objectAtIndex:[indexPath row]] objectForKey:@"id"] stringValue];
@@ -472,7 +472,7 @@ MBProgressHUD* loading;
         storeQtysPO.stores = [[[dict objectForKey:kEditableQty] objectFromJSONString] mutableCopy];
         storeQtysPO.tag = idx;
         storeQtysPO.editable = NO;
-        storeQtysPO.delegate = self;
+        storeQtysPO.delegate = (id<CIStoreQtyTableDelegate>) self;
         CGRect frame = [self.products rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
         frame = CGRectOffset(frame, 750, 0);
         DLog(@"pop from frame:%@",NSStringFromCGRect(frame));

@@ -52,7 +52,7 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     DLog(@"Sending %@",url);
-    __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    ASIHTTPRequest* __weak request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     
     [request setCompletionBlock:^{
         //DLog(@"response:%@",[request responseString]);

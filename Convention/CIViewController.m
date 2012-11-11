@@ -206,7 +206,7 @@
     
     DLog(@"Login URL:%@",kDBLOGIN);
     
-    __block ASIFormDataRequest* request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:kDBLOGIN]];
+    ASIFormDataRequest* __weak request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:kDBLOGIN]];
     
     [request setPostValue:Email forKey:kEmailKey];
     [request setPostValue:Password forKey:kPasswordKey];

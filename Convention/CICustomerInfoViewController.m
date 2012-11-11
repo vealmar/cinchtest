@@ -120,7 +120,7 @@
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
     DLog(@"Sending %@",url);
-    __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    ASIHTTPRequest* __weak request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     
     [request setCompletionBlock:^{
         NSArray* customerData = [[request responseString] objectFromJSONString];

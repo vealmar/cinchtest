@@ -83,7 +83,7 @@
 //    [isle becomeFirstResponder];
 //    [isle resignFirstResponder];
     
-    __block ASIFormDataRequest* request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:kDBREPORTPRINTS]];
+    ASIFormDataRequest* __weak request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:kDBREPORTPRINTS]];
     
     [request setPostValue:self.isle.text forKey:kReportPrintIsle];
     [request setPostValue:self.booth.text forKey:kReportPrintBooth];
