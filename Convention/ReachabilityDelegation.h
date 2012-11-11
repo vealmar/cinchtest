@@ -33,9 +33,9 @@
     
 }
 
-@property (assign) id <ReachabilityDelegate> delegate;
+@property (strong) id <ReachabilityDelegate> delegate;
 
-@property (nonatomic, retain) Reachability *reach;
+@property (strong) Reachability *reach;
 
 - (id)initWithDelegate:(id<ReachabilityDelegate>)del withUrl:(NSString*)url;
 

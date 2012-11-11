@@ -61,7 +61,7 @@
 {
 	
  	
-	return (![reach currentReachabilityStatus] == kNotReachable);	
+	return (![reach currentReachabilityStatus] == NotReachable);	
 }
 
 - (void)reachabilityChanged:(NSNotification *)note
@@ -89,7 +89,7 @@
 	[self unsubscribeFromNetworkReachabilityNotifications];
 	delegate = nil;
 	
-	[super dealloc];
+	 
 }
 
 

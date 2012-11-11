@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		331AF38C165068AE00C74117 /* ReachabilityDelegation.m in Sources */ = {isa = PBXBuildFile; fileRef = 331AF38B165068AE00C74117 /* ReachabilityDelegation.m */; };
+		331AF39016506B9000C74117 /* red_network.png in Resources */ = {isa = PBXBuildFile; fileRef = 331AF38E16506B9000C74117 /* red_network.png */; };
+		331AF39116506B9000C74117 /* green_network.png in Resources */ = {isa = PBXBuildFile; fileRef = 331AF38F16506B9000C74117 /* green_network.png */; };
 		335A42F3164D7306007B872A /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 335A42F2164D7306007B872A /* CoreData.framework */; };
 		335A4305164D749E007B872A /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 335A4303164D749E007B872A /* Model.xcdatamodeld */; };
 		335A4307164D7529007B872A /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 335A4306164D7529007B872A /* Settings.bundle */; };
@@ -117,6 +120,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		331AF38A165068AE00C74117 /* ReachabilityDelegation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReachabilityDelegation.h; sourceTree = "<group>"; };
+		331AF38B165068AE00C74117 /* ReachabilityDelegation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReachabilityDelegation.m; sourceTree = "<group>"; };
+		331AF38E16506B9000C74117 /* red_network.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = red_network.png; sourceTree = "<group>"; };
+		331AF38F16506B9000C74117 /* green_network.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = green_network.png; sourceTree = "<group>"; };
 		335A42F2164D7306007B872A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		335A42F5164D740A007B872A /* GroupedObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GroupedObject.h; sourceTree = "<group>"; };
 		335A42F6164D740A007B872A /* GroupedObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GroupedObject.m; sourceTree = "<group>"; };
@@ -308,6 +315,8 @@
 		335A42F9164D742F007B872A /* util */ = {
 			isa = PBXGroup;
 			children = (
+				331AF38A165068AE00C74117 /* ReachabilityDelegation.h */,
+				331AF38B165068AE00C74117 /* ReachabilityDelegation.m */,
 				335A42FA164D743E007B872A /* DateUtil.h */,
 				335A42FB164D743E007B872A /* DateUtil.m */,
 				335A42FC164D743E007B872A /* ErrorHandler.h */,
@@ -384,6 +393,8 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				331AF38E16506B9000C74117 /* red_network.png */,
+				331AF38F16506B9000C74117 /* green_network.png */,
 				7498340015DE3E3100F3EB26 /* DDCalendarView */,
 				743944BB15CC1B8A00D0D90E /* printform.png */,
 				743944B815CC1ACD00D0D90E /* printbutton.png */,
@@ -786,6 +797,8 @@
 				74D7E67915F1453C003F6F9E /* shipdatesNEW.png in Resources */,
 				74F79E8715FEFA30004ED26F /* itemcode.png in Resources */,
 				335A4307164D7529007B872A /* Settings.bundle in Resources */,
+				331AF39016506B9000C74117 /* red_network.png in Resources */,
+				331AF39116506B9000C74117 /* green_network.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -847,6 +860,7 @@
 				7498340415DE3EB600F3EB26 /* CICalendarViewController.m in Sources */,
 				335A4305164D749E007B872A /* Model.xcdatamodeld in Sources */,
 				335A430A164D75C0007B872A /* Order.m in Sources */,
+				331AF38C165068AE00C74117 /* ReachabilityDelegation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

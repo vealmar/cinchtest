@@ -19,6 +19,38 @@
 
 @synthesize window = _window;
 @synthesize viewController = _viewController;
+@synthesize networkAvailable;
+
+-(BOOL)isNetworkReachable {
+	
+	
+	// Create zero addy
+	struct sockaddr_in zeroAddress;
+	bzero(&zeroAddress, sizeof(zeroAddress));
+	zeroAddress.sin_len = sizeof(zeroAddress);
+	zeroAddress.sin_family = AF_INET;
+	
+	// Recover reachability flags
+	SCNetworkReachabilityRef defaultRouteReachability = SCNetworkReachabilityCreateWithAddress(NULL, (struct sockaddr *)&zeroAddress);
+	SCNetworkReachabilityFlags flags;
+	
+	BOOL didRetrieveFlags = SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags);
+	CFRelease(defaultRouteReachability);
+	
+	if (!didRetrieveFlags)
+	{
+		printf("Error. Could not recover network reachability flags\n");
+		return 0;
+	}
+	
+	BOOL isReachable = flags & kSCNetworkFlagsReachable;
+	BOOL needsConnection = flags & kSCNetworkFlagsConnectionRequired;
+	self.networkAvailable = (isReachable && !needsConnection) ? YES : NO;
+	
+	return self.networkAvailable;
+	
+	
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -33,7 +65,27 @@
     [self.window makeKeyAndVisible];
 	
 	[[SettingsManager sharedManager] initialize];
+	
+	self.networkAvailable = [reachDelegation isNetworkReachable]; //TODO: We may need actually prod it to check here.
     return YES;
+}
+
+#pragma mark Reachability
+
+
+
+-(void)networkLost {
+	
+	DLog(@"Network Lost !");
+	
+	networkAvailable = NO;
+}
+
+-(void)networkRestored {
+	
+	DLog(@"Network Gained !");
+	
+	networkAvailable = YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

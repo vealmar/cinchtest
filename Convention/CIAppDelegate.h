@@ -7,12 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ReachabilityDelegation.h"
 
 @class CIViewController;
 
-@interface CIAppDelegate : UIResponder <UIApplicationDelegate>
+@interface CIAppDelegate : UIResponder <UIApplicationDelegate, ReachabilityDelegate> {
+	
+	ReachabilityDelegation *reachDelegation;
+}
 
 @property (strong, nonatomic) UIWindow *window;
+
+@property (assign) BOOL networkAvailable;
 
 @property (strong, nonatomic) CIViewController *viewController;
 
@@ -22,5 +28,7 @@
 
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
+
+-(BOOL)isNetworkReachable;
 
 @end
