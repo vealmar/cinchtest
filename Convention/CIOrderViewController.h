@@ -52,6 +52,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblAuthBy;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblNotes;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblShipNotes;
+@property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblVoucher;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblItems;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblTotalPrice;
 @property (nonatomic, retain) UIPopoverController *popoverController;

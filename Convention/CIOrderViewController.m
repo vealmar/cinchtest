@@ -63,6 +63,7 @@
 @synthesize lblShipNotes;
 @synthesize lblItems;
 @synthesize lblTotalPrice;
+@synthesize lblVoucher;
 @synthesize itemsQty;
 @synthesize itemsPrice;
 @synthesize masterVender;
@@ -187,7 +188,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView==self.sideTable&&self.orders) {
+    if (tableView == self.sideTable && self.orders) {
         return [self.orders count];
     }
     else if (tableView==self.itemsTable&&self.itemsDB) {
@@ -325,7 +326,7 @@
                 }
             }
             
-            int lblsd =0;
+            int lblsd = 0;
             int nd = 1;
             if (((NSArray*)[self.itemsShipDates objectAtIndex:indexPath.row]).count>0) {
                 nd = ((NSArray*)[self.itemsShipDates objectAtIndex:indexPath.row]).count;
@@ -336,9 +337,9 @@
             
             cell.btnShipdates.titleLabel.text = [NSString stringWithFormat:@"SD:%d",lblsd];
             
+            DLog(@"price:%@", [self.itemsPrice objectAtIndex:indexPath.row]);
+            
             if ([self.itemsPrice objectAtIndex:indexPath.row]&&![[self.itemsPrice objectAtIndex:indexPath.row] isKindOfClass:[NSNull class]]) {
-                
-                
                 NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
                 nf.formatterBehavior = NSNumberFormatterBehavior10_4;
                 nf.maximumFractionDigits = 2;
@@ -350,7 +351,7 @@
                 cell.price.text = [nf stringFromNumber:[NSNumber numberWithDouble:price]];
                 cell.priceLbl.text = cell.price.text;
                 cell.price.hidden = YES;
-                cell.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:([cell.price.text doubleValue]* q*nd)] numberStyle:NSNumberFormatterCurrencyStyle];
+                cell.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(price * q * nd)] numberStyle:NSNumberFormatterCurrencyStyle];
             }
             else {
                 cell.price.text = @"0.00";
@@ -408,39 +409,44 @@
         currentOrderID = cell.tag;
         
         NSString* url = [NSString stringWithFormat:@"%@?%@=%@",[NSString stringWithFormat:kDBORDEREDIT(cell.tag)],kAuthToken,self.authToken];
-//        DLog(@"Sending edit order %@",url);
-        __weak ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-//        [request setTimeOutSeconds:10.f];
+        //        DLog(@"Sending edit order %@",url);
+        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+        //        [request setTimeOutSeconds:10.f];
+        ASIHTTPRequest* __weak weakRequest = request;
         [request setNumberOfTimesToRetryOnTimeout:3];
         
         [request setCompletionBlock:^{
+            
+            ASIHTTPRequest* strongRequest = weakRequest;
+            
             //DLog(@"order response:%@",[request responseString]);
             //dispatch_async(dispatch_get_main_queue(), ^{
-            self.itemsDB = [[request responseString] objectFromJSONString];
+            self.itemsDB = [[strongRequest responseString] objectFromJSONString];
             NSArray* arr = [self.itemsDB objectForKey:kItems];
             self.itemsPrice = [NSMutableArray array];
             self.itemsQty = [NSMutableArray array];
             self.itemsVouchers = [NSMutableArray array];
             self.itemsShipDates = [NSMutableArray array];
+            
             [arr enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop){
                 NSDictionary* dict = (NSDictionary*)obj;
-                if ([dict objectForKey:@"price"]&&![[dict objectForKey:@"price"] isKindOfClass:[NSNull class]]) {
+                if ([dict objectForKey:@"price"] && ![[dict objectForKey:@"price"] isKindOfClass:[NSNull class]]) {
                     [self.itemsPrice insertObject:[dict objectForKey:@"price"] atIndex:idx];
-//                    DLog(@"%@",[dict objectForKey:@"price"]);
+                    DLog(@"p(%i):%@",idx,[dict objectForKey:@"price"]);
                 }
                 else
-                    [self.itemsPrice insertObject:@"0" atIndex:idx];
+                    [self.itemsPrice insertObject:@"0.0" atIndex:idx];
                 
                 if ([dict objectForKey:@"quantity"]&&![[dict objectForKey:@"quantity"] isKindOfClass:[NSNull class]]) {
                     [self.itemsQty insertObject:[dict objectForKey:@"quantity"] atIndex:idx];
-                    DLog(@"q(%d):%@",idx,[dict objectForKey:@"quantity"]);
+                    DLog(@"q(%i):%@",idx,[dict objectForKey:@"quantity"]);
                 }
                 else
                     [self.itemsQty insertObject:@"0" atIndex:idx];
                 
                 if ([dict objectForKey:kOrderItemVoucher]&&![[dict objectForKey:kOrderItemVoucher] isKindOfClass:[NSNull class]]) {
                     [self.itemsVouchers insertObject:[dict objectForKey:kOrderItemVoucher] atIndex:idx];
-//                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
+                    //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
                 }
                 else
                     [self.itemsVouchers insertObject:@"0" atIndex:idx];
@@ -454,7 +460,7 @@
                         [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
                         NSDate* date = [[NSDate alloc]init];
                         date = [df dateFromString:str];
-                        DLog(@"str:%@ date:%@",str, date);
+                        //DLog(@"str:%@ date:%@",str, date);
                         [dates addObject:date];
                     }
                     
@@ -464,7 +470,7 @@
                 else
                     [self.itemsShipDates insertObject:[NSArray array] atIndex:idx];
             }];
-//            DLog(@"items Json:%@",itemsDB);
+            //            DLog(@"items Json:%@",itemsDB);
             [self.itemsTable reloadData];
             
             __block NSMutableArray* SDs = [NSMutableArray array];
@@ -496,12 +502,12 @@
             if (![[self.itemsDB objectForKey:kShipNotes] isKindOfClass:[NSNull class]]) {
                 self.shipNotes.text = [self.itemsDB objectForKey:kShipNotes];
             }
-//            DLog(@"notes:%@",[self.itemsDB objectForKey:kNotes]);
+            //            DLog(@"notes:%@",[self.itemsDB objectForKey:kNotes]);
             if (![[self.itemsDB objectForKey:kNotes] isKindOfClass:[NSNull class]]) {
                 self.notes.text = [self.itemsDB objectForKey:kNotes];
             }
             
-            [self UpdateTotal];
+            //[self UpdateTotal];
             
             [self.itemsTable reloadData];
             [self UpdateTotal];
@@ -512,17 +518,18 @@
         }];
         
         [request setFailedBlock:^{
+            ASIHTTPRequest* strongRequest = weakRequest;
             self.itemsPrice = [NSMutableArray array];
             self.itemsQty = [NSMutableArray array];
             
             self.itemsAct.hidden = YES;
             [self.itemsAct stopAnimating];
-            if (request.error.code == 2) {
+            if (strongRequest.error.code == 2) {
                 [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Loading order timed out, please select it again to try again!" delegate:self cancelButtonTitle:@"OK!" otherButtonTitles: nil] show];
             }else{
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading the order:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading the order:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
             }
-            DLog(@"error:%@", [request error]);
+            DLog(@"error:%@", [strongRequest error]);
         }];
         
         [request startAsynchronous];
@@ -544,50 +551,77 @@
 -(void) UpdateTotal{
     if(self.itemsDB)
     {
-//        DLog(@"in update total");
+        //        DLog(@"in update total");
         double ttotal = 0;
         double sctotal = 0;
         
         NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
         [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
-        for (int i = 0; i<[self.itemsDB count]&&i<[self.itemsQty count]; i++) {
-            CIItemEditCell* cell = (CIItemEditCell*)[self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+   
+//        for (int i = 0; /*i<[self.itemsDB count] &&*/ i < [self.itemsQty count]; i++) {
+//            
+//            CIItemEditCell* cell = (CIItemEditCell*)[self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+//            
+//            __autoreleasing NSError* err = nil;
+//            NSMutableDictionary* dict = [[self.itemsQty objectAtIndex:i] objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
+//            double q = 0;
+//            if (err) {
+//                //                DLog(@"UT JSON error:%@ for JSON:%@",err, cell.qty.text);
+//                q = [cell.qty.text doubleValue];
+//            }else if(dict&&![dict isKindOfClass:[NSNull class]]){
+//                //                DLog(@"UT JSon got:%@", dict);
+//                for (NSString* key in dict.allKeys) {
+//                    q += [[dict objectForKey:key] doubleValue];
+//                }
+//            }
+//            
+//            double nd = 1;
+//            if (((NSArray*)[self.itemsShipDates objectAtIndex:i]).count>0) {
+//                nd = ((NSArray*)[self.itemsShipDates objectAtIndex:i]).count;
+//            }
+//            
+//            DLog(@"subtotal:%@",cell.total.text);
+//            ttotal += [[nf numberFromString:cell.total.text] doubleValue];
+//            sctotal += [cell.voucher.text doubleValue]*q*nd;
+//            //            DLog(@"total:%@, voucher:%@(%f), qty:%@",cell.total.text,cell.voucher.text,[cell.voucher.text doubleValue],cell.qty.text);
+//        }
+        
+        NSInteger itemCount = [[self.itemsDB objectForKey:kItemCount] intValue];
+        DLog(@"itemCount:%i, itemQty:%i", itemCount, [self.itemsQty count]);
+        
+        //NSArray* arr = [self.itemsDB objectForKey:kItems];
+        for (int i = 0; i < itemCount; i++) {
+            double price = [[self.itemsPrice objectAtIndex:i] doubleValue];
+            double qty = 0;
             
             __autoreleasing NSError* err = nil;
-            NSMutableDictionary* dict = [[self.itemsQty objectAtIndex:i] objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-            
-            double q = 0;
-            if (err) {
-//                DLog(@"UT JSON error:%@ for JSON:%@",err, cell.qty.text);
-                q = [cell.qty.text doubleValue];
-            }else if(dict&&![dict isKindOfClass:[NSNull class]]){
-//                DLog(@"UT JSon got:%@", dict);
-                for (NSString* key in dict.allKeys) {
-                    q += [[dict objectForKey:key] doubleValue];
-                }
+            NSMutableDictionary *dict = [[self.itemsQty objectAtIndex:i] objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
+            if (err)
+                qty = [[self.itemsQty objectAtIndex:i] doubleValue];
+            else if (dict && ![dict isKindOfClass:[NSNull class]]) {
+                for (NSString* key in dict.allKeys)
+                    qty += [[dict objectForKey:key] doubleValue];
             }
             
-            double nd = 1;
-            if (((NSArray*)[self.itemsShipDates objectAtIndex:i]).count>0) {
-                nd = ((NSArray*)[self.itemsShipDates objectAtIndex:i]).count;
-            }
+            double numShipDates = 1;
+            if (((NSArray*)[self.itemsShipDates objectAtIndex:i]).count > 0)
+                numShipDates = ((NSArray*)[self.itemsShipDates objectAtIndex:i]).count;
             
-            DLog(@"subtotal:%@",cell.total.text);
-            ttotal += [[nf numberFromString:cell.total.text] doubleValue];
-            sctotal += [cell.voucher.text doubleValue]*q*nd;
-//            DLog(@"total:%@, voucher:%@(%f), qty:%@",cell.total.text,cell.voucher.text,[cell.voucher.text doubleValue],cell.qty.text);
+            ttotal += price * qty * numShipDates;
+            sctotal += [[self.itemsVouchers objectAtIndex:i] doubleValue] * qty * numShipDates;
         }
+        
         self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal] numberStyle:NSNumberFormatterCurrencyStyle];
         self.SCtotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];
         
-//        DLog(@"sctotal%f, item count:%d, SCtotal:%@",sctotal,self.itemsDB.count,self.SCtotal.text);
+        //        DLog(@"sctotal%f, item count:%d, SCtotal:%@",sctotal,self.itemsDB.count,self.SCtotal.text);
     }
 }
 
 -(void)Return{
     self.OrderDetailScroll.hidden = YES;
     
-    __block MBProgressHUD* order = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    MBProgressHUD* __weak order = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     order.labelText = @"Getting Orders...";
     
     [order show:YES];
@@ -941,6 +975,9 @@
     self.lblNotes.font = [UIFont fontWithName:kFontName size:15.f];
     self.lblShipNotes.font = [UIFont fontWithName:kFontName size:15.f];
     self.lblTotalPrice.font = [UIFont fontWithName:kFontName size:25.f];
+    self.total.font = [UIFont fontWithName:kFontName size:25.5];
+    self.lblVoucher.font = [UIFont fontWithName:kFontName size:25.f];
+    self.SCtotal.font = [UIFont fontWithName:kFontName size:25.f];
     self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
     
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];

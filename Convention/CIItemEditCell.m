@@ -28,10 +28,10 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        self.desc.font = [UIFont fontWithName:kFontName size:17.f];
-        self.lblQuantity.font = [UIFont fontWithName:kFontName size:17.f];
-        self.lblPrice.font = [UIFont fontWithName:kFontName size:17.f];
-        self.total.font = [UIFont fontWithName:kFontName size:17.f];
+        self.desc.font = [UIFont fontWithName:kFontName size:14.f];
+        self.lblQuantity.font = [UIFont fontWithName:kFontName size:14.f];
+        self.lblPrice.font = [UIFont fontWithName:kFontName size:14.f];
+        self.total.font = [UIFont fontWithName:kFontName size:14.f];
         self.qty.font = [UIFont fontWithName:kFontName size:14.f];
         self.price.font = [UIFont fontWithName:kFontName size:14.f];
         self.priceLbl.font = [UIFont fontWithName:kFontName size:14.f];
