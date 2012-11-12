@@ -22,12 +22,12 @@
 #import "DateUtil.h"
 
 @interface CIProductViewController (){
-    MBProgressHUD* loading;
+    //MBProgressHUD* loading;
     int currentVendor;
     NSArray* vendorsData;
     NSMutableDictionary* editableData;
     NSMutableSet* selectedIdx;
-    void(^loadCustomers)(void);
+//    void(^loadCustomers)(void);
 }
 -(void) getCustomers;
 @end
@@ -67,8 +67,8 @@
         // Custom initialization
         showPrice = YES;
         customersReady = NO;
-        backFromCart =NO;
-        tOffset =0;
+        backFromCart = NO;
+        tOffset = 0;
         currentVendor = 0;
         productCart = [NSMutableDictionary dictionary];
         editableData = [NSMutableDictionary dictionary];
@@ -88,56 +88,17 @@
 
 #pragma mark - View lifecycle
 
-
 - (void)viewWillAppear:(BOOL)animated
 {
 //    self.products.allowsMultipleSelection = YES;
 //    self.products.allowsMultipleSelectionDuringEditing = YES;
     self.searchBar.backgroundImage = [UIImage imageNamed:@"itemcode.png"];//[UIColor clearColor];
     
-    // register for keyboard notifications
-    DLog(@"in view will appear... need CI");
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:self.view.window];
-    loadCustomers = nil;
-    
-    if(!backFromCart){
-        
-        CIProductViewController __weak *weakSelf = self;
-        
-        loadCustomers = ^{
-            CIProductViewController *strongSelf = weakSelf;
-            loading = [MBProgressHUD showHUDAddedTo:strongSelf.view animated:NO];
-            loading.labelText = @"Loading...";
-            [loading show:NO];
-        
-            dispatch_queue_t myQueue;
-            myQueue = dispatch_queue_create("myQueue", NULL);
-            dispatch_async(myQueue, ^{
-                //            sleep(1);
-                //            while (!customersReady) {}
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [loading hide:NO];
-                    CICustomerInfoViewController* ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
-                    ci.modalPresentationStyle = UIModalPresentationFormSheet;
-                    ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-                    ci.delegate = self;
-                    ci.authToken = self.authToken;
-                    [ci setCustomerData:self.customerDB];
-                    [strongSelf presentViewController:ci animated:NO completion:nil];
-                });});
-        };
-        backFromCart =NO;
-    }else if(finishOrder){
-        DLog(@"Back from cart");
-        dispatch_queue_t myQueue;
-        myQueue = dispatch_queue_create("myQueue", NULL);
-        dispatch_async(myQueue, ^{
-//            sleep(1);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self finishOrder:nil];
-            });
+    if(backFromCart && finishOrder) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self finishOrder:nil];
         });
-        backFromCart =NO;
+        backFromCart = NO;
     }
     
     if(!backFromCart){
@@ -152,16 +113,29 @@
         [self loadProductsForUrl:url withLoadLabel:@"Loading Products..."];
         
         navBar.topItem.title = self.title;
-        [self getCustomers];
+        //[self getCustomers];
     }
     
     [self.vendorTable reloadData];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
+- (void)viewDidDisappear:(BOOL)animated
 {
     // unregister for keyboard notifications while not visible.
-    //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil]; 
+    //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+
+    [self setProducts:nil];
+    [self setNavBar:nil];
+    [self setIndicator:nil];
+    [self setHiddenTxt:nil];
+    [self setVendorView:nil];
+    [self setVendorTable:nil];
+    [self setDismissVendor:nil];
+    [self setCustomerLabel:nil];
+    [self setSearchBar:nil];
+    [super viewDidDisappear:animated];
+    // Release any retained subviews of the main view.
+    // e.g. self.myOutlet = nil;
 }
 
 -(NSMutableDictionary*)createIfDoesntExist:(NSMutableDictionary*) dict orig:(NSDictionary*)odict{
@@ -181,7 +155,7 @@
 
 -(void)loadProductsForUrl:(NSString*)url withLoadLabel:(NSString*)label{
     
-    __block MBProgressHUD* loadProductsHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+    MBProgressHUD* __weak loadProductsHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
     loadProductsHUD.labelText = label;
     [loadProductsHUD show:NO];
     
@@ -213,10 +187,7 @@
         self.resultData = [self.productData mutableCopy];
         [self.products reloadData];
         [loadProductsHUD hide:NO];
-        if (loadCustomers) {
-            loadCustomers();
-            loadCustomers = nil;
-        }
+        [self loadCustomersView];
     }];
     
     [request setFailedBlock:^{
@@ -229,31 +200,32 @@
     [request startAsynchronous];
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-}
-
-- (void)viewDidUnload
-{
-    [self setProducts:nil];
-    [self setNavBar:nil];
-    [self setIndicator:nil];
-    [self setHiddenTxt:nil];
-    [self setVendorView:nil];
-    [self setVendorTable:nil];
-    [self setDismissVendor:nil];
-    [self setCustomerLabel:nil];
-    [self setSearchBar:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
     return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+#pragma mark - Customer data
+
+-(void)loadCustomersView {
+//    loading.labelText = @"Loading...";
+//    [loading show:NO];
+//    
+//    [loading hide:NO];
+    CICustomerInfoViewController* ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
+    
+    // fire off this call to load customers asynchronously while the view continues to load.
+    [self getCustomers];
+    
+    ci.modalPresentationStyle = UIModalPresentationFormSheet;
+    ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    ci.delegate = self;
+    ci.authToken = self.authToken;
+    
+    // Handling setting of the customer data via notification now.
+    //[ci setCustomerData:self.customerDB];
+    [self presentViewController:ci animated:NO completion:nil];
 }
 
 #pragma mark - Table stuff
@@ -269,6 +241,7 @@
     }
     return 0;
 }
+
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (!self.resultData&&myTableView==self.products) {
         return nil;
@@ -543,12 +516,9 @@
             url = [NSString stringWithFormat:@"%@?%@=%@&%@=%d",kDBGETPRODUCTS,kAuthToken,self.authToken,@"vendor_id",cell.tag];
             
             [self loadProductsForUrl:url withLoadLabel:@"Loading Products for Selection..."];
-            
         }
-        
     }
 }
-
 
 #pragma mark - Other
 -(void)logout
@@ -590,7 +560,7 @@
     dispatch_async(myQueue, ^{
         sleep(1);
         dispatch_async(dispatch_get_main_queue(), ^{
-            [loading hide:YES];
+            //[loading hide:YES];
             [self dismissViewControllerAnimated:YES completion:nil];
         });
     });
@@ -606,7 +576,7 @@
 
 -(void)setCustomerInfo:(NSDictionary*)info
 {
-    [loading hide:YES];
+    //[loading hide:YES];
     [self.products reloadData];
     self.customer = [info copy];
     DLog(@"set customerinfo:%@",self.customer);
@@ -616,7 +586,6 @@
         self.customerLabel.text = [self.customer objectForKey:kBillName];
     }
 }
-
 
 - (IBAction)submit:(id)sender {
     MBProgressHUD* submit = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -1041,31 +1010,43 @@
     [thinking hide:NO];
 }
 
+-(void)postNotification{
+    NSMutableDictionary* userInfo = [[NSMutableDictionary alloc] initWithCapacity:1];
+    [userInfo setObject:self.customerDB forKey:kCustomerNotificationKey];
+    [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCustomersLoaded object:nil userInfo:(NSDictionary*)userInfo];
+}
+
 -(void) getCustomers{
-    NSFileManager* fm = [[NSFileManager alloc] init];
-    __autoreleasing NSError* err = nil;
+//    NSFileManager* fm = [[NSFileManager alloc] init];
+//    __autoreleasing NSError* err = nil;
     
-    NSURL* docs = [fm URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&err];
-    __block NSString* path = [docs URLByAppendingPathComponent:kCustomerFile].path; 
-    
-    if ([fm fileExistsAtPath:path]) {
-        self.customerDB = [NSArray arrayWithContentsOfFile:path];
-        customersReady = YES;
-        return;
-    }
+//    NSURL* docs = [fm URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&err];
+//    NSString* path = [docs URLByAppendingPathComponent:kCustomerFile].path;
+//    
+//    if ([fm fileExistsAtPath:path]) {
+//        self.customerDB = [NSArray arrayWithContentsOfFile:path];
+//        customersReady = YES;
+//        
+//        [self postNotification];
+//        return;
+//    }
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
     DLog(@"Sending %@",url);
-    __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request setNumberOfTimesToRetryOnTimeout:3];
     
+    ASIHTTPRequest* __weak weakRequest = request;
     [request setCompletionBlock:^{
-        self.customerDB = [[request responseString] objectFromJSONString];
-        
-        [self.customerDB writeToFile:path atomically:YES];
-        
-        DLog(@"customers Json:%@",self.customerDB);
+        ASIHTTPRequest* strongRequest = weakRequest;
+        self.customerDB = [[strongRequest responseString] objectFromJSONString];
+        //dispatch_queue_t writeQueue = dispatch_queue_create("writeQueue", NULL);
+        //dispatch_async(writeQueue, ^{
+        //[self.customerDB writeToFile:path atomically:YES];
+        //});
+        //DLog(@"customers Json:%@",self.customerDB);
         customersReady = YES;
+        [self postNotification];
     }];
     
     [request setFailedBlock:^{
@@ -1076,7 +1057,6 @@
     
     [request startAsynchronous];
 }
-
 
 -(void)VoucherChange:(double)price forIndex:(int)idx{
 //    NSString* key = [[self.productData objectAtIndex:idx] objectForKey:@"id"];
@@ -1093,7 +1073,6 @@
     [edict setObject:[NSNumber numberWithDouble:price] forKey:kEditableVoucher];
     [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
 }
-
 
 -(void)PriceChange:(double)price forIndex:(int)idx{
     //    NSString* key = [[self.productData objectAtIndex:idx] objectForKey:@"id"];

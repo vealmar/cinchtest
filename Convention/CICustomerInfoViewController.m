@@ -31,6 +31,9 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(customersLoaded:) name:kNotificationCustomersLoaded object:nil];
+        
         // Custom initialization
         self.tableData = [NSArray array];
         //DLog(@"CI init'd");
@@ -53,7 +56,7 @@
     [super viewDidLoad];
     //[self.scroll addSubview:self.custView];
     [self.custTable reloadData];
-    if ([self.tableData count]>0) {
+    if ([self.tableData count] > 0) {
         self.search.text = [[self.tableData objectAtIndex:0] objectForKey:kCustID];
         [self.custTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
     }
@@ -66,6 +69,13 @@
     //WARNING!!!
     //self.Authorizer.text = @"testing";
     // Do any additional setup after loading the view from its nib.
+}
+
+-(void) customersLoaded:(NSNotification*)notif {
+    if (notif.userInfo){
+        NSArray* customerData = [notif.userInfo objectForKey:kCustomerNotificationKey];
+        [self setCustomerData:customerData];
+    }
 }
 
 -(void) setCustomerData:(NSArray *)customerData
@@ -248,36 +258,25 @@
 
 #pragma mark - Table stuff
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    
     return 1;
 }
+
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
     if (self.filteredtableData) {
         return [self.filteredtableData count];
     }
     return 0;
 }
+
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (!self.filteredtableData) {
         return nil;
     }
     
     static NSString *CellIdentifier = @"CustCell";
-    
     UITableViewCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
     if (cell == nil){
-//        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIProductCell" owner:nil options:nil]; 
-//        
-//        for(id currentObject in topLevelObjects)
-//        {
-//            if([currentObject isKindOfClass:[CIProductCell class]])
-//            {
-//                cell = (CIProductCell *)currentObject;
-//                break;
-//            }
-//        }
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CustCell"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
     //cell.detailTextLabel.text = [[self.tableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
@@ -343,16 +342,16 @@
     
     [UIView commitAnimations];
 }
+
 -(void)textViewDidBeginEditing:(UITextView *)sender
 {
     
 }
+
 -(void)textViewDidEndEditing:(UITextView *)sender
 {
     
 }
-
-
 
 - (void)keyboardWillShow:(NSNotification *)notif
 {
@@ -360,7 +359,6 @@
     
     
 }
-
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -373,6 +371,7 @@
 {
     // unregister for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil]; 
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationCustomersLoaded object:nil];
 }
 
 #pragma mark UISearchBarDelegate
@@ -385,6 +384,7 @@
     [self.filteredtableData removeAllObjects];
     self.filteredtableData = [tableData mutableCopy];
 }
+
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     searchBar.showsCancelButton = NO;
@@ -392,6 +392,7 @@
         self.filteredtableData = [tableData mutableCopy];
     }
 }
+
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     [self.filteredtableData removeAllObjects];// remove all data that belongs to previous search

@@ -18,22 +18,22 @@
 
 //#define kBASEURL @"http://:3000"
 #define kShowID @"1"
-#define kDBLOGIN [NSString stringWithFormat:@"%@//vendors/sign_in.json",kBASEURL]
-#define kDBLOGOUT [NSString stringWithFormat:@"%@//vendors/sign_out.json",kBASEURL]
-#define kDBGETPRODUCTS [NSString stringWithFormat:@"%@//vendor/shows/%@/products.json",kBASEURL,kShowID]
-#define kDBGETVENDORSWithVG(VendorGroupID) [NSString stringWithFormat:@"%@//vendor/vendorgroups.json?%@=%@",kBASEURL,kVendorGroupID,VendorGroupID]
-#define kDBGETCUSTOMERS [NSString stringWithFormat:@"%@//vendor/shows/%@/customers.json",kBASEURL,kShowID]
-#define kDBORDER [NSString stringWithFormat:@"%@//vendor/shows/%@/orders.json",kBASEURL,kShowID]
+#define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
+#define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]
+#define kDBGETPRODUCTS [NSString stringWithFormat:@"%@/vendor/shows/%@/products.json",kBASEURL,kShowID]
+#define kDBGETVENDORSWithVG(VendorGroupID) [NSString stringWithFormat:@"%@/vendor/vendorgroups.json?%@=%@",kBASEURL,kVendorGroupID,VendorGroupID]
+#define kDBGETCUSTOMERS [NSString stringWithFormat:@"%@/vendor/shows/%@/customers.json",kBASEURL,kShowID]
+#define kDBORDER [NSString stringWithFormat:@"%@/vendor/shows/%@/orders.json",kBASEURL,kShowID]
 #define kDBORDEREDIT(ID) [NSString stringWithFormat:@"%@/vendor/orders/%d.json",kBASEURL,ID]
 #define kDBORDEREDITS(ID) [NSString stringWithFormat:@"%@/vendor/shows/%@/orders/%d.json",kBASEURL,kShowID,ID]
-#define kDBREPORTPRINTS [NSString stringWithFormat:@"%@//vendor/shows/%@/report_prints.json",kBASEURL,kShowID]
+#define kDBREPORTPRINTS [NSString stringWithFormat:@"%@/vendor/shows/%@/report_prints.json",kBASEURL,kShowID]
 
 
 //temp not needed...
-#define kDBMasterLOGIN [NSString stringWithFormat:@"%@//hosts/sign_in.json",kBASEURL]
-#define kDBMasterLOGOUT [NSString stringWithFormat:@"%@//hosts/sign_out.json",kBASEURL]
-#define kDBGETVENDORS [NSString stringWithFormat:@"%@//host/vendors.json",kBASEURL]
-#define kDBMasterORDER [NSString stringWithFormat:@"%@//host/shows/%@/orders.json",kBASEURL,kShowID]
+#define kDBMasterLOGIN [NSString stringWithFormat:@"%@/hosts/sign_in.json",kBASEURL]
+#define kDBMasterLOGOUT [NSString stringWithFormat:@"%@/hosts/sign_out.json",kBASEURL]
+#define kDBGETVENDORS [NSString stringWithFormat:@"%@/host/vendors.json",kBASEURL]
+#define kDBMasterORDER [NSString stringWithFormat:@"%@/host/shows/%@/orders.json",kBASEURL,kShowID]
 
 //Auth keys
 #define kEmailKey @"vendor[login]"
@@ -137,5 +137,9 @@
 
 //file names
 #define kCustomerFile @"custFile.plist"
+
+//notifications
+#define kNotificationCustomersLoaded @"NotificationCustomersLoaded"
+#define kCustomerNotificationKey @"customers"
 
 #endif

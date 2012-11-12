@@ -38,6 +38,7 @@
 @property (nonatomic) BOOL finishOrder;
 @property (nonatomic) BOOL multiStore;
 @property (nonatomic) int tOffset;
+
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property (nonatomic, retain) UIPopoverController *popoverController;
 @property (nonatomic, retain) CIStoreQtyTableViewController *storeQtysPO;

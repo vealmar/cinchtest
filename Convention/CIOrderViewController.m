@@ -109,34 +109,35 @@
     
     self.placeholderContainer.hidden = NO;
     
-    
-    __block MBProgressHUD* order = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    MBProgressHUD* __weak order = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     order.labelText = @"Getting Orders...";
     
     [order show:YES];
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     DLog(@"Sending %@",url);
-    __weak ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    ASIHTTPRequest* __weak weakRequest = request;
     [request setNumberOfTimesToRetryOnTimeout:3];
-    
     [request setCompletionBlock:^{
-        //DLog(@"response:%@",[request responseString]);
+        ASIHTTPRequest* strongRequest = weakRequest;
+        //DLog(@"response:%@",[strongRequest responseString]);
         //dispatch_async(dispatch_get_main_queue(), ^{
-        self.orders = [[request responseString] objectFromJSONString];
+        self.orders = [[strongRequest responseString] objectFromJSONString];
         //DLog(@"orders Json:%@, %@",orders,[request responseString]);
         [self.sideTable reloadData];
         //[self.sideTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
-        if ([self.orders count]>0) {
-            self.NoOrders.hidden =YES;
+        if ([self.orders count] > 0) {
+            self.NoOrders.hidden = YES;
         }
         [order hide:YES];
         //});
     }];
     
     [request setFailedBlock:^{
-        //DLog(@"error:%@", [request error]);
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+        ASIHTTPRequest* strongRequest = weakRequest;
+        //DLog(@"error:%@", [strongRequest error]);
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         [order hide:YES];
     }];
     
@@ -623,39 +624,39 @@
     
     MBProgressHUD* __weak order = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     order.labelText = @"Getting Orders...";
-    
     [order show:YES];
     
     self.itemsDB = nil;
-    
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     if (masterVender) {
         url = [NSString stringWithFormat:@"%@?%@=%@",kDBMasterORDER,kAuthToken,self.authToken];
     }
     DLog(@"Sending %@",url);
-    __weak ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
     [request setNumberOfTimesToRetryOnTimeout:3];
-    
+    ASIHTTPRequest* __weak weakRequest = request;
     [request setCompletionBlock:^{
-        //DLog(@"response:%@",[request responseString]);
+        ASIHTTPRequest* strongRequest = weakRequest;
+        //DLog(@"response:%@",[strongRequest responseString]);
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.orders = [[request responseString] objectFromJSONString];
+            self.orders = [[strongRequest responseString] objectFromJSONString];
             //DLog(@"orders Json:%@, %@",orders,[request responseString]);
             [self.sideTable reloadData];
             //[self.sideTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
-            if ([self.orders count]>0) {
-                self.NoOrders.hidden =YES;
+            if ([self.orders count] > 0) {
+                self.NoOrders.hidden = YES;
             }
             [order hide:YES];
         });
     }];
     
     [request setFailedBlock:^{
-        DLog(@"error:%@", [request error]);
+        ASIHTTPRequest* strongRequest = weakRequest;
+        DLog(@"error:%@", [strongRequest error]);
         if (request.error.code == 2) {
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Loading orders timed out, please hit [REFRESH] to try again!" delegate:self cancelButtonTitle:@"OK!" otherButtonTitles: nil] show];
         }else{
-            [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading the order:%@",[request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+            [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading the order:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         }
         [order hide:YES];
     }];
@@ -676,7 +677,7 @@
     page.delegate = self;
     
     [page setTitle:@"Select Products"];//[venderInfo objectForKey:kName]];
-    if (venderInfo&&venderInfo.count >0) {
+    if (venderInfo && venderInfo.count > 0) {
         if([[venderInfo objectAtIndex:currentVender] objectForKey:kVenderHidePrice] != nil){
             if ([[[venderInfo objectAtIndex:currentVender] objectForKey:kVenderHidePrice] boolValue]) {
                 page.showPrice = NO;
@@ -687,6 +688,7 @@
     }
     [self presentViewController:page animated:NO completion:nil];
 }
+
 -(void)logout
 {
     if (!masterVender) {
