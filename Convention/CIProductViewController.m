@@ -680,6 +680,10 @@
         ASIHTTPRequest* strongRequest = weakRequest;
         
         [submit hide:YES];
+        
+        NSString* _response = [strongRequest responseString];
+        DLog(@"response: %@", _response);
+        
         //DLog(@"Order complete:%@",[request responseString]);
         if (![[strongRequest responseString] objectFromJSONString]) {
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Something odd happened. Please try submitting your order again from the Cart!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
@@ -1089,6 +1093,7 @@
     [edict setObject:[NSNumber numberWithDouble:price] forKey:kEditablePrice];
     [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
 }
+
 -(void)QtyChange:(double)qty forIndex:(int)idx{
     NSString* key = [[self.resultData objectAtIndex:idx] objectForKey:@"id"];
     NSMutableDictionary* dict = [self.resultData objectAtIndex:idx];

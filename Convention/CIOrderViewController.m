@@ -144,7 +144,7 @@
     [request startAsynchronous];
 }
 
-- (void)viewDidUnload
+- (void)viewDidDisappear:(BOOL)animated
 {
     [self setSaveBtn:nil];
     [self setEditorView:nil];
@@ -171,7 +171,7 @@
     [self setLblTotalPrice:nil];
     [self setSCtotal:nil];
     [self setShipdates:nil];
-    [super viewDidUnload];
+    [super viewDidDisappear:animated];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }

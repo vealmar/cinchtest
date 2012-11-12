@@ -30,7 +30,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-//        self.tableData = [NSArray array];
+        //        self.tableData = [NSArray array];
         //DLog(@"CI init'd");
     }
     return self;
@@ -64,20 +64,19 @@
 - (IBAction)back:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
     DLog(@"see me?");
-//    if (self.delegate) {
-//        [self.delegate Cancel:nil];
-//    }
+    //    if (self.delegate) {
+    //        [self.delegate Cancel:nil];
+    //    }
 }
 
-- (void)viewDidUnload
-{
+-(void)viewDidDisappear:(BOOL)animated {
     [self setShippingNotes:nil];
     [self setNotes:nil];
     [self setAuthorizer:nil];
     [self setScroll:nil];
     [self setSendEmail:nil];
     [self setEmail:nil];
-    [super viewDidUnload];
+    [super viewDidDisappear:animated];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
@@ -101,7 +100,7 @@
             NSString* sdEmail = @"0";
             if (self.sendEmail.on) {
                 if (IS_POPULATED_STRING(self.email.text)) {
-                    BOOL stricterFilter = YES; 
+                    BOOL stricterFilter = YES;
                     NSString *stricterFilterString = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
                     NSString *laxString = @".+@.+\\.[A-Za-z]{2}[A-Za-z]*";
                     NSString *emailRegex = stricterFilter ? stricterFilterString : laxString;
@@ -124,9 +123,9 @@
                 }
             }
             [dict setObject:self.shippingNotes.text forKey:kShipNotes];
-            [dict setObject:self.Notes.text forKey:kNotes ]; 
+            [dict setObject:self.Notes.text forKey:kNotes ];
             [dict setObject:self.Authorizer.text forKey:kAuthorizedBy];
-            [dict setObject:sdEmail forKey:kSendEmail];  
+            [dict setObject:sdEmail forKey:kSendEmail];
             [dict setObject:semail forKey:kEmail];
             DLog(@"info to send:%@",dict);
             [self.delegate setCustomerInfo:[dict copy]];
@@ -149,7 +148,7 @@
     CGRect rect = self.scroll.frame;
     if (movedUp)
     {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
+        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
         // 2. increase the size of the view so that the area behind the keyboard is covered up.
         rect.origin.y += kOFFSET_FOR_KEYBOARD+40;//was -
         //rect.size.height += kOFFSET_FOR_KEYBOARD;
@@ -164,6 +163,7 @@
     
     [UIView commitAnimations];
 }
+
 -(void)setViewMovedUpDouble:(BOOL)movedUp
 {
     [UIView beginAnimations:nil context:NULL];
@@ -172,7 +172,7 @@
     CGRect rect = self.scroll.frame;
     if (movedUp)
     {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
+        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
         // 2. increase the size of the view so that the area behind the keyboard is covered up.
         rect.origin.y += (kOFFSET_FOR_KEYBOARD+40)*2;//was -
         //rect.size.height += kOFFSET_FOR_KEYBOARD;
@@ -187,6 +187,7 @@
     
     [UIView commitAnimations];
 }
+
 -(void)textViewDidBeginEditing:(UITextView *)sender
 {
     if ([sender isEqual:self.Notes])
@@ -206,6 +207,7 @@
         }
     }
 }
+
 -(void)textViewDidEndEditing:(UITextView *)sender
 {
     if ([sender isEqual:self.Notes])
@@ -226,8 +228,6 @@
     }
 }
 
-
-
 - (void)keyboardWillShow:(NSNotification *)notif
 {
     //keyboard will be shown now. depending for which textfield is active, move up or move down the view appropriately
@@ -246,11 +246,10 @@
     }
 }
 
-
 - (void)viewWillAppear:(BOOL)animated
 {
     //for testing
-//    self.Authorizer.text = @"testing";
+    //    self.Authorizer.text = @"testing";
     
     if (self.delegate) {
         NSDictionary* dict = [self.delegate getCustomerInfo];
@@ -265,14 +264,14 @@
     }
     
     // register for keyboard notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) 
-                                                 name:UIKeyboardWillShowNotification object:self.view.window]; 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification object:self.view.window];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     // unregister for keyboard notifications while not visible.
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil]; 
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 }
 
 @end

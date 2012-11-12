@@ -41,7 +41,7 @@
     // Do any additional setup after loading the view from its nib.
 }
 
-- (void)viewDidUnload
+-(void)viewDidDisappear:(BOOL)animated
 {
     [self setPrintHeader:nil];
     [self setIsle:nil];
@@ -49,7 +49,7 @@
     [self setNotesLbl:nil];
     [self setBooth:nil];
     [self setLblorder:nil];
-    [super viewDidUnload];
+    [super viewDidDisappear:animated];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
@@ -80,8 +80,8 @@
     hud.labelText = @"Logging in...";
     [hud show:YES];
     
-//    [isle becomeFirstResponder];
-//    [isle resignFirstResponder];
+    //    [isle becomeFirstResponder];
+    //    [isle resignFirstResponder];
     
     ASIFormDataRequest* __weak request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:kDBREPORTPRINTS]];
     
@@ -120,7 +120,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             if (request.responseString) {
                 DLog(@"ERROR:%@",[[request.responseString objectFromJSONString] objectForKey:kError]);
-                [hud hide:YES]; 
+                [hud hide:YES];
             }
             else {
                 if ([[request error] code]==1) {
@@ -129,7 +129,7 @@
                 else{
                     DLog(@"srsly error:%@",[[request error] description]);
                 }
-                [hud hide:YES]; 
+                [hud hide:YES];
             }
             DLog(@"returned:%@",request.responseString);
         });

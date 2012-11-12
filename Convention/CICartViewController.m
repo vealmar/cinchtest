@@ -19,7 +19,7 @@
 #import "SettingsManager.h"
 
 @interface CICartViewController (){
-MBProgressHUD* loading;
+    MBProgressHUD* loading;
 }
 -(void) getCustomers;
 
@@ -91,7 +91,7 @@ MBProgressHUD* loading;
 - (void)viewWillDisappear:(BOOL)animated
 {
     // unregister for keyboard notifications while not visible.
-    //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil]; 
+    //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 }
 
 - (void)viewDidLoad
@@ -101,7 +101,7 @@ MBProgressHUD* loading;
     // Do any additional setup after loading the view from its nib.
     
     navBar.topItem.title = self.title;
-//    [self getCustomers];
+    //    [self getCustomers];
 }
 
 - (void)viewDidUnload
@@ -141,7 +141,7 @@ MBProgressHUD* loading;
     CIProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil){
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIProductCell" owner:nil options:nil]; 
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIProductCell" owner:nil options:nil];
         
         for(id currentObject in topLevelObjects)
         {
@@ -201,7 +201,7 @@ MBProgressHUD* loading;
     cell.New.text = ([[self.productData objectForKey:key] objectForKey:@"new"]?@"Y":@"N");
     cell.Adv.text = ([[self.productData objectForKey:key] objectForKey:@"adv"]?@"Y":@"N");
     //DLog(@"regPrc:%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:@"regprc"]);
-//    cell.regPrc.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[[[self.productData objectForKey:key] objectForKey:@"regprc"] doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
+    //    cell.regPrc.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[[[self.productData objectForKey:key] objectForKey:@"regprc"] doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
     cell.regPrc.text = ([[[self.productData objectForKey:key] objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]]?[NSString stringWithFormat:@"%d",((NSArray*)[[self.productData objectForKey:key] objectForKey:kOrderItemShipDates]).count]:@"0");
     cell.quantity.hidden = YES;
     NSMutableDictionary* dict = [self.productCart objectForKey:key];
@@ -377,12 +377,12 @@ MBProgressHUD* loading;
         [[[UIAlertView alloc] initWithTitle:@"Cart Empty." message:@"You don't have anything in your cart!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         return;
     }
-//    CIFinalCustomerInfoViewController* ci = [[CIFinalCustomerInfoViewController alloc] initWithNibName:@"CIFinalCustomerInfoViewController" bundle:nil];
-//    ci.modalPresentationStyle = UIModalPresentationFormSheet;
-//    ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-//    ci.delegate = self.delegate;
-//    //    [ci setCustomerData:self.customerDB];
-//    [self presentModalViewController:ci animated:NO];
+    //    CIFinalCustomerInfoViewController* ci = [[CIFinalCustomerInfoViewController alloc] initWithNibName:@"CIFinalCustomerInfoViewController" bundle:nil];
+    //    ci.modalPresentationStyle = UIModalPresentationFormSheet;
+    //    ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    //    ci.delegate = self.delegate;
+    //    //    [ci setCustomerData:self.customerDB];
+    //    [self presentModalViewController:ci animated:NO];
     
     DLog(@"FO self class:%@",NSStringFromClass([self class]));
     DLog(@"FO delegate class:%@",NSStringFromClass([self.delegate class]));
@@ -390,13 +390,13 @@ MBProgressHUD* loading;
         [self.delegate setProductCart:self.productCart];
         [self.delegate setBackFromCart:YES];
         [self.delegate setFinishOrder:YES];
-//        [self.delegate finishOrder:nil];
+        //        [self.delegate finishOrder:nil];
     }
     else{
         DLog(@"no delegate class at all");
     }
-//    else if(self.finishTheOrder){
-//        self.finishTheOrder();
+    //    else if(self.finishTheOrder){
+    //        self.finishTheOrder();
     //    }
     [self dismissViewControllerAnimated:NO completion:nil];
 }
@@ -481,7 +481,7 @@ MBProgressHUD* loading;
     }
 }
 
-#pragma mark - keyboard functionality 
+#pragma mark - keyboard functionality
 -(void)setViewMovedUp:(BOOL)movedUp
 {
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -491,7 +491,7 @@ MBProgressHUD* loading;
         CGPoint rect = self.products.contentOffset;
         if (movedUp)
         {
-            // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
+            // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
             // 2. increase the size of the view so that the area behind the keyboard is covered up.
             tOffset = rect.y;
             rect.y += (kOFFSET_FOR_KEYBOARD*6);//was -

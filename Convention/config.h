@@ -13,6 +13,7 @@
 //#define kBASEURL @"http://afc.conventioninnovations.com"
 //#define kBASEURL @"http://conventioninnovations.herokuapp.com"
 //#define kBASEURL @"http://10.0.6.187"
+//#define kBASEURL @"http://ci-pw1.herokuapp.com"
 #define SERVER @"server"
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
 
