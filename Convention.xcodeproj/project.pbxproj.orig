@@ -393,9 +393,16 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+<<<<<<< HEAD
+				6E118585145F2F3600568ED1 /* ASI-HTTP */,
+=======
 				331AF38E16506B9000C74117 /* red_network.png */,
 				331AF38F16506B9000C74117 /* green_network.png */,
+>>>>>>> a446aae777ccbef056b25d0f6b57315a4b5735d7
 				7498340015DE3E3100F3EB26 /* DDCalendarView */,
+				6EAFF9ED145FABAA00491B42 /* JSONKit */,
+				6EAFFB23145FB0FB00491B42 /* iBoost */,
+				6E7698AE153E8C5D003CF4AC /* MMProgressHUD */,
 				743944BB15CC1B8A00D0D90E /* printform.png */,
 				743944B815CC1ACD00D0D90E /* printbutton.png */,
 				6E3E512C15919FFB00FC4638 /* refresh.png */,
@@ -417,15 +424,11 @@
 				6EDC7BA915478CAF00F16F66 /* neworderback.jpg */,
 				6EB8A118153F62F7005B1AF6 /* BEBAS.ttf */,
 				6EB78B38153F64A4005291EE /* loginscreenback.jpg */,
-				6E7698AE153E8C5D003CF4AC /* MMProgressHUD */,
 				6414A6F01496B9A10088586B /* bluebutton.png */,
 				6414A6E91496AE960088586B /* orangebutton.png */,
 				6E3BECF214927EDC00BF8E15 /* afc-logo.png */,
 				6E3BECF314927EDD00BF8E15 /* CI-Logo.png */,
 				6E3BEC861490556E00BF8E15 /* white_plaster.png */,
-				6EAFFB23145FB0FB00491B42 /* iBoost */,
-				6EAFF9ED145FABAA00491B42 /* JSONKit */,
-				6E118585145F2F3600568ED1 /* ASI-HTTP */,
 				6E11856D145F2F2200568ED1 /* Convention-Info.plist */,
 				6E11856E145F2F2200568ED1 /* InfoPlist.strings */,
 				6E118571145F2F2200568ED1 /* main.m */,
