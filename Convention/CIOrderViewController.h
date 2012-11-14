@@ -22,17 +22,21 @@
 @property (nonatomic, strong) NSString* vendorGroup;
 @property BOOL masterVender;
 @property int currentVender;
+@property (nonatomic, strong) NSDictionary* itemsDB;
+@property (nonatomic, strong) NSMutableArray* itemsQty;
+@property (nonatomic, strong) NSMutableArray* itemsPrice;
+@property (nonatomic, strong) NSMutableArray* itemsVouchers;
+@property (nonatomic, strong) NSMutableArray* itemsShipDates;
+@property (nonatomic, strong) UIPopoverController *popoverController;
+@property (nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
+@property (nonatomic, unsafe_unretained) NSManagedObjectContext* managedObjectContext;
+
 @property (unsafe_unretained, nonatomic) IBOutlet UITextView *shipdates;
 @property (unsafe_unretained, nonatomic) IBOutlet UITableView *sideTable;
 @property (unsafe_unretained, nonatomic) IBOutlet UIBarButtonItem *saveBtn;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *EditorView;
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *toolWithSave;
 @property (unsafe_unretained, nonatomic) IBOutlet UIToolbar *toolPlain;
-@property (nonatomic, strong) NSDictionary* itemsDB;
-@property (nonatomic, strong) NSMutableArray* itemsQty;
-@property (nonatomic, strong) NSMutableArray* itemsPrice;
-@property (nonatomic, strong) NSMutableArray* itemsVouchers;
-@property (nonatomic, strong) NSMutableArray* itemsShipDates;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *customer;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *authorizer;
 @property (unsafe_unretained, nonatomic) IBOutlet UITableView *itemsTable;
@@ -55,8 +59,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblVoucher;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblItems;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblTotalPrice;
-@property (nonatomic, retain) UIPopoverController *popoverController;
-@property (nonatomic, retain) CIStoreQtyTableViewController *storeQtysPO;
+
 - (IBAction)AddNewOrder:(id)sender;
 - (IBAction)logout:(id)sender;
 - (IBAction)Save:(id)sender;

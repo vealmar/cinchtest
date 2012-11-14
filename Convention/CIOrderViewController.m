@@ -27,9 +27,7 @@
 @interface CIOrderViewController (){
     int currentOrderID;
 }
-
 @end
-
 
 @implementation CIOrderViewController
 @synthesize orders;
@@ -74,6 +72,7 @@
 @synthesize popoverController;
 @synthesize storeQtysPO;
 @synthesize itemsShipDates;
+@synthesize managedObjectContext;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -456,11 +455,10 @@
                     
                     NSArray* raw = [dict objectForKey:kOrderItemShipDates];
                     NSMutableArray* dates = [NSMutableArray array];
+                    NSDateFormatter* df = [[NSDateFormatter alloc] init];
+                    [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
                     for(NSString* str in raw){
-                        NSDateFormatter* df = [[NSDateFormatter alloc] init];
-                        [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
-                        NSDate* date = [[NSDate alloc]init];
-                        date = [df dateFromString:str];
+                        NSDate* date = [df dateFromString:str];
                         //DLog(@"str:%@ date:%@",str, date);
                         [dates addObject:date];
                     }
@@ -671,10 +669,10 @@
     CIProductViewController* page;
     
     page = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
-    
     page.authToken = self.authToken;
     page.vendorGroup = self.vendorGroup;
     page.delegate = self;
+    page.managedObjectContext = self.managedObjectContext;
     
     [page setTitle:@"Select Products"];//[venderInfo objectForKey:kName]];
     if (venderInfo && venderInfo.count > 0) {
@@ -759,7 +757,7 @@
     for (NSInteger i =0; i<[self.itemsTable numberOfRowsInSection:0]; i++) {
         NSString* productID = [[data objectAtIndex:i] objectForKey:kOrderItemID];
         CIItemEditCell* cell = (CIItemEditCell*)[self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-       // NSInteger num = [cell.qty.text integerValue];
+        // NSInteger num = [cell.qty.text integerValue];
         //if (num>0) {
         NSString* qty = cell.qty.text;
         if (self.itemsQty.count > i) {
@@ -768,15 +766,15 @@
         
         NSArray* dates = [self.itemsShipDates objectAtIndex:i];
         NSMutableArray* strs = [NSMutableArray array];
+        NSDateFormatter* df = [[NSDateFormatter alloc] init];
+        [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
         for(NSDate* date in dates){
-            NSDateFormatter* df = [[NSDateFormatter alloc] init];
-            [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
             NSString* str = [df stringFromDate:date];
             [strs addObject:str];
         }
         
-            NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[[data objectAtIndex:i] objectForKey:kID],kID,qty,kOrderItemNum,cell.price.text,kOrderItemPRICE,cell.voucher.text,kOrderItemVoucher,strs,kOrderItemShipDates, nil];
-            [arr addObject:(id)proDict];
+        NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[[data objectAtIndex:i] objectForKey:kID],kID,qty,kOrderItemNum,cell.price.text,kOrderItemPRICE,cell.voucher.text,kOrderItemVoucher,strs,kOrderItemShipDates, nil];
+        [arr addObject:(id)proDict];
         
         //}
     }

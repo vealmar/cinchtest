@@ -21,37 +21,6 @@
 @synthesize viewController = _viewController;
 @synthesize networkAvailable;
 
--(BOOL)isNetworkReachable {
-	
-	
-	// Create zero addy
-	struct sockaddr_in zeroAddress;
-	bzero(&zeroAddress, sizeof(zeroAddress));
-	zeroAddress.sin_len = sizeof(zeroAddress);
-	zeroAddress.sin_family = AF_INET;
-	
-	// Recover reachability flags
-	SCNetworkReachabilityRef defaultRouteReachability = SCNetworkReachabilityCreateWithAddress(NULL, (struct sockaddr *)&zeroAddress);
-	SCNetworkReachabilityFlags flags;
-	
-	BOOL didRetrieveFlags = SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags);
-	CFRelease(defaultRouteReachability);
-	
-	if (!didRetrieveFlags)
-	{
-		printf("Error. Could not recover network reachability flags\n");
-		return 0;
-	}
-	
-	BOOL isReachable = flags & kSCNetworkFlagsReachable;
-	BOOL needsConnection = flags & kSCNetworkFlagsConnectionRequired;
-	self.networkAvailable = (isReachable && !needsConnection) ? YES : NO;
-	
-	return self.networkAvailable;
-	
-	
-}
-
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -62,30 +31,16 @@
         self.viewController = [[CIViewController alloc] initWithNibName:@"CIViewController_iPad" bundle:nil];
     }
     self.window.rootViewController = self.viewController;
+    
+    CIViewController* controller = self.viewController;
+    controller.managedObjectContext = self.managedObjectContext;
+    
     [self.window makeKeyAndVisible];
 	
 	[[SettingsManager sharedManager] initialize];
 	
 	self.networkAvailable = [reachDelegation isNetworkReachable]; //TODO: We may need actually prod it to check here.
     return YES;
-}
-
-#pragma mark Reachability
-
-
-
--(void)networkLost {
-	
-	DLog(@"Network Lost !");
-	
-	networkAvailable = NO;
-}
-
--(void)networkRestored {
-	
-	DLog(@"Network Gained !");
-	
-	networkAvailable = YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -127,6 +82,52 @@
      */
 }
 
+#pragma mark Reachability
+
+-(BOOL)isNetworkReachable {
+	
+	// Create zero addy
+	struct sockaddr_in zeroAddress;
+	bzero(&zeroAddress, sizeof(zeroAddress));
+	zeroAddress.sin_len = sizeof(zeroAddress);
+	zeroAddress.sin_family = AF_INET;
+	
+	// Recover reachability flags
+	SCNetworkReachabilityRef defaultRouteReachability = SCNetworkReachabilityCreateWithAddress(NULL, (struct sockaddr *)&zeroAddress);
+	SCNetworkReachabilityFlags flags;
+	
+	BOOL didRetrieveFlags = SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags);
+	CFRelease(defaultRouteReachability);
+	
+	if (!didRetrieveFlags)
+	{
+		printf("Error. Could not recover network reachability flags\n");
+		return 0;
+	}
+	
+	BOOL isReachable = flags & kSCNetworkFlagsReachable;
+	BOOL needsConnection = flags & kSCNetworkFlagsConnectionRequired;
+	self.networkAvailable = (isReachable && !needsConnection) ? YES : NO;
+	
+	return self.networkAvailable;
+}
+
+-(void)networkLost {
+	
+	DLog(@"Network Lost !");
+	
+	networkAvailable = NO;
+}
+
+-(void)networkRestored {
+	
+	DLog(@"Network Gained !");
+	
+	networkAvailable = YES;
+}
+
+#pragma mark - Core Data helper methods
+
 - (void)saveContext
 {
     NSError *error = nil;
@@ -166,7 +167,7 @@
     if (_managedObjectModel != nil) {
         return _managedObjectModel;
     }
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Model" withExtension:@"momd"];
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"ProductCart" withExtension:@"momd"];
     _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     return _managedObjectModel;
 }
@@ -179,10 +180,20 @@
         return _persistentStoreCoordinator;
     }
     
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"Model.sqlite"];
+    //DLog(@"%@", [self managedObjectModel]);
+    
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart"];
     
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+    
+////    NSDictionary *sourceMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:NSSQLiteStoreType URL:storeURL error:&error];
+////    NSManagedObjectModel *destinationModel = [_persistentStoreCoordinator managedObjectModel];
+////    BOOL pscCompatible = [destinationModel isConfiguration:nil compatibleWithStoreMetadata:sourceMetadata];
+////    if (!pscCompatible) {
+        [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
+////    }
+    
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options: @{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES} error:&error]) {
         /*
          Replace this implementation with code to handle the error appropriately.

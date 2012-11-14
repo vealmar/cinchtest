@@ -53,6 +53,7 @@
 - (IBAction)qtyDidEnd:(id)sender;
 - (IBAction)addToCart:(id)sender;
 - (IBAction)qtyTouch:(id)sender;
+- (IBAction)qtyChanged:(id)sender;
 - (id)init;
 
 @end

@@ -12,6 +12,7 @@
 #import "CICartViewController.h"
 #import "CIProductCell.h"
 #import "CIStoreQtyTableViewController.h"
+#import "Order.h"
 
 @class CIViewController;
 
@@ -21,7 +22,8 @@
 
 @end
 
-@interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, CICustomerDelegate, CIProductCellDelegate, CIFinalCustomerDelegate, CICartViewDelegate,UISearchBarDelegate,CIStoreQtyTableDelegate>
+@interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, CICustomerDelegate, CIProductCellDelegate, CIFinalCustomerDelegate, CICartViewDelegate,UISearchBarDelegate,CIStoreQtyTableDelegate,UIAlertViewDelegate>
+
 @property (unsafe_unretained, nonatomic) IBOutlet UITableView *products;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *hiddenTxt;
 @property (unsafe_unretained, nonatomic) IBOutlet UISearchBar *searchBar;
@@ -40,8 +42,11 @@
 @property (nonatomic) int tOffset;
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
-@property (nonatomic, retain) UIPopoverController *popoverController;
-@property (nonatomic, retain) CIStoreQtyTableViewController *storeQtysPO;
+@property (nonatomic, strong) UIPopoverController *popoverController;
+@property (nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
+
+@property (nonatomic, unsafe_unretained) NSManagedObjectContext* managedObjectContext;
+@property (nonatomic, strong) Order *order;
 
 @property (unsafe_unretained, nonatomic) IBOutlet UINavigationBar *navBar;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *vendorView;

@@ -121,6 +121,8 @@
 #define kProductShipDate1 @"shipdate1"
 #define kProductShipDate2 @"shipdate2"
 #define kProductVoucher @"voucher"
+#define kProductDiscount @"discount"
+#define kProductUniqueId @"unique_product_id"
 
 #define kEditablePrice @"editablePrice"
 #define kEditableVoucher @"editableVoucher"

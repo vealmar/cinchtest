@@ -19,6 +19,8 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblVersion;
 @property BOOL masterVender;
 
+@property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
+
 - (IBAction)login:(id)sender;
 - (IBAction)dismissKB:(id)sender;
 -(void)logout;

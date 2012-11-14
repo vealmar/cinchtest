@@ -47,5 +47,6 @@
 
 - (void) deleteObject: (NSManagedObject *) managedObject;
 
+- (void) saveObjects;
 
 @end
