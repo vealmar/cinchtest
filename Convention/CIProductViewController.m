@@ -224,6 +224,7 @@
 //    [loading show:NO];
 //    
 //    [loading hide:NO];
+    
     CICustomerInfoViewController* ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
     
     // fire off this call to load customers asynchronously while the view continues to load.
@@ -235,7 +236,6 @@
     ci.authToken = self.authToken;
     
     // Handling setting of the customer data via notification now.
-    //[ci setCustomerData:self.customerDB];
     [self presentViewController:ci animated:NO completion:nil];
 }
 
@@ -557,18 +557,22 @@
 }
 
 -(void)Cancel{
-    
-    UIAlertView *alertView = [[UIAlertView alloc]
-                              initWithTitle:@"Cancel Order?"
-                              message:@"This will cancel the current order."
-                              delegate:self
-                              cancelButtonTitle:@"Cancel"
-                              otherButtonTitles:@"OK", nil];
-    
-    //alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
-    [alertView show];
-   
-    // main cancel logic has been moved to alertView:didDismissWithButtonIndex
+    if (isInitialized) {
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:@"Cancel Order?"
+                                  message:@"This will cancel the current order."
+                                  delegate:self
+                                  cancelButtonTitle:@"Cancel"
+                                  otherButtonTitles:@"OK", nil];
+        
+        [alertView show];
+    } else {
+        [self dismissViewControllerAnimated:NO completion:^{
+            if (self.delegate) {
+                [self.delegate Return];
+            }
+        }];
+    }
 }
 
 - (IBAction)Cancel:(id)sender {
@@ -584,10 +588,10 @@
     //[loading hide:YES];
     [self.products reloadData];
     
-    int customer_id = -1;
+    //int customer_id = -1;
     int custid = -1;
     if (isInitialized) {
-        customer_id = [[self.customer objectForKey:@"id"] integerValue];
+        //customer_id = [[self.customer objectForKey:@"id"] integerValue];
         custid = [[self.customer objectForKey:@"custid"] integerValue];
     }
     
@@ -613,7 +617,7 @@
         //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)", customer_id, custid];
         //order = [[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:predicate];
         
-        [order setCustid:[NSNumber numberWithInt:[[self.customer objectForKey:@"custid"] integerValue]]];
+        [order setCustid:[NSNumber numberWithInt:custid]];
         [coreDataManager saveObjects];
     }
 }
@@ -757,7 +761,8 @@
     if (self.delegate) {
         [self.delegate Return];
     }
-    [self dismissViewControllerAnimated:NO completion:nil];
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)finishOrder:(id)sender {
@@ -1042,18 +1047,18 @@
 }
 
 -(void) getCustomers{
-//    NSFileManager* fm = [[NSFileManager alloc] init];
-//    __autoreleasing NSError* err = nil;
-    
-//    NSURL* docs = [fm URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&err];
-//    NSString* path = [docs URLByAppendingPathComponent:kCustomerFile].path;
-//    
-//    if ([fm fileExistsAtPath:path]) {
-//        self.customerDB = [NSArray arrayWithContentsOfFile:path];
-//        customersReady = YES;
-//        
-//        [self postNotification];
-//        return;
+
+//    NSURL *docs = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+//    NSString __block *path = nil;
+//    if (docs)
+//    {
+//        path = [docs URLByAppendingPathComponent:kCustomerFile].path;
+//        if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+//            self.customerDB = [NSArray arrayWithContentsOfFile:path];
+//            customersReady = YES;
+//            [self postNotification];
+//            return;
+//        }
 //    }
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
@@ -1065,13 +1070,17 @@
     [request setCompletionBlock:^{
         ASIHTTPRequest* strongRequest = weakRequest;
         self.customerDB = [[strongRequest responseString] objectFromJSONString];
-        //dispatch_queue_t writeQueue = dispatch_queue_create("writeQueue", NULL);
-        //dispatch_async(writeQueue, ^{
-        //[self.customerDB writeToFile:path atomically:YES];
-        //});
-        //DLog(@"customers Json:%@",self.customerDB);
+//        if (path != nil)
+//        {
+////            dispatch_queue_t writeQueue = dispatch_queue_create("writeQueue", NULL);
+////            dispatch_async(writeQueue, ^{
+//                [self.customerDB writeToFile:path atomically:YES];
+////            });
+//            path = nil;
+//        }
         customersReady = YES;
         [self postNotification];
+        
     }];
     
     [request setFailedBlock:^{
@@ -1281,8 +1290,11 @@
 }
 
 -(void)cancelOrder {
-    [coreDataManager deleteObject:order];
-    [coreDataManager saveObjects];
+    if (isInitialized && order)
+    {
+        [coreDataManager deleteObject:order];
+        [coreDataManager saveObjects];
+    }
 }
 
 #pragma mark - line item entry
@@ -1439,24 +1451,7 @@
         DLog(@"cancel");
         
         [self cancelOrder];
-        
-        if (self.delegate != nil) {
-            [self.delegate Return];
-        }
-        
-        self.indicator.hidden = NO;
-        [self.indicator startAnimating];
-        
-        dispatch_queue_t myQueue;
-        myQueue = dispatch_queue_create("myQueue", NULL);
-        
-        dispatch_async(myQueue, ^{
-            sleep(1);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                //[loading hide:YES];
-                [self dismissViewControllerAnimated:YES completion:nil];
-            });
-        });
+        [self Return];
     }
 }
 

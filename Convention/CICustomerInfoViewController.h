@@ -11,7 +11,7 @@
 @protocol CICustomerDelegate <NSObject>
 
 -(void)setCustomerInfo:(NSDictionary*)info;
-- (IBAction)Cancel:(id)sender;
+- (void)Cancel;
 
 @end
 

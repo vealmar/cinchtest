@@ -121,16 +121,16 @@
     [request setCompletionBlock:^{
         ASIHTTPRequest* strongRequest = weakRequest;
         //DLog(@"response:%@",[strongRequest responseString]);
-        //dispatch_async(dispatch_get_main_queue(), ^{
+
         self.orders = [[strongRequest responseString] objectFromJSONString];
-        //DLog(@"orders Json:%@, %@",orders,[request responseString]);
         [self.sideTable reloadData];
         //[self.sideTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
+
         if ([self.orders count] > 0) {
             self.NoOrders.hidden = YES;
         }
+        
         [order hide:YES];
-        //});
     }];
     
     [request setFailedBlock:^{

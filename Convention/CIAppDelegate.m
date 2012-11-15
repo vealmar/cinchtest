@@ -182,7 +182,7 @@
     
     //DLog(@"%@", [self managedObjectModel]);
     
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart.sqlite"];
     
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
@@ -191,7 +191,7 @@
 ////    NSManagedObjectModel *destinationModel = [_persistentStoreCoordinator managedObjectModel];
 ////    BOOL pscCompatible = [destinationModel isConfiguration:nil compatibleWithStoreMetadata:sourceMetadata];
 ////    if (!pscCompatible) {
-        [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
+//        [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
 ////    }
     
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options: @{NSMigratePersistentStoresAutomaticallyOption:@YES, NSInferMappingModelAutomaticallyOption:@YES} error:&error]) {

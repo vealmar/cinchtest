@@ -54,7 +54,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    //[self.scroll addSubview:self.custView];
     [self.custTable reloadData];
     if ([self.tableData count] > 0) {
         self.search.text = [[self.tableData objectAtIndex:0] objectForKey:kCustID];
@@ -80,6 +79,8 @@
 
 -(void) setCustomerData:(NSArray *)customerData
 {
+    DLog(@"Load customer data");
+
     NSMutableArray* arr = [NSMutableArray array];
     //NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:@"New Customer",kCustID,@"New Customer",kBillName,@"0",kID, nil];
     //[arr addObject:dict];
@@ -99,15 +100,17 @@
     self.tableData = [arr copy];
     self.filteredtableData = [arr mutableCopy];
     [self.custTable reloadData];
-    DLog(@"Load customer data");
+    
+    if ([self.tableData count] > 0)
+        [self.custTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
 }
 
 - (IBAction)back:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
-    DLog(@"see me?");
-    if (self.delegate) {
-        [self.delegate Cancel:nil];
-    }
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (self.delegate) {
+            [self.delegate Cancel];
+        }
+    }];
 }
 
 - (IBAction)refresh:(id)sender {
