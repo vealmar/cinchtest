@@ -50,8 +50,7 @@
     authToken = nil;
     
     //for testing
-	self.email.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
-    self.password.text = [[SettingsManager sharedManager] lookupSettingByString:@"password"];
+ 
 //    
 //    self.email.text = @"afc-mer58982";
 //    self.password.text = @"2210";
@@ -100,6 +99,10 @@
 	
 	NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
 	NSString *build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+	
+	self.email.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
+    self.password.text = [[SettingsManager sharedManager] lookupSettingByString:@"password"];
+
 
 	
 	
@@ -191,6 +194,16 @@
         
         [signout startAsynchronous];
     }
+	
+	
+	
+	[[SettingsManager sharedManager] saveSetting:@"username" value:@""];
+	[[SettingsManager sharedManager] saveSetting:@"password" value:@""];
+	
+	self.email.text = @"";
+	self.password.text = @"";
+
+	
 }
 
 - (IBAction)login:(id)sender {
@@ -214,15 +227,15 @@
     
     [request setPostValue:Email forKey:kEmailKey];
     [request setPostValue:Password forKey:kPasswordKey];
-    
-//    [request setNumberOfTimesToRetryOnTimeout:3];
+	 
+    [request setNumberOfTimesToRetryOnTimeout:3];
     
     [request setCompletionBlock:^{
         //DLog(@"good:cookies%@, headers:%@, string:%@", [request responseCookies], [request responseHeaders], [request responseString]);
         dispatch_async(dispatch_get_main_queue(), ^{
-            if([[[request responseHeaders] objectForKey:@"Content-Type"] isEqualToString:@"application/json; charset=utf-8"])
+            if([[[request responseHeaders] objectForKey:@"Content-Type"] isEqualToString:@"application/json; charset=utf-8"]) //TODO: HEre is the problem
             {
-                //DLog(@"Got JSON. Response %@",[request responseStatusMessage]);
+                DLog(@"Got JSON. Response %@",[request responseStatusMessage]);
                 NSDictionary* temp = [[request responseString] objectFromJSONString];
                 DLog(@"JSON:%@",temp);
                 if ([[temp objectForKey:kResponse] isEqualToString:kOK]) {
@@ -243,6 +256,9 @@
                     masterViewController.managedObjectContext = self.managedObjectContext;
                     
                     [self presentViewController:masterViewController animated:YES completion:nil];
+					
+					[[SettingsManager sharedManager] saveSetting:@"username" value:email.text];
+					[[SettingsManager sharedManager] saveSetting:@"password" value:password.text];
                     //[self.view addSubview:splitViewController.view];
                     //[self logout];
                     //self.password.text = @"";
@@ -251,7 +267,7 @@
             else
             {
                 DLog(@"Got JSON. Response %@, full:%@",[request responseStatusMessage], request.responseString);
-                [self logout];
+                //[self logout];
             }
             [loginHud hide:YES]; 
         });//main_thread
@@ -259,7 +275,7 @@
     }];//completion block
     
     [request setFailedBlock:^{
-        //DLog(@"error:%@",[request error]);
+         DLog(@"error:%@",[request error]);
         if (request.responseStatusCode == 0) {
             //loginHud.labelText = @"An unknown error occurred. Please try login again.";
             [loginHud hide:YES];

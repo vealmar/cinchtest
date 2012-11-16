@@ -40,8 +40,8 @@
 	
 	[[SettingsManager sharedManager] initialize];
 	
-	reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self
-													  withUrl:kBASEURL];
+	//reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self
+													 // withUrl:kBASEURL];
  	
 	self.networkAvailable = [reachDelegation isNetworkReachable]; //TODO: We may need actually prod it to check here.
 

@@ -52,7 +52,7 @@
 
 - (IBAction)Cancel:(id)sender;
 
-- (IBAction)logout:(id)sender;
+ 
 - (IBAction)submit:(id)sender;
 - (IBAction)finishOrder:(id)sender;
 
@@ -60,6 +60,6 @@
 
 -(void)setCustomerInfo:(NSDictionary*)info;
 
--(void)setTitle:(NSString *)title;
+ 
 
 @end
