@@ -25,6 +25,7 @@
 #import "Cart.h"
 #import "ShipDate.h"
 #import "Order+Extensions.h"
+#import "StringManipulation.h"
 
 @interface CIProductViewController (){
     //MBProgressHUD* loading;
@@ -123,7 +124,8 @@
 {
 //    self.products.allowsMultipleSelection = YES;
 //    self.products.allowsMultipleSelectionDuringEditing = YES;
-    self.searchBar.backgroundImage = [UIImage imageNamed:@"itemcode.png"];//[UIColor clearColor];
+     //self.searchBar.backgroundColor =  [UIColor clearColor];
+	[[searchBar.subviews objectAtIndex:0] removeFromSuperview];
     
     if(backFromCart && finishOrder) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -1476,74 +1478,6 @@
 
 #pragma mark - Search Delegate stuff
 
--(void)searchBarTextDidBeginEditing:(UISearchBar *)sBar{
-//    DLog(@"search did begin:%@",sBar.text);
-    if (self.productData == nil||[self.productData isKindOfClass:[NSNull class]]) {
-        return;
-    }
-//    if (sBar == self.searchBar) {
-        if ([sBar.text isEqualToString:@""]) {
-            self.resultData = [self.productData mutableCopy];
-            DLog(@"string is empty");
-        }else{
-            
-            NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
-                NSMutableDictionary* dict = (NSMutableDictionary*)obj;
-                
-                NSString* invtid = nil;
-                
-                if ([dict objectForKey:kProductInvtid]&&![[dict objectForKey:kProductInvtid] isKindOfClass:[NSNull class]]) {
-                    invtid = [dict objectForKey:kProductInvtid];
-                }else{
-                    invtid = @"";
-                }
-//                DLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
-                 
-                
-                return [invtid hasPrefix:sBar.text];
-            }];
-            
-            self.resultData = [[self.productData filteredArrayUsingPredicate:pred] mutableCopy];
-            [selectedIdx removeAllObjects];
-            DLog(@"results count:%d", self.resultData.count);
-        }
-        [self.products reloadData];
-//    }
-}
-
--(void)searchBarTextDidEndEditing:(UISearchBar *)sBar{
-//    DLog(@"search did end:%@",sBar.text);
-    if (self.productData == nil||[self.productData isKindOfClass:[NSNull class]]) {
-        return;
-    }
-//    if (sBar == self.searchBar) {
-        if ([sBar.text isEqualToString:@""]) {
-            self.resultData = [self.productData mutableCopy];
-            DLog(@"string is empty");
-        }else{
-            
-            NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
-                NSMutableDictionary* dict = (NSMutableDictionary*)obj;
-                
-                NSString* invtid = nil;
-                
-                if ([dict objectForKey:kProductInvtid]&&![[dict objectForKey:kProductInvtid] isKindOfClass:[NSNull class]]) {
-                    invtid = [dict objectForKey:kProductInvtid];
-                }else{
-                    invtid = @"";
-                }
-//                DLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
-                
-                return [invtid hasPrefix:sBar.text];
-            }];
-            
-            self.resultData = [[self.productData filteredArrayUsingPredicate:pred] mutableCopy];
-            [selectedIdx removeAllObjects];
-            DLog(@"results count:%d", self.resultData.count);
-        }
-        [self.products reloadData];
-//    }
-}
 
 -(void)searchBar:(UISearchBar *)sBar textDidChange:(NSString *)searchText{
 //    DLog(@"search did change:%@ - %@",sBar.text,searchText);
@@ -1559,16 +1493,21 @@
             NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
                 NSMutableDictionary* dict = (NSMutableDictionary*)obj;
                 
-                NSString* invtid = nil;
+                NSString *invtid = nil;
+				
                 
-                if ([dict objectForKey:kProductInvtid]&&![[dict objectForKey:kProductInvtid] isKindOfClass:[NSNull class]]) {
+				DLog(@"Text : %@", [dict objectForKey:kProductDescr]);
+				
+                if ([dict objectForKey:kProductInvtid] && ![[dict objectForKey:kProductInvtid] isKindOfClass:[NSNull class]]) {
                     invtid = [dict objectForKey:kProductInvtid];
-                }else{
+				 
+               }else{
                     invtid = @"";
                 }
+				NSString *descrip = [dict objectForKey:kProductDescr];
 //                DLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
                 
-                return [invtid hasPrefix:searchText];
+                return [invtid hasPrefix:searchText] || [[descrip uppercaseString] contains:[searchText uppercaseString]];
             }];
             
             self.resultData = [[self.productData filteredArrayUsingPredicate:pred] mutableCopy];
@@ -1578,4 +1517,20 @@
         [self.products reloadData];
 //    }
 }
+
+/*
+
+-(void)searchBarTextDidBeginEditing:(UISearchBar *)sBar{
+	
+	[self searchBar:sBar textDidChange:sBar.text];
+	
+	
+}
+
+-(void)searchBarTextDidEndEditing:(UISearchBar *)sBar{
+	
+	[self searchBar:sBar textDidChange:sBar.text];
+
+} */
+
 @end

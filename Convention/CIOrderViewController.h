@@ -12,11 +12,12 @@
 #import "CIStoreQtyTableViewController.h"
 
 
-@interface CIOrderViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,CIItemEditDelegate,CIProductViewDelegate, UITextFieldDelegate, UITextViewDelegate,CIStoreQtyTableDelegate, CIStoreQtyDelegate,UIAlertViewDelegate, ReachabilityDelegate>{
+@interface CIOrderViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,CIItemEditDelegate,CIProductViewDelegate, UITextFieldDelegate, UISearchBarDelegate, UITextViewDelegate,CIStoreQtyTableDelegate, CIStoreQtyDelegate,UIAlertViewDelegate, ReachabilityDelegate>{
 	
 	ReachabilityDelegation *reachDelegation;
     
 }
+@property (nonatomic, strong) IBOutlet UISearchBar *sBar;
 @property (nonatomic, strong) IBOutlet UIImageView *ciLogo;
 @property (nonatomic, strong) NSArray* orders;
 @property (nonatomic, strong) NSString* authToken;

@@ -78,6 +78,6 @@
 
 -(void)setCustomerInfo:(NSDictionary*)info;
 
--(void)setTitle:(NSString *)title;
+ 
 
 @end

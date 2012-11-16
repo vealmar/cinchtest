@@ -30,6 +30,7 @@
 @end
 
 @implementation CIOrderViewController
+@synthesize sBar;
 @synthesize ciLogo;
 @synthesize orders;
 @synthesize authToken;
@@ -133,6 +134,9 @@
     order.labelText = @"Getting Orders...";
     
     [order show:YES];
+	
+	self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
+
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     DLog(@"Sending %@",url);
@@ -146,6 +150,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             self.orders = [[strongRequest responseString] objectFromJSONString];
             [self.sideTable reloadData];
+			//[self.sideTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
             //[self.sideTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
             
             if ([self.orders count] > 0) {
@@ -401,6 +406,8 @@
 	
 	//Not Imlemented
 }
+
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
@@ -1019,6 +1026,9 @@
         [request startAsynchronous];
         
     }
+	
+	
+
     [self Return];
 }
 
@@ -1195,6 +1205,15 @@
             [request startAsynchronous];
         }
     }
+}
+
+
+#pragma mark - Search Delegate stuff
+
+
+-(void)searchBar:(UISearchBar *)sBar textDidChange:(NSString *)searchText{
+ 
+   //TODO: Implement
 }
 
 @end
