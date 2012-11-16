@@ -26,6 +26,7 @@
 
 @interface CIOrderViewController (){
     int currentOrderID;
+    PullToRefreshView *pull;
 }
 @end
 
@@ -133,6 +134,10 @@
     order.labelText = @"Getting Orders...";
     
     [order show:YES];
+    
+    pull = [[PullToRefreshView alloc] initWithScrollView:(UIScrollView *) self.sideTable];
+    [pull setDelegate:self];
+    [self.sideTable addSubview:pull];
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     DLog(@"Sending %@",url);
@@ -640,6 +645,7 @@
                 self.NoOrders.hidden = YES;
             }
             [order hide:YES];
+            [pull finishedLoading];
         });
     }];
     
@@ -652,6 +658,7 @@
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading the order:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         }
         [order hide:YES];
+        [pull finishedLoading];
     }];
     
     [request startAsynchronous];
@@ -1195,6 +1202,13 @@
             [request startAsynchronous];
         }
     }
+}
+
+#pragma mark - PullToRefreshDelegate method
+
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view;
+{
+    [self Refresh:nil];
 }
 
 @end
