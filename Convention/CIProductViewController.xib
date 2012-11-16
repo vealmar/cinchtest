@@ -741,6 +741,21 @@
 							<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 						</object>
 					</object>
+					<object class="IBUIImageView" id="1063406873">
+						<reference key="NSNextResponder" ref="535335168"/>
+						<int key="NSvFlags">292</int>
+						<string key="NSFrame">{{517, -5}, {67, 61}}</string>
+						<reference key="NSSuperview" ref="535335168"/>
+						<reference key="NSWindow"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<int key="IBUIContentMode">1</int>
+						<bool key="IBUIUserInteractionEnabled">NO</bool>
+						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+						<object class="NSCustomResource" key="IBUIImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">ci_red.png</string>
+						</object>
+					</object>
 				</array>
 				<string key="NSFrameSize">{1024, 748}</string>
 				<reference key="NSSuperview"/>
@@ -832,6 +847,14 @@
 						<reference key="destination" ref="1068747215"/>
 					</object>
 					<int key="connectionID">109</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">ciLogo</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="1063406873"/>
+					</object>
+					<int key="connectionID">133</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -965,6 +988,7 @@
 							<reference ref="614397271"/>
 							<reference ref="33600479"/>
 							<reference ref="1067039406"/>
+							<reference ref="1063406873"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -1146,6 +1170,11 @@
 						<reference key="object" ref="389335690"/>
 						<reference key="parent" ref="356833177"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">132</int>
+						<reference key="object" ref="1063406873"/>
+						<reference key="parent" ref="535335168"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1158,6 +1187,7 @@
 				<string key="110.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="111.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="123.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="132.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="14.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="27.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="63.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1190,7 +1220,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">131</int>
+			<int key="maxID">133</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1242,6 +1272,7 @@
 						</object>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
+						<string key="ciLogo">UIImageView</string>
 						<string key="customerLabel">UILabel</string>
 						<string key="dismissVendor">UIButton</string>
 						<string key="hiddenTxt">UITextField</string>
@@ -1253,6 +1284,10 @@
 						<string key="vendorView">UIView</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
+						<object class="IBToOneOutletInfo" key="ciLogo">
+							<string key="name">ciLogo</string>
+							<string key="candidateClassName">UIImageView</string>
+						</object>
 						<object class="IBToOneOutletInfo" key="customerLabel">
 							<string key="name">customerLabel</string>
 							<string key="candidateClassName">UILabel</string>
@@ -1305,6 +1340,7 @@
 			<string key="NEWbackground.jpg">{1024, 768}</string>
 			<string key="addtocartbutton.png">{57, 38}</string>
 			<string key="cancelbutton.png">{94, 38}</string>
+			<string key="ci_red.png">{70, 55}</string>
 			<string key="dropdown.png">{584, 736}</string>
 			<string key="shipdatesNEW.png">{101, 37}</string>
 			<string key="vendorbutton.png">{322, 80}</string>

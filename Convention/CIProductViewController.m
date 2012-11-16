@@ -41,6 +41,7 @@
 
 @implementation CIProductViewController
 @synthesize products;
+@synthesize ciLogo;
 @synthesize hiddenTxt;
 @synthesize searchBar;
 @synthesize productData;
@@ -86,6 +87,9 @@
         isInitialized = NO;
         coreDataManager = [CoreDataUtil sharedManager];
     }
+	
+	reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self
+															   withUrl:kBASEURL];
     return self;
 }
 
@@ -96,6 +100,22 @@
     
     // Release any cached data, images, etc that aren't in use.
 }
+
+-(void)networkLost {
+	
+	[ciLogo setImage:[UIImage imageNamed:@"ci_red.png"]];
+	
+	
+	 
+}
+
+-(void)networkRestored {
+	
+	[ciLogo setImage:[UIImage imageNamed:@"ci_green.png"]];
+
+	
+}
+
 
 #pragma mark - View lifecycle
 

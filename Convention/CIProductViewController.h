@@ -13,6 +13,7 @@
 #import "CIProductCell.h"
 #import "CIStoreQtyTableViewController.h"
 #import "Order.h"
+#import "ReachabilityDelegation.h"
 
 @class CIViewController;
 
@@ -22,9 +23,13 @@
 
 @end
 
-@interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, CICustomerDelegate, CIProductCellDelegate, CIFinalCustomerDelegate, CICartViewDelegate,UISearchBarDelegate,CIStoreQtyTableDelegate,UIAlertViewDelegate>
+@interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, CICustomerDelegate, CIProductCellDelegate, CIFinalCustomerDelegate, CICartViewDelegate,UISearchBarDelegate,CIStoreQtyTableDelegate,UIAlertViewDelegate, ReachabilityDelegate> {
+	
+	ReachabilityDelegation *reachDelegation;
+}
 
 @property (unsafe_unretained, nonatomic) IBOutlet UITableView *products;
+@property (nonatomic, strong) IBOutlet UIImageView *ciLogo;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *hiddenTxt;
 @property (unsafe_unretained, nonatomic) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray* productData;

@@ -97,10 +97,16 @@
     self.email.font = [UIFont fontWithName:kFontName size:14.f];
     self.password.font = [UIFont fontWithName:kFontName size:14.f];
     self.lblVersion.font = [UIFont fontWithName:kFontName size:14.f];
+	
+	NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
+	NSString *build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+
+	
+	
     
-    DLog(@"%@,%@",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"],[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
+    DLog(@"%@,%@",version, build);
     
-    self.lblVersion.text = [NSString stringWithFormat:@"CI %@.%@",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"],[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
+    self.lblVersion.text = [NSString stringWithFormat:@"CI %@.%@", version, build];
     
 //    DLog(@"fonts:%@ %@ %@",[UIFont fontWithName:kFontName size:14.f],[UIFont fontWithName:@"bebas" size:14.f],[UIFont fontWithName:@"Bebas" size:14.f]);
     
@@ -239,7 +245,7 @@
                     [self presentViewController:masterViewController animated:YES completion:nil];
                     //[self.view addSubview:splitViewController.view];
                     //[self logout];
-                    self.password.text = @"";
+                    //self.password.text = @"";
                 }
             }
             else
