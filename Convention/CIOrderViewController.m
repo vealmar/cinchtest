@@ -738,6 +738,12 @@
         
         [signout startAsynchronous];
     }
+	
+	
+	[[SettingsManager sharedManager] saveSetting:@"username" value:@""];
+	[[SettingsManager sharedManager] saveSetting:@"password" value:@""];
+	
+	 	
 }
 
 - (IBAction)logout:(id)sender {

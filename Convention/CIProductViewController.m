@@ -41,6 +41,7 @@
 @end
 
 @implementation CIProductViewController
+@synthesize vendorLabel;
 @synthesize products;
 @synthesize ciLogo;
 @synthesize hiddenTxt;
@@ -149,6 +150,7 @@
         //[self getCustomers];
     }
     
+	self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
     [self.vendorTable reloadData];
 }
 
@@ -165,6 +167,7 @@
     [self setVendorTable:nil];
     [self setDismissVendor:nil];
     [self setCustomerLabel:nil];
+	[self setVendorLabel:nil];
     [self setSearchBar:nil];
     [super viewDidDisappear:animated];
     // Release any retained subviews of the main view.
@@ -295,7 +298,11 @@
         
         //TODO: pull from list and set tag to internal vendor_id
         NSDictionary* details = [vendorsData objectAtIndex:[indexPath row]];
-        cell.textLabel.text = [details objectForKey:kVendorUsername];
+		if ([details objectForKey:kVendorVendID] != nil)
+           cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID] != nil ? [details objectForKey:kVendorVendID] : @"", [details objectForKey:kVendorUsername]];
+		else
+			cell.textLabel.text = [NSString stringWithFormat:@"%@", [details objectForKey:kVendorUsername]];
+
         cell.tag = [[details objectForKey:@"id"] intValue];
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.selectionStyle = UITableViewCellSelectionStyleGray;
@@ -550,6 +557,10 @@
             
             [self loadProductsForUrl:url withLoadLabel:@"Loading Products for Selection..."];
         }
+		
+		NSDictionary* details = [vendorsData objectAtIndex:[indexPath row]];
+       self.vendorLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID], [details objectForKey:kVendorUsername]];
+
     }
 }
 

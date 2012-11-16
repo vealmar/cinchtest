@@ -58,6 +58,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UITableView *vendorTable;
 @property (unsafe_unretained, nonatomic) IBOutlet UIButton *dismissVendor;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *customerLabel;
+@property (unsafe_unretained, nonatomic) IBOutlet UILabel *vendorLabel;
 
 @property (nonatomic, assign) id<CIProductViewDelegate> delegate;
 
