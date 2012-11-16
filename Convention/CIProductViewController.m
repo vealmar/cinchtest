@@ -1348,47 +1348,47 @@
     }
 }
 
-//-(void)QtyTableChange:(NSMutableDictionary *)qty forIndex:(int)idx{
-//    NSString* JSON = [qty JSONString];
-//    DLog(@"setting qtys on index(%d) to %@",idx,JSON);
-//    
-//    NSString* key = [[self.resultData objectAtIndex:idx] objectForKey:@"id"];
-//    
-//    NSMutableDictionary* dict = [self.resultData objectAtIndex:idx];
-//    NSMutableDictionary* editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
-//    
-//    NSMutableDictionary* edict = [self createIfDoesntExist:editableDict orig:dict];
-//    
-//    if (edict == nil ) {
-//        edict = editableDict;
-//    }
-//    
-//    DLog(@"after done touch(should never be nil):%@",edict);
-//    [edict setValue:JSON forKey:kEditableQty];
-//    DLog(@"row now set to %@",edict);
-//    [editableData setObject:edict forKey:key];
-//    
-//    int highestQty = -1;
-//    
-//    for( NSString* n in qty.allKeys){
-//        int j =[[qty objectForKey:n] intValue];
-//        if (j>highestQty) {
-//            highestQty = j;
-//            if (highestQty>0) {
-//                break;
-//            }
-//        }
-//    }
-//    
-//    DLog(@"in qty %@ the qty picked is %d",qty,highestQty);
-//    
-//    if (highestQty > 0) {
-//        [self AddToCartForIndex:idx];
-//    }else {
-//        [self.productCart removeObjectForKey:key];
-//    }
-//    [self.products reloadData];
-//}
+-(void)QtyTableChange:(NSMutableDictionary *)qty forIndex:(int)idx{
+    NSString* JSON = [qty JSONString];
+    DLog(@"setting qtys on index(%d) to %@",idx,JSON);
+    
+    NSString* key = [[self.resultData objectAtIndex:idx] objectForKey:@"id"];
+    
+    NSMutableDictionary* dict = [self.resultData objectAtIndex:idx];
+    NSMutableDictionary* editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
+    
+    NSMutableDictionary* edict = [self createIfDoesntExist:editableDict orig:dict];
+    
+    if (edict == nil ) {
+        edict = editableDict;
+    }
+    
+    DLog(@"after done touch(should never be nil):%@",edict);
+    [edict setValue:JSON forKey:kEditableQty];
+    DLog(@"row now set to %@",edict);
+    [editableData setObject:edict forKey:key];
+    
+    int highestQty = -1;
+    
+    for( NSString* n in qty.allKeys){
+        int j =[[qty objectForKey:n] intValue];
+        if (j>highestQty) {
+            highestQty = j;
+            if (highestQty>0) {
+                break;
+            }
+        }
+    }
+    
+    DLog(@"in qty %@ the qty picked is %d",qty,highestQty);
+    
+    if (highestQty > 0) {
+        [self AddToCartForIndex:idx];
+    }else {
+        [self.productCart removeObjectForKey:key];
+    }
+    [self.products reloadData];
+}
 
 #pragma mark - keyboard functionality 
 -(void)setViewMovedUp:(BOOL)movedUp
@@ -1418,7 +1418,6 @@
         [UIView commitAnimations];
     });
 }
-
 
 -(void)textEditBeginWithFrame:(CGRect)frame{
     int offset = frame.origin.y - self.products.contentOffset.y;

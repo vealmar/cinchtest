@@ -100,7 +100,7 @@
     
     DLog(@"%@,%@",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"],[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]);
     
-    self.lblVersion.text = [NSString stringWithFormat:@"CI %@",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
+    self.lblVersion.text = [NSString stringWithFormat:@"CI %@.%@",[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"],[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
     
 //    DLog(@"fonts:%@ %@ %@",[UIFont fontWithName:kFontName size:14.f],[UIFont fontWithName:@"bebas" size:14.f],[UIFont fontWithName:@"Bebas" size:14.f]);
     

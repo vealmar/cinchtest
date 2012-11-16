@@ -121,18 +121,20 @@
     [request setCompletionBlock:^{
         ASIHTTPRequest* strongRequest = weakRequest;
         //DLog(@"response:%@",[strongRequest responseString]);
-
-        self.orders = [[strongRequest responseString] objectFromJSONString];
-        [self.sideTable reloadData];
-        //[self.sideTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
-
-        if ([self.orders count] > 0) {
-            self.NoOrders.hidden = YES;
-        }
         
-        [order hide:YES];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.orders = [[strongRequest responseString] objectFromJSONString];
+            [self.sideTable reloadData];
+            //[self.sideTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
+            
+            if ([self.orders count] > 0) {
+                self.NoOrders.hidden = YES;
+            }
+            
+            [order hide:YES];
+        });
     }];
-    
+                       
     [request setFailedBlock:^{
         ASIHTTPRequest* strongRequest = weakRequest;
         //DLog(@"error:%@", [strongRequest error]);
@@ -556,35 +558,7 @@
         
         NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
         [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
-   
-//        for (int i = 0; /*i<[self.itemsDB count] &&*/ i < [self.itemsQty count]; i++) {
-//            
-//            CIItemEditCell* cell = (CIItemEditCell*)[self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-//            
-//            __autoreleasing NSError* err = nil;
-//            NSMutableDictionary* dict = [[self.itemsQty objectAtIndex:i] objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-//            double q = 0;
-//            if (err) {
-//                //                DLog(@"UT JSON error:%@ for JSON:%@",err, cell.qty.text);
-//                q = [cell.qty.text doubleValue];
-//            }else if(dict&&![dict isKindOfClass:[NSNull class]]){
-//                //                DLog(@"UT JSon got:%@", dict);
-//                for (NSString* key in dict.allKeys) {
-//                    q += [[dict objectForKey:key] doubleValue];
-//                }
-//            }
-//            
-//            double nd = 1;
-//            if (((NSArray*)[self.itemsShipDates objectAtIndex:i]).count>0) {
-//                nd = ((NSArray*)[self.itemsShipDates objectAtIndex:i]).count;
-//            }
-//            
-//            DLog(@"subtotal:%@",cell.total.text);
-//            ttotal += [[nf numberFromString:cell.total.text] doubleValue];
-//            sctotal += [cell.voucher.text doubleValue]*q*nd;
-//            //            DLog(@"total:%@, voucher:%@(%f), qty:%@",cell.total.text,cell.voucher.text,[cell.voucher.text doubleValue],cell.qty.text);
-//        }
-        
+
         NSInteger itemCount = [[self.itemsDB objectForKey:kItemCount] intValue];
         DLog(@"itemCount:%i, itemQty:%i", itemCount, [self.itemsQty count]);
         

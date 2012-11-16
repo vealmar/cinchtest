@@ -406,7 +406,6 @@
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{535, 641}, {117, 34}}</string>
 								<reference key="NSSuperview" ref="596173366"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:345</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -1308,8 +1307,8 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="mainpage_back.jpg">{16, 16}</string>
-			<string key="printbutton.png">{16, 16}</string>
+			<string key="mainpage_back.jpg">{1024, 768}</string>
+			<string key="printbutton.png">{94, 38}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">1930</string>
 	</data>
