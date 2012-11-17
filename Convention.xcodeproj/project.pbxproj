@@ -368,7 +368,6 @@
 		6E118556145F2F2100568ED1 = {
 			isa = PBXGroup;
 			children = (
-				C713AFAB1656E45100E151EA /* QuartzCore.framework */,
 				335A4306164D7529007B872A /* Settings.bundle */,
 				6EDBF908154EFD8000D4A0E7 /* CI_72logo.png */,
 				6EDBF905154EFD6100D4A0E7 /* CI_144logo.png */,
@@ -389,6 +388,7 @@
 		6E118564145F2F2200568ED1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C713AFAB1656E45100E151EA /* QuartzCore.framework */,
 				335A42F2164D7306007B872A /* CoreData.framework */,
 				6E118601145F2FB100568ED1 /* CFNetwork.framework */,
 				6E118602145F2FB100568ED1 /* libz.dylib */,
@@ -416,12 +416,12 @@
 				6E3BEC8A149056AA00BF8E15 /* login/start */,
 				6E3BEC9114905BEF00BF8E15 /* Order List */,
 				6E3BEC891490568C00BF8E15 /* order form */,
-				6E11856C145F2F2200568ED1 /* ` */,
+				6E11856C145F2F2200568ED1 /* Supporting Files */,
 			);
 			path = Convention;
 			sourceTree = "<group>";
 		};
-		6E11856C145F2F2200568ED1 /* ` */ = {
+		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
 				331AF39C165670C400C74117 /* ci_red.png */,
@@ -465,7 +465,7 @@
 				6E118571145F2F2200568ED1 /* main.m */,
 				6E118573145F2F2200568ED1 /* Convention-Prefix.pch */,
 			);
-			name = "`";
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		6E118585145F2F3600568ED1 /* ASI-HTTP */ = {
