@@ -19,7 +19,8 @@
 }
 @property (nonatomic, strong) IBOutlet UISearchBar *sBar;
 @property (nonatomic, strong) IBOutlet UIImageView *ciLogo;
-@property (nonatomic, strong) NSArray* orders;
+@property (nonatomic, strong) NSMutableArray* orders;
+@property (nonatomic, strong) NSMutableArray* orderData;
 @property (nonatomic, strong) NSString* authToken;
 @property (nonatomic) BOOL showPrice;
 @property (nonatomic, strong) NSMutableArray* venderInfo;

@@ -23,6 +23,7 @@
 #import "vender.h"
 #import "product.h"
 #import "lineItem.h"
+#import "StringManipulation.h"
 
 @interface CIOrderViewController (){
     int currentOrderID;
@@ -33,6 +34,7 @@
 @synthesize sBar;
 @synthesize ciLogo;
 @synthesize orders;
+@synthesize orderData;
 @synthesize authToken;
 @synthesize showPrice;
 @synthesize venderInfo;
@@ -116,6 +118,81 @@
 }
 
 
+
+-(void)loadOrders {
+	
+	self.OrderDetailScroll.hidden = YES;
+	
+	MBProgressHUD* __weak order = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
+    order.labelText = @"Getting Orders...";
+    
+    [order show:YES];
+	
+    
+    NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
+	 
+    if (masterVender) {
+        url = [NSString stringWithFormat:@"%@?%@=%@",kDBMasterORDER,kAuthToken,self.authToken];
+    }
+    DLog(@"Sending %@",url);
+    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+    ASIHTTPRequest* __weak weakRequest = request;
+    [request setNumberOfTimesToRetryOnTimeout:3];
+    [request setCompletionBlock:^{
+        ASIHTTPRequest* strongRequest = weakRequest;
+        //DLog(@"response:%@",[strongRequest responseString]);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.orders = [[[strongRequest responseString] objectFromJSONString] mutableCopy];
+			
+			
+			
+			//        DLog(@"data:%@",data);
+			self.orderData = [self.orders mutableCopy];
+			//PW---        if (showPrice) {
+			for( int i=0;i< self.orderData.count;i++){
+				NSMutableDictionary* dict = [[self.orderData objectAtIndex:i] mutableCopy];
+				
+				//            DLog(@"invtid:%@",[dict objectForKey:kProductInvtid]);
+				
+				[self.orderData removeObjectAtIndex:i];
+				[self.orderData insertObject:dict atIndex:i];
+			}
+			//        }
+			//        DLog(@"Json:%@",self.productData);
+			 
+			 
+			
+            [self.sideTable reloadData];
+			//[self.sideTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
+            //[self.sideTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
+            
+            if ([self.orders count] > 0) {
+                self.NoOrders.hidden = YES;
+            }
+            
+            [order hide:YES];
+        });
+    }];
+	
+    [request setFailedBlock:^{
+        ASIHTTPRequest* strongRequest = weakRequest;
+        //DLog(@"error:%@", [strongRequest error]);
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+        [order hide:YES];
+    }];
+    
+    [request startAsynchronous];
+	
+	
+	
+	
+	
+	
+}
+
+
+
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad
@@ -130,45 +207,13 @@
     
     self.placeholderContainer.hidden = NO;
     
-    MBProgressHUD* __weak order = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    order.labelText = @"Getting Orders...";
-    
-    [order show:YES];
+  
 	
 	self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
-
-    
-    NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
-    DLog(@"Sending %@",url);
-    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    ASIHTTPRequest* __weak weakRequest = request;
-    [request setNumberOfTimesToRetryOnTimeout:3];
-    [request setCompletionBlock:^{
-        ASIHTTPRequest* strongRequest = weakRequest;
-        //DLog(@"response:%@",[strongRequest responseString]);
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.orders = [[strongRequest responseString] objectFromJSONString];
-            [self.sideTable reloadData];
-			//[self.sideTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
-            //[self.sideTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
-            
-            if ([self.orders count] > 0) {
-                self.NoOrders.hidden = YES;
-            }
-            
-            [order hide:YES];
-        });
-    }];
-                       
-    [request setFailedBlock:^{
-        ASIHTTPRequest* strongRequest = weakRequest;
-        //DLog(@"error:%@", [strongRequest error]);
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-        [order hide:YES];
-    }];
-    
-    [request startAsynchronous];
+	
+	[self loadOrders];
+	
+	
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -620,48 +665,12 @@
 }
 
 -(void)Return{
-    self.OrderDetailScroll.hidden = YES;
+     
     
-    MBProgressHUD* __weak order = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    order.labelText = @"Getting Orders...";
-    [order show:YES];
-    
-    self.itemsDB = nil;
-    NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
-    if (masterVender) {
-        url = [NSString stringWithFormat:@"%@?%@=%@",kDBMasterORDER,kAuthToken,self.authToken];
-    }
-    DLog(@"Sending %@",url);
-    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    [request setNumberOfTimesToRetryOnTimeout:3];
-    ASIHTTPRequest* __weak weakRequest = request;
-    [request setCompletionBlock:^{
-        ASIHTTPRequest* strongRequest = weakRequest;
-        //DLog(@"response:%@",[strongRequest responseString]);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.orders = [[strongRequest responseString] objectFromJSONString];
-            //DLog(@"orders Json:%@, %@",orders,[request responseString]);
-            [self.sideTable reloadData];
-            //[self.sideTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
-            if ([self.orders count] > 0) {
-                self.NoOrders.hidden = YES;
-            }
-            [order hide:YES];
-        });
-    }];
-    
-    [request setFailedBlock:^{
-        ASIHTTPRequest* strongRequest = weakRequest;
-        DLog(@"error:%@", [strongRequest error]);
-        if (request.error.code == 2) {
-            [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Loading orders timed out, please hit [REFRESH] to try again!" delegate:self cancelButtonTitle:@"OK!" otherButtonTitles: nil] show];
-        }else{
-            [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading the order:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-        }
-        [order hide:YES];
-    }];
-    
-    [request startAsynchronous];
+        self.itemsDB = nil;
+   
+   
+	[self loadOrders];
 }
 
 #pragma mark - buttons
@@ -959,9 +968,13 @@
 }
 
 
+
+
+
 - (void)viewWillAppear:(BOOL)animated
 {
     // register for keyboard notifications
+	
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) 
                                                  name:UIKeyboardWillShowNotification object:self.view.window]; 
     
@@ -995,6 +1008,7 @@
     
     self.itemsAct.hidden = YES;
     
+	/*
     if (masterVender) {
         __block MBProgressHUD* venderHud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         venderHud.labelText = @"loading...";
@@ -1035,7 +1049,7 @@
 	
 	
 
-    [self Return];
+    [self Return]; */
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -1216,10 +1230,43 @@
 
 #pragma mark - Search Delegate stuff
 
+ 
+
+
 
 -(void)searchBar:(UISearchBar *)sBar textDidChange:(NSString *)searchText{
  
-   //TODO: Implement
+	if (self.orders == nil||[self.orders isKindOfClass:[NSNull class]]) {
+        return;
+    }
+	 
+	if ([searchText isEqualToString:@""]) {
+		self.orders = [self.orderData mutableCopy];
+		DLog(@"string is empty");
+	}else{
+		DLog(@"Search Text %@", searchText);
+		NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
+			NSMutableDictionary* dict = (NSMutableDictionary*)obj;
+			
+		 
+			NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
+			NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
+			DLog(@"Bill Name: %@", storeName);
+			DLog(@"Cust Id: %@", custId);
+				
+		 
+			
+			return [[storeName uppercaseString] contains:[searchText uppercaseString]] ||
+					 [[custId uppercaseString] hasPrefix:[searchText uppercaseString]];
+		}];
+		
+		self.orders = [[self.orderData filteredArrayUsingPredicate:pred] mutableCopy];
+		//[selectedIdx removeAllObjects];
+		DLog(@"results count:%d", self.orders.count);
+	}
+	[self.sideTable reloadData];
+	//    }
+
 }
 
 @end

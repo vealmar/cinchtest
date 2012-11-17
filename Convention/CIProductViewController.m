@@ -590,7 +590,8 @@
 }
 
 -(void)Cancel{
-    if (isInitialized) {
+   
+	if (isInitialized) {
         UIAlertView *alertView = [[UIAlertView alloc]
                                   initWithTitle:@"Cancel Order?"
                                   message:@"This will cancel the current order."
