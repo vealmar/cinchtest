@@ -29,13 +29,13 @@
     // Configure the view for the selected state
 }
 
--(void)textFieldDidBeginEditing:(UITextField *)textField{
-    [self qtyChanged:nil];
-}
-
--(void)textFieldDidEndEditing:(UITextField *)textField{
-    [self qtyChanged:nil];
-}
+//-(void)textFieldDidBeginEditing:(UITextField *)textField{
+//    [self qtyChanged:nil];
+//}
+//
+//-(void)textFieldDidEndEditing:(UITextField *)textField{
+//    [self qtyChanged:nil];
+//}
 
 - (IBAction)qtyChanged:(id)sender {
     if (self.delegate) {

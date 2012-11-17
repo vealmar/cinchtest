@@ -9,7 +9,9 @@
 #import "CIStoreQtyTableViewController.h"
 #import "CIStoreQtyCell.h"
 
-@interface CIStoreQtyTableViewController ()
+@interface CIStoreQtyTableViewController () {
+    NSArray *keys;
+}
 
 @end
 
@@ -59,8 +61,12 @@
     // e.g. self.myOutlet = nil;
 }
 
--(void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
+-(void)setStores:(NSMutableDictionary *)storeData {
+    self.stores = storeData;
+    keys = [stores.allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSNumber* n1 = (NSNumber*)obj1;NSNumber* n2 = (NSNumber*)obj2;
+        return [n1 compare:n2];
+    }];
     [self.tableView reloadData];
 }
 
@@ -82,7 +88,7 @@
 {
     // Return the number of rows in the section.
 //    DLog(@"numberOfRowsInSection with stores:%@",stores);
-    if (stores&&([stores isKindOfClass:[NSMutableDictionary class]]||[stores isKindOfClass:[NSDictionary class]])) {
+    if (stores && ([stores isKindOfClass:[NSMutableDictionary class]] || [stores isKindOfClass:[NSDictionary class]])) {
         return stores.allKeys.count;
     }
     return 0;
@@ -97,17 +103,17 @@
     static NSString *CellIdentifier = @"StoreQty";
     CIStoreQtyCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
-    
     if (cell == nil) {
         NSArray* arr = [[NSBundle mainBundle] loadNibNamed:@"CIStoreQtyCell" owner:self options:nil];
         cell = (CIStoreQtyCell*)[arr objectAtIndex:0];
     }
     cell.tag = indexPath.row;
     
-    NSArray* keys = [stores.allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSNumber* n1 = (NSNumber*)obj1;NSNumber* n2 = (NSNumber*)obj2;
-        return [n1 compare:n2];
-    }];
+//    NSArray* keys = [stores.allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+//        NSNumber* n1 = (NSNumber*)obj1;
+//        NSNumber* n2 = (NSNumber*)obj2;
+//        return [n1 compare:n2];
+//    }];
     
 //    DLog(@"keys: %@",keys);
     
@@ -167,22 +173,22 @@
 
 #pragma mark - Table view delegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
-}
+//- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    // Navigation logic may go here. Create and push another view controller.
+//    /*
+//     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
+//     // ...
+//     // Pass the selected object to the new view controller.
+//     [self.navigationController pushViewController:detailViewController animated:YES];
+//     */
+//}
 
 -(void)QtyChange:(double)qty forIndex:(int)idx{
-    NSArray* keys = [stores.allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSNumber* n1 = (NSNumber*)obj1;NSNumber* n2 = (NSNumber*)obj2;
-        return [n1 compare:n2];
-    }];
+//    NSArray* keys = [stores.allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+//        NSNumber* n1 = (NSNumber*)obj1;NSNumber* n2 = (NSNumber*)obj2;
+//        return [n1 compare:n2];
+//    }];
     NSString* key = [keys objectAtIndex:idx];
     [self.stores setObject:[NSNumber numberWithDouble:qty] forKey:key];
     if (self.delegate) {

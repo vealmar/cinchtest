@@ -16,9 +16,10 @@
 
 
 @interface CIStoreQtyCell : UITableViewCell<UITextFieldDelegate>
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *Key;
-@property (unsafe_unretained, nonatomic) IBOutlet UITextField *Qty;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblQty;
+
+@property (weak, nonatomic) IBOutlet UILabel *Key;
+@property (weak, nonatomic) IBOutlet UITextField *Qty;
+@property (weak, nonatomic) IBOutlet UILabel *lblQty;
 
 - (IBAction)qtyChanged:(id)sender;
 @property (nonatomic, assign) id<CIStoreQtyDelegate> delegate;
