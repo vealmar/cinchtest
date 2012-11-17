@@ -54,7 +54,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *NoOrdersLabel;
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *ordersAct;
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *itemsAct;
-@property (unsafe_unretained, nonatomic) IBOutlet UIScrollView *OrderDetailScroll;
+@property (strong, nonatomic) IBOutlet UIScrollView *OrderDetailScroll;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *sideContainer;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *placeholderContainer;
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *orderContainer;

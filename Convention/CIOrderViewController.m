@@ -80,6 +80,8 @@
 @synthesize itemsShipDates;
 @synthesize managedObjectContext;
 
+bool showHud = true;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -117,9 +119,13 @@
     isLoadingOrders = YES;
 	self.OrderDetailScroll.hidden = YES;
 	
-	MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
-    hud.labelText = @"Getting Orders";
-    [hud show:YES];
+	MBProgressHUD* hud;
+	
+	if (showHud) {
+		 hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
+        hud.labelText = @"Getting Orders";
+        [hud show:YES];
+	}
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
 	 
@@ -162,8 +168,10 @@
             if ([self.orders count] > 0) {
                 self.NoOrders.hidden = YES;
             }
-            
-            [hud hide:YES];
+            if (showHud) {
+              [hud hide:YES];
+			}
+			showHud = true;
             [pull finishedLoading];
             self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
             isLoadingOrders = NO;
@@ -203,7 +211,7 @@
 	
 	self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
 	
-	[self loadOrders];
+	[self Return];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -220,7 +228,7 @@
     [self setItemsAct:nil];
     [self setOrdersAct:nil];
     [self setNoOrders:nil];
-    [self setOrderDetailScroll:nil];
+    //[self setOrderDetailScroll:nil]; //Don't do this
     [self setSideContainer:nil];
     [self setPlaceholderContainer:nil];
     [self setOrderContainer:nil];
@@ -1165,6 +1173,8 @@
     [self.itemsQty insertObject:qty atIndex:idx];
 }
 
+
+
 -(void)QtyTouchForIndex:(int)idx{
     if ([popoverController isPopoverVisible]) {
         [popoverController dismissPopoverAnimated:YES];
@@ -1344,13 +1354,31 @@
 	[self.sideTable reloadData];
 }
 
+//UIGestureRecognizer* cancelGesture;
+//
+//- (void) backgroundTouched:(id)sender {
+//    [self.view endEditing:YES];
+//}
+//
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
     [searchBar setShowsCancelButton:YES animated:YES];
+//    self.sideTable.allowsSelection = NO;
+//    self.sideTable.scrollEnabled = NO;
 }
 
 -(void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
     [searchBar setShowsCancelButton:NO animated:YES];
+//    self.sideTable.allowsSelection = YES;
+//    self.sideTable.scrollEnabled = YES;
 }
+
+//-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//    UITouch *touch = [[event allTouches] anyObject];
+//    if ([self.sBar isFirstResponder] && [touch view] != self.sBar) {
+//        [self.sBar resignFirstResponder];
+//    }
+//    [super touchesBegan:touches withEvent:event];
+//}
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     searchBar.text=@"";
@@ -1364,6 +1392,15 @@
 #pragma mark - Pull to Refresh stuff
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
+    //[self performSelectorInBackground:@selector(loadOrders) withObject:nil];
+	showHud = false;
     [self Return];
 }
+
+//-(void)refreshTableWithPull {
+//    self.sideTable.contentOffset = CGPointMake(0, -65 - self.sBar.frame.size.height);
+//    [pull setState:PullToRefreshViewStateLoading];
+//    //[self performSelectorInBackground:@selector(reloadTableData) withObject:nil];
+//    [self Return];
+//}
 @end

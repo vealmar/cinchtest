@@ -400,13 +400,12 @@
 		6E11856B145F2F2200568ED1 /* Convention */ = {
 			isa = PBXGroup;
 			children = (
-				C713AF9F1656E18E00E151EA /* PullToRefresh */,
-				335A4300164D7448007B872A /* Categories */,
-				335A42F9164D742F007B872A /* util */,
-				6E7698A7153E8BD0003CF4AC /* models */,
 				6E118609145F314200568ED1 /* config.h */,
 				6E118574145F2F2200568ED1 /* CIAppDelegate.h */,
 				6E118575145F2F2200568ED1 /* CIAppDelegate.m */,
+				335A4300164D7448007B872A /* Categories */,
+				335A42F9164D742F007B872A /* util */,
+				6E7698A7153E8BD0003CF4AC /* models */,
 				7498340615DE3EBB00F3EB26 /* Calendar */,
 				74AC165415C91DE800977A09 /* Print */,
 				6E3BEC8A149056AA00BF8E15 /* login/start */,
@@ -420,6 +419,7 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C713AF9F1656E18E00E151EA /* PullToRefresh */,
 				331AF39C165670C400C74117 /* ci_red.png */,
 				331AF39D165670C400C74117 /* ci_green.png */,
 				C721C9F91654BD93003F42A6 /* tools */,
