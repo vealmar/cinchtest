@@ -23,7 +23,8 @@
 
 @end
 
-@interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, CICustomerDelegate, CIProductCellDelegate, CIFinalCustomerDelegate, CICartViewDelegate,UISearchBarDelegate,CIStoreQtyTableDelegate,UIAlertViewDelegate, ReachabilityDelegate> {
+@interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIAlertViewDelegate,
+    CICustomerDelegate, CIProductCellDelegate, CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate> {
 	
 	ReachabilityDelegation *reachDelegation;
 }

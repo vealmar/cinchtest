@@ -27,6 +27,8 @@
 
 @interface CIOrderViewController (){
     int currentOrderID;
+    BOOL isLoadingOrders;
+    PullToRefreshView *pull;
 }
 @end
 
@@ -86,10 +88,9 @@
         masterVender = NO;
         currentVender = 0;
         currentOrderID = 0;
+        isLoadingOrders = NO;
+        reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
     }
-	
-	reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self
-															   withUrl:kBASEURL];
 	
     return self;
 }
@@ -105,29 +106,20 @@
 -(void)networkLost {
 	
 	[ciLogo setImage:[UIImage imageNamed:@"ci_red.png"]];
-	
-	
-	
 }
 
 -(void)networkRestored {
 	
 	[ciLogo setImage:[UIImage imageNamed:@"ci_green.png"]];
-	
-	
 }
 
-
-
 -(void)loadOrders {
-	
+    isLoadingOrders = YES;
 	self.OrderDetailScroll.hidden = YES;
 	
-	MBProgressHUD* __weak order = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
-    order.labelText = @"Getting Orders...";
-    
-    [order show:YES];
-	
+	MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
+    hud.labelText = @"Getting Orders";
+    [hud show:YES];
     
     NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
 	 
@@ -150,17 +142,17 @@
 			//        DLog(@"data:%@",data);
 			self.orderData = [self.orders mutableCopy];
 			//PW---        if (showPrice) {
-			for( int i=0;i< self.orderData.count;i++){
-				NSMutableDictionary* dict = [[self.orderData objectAtIndex:i] mutableCopy];
-				
-				//            DLog(@"invtid:%@",[dict objectForKey:kProductInvtid]);
-				
-				[self.orderData removeObjectAtIndex:i];
-				[self.orderData insertObject:dict atIndex:i];
-			}
-			//        }
-			//        DLog(@"Json:%@",self.productData);
-			 
+//			for( int i=0;i< self.orderData.count;i++){
+//				NSMutableDictionary* dict = [[self.orderData objectAtIndex:i] mutableCopy];
+//				
+//				//            DLog(@"invtid:%@",[dict objectForKey:kProductInvtid]);
+//				
+//				[self.orderData removeObjectAtIndex:i];
+//				[self.orderData insertObject:dict atIndex:i];
+//			}
+//			//        }
+//			//        DLog(@"Json:%@",self.productData);
+//			 
 			 
 			
             [self.sideTable reloadData];
@@ -171,7 +163,10 @@
                 self.NoOrders.hidden = YES;
             }
             
-            [order hide:YES];
+            [hud hide:YES];
+            [pull finishedLoading];
+            self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
+            isLoadingOrders = NO;
         });
     }];
 	
@@ -179,19 +174,14 @@
         ASIHTTPRequest* strongRequest = weakRequest;
         //DLog(@"error:%@", [strongRequest error]);
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-        [order hide:YES];
+        [hud hide:YES];
+        [pull finishedLoading];
+        isLoadingOrders = NO;
+        self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
     }];
     
     [request startAsynchronous];
-	
-	
-	
-	
-	
-	
 }
-
-
 
 #pragma mark - View lifecycle
 
@@ -207,13 +197,13 @@
     
     self.placeholderContainer.hidden = NO;
     
-  
+    pull = [[PullToRefreshView alloc] initWithScrollView:(UIScrollView *) self.sideTable];
+    [pull setDelegate:self];
+    [self.sideTable addSubview:pull];
 	
 	self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
 	
 	[self loadOrders];
-	
-	
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -295,7 +285,7 @@
             }
         }
         
-        NSDictionary* data = [orders objectAtIndex:[indexPath row]];
+        NSDictionary* data = [self.orders objectAtIndex:[indexPath row]];
         //DLog(@"data:%@",data);
         
         cell.Customer.text = [NSString stringWithFormat:@"%@ - %@",([[data objectForKey:@"customer"] objectForKey:kBillName]==nil?@"(Unknown)":[[data objectForKey:@"customer"] objectForKey:kBillName]),([[data objectForKey:@"customer"] objectForKey:kCustID]==nil?@"(Unknown)":[[data objectForKey:@"customer"] objectForKey:kCustID])];
@@ -452,10 +442,13 @@
 	//Not Imlemented
 }
 
-
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
+        
+        if ([self.sBar isFirstResponder]) {
+            [self.sBar resignFirstResponder];
+        }
+        
         self.EditorView.hidden = NO;
         self.toolWithSave.hidden = NO;
         self.orderContainer.hidden = NO;
@@ -483,133 +476,233 @@
         self.EditorView.tag = cell.tag;
         currentOrderID = cell.tag;
         
-        NSString* url = [NSString stringWithFormat:@"%@?%@=%@",[NSString stringWithFormat:kDBORDEREDIT(cell.tag)],kAuthToken,self.authToken];
-        //        DLog(@"Sending edit order %@",url);
-        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-        //        [request setTimeOutSeconds:10.f];
-        ASIHTTPRequest* __weak weakRequest = request;
-        [request setNumberOfTimesToRetryOnTimeout:3];
+        [self displayOrderDetail:[indexPath row]];
         
-        [request setCompletionBlock:^{
-            
-            ASIHTTPRequest* strongRequest = weakRequest;
-            
-            //DLog(@"order response:%@",[request responseString]);
-            //dispatch_async(dispatch_get_main_queue(), ^{
-            self.itemsDB = [[strongRequest responseString] objectFromJSONString];
-            NSArray* arr = [self.itemsDB objectForKey:kItems];
-            self.itemsPrice = [NSMutableArray array];
-            self.itemsQty = [NSMutableArray array];
-            self.itemsVouchers = [NSMutableArray array];
-            self.itemsShipDates = [NSMutableArray array];
-            
-            [arr enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop){
-                NSDictionary* dict = (NSDictionary*)obj;
-                if ([dict objectForKey:@"price"] && ![[dict objectForKey:@"price"] isKindOfClass:[NSNull class]]) {
-                    [self.itemsPrice insertObject:[dict objectForKey:@"price"] atIndex:idx];
-                    DLog(@"p(%i):%@",idx,[dict objectForKey:@"price"]);
-                }
-                else
-                    [self.itemsPrice insertObject:@"0.0" atIndex:idx];
-                
-                if ([dict objectForKey:@"quantity"]&&![[dict objectForKey:@"quantity"] isKindOfClass:[NSNull class]]) {
-                    [self.itemsQty insertObject:[dict objectForKey:@"quantity"] atIndex:idx];
-                    DLog(@"q(%i):%@",idx,[dict objectForKey:@"quantity"]);
-                }
-                else
-                    [self.itemsQty insertObject:@"0" atIndex:idx];
-                
-                if ([dict objectForKey:kOrderItemVoucher]&&![[dict objectForKey:kOrderItemVoucher] isKindOfClass:[NSNull class]]) {
-                    [self.itemsVouchers insertObject:[dict objectForKey:kOrderItemVoucher] atIndex:idx];
-                    //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
-                }
-                else
-                    [self.itemsVouchers insertObject:@"0" atIndex:idx];
-                
-                if ([dict objectForKey:kOrderItemShipDates]&&![[dict objectForKey:kOrderItemShipDates] isKindOfClass:[NSNull class]]) {
-                    
-                    NSArray* raw = [dict objectForKey:kOrderItemShipDates];
-                    NSMutableArray* dates = [NSMutableArray array];
-                    NSDateFormatter* df = [[NSDateFormatter alloc] init];
-                    [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
-                    for(NSString* str in raw){
-                        NSDate* date = [df dateFromString:str];
-                        //DLog(@"str:%@ date:%@",str, date);
-                        [dates addObject:date];
-                    }
-                    
-                    [self.itemsShipDates insertObject:dates atIndex:idx];
-                    //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
-                }
-                else
-                    [self.itemsShipDates insertObject:[NSArray array] atIndex:idx];
-            }];
-            //            DLog(@"items Json:%@",itemsDB);
-            [self.itemsTable reloadData];
-            
-            __block NSMutableArray* SDs = [NSMutableArray array];
-            
-            [self.itemsShipDates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                __block NSMutableArray* dates = (NSMutableArray*)obj;
-                [dates enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
-                    NSDate* date = (NSDate*)obj1;
-                    if (![SDs containsObject:date]) {
-                        [SDs addObject:date];
-                    }
-                }];
-            }];
-            
-            __block NSString* sdtext = @"";
-            
-            [SDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                if (idx!=0) {
-                    sdtext = [sdtext stringByAppendingString:@", "];
-                }
-                NSDate* date = (NSDate*)obj;
-                NSDateFormatter* df = [[NSDateFormatter alloc] init];
-                [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
-                sdtext = [sdtext stringByAppendingString:[df stringFromDate:date]];
-            }];
-            
-            self.shipdates.text = sdtext;
-            
-            if (![[self.itemsDB objectForKey:kShipNotes] isKindOfClass:[NSNull class]]) {
-                self.shipNotes.text = [self.itemsDB objectForKey:kShipNotes];
-            }
-            //            DLog(@"notes:%@",[self.itemsDB objectForKey:kNotes]);
-            if (![[self.itemsDB objectForKey:kNotes] isKindOfClass:[NSNull class]]) {
-                self.notes.text = [self.itemsDB objectForKey:kNotes];
-            }
-            
-            //[self UpdateTotal];
-            
-            [self.itemsTable reloadData];
-            [self UpdateTotal];
-            
-            self.itemsAct.hidden = YES;
-            [self.itemsAct stopAnimating];
-            //});
-        }];
-        
-        [request setFailedBlock:^{
-            ASIHTTPRequest* strongRequest = weakRequest;
-            self.itemsPrice = [NSMutableArray array];
-            self.itemsQty = [NSMutableArray array];
-            
-            self.itemsAct.hidden = YES;
-            [self.itemsAct stopAnimating];
-            if (strongRequest.error.code == 2) {
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Loading order timed out, please select it again to try again!" delegate:self cancelButtonTitle:@"OK!" otherButtonTitles: nil] show];
-            }else{
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading the order:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-            }
-            DLog(@"error:%@", [strongRequest error]);
-        }];
-        
-        [request startAsynchronous];
+//        NSString* url = [NSString stringWithFormat:@"%@?%@=%@",[NSString stringWithFormat:kDBORDEREDIT(cell.tag)],kAuthToken,self.authToken];
+//        //        DLog(@"Sending edit order %@",url);
+//        ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+//        //        [request setTimeOutSeconds:10.f];
+//        ASIHTTPRequest* __weak weakRequest = request;
+//        [request setNumberOfTimesToRetryOnTimeout:3];
+//        
+//        [request setCompletionBlock:^{
+//            
+//            ASIHTTPRequest* strongRequest = weakRequest;
+//            
+//            //DLog(@"order response:%@",[request responseString]);
+//            //dispatch_async(dispatch_get_main_queue(), ^{
+//            self.itemsDB = [[strongRequest responseString] objectFromJSONString];
+//            NSArray* arr = [self.itemsDB objectForKey:kItems];
+//            self.itemsPrice = [NSMutableArray array];
+//            self.itemsQty = [NSMutableArray array];
+//            self.itemsVouchers = [NSMutableArray array];
+//            self.itemsShipDates = [NSMutableArray array];
+//            
+//            [arr enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop){
+//                NSDictionary* dict = (NSDictionary*)obj;
+//                if ([dict objectForKey:@"price"] && ![[dict objectForKey:@"price"] isKindOfClass:[NSNull class]]) {
+//                    [self.itemsPrice insertObject:[dict objectForKey:@"price"] atIndex:idx];
+//                    DLog(@"p(%i):%@",idx,[dict objectForKey:@"price"]);
+//                }
+//                else
+//                    [self.itemsPrice insertObject:@"0.0" atIndex:idx];
+//                
+//                if ([dict objectForKey:@"quantity"]&&![[dict objectForKey:@"quantity"] isKindOfClass:[NSNull class]]) {
+//                    [self.itemsQty insertObject:[dict objectForKey:@"quantity"] atIndex:idx];
+//                    DLog(@"q(%i):%@",idx,[dict objectForKey:@"quantity"]);
+//                }
+//                else
+//                    [self.itemsQty insertObject:@"0" atIndex:idx];
+//                
+//                if ([dict objectForKey:kOrderItemVoucher]&&![[dict objectForKey:kOrderItemVoucher] isKindOfClass:[NSNull class]]) {
+//                    [self.itemsVouchers insertObject:[dict objectForKey:kOrderItemVoucher] atIndex:idx];
+//                    //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
+//                }
+//                else
+//                    [self.itemsVouchers insertObject:@"0" atIndex:idx];
+//                
+//                if ([dict objectForKey:kOrderItemShipDates]&&![[dict objectForKey:kOrderItemShipDates] isKindOfClass:[NSNull class]]) {
+//                    
+//                    NSArray* raw = [dict objectForKey:kOrderItemShipDates];
+//                    NSMutableArray* dates = [NSMutableArray array];
+//                    NSDateFormatter* df = [[NSDateFormatter alloc] init];
+//                    [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
+//                    for(NSString* str in raw){
+//                        NSDate* date = [df dateFromString:str];
+//                        //DLog(@"str:%@ date:%@",str, date);
+//                        [dates addObject:date];
+//                    }
+//                    
+//                    [self.itemsShipDates insertObject:dates atIndex:idx];
+//                    //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
+//                }
+//                else
+//                    [self.itemsShipDates insertObject:[NSArray array] atIndex:idx];
+//            }];
+//            //            DLog(@"items Json:%@",itemsDB);
+//            [self.itemsTable reloadData];
+//            
+//            __block NSMutableArray* SDs = [NSMutableArray array];
+//            
+//            [self.itemsShipDates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//                __block NSMutableArray* dates = (NSMutableArray*)obj;
+//                [dates enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
+//                    NSDate* date = (NSDate*)obj1;
+//                    if (![SDs containsObject:date]) {
+//                        [SDs addObject:date];
+//                    }
+//                }];
+//            }];
+//            
+//            __block NSString* sdtext = @"";
+//            
+//            [SDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//                if (idx!=0) {
+//                    sdtext = [sdtext stringByAppendingString:@", "];
+//                }
+//                NSDate* date = (NSDate*)obj;
+//                NSDateFormatter* df = [[NSDateFormatter alloc] init];
+//                [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
+//                sdtext = [sdtext stringByAppendingString:[df stringFromDate:date]];
+//            }];
+//            
+//            self.shipdates.text = sdtext;
+//            
+//            if (![[self.itemsDB objectForKey:kShipNotes] isKindOfClass:[NSNull class]]) {
+//                self.shipNotes.text = [self.itemsDB objectForKey:kShipNotes];
+//            }
+//            //            DLog(@"notes:%@",[self.itemsDB objectForKey:kNotes]);
+//            if (![[self.itemsDB objectForKey:kNotes] isKindOfClass:[NSNull class]]) {
+//                self.notes.text = [self.itemsDB objectForKey:kNotes];
+//            }
+//            
+//            //[self UpdateTotal];
+//            
+//            [self.itemsTable reloadData];
+//            [self UpdateTotal];
+//            
+//            self.itemsAct.hidden = YES;
+//            [self.itemsAct stopAnimating];
+//            //});
+//        }];
+//        
+//        [request setFailedBlock:^{
+//            ASIHTTPRequest* strongRequest = weakRequest;
+//            self.itemsPrice = [NSMutableArray array];
+//            self.itemsQty = [NSMutableArray array];
+//            
+//            self.itemsAct.hidden = YES;
+//            [self.itemsAct stopAnimating];
+//            if (strongRequest.error.code == 2) {
+//                [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Loading order timed out, please select it again to try again!" delegate:self cancelButtonTitle:@"OK!" otherButtonTitles: nil] show];
+//            }else{
+//                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading the order:%@",[strongRequest error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+//            }
+//            DLog(@"error:%@", [strongRequest error]);
+//        }];
+//        
+//        [request startAsynchronous];
     }
     else if(tableView == self.itemsTable){
         
+    }
+}
+
+-(void) displayOrderDetail:(int)index {
+    self.itemsDB = [self.orders objectAtIndex:index];
+    if (self.itemsDB)
+    {
+        NSArray* arr = [self.itemsDB objectForKey:kItems];
+        self.itemsPrice = [NSMutableArray array];
+        self.itemsQty = [NSMutableArray array];
+        self.itemsVouchers = [NSMutableArray array];
+        self.itemsShipDates = [NSMutableArray array];
+        
+        [arr enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop){
+            NSDictionary* dict = (NSDictionary*)obj;
+            if ([dict objectForKey:@"price"] && ![[dict objectForKey:@"price"] isKindOfClass:[NSNull class]]) {
+                [self.itemsPrice insertObject:[dict objectForKey:@"price"] atIndex:idx];
+                DLog(@"p(%i):%@",idx,[dict objectForKey:@"price"]);
+            }
+            else
+                [self.itemsPrice insertObject:@"0.0" atIndex:idx];
+            
+            if ([dict objectForKey:@"quantity"]&&![[dict objectForKey:@"quantity"] isKindOfClass:[NSNull class]]) {
+                [self.itemsQty insertObject:[dict objectForKey:@"quantity"] atIndex:idx];
+                DLog(@"q(%i):%@",idx,[dict objectForKey:@"quantity"]);
+            }
+            else
+                [self.itemsQty insertObject:@"0" atIndex:idx];
+            
+            if ([dict objectForKey:kOrderItemVoucher]&&![[dict objectForKey:kOrderItemVoucher] isKindOfClass:[NSNull class]]) {
+                [self.itemsVouchers insertObject:[dict objectForKey:kOrderItemVoucher] atIndex:idx];
+                //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
+            }
+            else
+                [self.itemsVouchers insertObject:@"0" atIndex:idx];
+            
+            if ([dict objectForKey:kOrderItemShipDates]&&![[dict objectForKey:kOrderItemShipDates] isKindOfClass:[NSNull class]]) {
+                
+                NSArray* raw = [dict objectForKey:kOrderItemShipDates];
+                NSMutableArray* dates = [NSMutableArray array];
+                NSDateFormatter* df = [[NSDateFormatter alloc] init];
+                [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
+                for(NSString* str in raw){
+                    NSDate* date = [df dateFromString:str];
+                    //DLog(@"str:%@ date:%@",str, date);
+                    [dates addObject:date];
+                }
+                
+                [self.itemsShipDates insertObject:dates atIndex:idx];
+                //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
+            }
+            else
+                [self.itemsShipDates insertObject:[NSArray array] atIndex:idx];
+        }];
+        //            DLog(@"items Json:%@",itemsDB);
+        [self.itemsTable reloadData];
+        
+        __block NSMutableArray* SDs = [NSMutableArray array];
+        
+        [self.itemsShipDates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            __block NSMutableArray* dates = (NSMutableArray*)obj;
+            [dates enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
+                NSDate* date = (NSDate*)obj1;
+                if (![SDs containsObject:date]) {
+                    [SDs addObject:date];
+                }
+            }];
+        }];
+        
+        __block NSString* sdtext = @"";
+        
+        [SDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            if (idx!=0) {
+                sdtext = [sdtext stringByAppendingString:@", "];
+            }
+            NSDate* date = (NSDate*)obj;
+            NSDateFormatter* df = [[NSDateFormatter alloc] init];
+            [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
+            sdtext = [sdtext stringByAppendingString:[df stringFromDate:date]];
+        }];
+        
+        self.shipdates.text = sdtext;
+        
+        if (![[self.itemsDB objectForKey:kShipNotes] isKindOfClass:[NSNull class]]) {
+            self.shipNotes.text = [self.itemsDB objectForKey:kShipNotes];
+        }
+        //            DLog(@"notes:%@",[self.itemsDB objectForKey:kNotes]);
+        if (![[self.itemsDB objectForKey:kNotes] isKindOfClass:[NSNull class]]) {
+            self.notes.text = [self.itemsDB objectForKey:kNotes];
+        }
+        
+        //[self UpdateTotal];
+        
+        [self.itemsTable reloadData];
+        [self UpdateTotal];
+        
+        self.itemsAct.hidden = YES;
+        [self.itemsAct stopAnimating];
     }
 }
 
@@ -664,17 +757,14 @@
     }
 }
 
--(void)Return{
-     
-    
+-(void)Return {
+    if (!isLoadingOrders) {
         self.itemsDB = nil;
-   
-   
-	[self loadOrders];
+        [self loadOrders];
+    }
 }
 
 #pragma mark - buttons
-
 
 - (IBAction)AddNewOrder:(id)sender {
     CIProductViewController* page;
@@ -748,11 +838,8 @@
         [signout startAsynchronous];
     }
 	
-	
 	[[SettingsManager sharedManager] saveSetting:@"username" value:@""];
 	[[SettingsManager sharedManager] saveSetting:@"password" value:@""];
-	
-	 	
 }
 
 - (IBAction)logout:(id)sender {
@@ -1049,13 +1136,13 @@
 	
 	
 
-    [self Return]; */
+    [self reloadOrderTableData]; */
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     // unregister for keyboard notifications while not visible.
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil]; 
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 }
 
 
@@ -1227,12 +1314,7 @@
     }
 }
 
-
-#pragma mark - Search Delegate stuff
-
- 
-
-
+#pragma mark - UISearchBarDelegate
 
 -(void)searchBar:(UISearchBar *)sBar textDidChange:(NSString *)searchText{
  
@@ -1247,14 +1329,11 @@
 		DLog(@"Search Text %@", searchText);
 		NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
 			NSMutableDictionary* dict = (NSMutableDictionary*)obj;
-			
 		 
 			NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
 			NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
 			DLog(@"Bill Name: %@", storeName);
 			DLog(@"Cust Id: %@", custId);
-				
-		 
 			
 			return [[storeName uppercaseString] contains:[searchText uppercaseString]] ||
 					 [[custId uppercaseString] hasPrefix:[searchText uppercaseString]];
@@ -1265,8 +1344,54 @@
 		DLog(@"results count:%d", self.orders.count);
 	}
 	[self.sideTable reloadData];
-	//    }
-
 }
 
+//UIGestureRecognizer* cancelGesture;
+//
+//- (void) backgroundTouched:(id)sender {
+//    [self.view endEditing:YES];
+//}
+//
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+    [searchBar setShowsCancelButton:YES animated:YES];
+//    self.sideTable.allowsSelection = NO;
+//    self.sideTable.scrollEnabled = NO;
+}
+
+-(void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+    [searchBar setShowsCancelButton:NO animated:YES];
+//    self.sideTable.allowsSelection = YES;
+//    self.sideTable.scrollEnabled = YES;
+}
+
+//-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//    UITouch *touch = [[event allTouches] anyObject];
+//    if ([self.sBar isFirstResponder] && [touch view] != self.sBar) {
+//        [self.sBar resignFirstResponder];
+//    }
+//    [super touchesBegan:touches withEvent:event];
+//}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    searchBar.text=@"";
+    [searchBar resignFirstResponder];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [searchBar resignFirstResponder];
+}
+
+#pragma mark - Pull to Refresh stuff
+
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
+    //[self performSelectorInBackground:@selector(loadOrders) withObject:nil];
+    [self Return];
+}
+
+//-(void)refreshTableWithPull {
+//    self.sideTable.contentOffset = CGPointMake(0, -65 - self.sBar.frame.size.height);
+//    [pull setState:PullToRefreshViewStateLoading];
+//    //[self performSelectorInBackground:@selector(reloadTableData) withObject:nil];
+//    [self Return];
+//}
 @end

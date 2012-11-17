@@ -579,7 +579,8 @@
     
     [signout setCompletionBlock:^{
         //DLog(@"Signout:%@",[signout responseString]);
-        [self dismissViewControllerAnimated:YES completion:nil];
+        isInitialized = NO;
+        [self Cancel];
     }];
     
     [signout setFailedBlock:^{
@@ -601,11 +602,7 @@
         
         [alertView show];
     } else {
-        [self dismissViewControllerAnimated:NO completion:^{
-            if (self.delegate) {
-                [self.delegate Return];
-            }
-        }];
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 
@@ -767,11 +764,12 @@
             DLog(@"tap");
             dispatch_async(dispatch_get_main_queue(), ^{
                 DLog(@"tap2");
-                if (self.delegate != nil) {
-                    [self.delegate Return];
-                    //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
-                }
-                [self dismissViewControllerAnimated:NO completion:nil];
+                [self Return];
+//                if (self.delegate != nil) {
+//                    [self.delegate Return];
+//                    //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
+//                }
+//                [self dismissViewControllerAnimated:NO completion:nil];
             });
         });
     }];
@@ -787,16 +785,16 @@
     
     [request startAsynchronous];
     
-        
+    
 //    [self dismissModalViewControllerAnimated:YES];
 }
 
 -(void) Return{
-    if (self.delegate) {
-        [self.delegate Return];
-    }
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:^{
+        if (self.delegate) {
+            [self.delegate Return];
+        }
+    }];
 }
 
 - (IBAction)finishOrder:(id)sender {
@@ -1119,7 +1117,8 @@
     
     [request setFailedBlock:^{
         self.customerDB = nil;
-        [self dismissViewControllerAnimated:YES completion:nil];
+        isInitialized = NO;
+        [self Cancel];
         //DLog(@"error:%@", [request error]);
     }];
     

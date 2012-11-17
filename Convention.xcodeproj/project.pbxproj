@@ -761,7 +761,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6E118582145F2F2200568ED1 /* Build configuration list for PBXNativeTarget "Convention" */;
 			buildPhases = (
-				C721C9F316548DF8003F42A6 /* ShellScript */,
 				6E11855D145F2F2200568ED1 /* Sources */,
 				6E11855E145F2F2200568ED1 /* Frameworks */,
 				6E11855F145F2F2200568ED1 /* Resources */,
@@ -865,22 +864,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		C721C9F316548DF8003F42A6 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "${PROJECT_DIR}/tools/bump_build_number.sh \"${PROJECT_DIR}/${INFOPLIST_FILE}\"";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		6E11855D145F2F2200568ED1 /* Sources */ = {

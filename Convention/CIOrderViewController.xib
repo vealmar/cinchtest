@@ -423,6 +423,7 @@
 								<string key="NSFrame">{{535, 641}, {117, 34}}</string>
 								<reference key="NSSuperview" ref="596173366"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:345</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -654,6 +655,7 @@
 								<string key="NSFrameSize">{340, 44}</string>
 								<reference key="NSSuperview" ref="127781660"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="54173236"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<int key="IBUIContentMode">3</int>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -666,7 +668,7 @@
 						<string key="NSFrame">{{0, 53}, {340, 644}}</string>
 						<reference key="NSSuperview" ref="362130751"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="54173236"/>
+						<reference key="NSNextKeyView" ref="828994351"/>
 						<string key="NSReuseIdentifierKey">_NS:408</string>
 						<reference key="IBUIBackgroundColor" ref="514552854"/>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -696,7 +698,7 @@
 						<int key="IBUISeparatorStyle">1</int>
 						<int key="IBUISectionIndexMinimumDisplayRowCount">0</int>
 						<bool key="IBUIShowsSelectionImmediatelyOnTouchBegin">YES</bool>
-						<float key="IBUIRowHeight">44</float>
+						<float key="IBUIRowHeight">750</float>
 						<float key="IBUISectionHeaderHeight">22</float>
 						<float key="IBUISectionFooterHeight">22</float>
 						<reference key="IBUITableHeaderView" ref="828994351"/>
@@ -770,6 +772,7 @@
 						<string key="NSFrame">{{361, 8}, {94, 37}}</string>
 						<reference key="NSSuperview" ref="362130751"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="284090758"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -795,6 +798,7 @@
 						<string key="NSFrame">{{510, 0}, {77, 51}}</string>
 						<reference key="NSSuperview" ref="362130751"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="127781660"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<int key="IBUIContentMode">1</int>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>

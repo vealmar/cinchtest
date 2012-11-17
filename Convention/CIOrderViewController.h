@@ -10,12 +10,13 @@
 #import "CIItemEditCell.h"
 #import "CIProductViewController.h"
 #import "CIStoreQtyTableViewController.h"
+#import "PullToRefreshView.h"
 
-
-@interface CIOrderViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,CIItemEditDelegate,CIProductViewDelegate, UITextFieldDelegate, UISearchBarDelegate, UITextViewDelegate,CIStoreQtyTableDelegate, CIStoreQtyDelegate,UIAlertViewDelegate, ReachabilityDelegate>{
+@interface CIOrderViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate,
+    UISearchBarDelegate, UITextViewDelegate, UIAlertViewDelegate, CIItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
+    CIStoreQtyDelegate, ReachabilityDelegate, PullToRefreshViewDelegate> {
 	
 	ReachabilityDelegation *reachDelegation;
-    
 }
 @property (nonatomic, strong) IBOutlet UISearchBar *sBar;
 @property (nonatomic, strong) IBOutlet UIImageView *ciLogo;
