@@ -228,11 +228,12 @@
     [request setPostValue:Email forKey:kEmailKey];
     [request setPostValue:Password forKey:kPasswordKey];
 	 
-    [request setNumberOfTimesToRetryOnTimeout:3];
+    [request setNumberOfTimesToRetryOnTimeout:5];
+	[request setTimeOutSeconds:30];
     
     [request setCompletionBlock:^{
         //DLog(@"good:cookies%@, headers:%@, string:%@", [request responseCookies], [request responseHeaders], [request responseString]);
-        dispatch_async(dispatch_get_main_queue(), ^{
+     
             if([[[request responseHeaders] objectForKey:@"Content-Type"] isEqualToString:@"application/json; charset=utf-8"]) //TODO: HEre is the problem
             {
                 DLog(@"Got JSON. Response %@",[request responseStatusMessage]);
@@ -270,7 +271,7 @@
                 //[self logout];
             }
             [loginHud hide:YES]; 
-        });//main_thread
+        
         
     }];//completion block
     
@@ -289,57 +290,8 @@
                 if (request.responseString) {
                     DLog(@"returned:%@",request.responseString);
                     self.error.text = [[request.responseString objectFromJSONString] objectForKey:kError];
-                    //                __block ASIFormDataRequest* mvrequest = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:kDBMasterLOGIN]];
-                    //
-                    //                [mvrequest setPostValue:Email forKey:kEmailMasterKey];
-                    //                [mvrequest setPostValue:Password forKey:kPasswordMasterKey];
-                    //
-                    //                [mvrequest setCompletionBlock:^{
-                    //                    //DLog(@"good:cookies%@, headers:%@, string:%@", [request responseCookies], [request responseHeaders], [request responseString]);
-                    //                    dispatch_async(dispatch_get_main_queue(), ^{
-                    //                        if([[[mvrequest responseHeaders] objectForKey:@"Content-Type"] isEqualToString:@"application/json; charset=utf-8"])
-                    //                        {
-                    //                            //DLog(@"Got JSON. Response %@",[request responseStatusMessage]);
-                    //                            NSDictionary* temp = [[mvrequest responseString] objectFromJSONString];
-                    //                            DLog(@"JSON:%@",temp);
-                    //                            if ([[temp objectForKey:kResponse] isEqualToString:kOK]) {
-                    //                                authToken = [temp objectForKey:kAuthToken];
-                    //                                //[venderInfo addObject:temp];
-                    //                                masterVender = YES;
-                    //
-                    //                                CIOrderViewController *masterViewController = [[CIOrderViewController alloc] initWithNibName:@"CIOrderViewController" bundle:nil];
-                    //                                masterViewController.authToken = authToken;
-                    //                                masterViewController.masterVender = masterVender;
-                    //
-                    //                                //ol.title = [venderInfo objectForKey:kName];
-                    //                                //masterViewController.venderInfo = [venderInfo copy];
-                    //
-                    //
-                    //
-                    //                                [self presentModalViewController:masterViewController animated:YES];
-                    //                                //[self.view addSubview:splitViewController.view];
-                    //                                //[self logout];
-                    //                                self.password.text = @"";
-                    //                            }
-                    //                        }
-                    //                        [loginHud hide:YES];
-                    //                    });
-                    //                }];
-                    //
-                    //                [mvrequest setFailedBlock:^{
-                    //                    DLog(@"error:%@",[mvrequest error]);
-                    //                    dispatch_async(dispatch_get_main_queue(), ^{
-                    //                        if (mvrequest.responseString) {
-                    //                            self.error.text = [[mvrequest.responseString objectFromJSONString] objectForKey:kError];                        }
-                    //                        else {
-                    //                            self.error.text = [[mvrequest error] description];
-                    //                        }
-                    //                        DLog(@"returned:%@",mvrequest.responseString);
                     [loginHud hide:YES]; 
-                    //                    });
-                    //                }];
-                    //                
-                    //                [mvrequest startAsynchronous];
+                     
                 }
                 else {
                     if ([[request error] code]==1||[[request error] code]==2) {
