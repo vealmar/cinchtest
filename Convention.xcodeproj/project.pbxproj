@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		331AF38C165068AE00C74117 /* ReachabilityDelegation.m in Sources */ = {isa = PBXBuildFile; fileRef = 331AF38B165068AE00C74117 /* ReachabilityDelegation.m */; };
-		331AF39016506B9000C74117 /* red_network.png in Resources */ = {isa = PBXBuildFile; fileRef = 331AF38E16506B9000C74117 /* red_network.png */; };
-		331AF39116506B9000C74117 /* green_network.png in Resources */ = {isa = PBXBuildFile; fileRef = 331AF38F16506B9000C74117 /* green_network.png */; };
 		331AF39E165670C400C74117 /* ci_red.png in Resources */ = {isa = PBXBuildFile; fileRef = 331AF39C165670C400C74117 /* ci_red.png */; };
 		331AF39F165670C400C74117 /* ci_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 331AF39D165670C400C74117 /* ci_green.png */; };
 		335A42F3164D7306007B872A /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 335A42F2164D7306007B872A /* CoreData.framework */; };
@@ -128,8 +126,6 @@
 /* Begin PBXFileReference section */
 		331AF38A165068AE00C74117 /* ReachabilityDelegation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReachabilityDelegation.h; sourceTree = "<group>"; };
 		331AF38B165068AE00C74117 /* ReachabilityDelegation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReachabilityDelegation.m; sourceTree = "<group>"; };
-		331AF38E16506B9000C74117 /* red_network.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = red_network.png; sourceTree = "<group>"; };
-		331AF38F16506B9000C74117 /* green_network.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = green_network.png; sourceTree = "<group>"; };
 		331AF39C165670C400C74117 /* ci_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ci_red.png; sourceTree = "<group>"; };
 		331AF39D165670C400C74117 /* ci_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ci_green.png; sourceTree = "<group>"; };
 		335A42F2164D7306007B872A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -411,8 +407,6 @@
 				331AF39C165670C400C74117 /* ci_red.png */,
 				331AF39D165670C400C74117 /* ci_green.png */,
 				C721C9F91654BD93003F42A6 /* tools */,
-				331AF38E16506B9000C74117 /* red_network.png */,
-				331AF38F16506B9000C74117 /* green_network.png */,
 				7498340015DE3E3100F3EB26 /* DDCalendarView */,
 				743944BB15CC1B8A00D0D90E /* printform.png */,
 				743944B815CC1ACD00D0D90E /* printbutton.png */,
@@ -830,8 +824,6 @@
 				74D7E67915F1453C003F6F9E /* shipdatesNEW.png in Resources */,
 				74F79E8715FEFA30004ED26F /* itemcode.png in Resources */,
 				335A4307164D7529007B872A /* Settings.bundle in Resources */,
-				331AF39016506B9000C74117 /* red_network.png in Resources */,
-				331AF39116506B9000C74117 /* green_network.png in Resources */,
 				C721C9F81654BD69003F42A6 /* bump_build_number.sh in Resources */,
 				331AF39E165670C400C74117 /* ci_red.png in Resources */,
 				331AF39F165670C400C74117 /* ci_green.png in Resources */,
