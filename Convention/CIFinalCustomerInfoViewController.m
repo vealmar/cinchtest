@@ -63,10 +63,6 @@
 
 - (IBAction)back:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-    DLog(@"see me?");
-    //    if (self.delegate) {
-    //        [self.delegate Cancel:nil];
-    //    }
 }
 
 -(void)viewDidDisappear:(BOOL)animated {
@@ -81,11 +77,39 @@
     // e.g. self.myOutlet = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void)viewWillAppear:(BOOL)animated
 {
-    // Return YES for supported orientations
-    return YES;
+    //for testing
+    //    self.Authorizer.text = @"testing";
+    
+    if (self.delegate) {
+        NSDictionary* dict = [self.delegate getCustomerInfo];
+        DLog(@"trying to load email:%@",dict);
+        if ([dict objectForKey:kEmail]&&![[dict objectForKey:kEmail] isKindOfClass:[NSNull class]]) {
+            self.email.text = [dict objectForKey:kEmail];
+        }else {
+            self.sendEmail.on = NO;
+        }
+    }else {
+        self.sendEmail.on = NO;
+    }
+    
+    // register for keyboard notifications
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
+//                                                 name:UIKeyboardWillShowNotification object:self.view.window];
 }
+
+//- (void)viewWillDisappear:(BOOL)animated
+//{
+//    // unregister for keyboard notifications while not visible.
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+//}
+
+//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+//{
+//    // Return YES for supported orientations
+//    return YES;
+//}
 
 - (IBAction)submit:(id)sender {
     if (!IS_EMPTY_STRING(self.Authorizer.text)) {
@@ -139,139 +163,125 @@
     }
 }
 
-//method to move the view up/down whenever the keyboard is shown/dismissed
--(void)setViewMovedUp:(BOOL)movedUp
-{
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-    
-    CGRect rect = self.scroll.frame;
-    if (movedUp)
-    {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
-        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += kOFFSET_FOR_KEYBOARD+40;//was -
-        //rect.size.height += kOFFSET_FOR_KEYBOARD;
-    }
-    else
-    {
-        // revert back to the normal state.
-        rect.origin.y =0;//-= (kOFFSET_FOR_KEYBOARD);//was +
-        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
-    }
-    self.scroll.contentOffset = rect.origin;
-    
-    [UIView commitAnimations];
+////method to move the view up/down whenever the keyboard is shown/dismissed
+//-(void)setViewMovedUp:(BOOL)movedUp
+//{
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
+//    
+//    CGRect rect = self.scroll.frame;
+//    if (movedUp)
+//    {
+//        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
+//        // 2. increase the size of the view so that the area behind the keyboard is covered up.
+//        rect.origin.y += kOFFSET_FOR_KEYBOARD+40;//was -
+//        //rect.size.height += kOFFSET_FOR_KEYBOARD;
+//    }
+//    else
+//    {
+//        // revert back to the normal state.
+//        rect.origin.y =0;//-= (kOFFSET_FOR_KEYBOARD);//was +
+//        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
+//    }
+//    self.scroll.contentOffset = rect.origin;
+//    
+//    [UIView commitAnimations];
+//}
+
+//-(void)setViewMovedUpDouble:(BOOL)movedUp
+//{
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
+//    
+//    CGRect rect = self.scroll.frame;
+//    if (movedUp)
+//    {
+//        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
+//        // 2. increase the size of the view so that the area behind the keyboard is covered up.
+//        rect.origin.y += (kOFFSET_FOR_KEYBOARD+40)*2;//was -
+//        //rect.size.height += kOFFSET_FOR_KEYBOARD;
+//    }
+//    else
+//    {
+//        // revert back to the normal state.
+//        rect.origin.y = 0;//-= (kOFFSET_FOR_KEYBOARD-7);//was +
+//        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
+//    }
+//    self.scroll.contentOffset = rect.origin;
+//    
+//    [UIView commitAnimations];
+//}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+    return YES;
 }
 
--(void)setViewMovedUpDouble:(BOOL)movedUp
-{
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-    
-    CGRect rect = self.scroll.frame;
-    if (movedUp)
-    {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
-        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += (kOFFSET_FOR_KEYBOARD+40)*2;//was -
-        //rect.size.height += kOFFSET_FOR_KEYBOARD;
-    }
-    else
-    {
-        // revert back to the normal state.
-        rect.origin.y = 0;//-= (kOFFSET_FOR_KEYBOARD-7);//was +
-        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
-    }
-    self.scroll.contentOffset = rect.origin;
-    
-    [UIView commitAnimations];
+-(BOOL)textViewShouldEndEditing:(UITextView *)textView {
+//    [textView resignFirstResponder];
+    return YES;
 }
 
--(void)textViewDidBeginEditing:(UITextView *)sender
-{
-    if ([sender isEqual:self.Notes])
-    {
-        //move the main view, so that the keyboard does not hide it.
-        if  (self.view.frame.origin.y >= 0)
-        {
-            [self setViewMovedUp:YES];
-        }
-    }
-    if([sender isEqual:self.shippingNotes])
-    {
-        //move the main view, so that the keyboard does not hide it.
-        if  (self.view.frame.origin.y >= 0)
-        {
-            [self setViewMovedUpDouble:YES];
-        }
-    }
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+    if ([textField isFirstResponder])
+        [textField resignFirstResponder];
 }
 
--(void)textViewDidEndEditing:(UITextView *)sender
-{
-    if ([sender isEqual:self.Notes])
-    {
-        //move the main view, so that the keyboard does not hide it.
-        if  (self.view.frame.origin.y >= 0)
-        {
-            [self setViewMovedUp:NO];
-        }
-    }
-    if([sender isEqual:self.shippingNotes])
-    {
-        //move the main view, so that the keyboard does not hide it.
-        if  (self.view.frame.origin.y >= 0)
-        {
-            [self setViewMovedUpDouble:NO];
-        }
-    }
-}
+//-(void)textViewDidBeginEditing:(UITextView *)sender
+//{
+//    if ([sender isEqual:self.Notes])
+//    {
+//        //move the main view, so that the keyboard does not hide it.
+//        if  (self.view.frame.origin.y >= 0)
+//        {
+//            [self setViewMovedUp:YES];
+//        }
+//    }
+//    if([sender isEqual:self.shippingNotes])
+//    {
+//        //move the main view, so that the keyboard does not hide it.
+//        if  (self.view.frame.origin.y >= 0)
+//        {
+//            [self setViewMovedUpDouble:YES];
+//        }
+//    }
+//}
 
-- (void)keyboardWillShow:(NSNotification *)notif
-{
-    //keyboard will be shown now. depending for which textfield is active, move up or move down the view appropriately
-    
-    if ([self.Notes isFirstResponder] && self.view.frame.origin.y >= 0)
-    {
-        [self setViewMovedUp:YES];
-    }
-    else if([self.shippingNotes isFirstResponder]&&self.view.frame.origin.y >=0)
-    {
-        [self setViewMovedUpDouble:YES];
-    }
-    else if (![self.shippingNotes isFirstResponder]&&![self.Notes isFirstResponder] && self.view.frame.origin.y < 0)
-    {
-        [self setViewMovedUp:NO];
-    }
-}
+//-(void)textViewDidEndEditing:(UITextView *)sender
+//{
+//    if ([sender isEqual:self.Notes])
+//    {
+//        //move the main view, so that the keyboard does not hide it.
+//        if  (self.view.frame.origin.y >= 0)
+//        {
+//            [self setViewMovedUp:NO];
+//        }
+//    }
+//    if([sender isEqual:self.shippingNotes])
+//    {
+//        //move the main view, so that the keyboard does not hide it.
+//        if  (self.view.frame.origin.y >= 0)
+//        {
+//            [self setViewMovedUpDouble:NO];
+//        }
+//    }
+//}
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    //for testing
-    //    self.Authorizer.text = @"testing";
-    
-    if (self.delegate) {
-        NSDictionary* dict = [self.delegate getCustomerInfo];
-        DLog(@"trying to load email:%@",dict);
-        if ([dict objectForKey:kEmail]&&![[dict objectForKey:kEmail] isKindOfClass:[NSNull class]]) {
-            self.email.text = [dict objectForKey:kEmail];
-        }else {
-            self.sendEmail.on = NO;
-        }
-    }else {
-        self.sendEmail.on = NO;
-    }
-    
-    // register for keyboard notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification object:self.view.window];
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    // unregister for keyboard notifications while not visible.
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-}
+//- (void)keyboardWillShow:(NSNotification *)notif
+//{
+//    //keyboard will be shown now. depending for which textfield is active, move up or move down the view appropriately
+//    
+//    if ([self.Notes isFirstResponder] && self.view.frame.origin.y >= 0)
+//    {
+//        [self setViewMovedUp:YES];
+//    }
+//    else if([self.shippingNotes isFirstResponder]&&self.view.frame.origin.y >=0)
+//    {
+//        [self setViewMovedUpDouble:YES];
+//    }
+//    else if (![self.shippingNotes isFirstResponder]&&![self.Notes isFirstResponder] && self.view.frame.origin.y < 0)
+//    {
+//        [self setViewMovedUp:NO];
+//    }
+//}
 
 @end

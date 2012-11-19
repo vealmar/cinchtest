@@ -7,10 +7,12 @@
 //
 
 #import "CIProductCell.h"
+#import "StringManipulation.h"
 
 @interface CIProductCell (){
     NSString* oldPrice;
     NSString* oldVoucher;
+    NSString* originalCellValue;
 }
 
 @end
@@ -159,21 +161,30 @@
     
 }
 
--(void)textFieldDidEndEditing:(UITextField *)textField{
-    DLog(@"textFieldDidEndEditing");
-    if (self.delegate) {
-//        DLog(@"end frame:%@",NSStringFromCGRect(self.frame));
-        [self.delegate textEditEndWithFrame:self.frame];
-    }
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
 }
 
--(void)textFieldDidBeginEditing:(UITextField *)textField{
-    DLog(@"textFieldDidBeginEditing");
-    if (self.delegate) {
-//        DLog(@"begin frame:%@",NSStringFromCGRect(self.frame));
-        [self.delegate textEditBeginWithFrame:self.frame];
+-(BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    originalCellValue = [NSString stringWithString:textField.text];
+    UITableView * tableView = (UITableView *)self.superview;
+    NSIndexPath *indexPath = [tableView indexPathForCell:self];
+    [tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    return YES;
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField{
+//    DLog(@"textFieldDidEndEditing");
+//    if (self.delegate) {
+////        DLog(@"end frame:%@",NSStringFromCGRect(self.frame));
+//        [self.delegate textEditEndWithFrame:self.frame];
+//    }
+    if ([textField.text isEmpty]) {
+        textField.text = originalCellValue;
     }
-    //[textField resignFirstResponder];
+    if ([textField isFirstResponder])
+        [textField resignFirstResponder];
 }
 
 @end

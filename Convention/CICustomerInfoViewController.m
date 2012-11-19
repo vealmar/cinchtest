@@ -8,14 +8,16 @@
 
 #import "CICustomerInfoViewController.h"
 #import <QuartzCore/QuartzCore.h>
-#import "ASIHTTPRequest.h"
 #import "JSONKit.h"
 #import "MBProgressHUD.h"
 #import "Macros.h"
 #import "config.h"
 #import "SettingsManager.h"
+#import "CustomerDataController.h"
 
-@implementation CICustomerInfoViewController
+@implementation CICustomerInfoViewController {
+    MBProgressHUD* refreshing;
+}
 @synthesize tablelayer;
 @synthesize customerID;
 @synthesize custTable;
@@ -82,10 +84,7 @@
     DLog(@"Load customer data");
 
     NSMutableArray* arr = [NSMutableArray array];
-    //NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:@"New Customer",kCustID,@"New Customer",kBillName,@"0",kID, nil];
-    //[arr addObject:dict];
     for (int i=0; i<[customerData count]; i++) {
-        //DLog(@"Loading bn:%@,cusID:%@,id:%@",[[customerData objectAtIndex:i] objectForKey:kBillName],[[customerData objectAtIndex:i] objectForKey:kCustID],[[customerData objectAtIndex:i] objectForKey:kID]);
         if (i==0) {
             DLog(@"search before:%@",self.search.text);
             self.search.text = [[customerData objectAtIndex:0] objectForKey:kCustID];
@@ -103,6 +102,11 @@
     
     if ([self.tableData count] > 0)
         [self.custTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
+    
+    if (refreshing) {
+        [refreshing hide:YES];
+        refreshing = nil;
+    }
 }
 
 - (IBAction)back:(id)sender {
@@ -114,68 +118,10 @@
 }
 
 - (IBAction)refresh:(id)sender {
-    __block NSFileManager* fm = [[NSFileManager alloc] init];
-    __block NSError* err = nil;
-    
-    __block MBProgressHUD* refreshing = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    refreshing = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     refreshing.labelText = @"Refreshing";
     [refreshing show:YES];
-    
-    NSURL* docs = [fm URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:YES error:&err];
-    
-    if(err){
-        DLog(@"error getting directory in customer refresh:%@",err);
-    }
-    
-    err = nil;
-    
-    __block NSString* path = [docs URLByAppendingPathComponent:kCustomerFile].path; 
-    
-    NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
-    DLog(@"Sending %@",url);
-    ASIHTTPRequest* __weak request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    
-    [request setCompletionBlock:^{
-        NSArray* customerData = [[request responseString] objectFromJSONString];
-        
-        if ([fm fileExistsAtPath:path]) {
-            [fm removeItemAtURL:[NSURL URLWithString:path] error:&err];
-            if (err) {
-                DLog(@"Error deleting existing file in Custom Refresh:%@",err);
-            }
-        }
-        
-        [customerData writeToFile:path atomically:YES];
-        
-        NSMutableArray* arr = [NSMutableArray array];
-        //NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:@"New Customer",kCustID,@"New Customer",kBillName,@"0",kID, nil];
-        //[arr addObject:dict];
-        for (int i=0; i<[customerData count]; i++) {
-            //DLog(@"Loading bn:%@,cusID:%@,id:%@",[[customerData objectAtIndex:i] objectForKey:kBillName],[[customerData objectAtIndex:i] objectForKey:kCustID],[[customerData objectAtIndex:i] objectForKey:kID]);
-            if (i==0) {
-                DLog(@"search before:%@",self.search.text);
-                self.search.text = [[customerData objectAtIndex:0] objectForKey:kCustID];
-                DLog(@"search after:%@, %@",self.search.text,[[customerData objectAtIndex:0] objectForKey:kCustID]);
-            }
-            NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:[[customerData objectAtIndex:i] objectForKey:kCustID],kCustID,[[customerData objectAtIndex:i] objectForKey:kBillName],kBillName,[[customerData objectAtIndex:i] objectForKey:kID],kID,[[customerData objectAtIndex:i] objectForKey:kEmail],kEmail,[[customerData objectAtIndex:i] objectForKey:kStores],kStores, nil];
-            [arr addObject:dict];
-        }
-        if (self.tableData) {
-            self.tableData = nil;
-        }
-        self.tableData = [arr copy];
-        self.filteredtableData = [arr mutableCopy];
-        [self.custTable reloadData];
-        [refreshing hide:YES];
-    }];
-    
-    [request setFailedBlock:^{
-        //DLog(@"error:%@", [request error]);
-        [[[UIAlertView alloc] initWithTitle:@"Oops" message:[NSString stringWithFormat:@"Couldn't refresh customer list do to following error:%@", [request error]] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-        [refreshing hide:NO];
-    }];
-    
-    [request startAsynchronous];
+    [CustomerDataController loadCustomers:self.authToken];
 }
 
 - (void)viewDidUnload

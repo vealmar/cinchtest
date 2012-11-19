@@ -15,8 +15,8 @@
 -(void)PriceChange:(double)price forIndex:(int)idx;
 -(void)QtyChange:(double)qty forIndex:(int)idx;
 -(void)AddToCartForIndex:(int)idx;
--(void)textEditBeginWithFrame:(CGRect)frame;
--(void)textEditEndWithFrame:(CGRect)frame;
+//-(void)textEditBeginWithFrame:(CGRect)frame;
+//-(void)textEditEndWithFrame:(CGRect)frame;
 -(void)QtyTouchForIndex:(int)idx;
 
 @end

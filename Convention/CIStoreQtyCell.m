@@ -7,8 +7,11 @@
 //
 
 #import "CIStoreQtyCell.h"
+#import "StringManipulation.h"
 
-@implementation CIStoreQtyCell
+@implementation CIStoreQtyCell {
+    NSString *originalText;
+}
 @synthesize Key;
 @synthesize Qty;
 @synthesize lblQty;
@@ -29,13 +32,37 @@
     // Configure the view for the selected state
 }
 
-//-(void)textFieldDidBeginEditing:(UITextField *)textField{
-//    [self qtyChanged:nil];
-//}
-//
-//-(void)textFieldDidEndEditing:(UITextField *)textField{
-//    [self qtyChanged:nil];
-//}
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+//    if (self.delegate)
+//        [self.delegate selectNextRow:self.tag];
+    return YES;
+}
+
+-(BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    originalText = [NSString stringWithString:textField.text];
+    return YES;
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+    
+    // Revert the text to original value
+    // if nothing is in the field.
+    if ([textField.text isEmpty])
+        textField.text = [NSString stringWithString:originalText];
+    
+    UITableView *tableView = (UITableView *)self.superview;
+    int nextRow = self.tag + 1;
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:nextRow inSection:0];
+    CIStoreQtyCell *nextCell = (CIStoreQtyCell *)[tableView cellForRowAtIndexPath:indexPath];
+    if (nextCell)
+        [nextCell.Qty becomeFirstResponder];
+//    if (cellPath.row + 1 > [tableView numberOfRowsInSection:0]) {
+//        NSIndexPath *nextCellPath = [NSIndexPath indexPathForRow:cellPath.row + 1 inSection:cellPath.section];
+//        CIStoreQtyCell *nextCell = (CIStoreQtyCell *)[tableView cellForRowAtIndexPath:nextCellPath];
+//        [nextCell.Qty becomeFirstResponder];
+//    }
+}
 
 - (IBAction)qtyChanged:(id)sender {
     if (self.delegate) {

@@ -23,6 +23,6 @@
 
 - (IBAction)login:(id)sender;
 - (IBAction)dismissKB:(id)sender;
--(void)logout;
+//-(void)logout;
 
 @end

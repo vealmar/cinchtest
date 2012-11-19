@@ -14,7 +14,7 @@
 
 @interface CIOrderViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate,
     UISearchBarDelegate, UITextViewDelegate, UIAlertViewDelegate, CIItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
-    CIStoreQtyDelegate, ReachabilityDelegate, PullToRefreshViewDelegate> {
+    CIStoreQtyDelegate, PullToRefreshViewDelegate, ReachabilityDelegate> {
 	
 	ReachabilityDelegation *reachDelegation;
 }

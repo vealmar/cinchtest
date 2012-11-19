@@ -16,7 +16,7 @@
 
 @end
 
-@interface CIFinalCustomerInfoViewController : UIViewController
+@interface CIFinalCustomerInfoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate>
 @property (unsafe_unretained, nonatomic) IBOutlet UITextView *shippingNotes;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextView *Notes;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *Authorizer;

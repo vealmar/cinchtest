@@ -7,7 +7,7 @@
 //
 
 #import "CICartViewController.h"
-#import "ASIHTTPRequest.h"
+//#import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "config.h"
 #import "JSONKit.h"
@@ -17,11 +17,13 @@
 #import "MBProgressHUD.h"
 #import "Macros.h"
 #import "SettingsManager.h"
+#import "AFHTTPClient.h"
+#import "AFJSONRequestOperation.h"
 
 @interface CICartViewController (){
     MBProgressHUD* loading;
 }
--(void) getCustomers;
+//-(void) getCustomers;
 
 @end
 
@@ -332,41 +334,61 @@
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     DLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
     
-    __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    [request addRequestHeader:@"Accept" value:@"application/json"];
-    [request addRequestHeader:@"Content-Type" value:@"application/json"];
-    //[request appendPostData:[dataContent dataUsingEncoding:NSUTF8StringEncoding]];
-    [request setRequestMethod:@"POST"];
-    
-    //[request addRequestHeader:@"Content-Type" value:@"application/json; charset=utf-8"];
-    
-    //[request setPostValue:self.authToken forKey:kAuthToken];
-    
-    //[request.postBody appendData:[final JSONData]];
-    [request appendPostData:[[final JSONString] dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    //DLog(@"pure:%@",[request postBody]);
-    
-    [request setCompletionBlock:^{
-        //DLog(@"Order complete:%@",[request responseString]);
-        dispatch_async(dispatch_get_main_queue(), ^{
+    AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:url]];
+    [client setParameterEncoding:AFJSONParameterEncoding];
+    NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:@"" parameters:final];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        
+        [self dismissViewControllerAnimated:YES completion:^{
             if (self.delegate != nil) {
                 [self.delegate Return];
-                //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
                 [self.delegate setBackFromCart:YES];
             }
-            [self dismissViewControllerAnimated:YES completion:nil];
-        });
+
+        }];
+    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        
+        [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",error.localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+
     }];
     
-    [request setFailedBlock:^{
-        //DLog(@"Order Error:%@",[request error]);
-        [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",request.error] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-    }];
+    [operation start];
     
-    DLog(@"request content-type:%@",request.requestHeaders);
-    
-    [request startAsynchronous];
+//    __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+//    [request addRequestHeader:@"Accept" value:@"application/json"];
+//    [request addRequestHeader:@"Content-Type" value:@"application/json"];
+//    //[request appendPostData:[dataContent dataUsingEncoding:NSUTF8StringEncoding]];
+//    [request setRequestMethod:@"POST"];
+//    
+//    //[request addRequestHeader:@"Content-Type" value:@"application/json; charset=utf-8"];
+//    
+//    //[request setPostValue:self.authToken forKey:kAuthToken];
+//    
+//    //[request.postBody appendData:[final JSONData]];
+//    [request appendPostData:[[final JSONString] dataUsingEncoding:NSUTF8StringEncoding]];
+//    
+//    //DLog(@"pure:%@",[request postBody]);
+//    
+//    [request setCompletionBlock:^{
+//        //DLog(@"Order complete:%@",[request responseString]);
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            if (self.delegate != nil) {
+//                [self.delegate Return];
+//                //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
+//                [self.delegate setBackFromCart:YES];
+//            }
+//            [self dismissViewControllerAnimated:YES completion:nil];
+//        });
+//    }];
+//    
+//    [request setFailedBlock:^{
+//        //DLog(@"Order Error:%@",[request error]);
+//        [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",request.error] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+//    }];
+//    
+//    DLog(@"request content-type:%@",request.requestHeaders);
+//    
+//    [request startAsynchronous];
     
     
     //    [self dismissModalViewControllerAnimated:YES];
@@ -401,25 +423,41 @@
     [self dismissViewControllerAnimated:NO completion:nil];
 }
 
--(void) getCustomers{
-    NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
-    DLog(@"Sending %@",url);
-    __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    
-    [request setCompletionBlock:^{
-        self.customerDB = [[request responseString] objectFromJSONString];
-        // DLog(@"Json:%@",self.customerDB);
-        customersReady = YES;
-    }];
-    
-    [request setFailedBlock:^{
-        self.customerDB = nil;
-        [self dismissViewControllerAnimated:YES completion:nil];
-        //DLog(@"error:%@", [request error]);
-    }];
-    
-    [request startAsynchronous];
-}
+//-(void) getCustomers{
+//    NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
+//    DLog(@"Sending %@", url);
+//    
+//    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+//    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+//        
+//        DLog(@"JSON: %@", JSON);
+//        
+////        self.customerDB = [
+//        
+//    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+//        self.customerDB = nil;
+//        [self dismissViewControllerAnimated:YES completion:nil];
+//    }];
+//    
+//    [operation start];
+//    
+////    DLog(@"Sending %@",url);
+////    __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+////    
+////    [request setCompletionBlock:^{
+////        self.customerDB = [[request responseString] objectFromJSONString];
+////        // DLog(@"Json:%@",self.customerDB);
+////        customersReady = YES;
+////    }];
+////    
+////    [request setFailedBlock:^{
+////        self.customerDB = nil;
+////        [self dismissViewControllerAnimated:YES completion:nil];
+////        //DLog(@"error:%@", [request error]);
+////    }];
+////    
+////    [request startAsynchronous];
+//}
 
 -(void)VoucherChange:(double)price forIndex:(int)idx{
     NSString* key = [[self.productData allKeys] objectAtIndex:idx];

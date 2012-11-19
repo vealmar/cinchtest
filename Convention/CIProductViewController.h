@@ -41,7 +41,7 @@
 @property (nonatomic, strong) NSArray* customerDB;
 @property (nonatomic, strong) NSMutableDictionary* productCart;
 @property (nonatomic) BOOL showPrice;
-@property (nonatomic) BOOL customersReady;
+
 @property (nonatomic) BOOL backFromCart;
 @property (nonatomic) BOOL finishOrder;
 @property (nonatomic) BOOL multiStore;

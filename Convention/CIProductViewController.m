@@ -8,7 +8,6 @@
 
 #import "CIProductViewController.h"
 #import "ASIHTTPRequest.h"
-#import "ASIFormDataRequest.h"
 #import "config.h"
 #import "JSONKit.h"
 #import "CIViewController.h"
@@ -26,6 +25,9 @@
 #import "ShipDate.h"
 #import "Order+Extensions.h"
 #import "StringManipulation.h"
+#import "AFJSONRequestOperation.h"
+#import "AFHTTPClient.h"
+#import "CustomerDataController.h"
 
 @interface CIProductViewController (){
     //MBProgressHUD* loading;
@@ -36,6 +38,8 @@
 //    void(^loadCustomers)(void);
     BOOL isInitialized;
     CoreDataUtil* coreDataManager;
+    UITapGestureRecognizer *gestureRecognizer;
+    UITextField *currentTextField;
 }
 -(void) getCustomers;
 @end
@@ -59,7 +63,6 @@
 @synthesize customerDB;
 @synthesize customer;
 @synthesize delegate;
-@synthesize customersReady;
 @synthesize tOffset;
 @synthesize productCart;
 @synthesize backFromCart;
@@ -78,7 +81,6 @@
     if (self) {
         // Custom initialization
         showPrice = YES;
-        customersReady = NO;
         backFromCart = NO;
         tOffset = 0;
         currentVendor = 0;
@@ -87,11 +89,11 @@
         selectedIdx = [NSMutableSet set];
         multiStore = NO;
         isInitialized = NO;
+        currentTextField = nil;
         coreDataManager = [CoreDataUtil sharedManager];
     }
 	
-	reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self
-															   withUrl:kBASEURL];
+	reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
     return self;
 }
 
@@ -106,16 +108,11 @@
 -(void)networkLost {
 	
 	[ciLogo setImage:[UIImage imageNamed:@"ci_red.png"]];
-	
-	
-	 
 }
 
 -(void)networkRestored {
 	
 	[ciLogo setImage:[UIImage imageNamed:@"ci_green.png"]];
-
-	
 }
 
 
@@ -152,6 +149,9 @@
     
 	self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
     [self.vendorTable reloadData];
+    
+//    gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)];
+//    [self.products addGestureRecognizer:gestureRecognizer];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -159,6 +159,7 @@
     // unregister for keyboard notifications while not visible.
     //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
 
+//    [self.products removeGestureRecognizer:gestureRecognizer];
     [self setProducts:nil];
     [self setNavBar:nil];
     [self setIndicator:nil];
@@ -169,6 +170,7 @@
     [self setCustomerLabel:nil];
 	[self setVendorLabel:nil];
     [self setSearchBar:nil];
+    
     [super viewDidDisappear:animated];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
@@ -264,11 +266,12 @@
     [self presentViewController:ci animated:NO completion:nil];
 }
 
-#pragma mark - Table stuff
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    
+#pragma mark - UITableView Datasource
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
+
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
     if (self.resultData&&myTableView==self.products) {
         return [self.resultData count];
@@ -279,10 +282,10 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (!self.resultData&&myTableView==self.products) {
+	if (!self.resultData && myTableView==self.products) {
         return nil;
     }
-    if (!vendorsData&&myTableView==self.vendorTable) {
+    if (!vendorsData && myTableView==self.vendorTable) {
         return nil;
     }
     
@@ -715,78 +718,37 @@
     //    else{
     //        order = [NSDictionary dictionaryWithObjectsAndKeys:[info objectForKey:kCustName],kCustName,[info objectForKey:kStoreName],kStoreName,[info objectForKey:kCity],kCity,arr,kOrderItems, nil];
     //    }
+    
     NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:_order,kOrder, nil];
     
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     DLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
     
-    ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    [request addRequestHeader:@"Accept" value:@"application/json"];
-    [request addRequestHeader:@"Content-Type" value:@"application/json"];
-    //[request appendPostData:[dataContent dataUsingEncoding:NSUTF8StringEncoding]];
-    [request setRequestMethod:@"POST"];
-    [request setNumberOfTimesToRetryOnTimeout:3];
+    AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
+    [client setParameterEncoding:AFJSONParameterEncoding];
+    NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:nil parameters:final];
+
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+        success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+            
+            [submit hide:YES];
+            
+            NSString *status = [JSON valueForKey:@"status"];
+            DLog(@"status = %@", status);
+            
+//            self.productCart = [NSMutableDictionary dictionary];
+//            [self.products reloadData];
+            [self Return];
+            
+        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+            
+            [submit hide:YES];
+            NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
+            [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+            
+        }];
     
-    //[request addRequestHeader:@"Content-Type" value:@"application/json; charset=utf-8"];
-    
-    //[request setPostValue:self.authToken forKey:kAuthToken];
-    
-    //[request.postBody appendData:[final JSONData]];
-    [request appendPostData:[[final JSONString] dataUsingEncoding:NSUTF8StringEncoding]];
-    
-    //DLog(@"pure:%@",[request postBody]);
-    
-    ASIHTTPRequest __weak *weakRequest = request;
-    
-    [request setCompletionBlock:^{
-        
-        ASIHTTPRequest* strongRequest = weakRequest;
-        
-        [submit hide:YES];
-        
-        NSString* _response = [strongRequest responseString];
-        DLog(@"response: %@", _response);
-        
-        //DLog(@"Order complete:%@",[request responseString]);
-        if (![[strongRequest responseString] objectFromJSONString]) {
-            [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Something odd happened. Please try submitting your order again from the Cart!"
-                                       delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-            return;
-        }
-        
-        self.productCart = [NSMutableDictionary dictionary];
-        [self.products reloadData];
-        
-        dispatch_queue_t tapQueue;
-        tapQueue = dispatch_queue_create("tapQueue", NULL);
-        dispatch_async(tapQueue, ^{
-            [NSThread sleepForTimeInterval:1];
-            DLog(@"tap");
-            dispatch_async(dispatch_get_main_queue(), ^{
-                DLog(@"tap2");
-                [self Return];
-//                if (self.delegate != nil) {
-//                    [self.delegate Return];
-//                    //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
-//                }
-//                [self dismissViewControllerAnimated:NO completion:nil];
-            });
-        });
-    }];
-    
-    [request setFailedBlock:^{
-        ASIHTTPRequest* strongRequest = weakRequest;
-        [submit hide:YES];
-        // DLog(@"Order Error:%@",[request error]);
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got the following error on submittion:%@",[strongRequest error]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-    }];
-    
-    DLog(@"request content-type:%@",request.requestHeaders);
-    
-    [request startAsynchronous];
-    
-    
-//    [self dismissModalViewControllerAnimated:YES];
+    [operation start];
 }
 
 -(void) Return{
@@ -1078,51 +1040,24 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCustomersLoaded object:nil userInfo:(NSDictionary*)userInfo];
 }
 
--(void) getCustomers{
-
-//    NSURL *docs = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
-//    NSString __block *path = nil;
-//    if (docs)
-//    {
-//        path = [docs URLByAppendingPathComponent:kCustomerFile].path;
-//        if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-//            self.customerDB = [NSArray arrayWithContentsOfFile:path];
-//            customersReady = YES;
-//            [self postNotification];
-//            return;
-//        }
-//    }
-    
-    NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
-    DLog(@"Sending %@",url);
-    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    [request setNumberOfTimesToRetryOnTimeout:3];
-    
-    ASIHTTPRequest* __weak weakRequest = request;
-    [request setCompletionBlock:^{
-        ASIHTTPRequest* strongRequest = weakRequest;
-        self.customerDB = [[strongRequest responseString] objectFromJSONString];
-//        if (path != nil)
-//        {
-////            dispatch_queue_t writeQueue = dispatch_queue_create("writeQueue", NULL);
-////            dispatch_async(writeQueue, ^{
-//                [self.customerDB writeToFile:path atomically:YES];
-////            });
-//            path = nil;
-//        }
-        customersReady = YES;
-        [self postNotification];
-        
-    }];
-    
-    [request setFailedBlock:^{
+-(void)customersLoaded:(NSNotification*)notif {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationCustomersLoaded object:nil];
+    NSArray *customers = nil;
+    if (notif.userInfo) {
+        customers = [notif.userInfo objectForKey:kCustomerNotificationKey];
+    }
+    if (customers && customers.count > 0){
+        self.customerDB = customers;
+    }else {
         self.customerDB = nil;
         isInitialized = NO;
         [self Cancel];
-        //DLog(@"error:%@", [request error]);
-    }];
-    
-    [request startAsynchronous];
+    }
+}
+
+-(void)getCustomers{
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(customersLoaded:) name:kNotificationCustomersLoaded object:nil];
+    [CustomerDataController loadCustomers:self.authToken];
 }
 
 -(void)VoucherChange:(double)price forIndex:(int)idx{
@@ -1424,51 +1359,55 @@
 }
 
 #pragma mark - keyboard functionality 
--(void)setViewMovedUp:(BOOL)movedUp
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-        
-        CGPoint rect = self.products.contentOffset;
-        if (movedUp)
-        {
-            // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
-            // 2. increase the size of the view so that the area behind the keyboard is covered up.
-            tOffset = rect.y;
-            rect.y += (kOFFSET_FOR_KEYBOARD*6);//was -
-            //rect.size.height += kOFFSET_FOR_KEYBOARD;
-        }
-        else
-        {
-            // revert back to the normal state.
-            rect.y = tOffset;//-(kOFFSET_FOR_KEYBOARD-16);//was +
-            //tOffset =0;
-            //rect.size.height -= kOFFSET_FOR_KEYBOARD;
-        }
-        self.products.contentOffset = rect;
-        
-        [UIView commitAnimations];
-    });
-}
+//-(void)setViewMovedUp:(BOOL)movedUp
+//{
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        [UIView beginAnimations:nil context:NULL];
+//        [UIView setAnimationDuration:0.5]; // if you want to slide up the view
+//        
+//        CGPoint rect = self.products.contentOffset;
+//        if (movedUp)
+//        {
+//            // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
+//            // 2. increase the size of the view so that the area behind the keyboard is covered up.
+//            tOffset = rect.y;
+//            rect.y += (kOFFSET_FOR_KEYBOARD*6);//was -
+//            //rect.size.height += kOFFSET_FOR_KEYBOARD;
+//        }
+//        else
+//        {
+//            // revert back to the normal state.
+//            rect.y = tOffset;//-(kOFFSET_FOR_KEYBOARD-16);//was +
+//            //tOffset =0;
+//            //rect.size.height -= kOFFSET_FOR_KEYBOARD;
+//        }
+//        self.products.contentOffset = rect;
+//        
+//        [UIView commitAnimations];
+//    });
+//}
+//
+//-(void)textEditBeginWithFrame:(CGRect)frame{
+//    int offset = frame.origin.y - self.products.contentOffset.y;
+//    DLog(@"cell edit begin, %d", offset);
+//    if (offset>=340) {
+//        [self setViewMovedUp:YES];
+//    }
+//    else{
+//        tOffset = self.products.contentOffset.y;
+//        DLog(@"offset to %d",tOffset);
+//        [self setViewMovedUp:NO];
+//    }
+//}
+//
+//-(void)textEditEndWithFrame:(CGRect)frame{
+//    DLog(@"cell edit end");
+////    [self setViewMovedUp:NO];
+//    [self.products reloadData];
+//}
 
--(void)textEditBeginWithFrame:(CGRect)frame{
-    int offset = frame.origin.y - self.products.contentOffset.y;
-    DLog(@"cell edit begin, %d", offset);
-    if (offset>=340) {
-        [self setViewMovedUp:YES];
-    }
-    else{
-        tOffset = self.products.contentOffset.y;
-        DLog(@"offset to %d",tOffset);
-        [self setViewMovedUp:NO];
-    }
-}
-
--(void)textEditEndWithFrame:(CGRect)frame{
-    DLog(@"cell edit end");
-//    [self setViewMovedUp:NO];
-    [self.products reloadData];
+-(void)dismissKeyboard {
+    
 }
 
 -(NSDictionary*)getCustomerInfo{

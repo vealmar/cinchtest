@@ -11,9 +11,9 @@
 
 @protocol CIStoreQtyDelegate <NSObject>
 @required
--(void)QtyChange:(double)qty forIndex:(int)idx;
+-(void)QtyChange:(double)qty forIndex:(int)index;
+//-(void)selectNextRow:(int)fromIndex;
 @end
-
 
 @interface CIStoreQtyCell : UITableViewCell<UITextFieldDelegate>
 
