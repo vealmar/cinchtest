@@ -105,6 +105,7 @@
 #define kOrderItemPRICE @"price"
 #define kOrderItemVoucher @"voucherPrice"
 #define kOrderItemShipDates @"shipdates"
+#define kOrderStatus @"status"
 
 #define kProductShowPrice @"showprc"
 #define kProductIdx @"idx"
@@ -135,6 +136,7 @@
 #define kReportPrintOrderId @"report_print[order_id]"
 
 #define kOFFSET_FOR_KEYBOARD 60.0
+//#define kOFFSET_FOR_KEYBOARD 80.0
 
 #define kFontName @"BEBAS"
 

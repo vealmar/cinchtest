@@ -12,9 +12,9 @@
 
 @implementation CIItemEditCell
 @synthesize desc;
-@synthesize lblQuantity;
+//@synthesize lblQuantity;
 @synthesize voucher;
-@synthesize lblPrice;
+//@synthesize lblPrice;
 @synthesize qty;
 @synthesize price;
 @synthesize btnShipdates;
@@ -28,13 +28,13 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
-        self.desc.font = [UIFont fontWithName:kFontName size:14.f];
-        self.lblQuantity.font = [UIFont fontWithName:kFontName size:14.f];
-        self.lblPrice.font = [UIFont fontWithName:kFontName size:14.f];
-        self.total.font = [UIFont fontWithName:kFontName size:14.f];
-        self.qty.font = [UIFont fontWithName:kFontName size:14.f];
-        self.price.font = [UIFont fontWithName:kFontName size:14.f];
-        self.priceLbl.font = [UIFont fontWithName:kFontName size:14.f];
+//        self.desc.font = [UIFont fontWithName:kFontName size:14.f];
+//        self.lblQuantity.font = [UIFont fontWithName:kFontName size:14.f];
+//        self.lblPrice.font = [UIFont fontWithName:kFontName size:14.f];
+//        self.total.font = [UIFont fontWithName:kFontName size:14.f];
+//        self.qty.font = [UIFont fontWithName:kFontName size:14.f];
+//        self.price.font = [UIFont fontWithName:kFontName size:14.f];
+//        self.priceLbl.font = [UIFont fontWithName:kFontName size:14.f];
     }
     return self;
 }
@@ -76,8 +76,8 @@
     if (self.delegate) {
         [self.delegate setVoucher:self.qty.text atIndex:self.tag];
         [self.delegate UpdateTotal];
-        [self.delegate setViewMovedUpDouble:NO];
-        [self.delegate setViewMovedUpDouble:NO];
+//        [self.delegate setViewMovedUpDouble:NO];
+//        [self.delegate setViewMovedUpDouble:NO];
     }
 }
 
@@ -86,8 +86,8 @@
     if (self.delegate) {
         [self.delegate setQuantity:self.qty.text atIndex:self.tag];
         [self.delegate UpdateTotal];
-        [self.delegate setViewMovedUpDouble:NO];
-        [self.delegate setViewMovedUpDouble:NO];
+//        [self.delegate setViewMovedUpDouble:NO];
+//        [self.delegate setViewMovedUpDouble:NO];
     }
 }
 
@@ -97,8 +97,8 @@
     if (self.delegate) {
         [self.delegate setPrice:self.price.text atIndex:self.tag];
         [self.delegate UpdateTotal];
-        [self.delegate setViewMovedUpDouble:NO];
-        [self.delegate setViewMovedUpDouble:NO];
+//        [self.delegate setViewMovedUpDouble:NO];
+//        [self.delegate setViewMovedUpDouble:NO];
     }
 }
 
@@ -114,12 +114,18 @@
     }
 }
 
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+//    if (self.delegate)
+//        [self.delegate setActiveField:nil];
+}
+
 -(void)textFieldDidBeginEditing:(UITextField *)textField
 {
-    if (self.delegate) {
-        [self.delegate setViewMovedUpDouble:YES];
-        [self.delegate setViewMovedUpDouble:YES];
-    }
+    if (self.delegate)
+        [self.delegate setActiveField:textField];
+    
+//    if (self.delegate)
+//        [self.delegate setViewMovedUpDouble:YES];
 }
 
 @end

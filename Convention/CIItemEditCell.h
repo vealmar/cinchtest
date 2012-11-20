@@ -17,21 +17,22 @@
 -(void)setVoucher:(NSString*)voucher atIndex:(int)idx;
 -(void)QtyTouchForIndex:(int)idx;
 -(void)ShipDatesTouchForIndex:(int) idx;
+-(void)setActiveField:(UITextField *)textField;
 
 @end
 
 @interface CIItemEditCell : UITableViewCell <UITextFieldDelegate>
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *desc;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblQuantity;
-@property (unsafe_unretained, nonatomic) IBOutlet UITextField *voucher;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblPrice;
-@property (unsafe_unretained, nonatomic) IBOutlet UITextField *qty;
-@property (unsafe_unretained, nonatomic) IBOutlet UITextField *price;
-@property (unsafe_unretained, nonatomic) IBOutlet UIButton *btnShipdates;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *total;
+@property (weak, nonatomic) IBOutlet UILabel *desc;
+@property (weak, nonatomic) IBOutlet UIButton *btnShipdates;
+@property (weak, nonatomic) IBOutlet UITextField *voucher;
+@property (weak, nonatomic) IBOutlet UITextField *qty;
+@property (weak, nonatomic) IBOutlet UIButton *qtyBtn;
+@property (weak, nonatomic) IBOutlet UITextField *price;
+@property (weak, nonatomic) IBOutlet UILabel *priceLbl;
+@property (weak, nonatomic) IBOutlet UILabel *total;
+
 @property (nonatomic, assign) id<CIItemEditDelegate> delegate;
-@property (unsafe_unretained, nonatomic) IBOutlet UIButton *qtyBtn;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *priceLbl;
+
 - (IBAction)voucherEdit:(id)sender;
 - (IBAction)qtyEdit:(id)sender;
 - (IBAction)priceEdit:(id)sender;

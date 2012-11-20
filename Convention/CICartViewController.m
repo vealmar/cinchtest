@@ -8,7 +8,7 @@
 
 #import "CICartViewController.h"
 //#import "ASIHTTPRequest.h"
-#import "ASIFormDataRequest.h"
+//#import "ASIFormDataRequest.h"
 #import "config.h"
 #import "JSONKit.h"
 #import "CIViewController.h"
@@ -17,8 +17,8 @@
 #import "MBProgressHUD.h"
 #import "Macros.h"
 #import "SettingsManager.h"
-#import "AFHTTPClient.h"
-#import "AFJSONRequestOperation.h"
+//#import "AFHTTPClient.h"
+//#import "AFJSONRequestOperation.h"
 
 @interface CICartViewController (){
     MBProgressHUD* loading;
@@ -298,101 +298,100 @@
     
 }
 
-
-- (IBAction)submit:(id)sender {
-    NSMutableArray* arr = [[NSMutableArray alloc] initWithCapacity:[self.products numberOfRowsInSection:0]];
-    
-    //    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
-    //    [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
-    NSArray* keys = self.productCart.allKeys;
-    for (NSString* i in keys) {
-        NSString* productID = [[self.productData objectForKey:i] objectForKey:@"id"];
-        NSMutableDictionary* dict = [self.productCart objectForKey:i];
-        NSInteger num = [[dict objectForKey:kEditableQty] integerValue];
-        DLog(@"q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
-        if (num>0) {
-            NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[NSString stringWithFormat:@"%d",num],kOrderItemNum,[dict objectForKey:kEditablePrice],kOrderItemPRICE,[dict objectForKey:kEditableVoucher],kOrderItemVoucher, nil];
-            [arr addObject:(id)proDict];
-        }
-    }
-    
-    [arr removeObjectIdenticalTo:nil];
-    
-    DLog(@"array:%@",arr);
-    NSDictionary* order;
-    //if ([info objectForKey:kOrderCustID]) {
-    if (!self.customer) {
-        return;
-    }
-    order = [NSDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:kOrderCustID],kOrderCustID,[self.customer objectForKey:kShipNotes],kShipNotes,[self.customer objectForKey:kNotes],kNotes,[self.customer objectForKey:kAuthorizedBy],kAuthorizedBy,[self.customer objectForKey:kEmail],kEmail,[self.customer objectForKey:kSendEmail],kSendEmail, arr,kOrderItems, nil];
-    //    }
-    //    else{
-    //        order = [NSDictionary dictionaryWithObjectsAndKeys:[info objectForKey:kCustName],kCustName,[info objectForKey:kStoreName],kStoreName,[info objectForKey:kCity],kCity,arr,kOrderItems, nil];
-    //    }
-    NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:order,kOrder, nil];
-    
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
-    DLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
-    
-    AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:url]];
-    [client setParameterEncoding:AFJSONParameterEncoding];
-    NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:@"" parameters:final];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-        
-        [self dismissViewControllerAnimated:YES completion:^{
-            if (self.delegate != nil) {
-                [self.delegate Return];
-                [self.delegate setBackFromCart:YES];
-            }
-
-        }];
-    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-        
-        [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",error.localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-
-    }];
-    
-    [operation start];
-    
-//    __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-//    [request addRequestHeader:@"Accept" value:@"application/json"];
-//    [request addRequestHeader:@"Content-Type" value:@"application/json"];
-//    //[request appendPostData:[dataContent dataUsingEncoding:NSUTF8StringEncoding]];
-//    [request setRequestMethod:@"POST"];
+//- (IBAction)submit:(id)sender {
+//    NSMutableArray* arr = [[NSMutableArray alloc] initWithCapacity:[self.products numberOfRowsInSection:0]];
 //    
-//    //[request addRequestHeader:@"Content-Type" value:@"application/json; charset=utf-8"];
+//    //    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+//    //    [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
+//    NSArray* keys = self.productCart.allKeys;
+//    for (NSString* i in keys) {
+//        NSString* productID = [[self.productData objectForKey:i] objectForKey:@"id"];
+//        NSMutableDictionary* dict = [self.productCart objectForKey:i];
+//        NSInteger num = [[dict objectForKey:kEditableQty] integerValue];
+//        DLog(@"q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
+//        if (num>0) {
+//            NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[NSString stringWithFormat:@"%d",num],kOrderItemNum,[dict objectForKey:kEditablePrice],kOrderItemPRICE,[dict objectForKey:kEditableVoucher],kOrderItemVoucher, nil];
+//            [arr addObject:(id)proDict];
+//        }
+//    }
 //    
-//    //[request setPostValue:self.authToken forKey:kAuthToken];
+//    [arr removeObjectIdenticalTo:nil];
 //    
-//    //[request.postBody appendData:[final JSONData]];
-//    [request appendPostData:[[final JSONString] dataUsingEncoding:NSUTF8StringEncoding]];
+//    DLog(@"array:%@",arr);
+//    NSDictionary* order;
+//    //if ([info objectForKey:kOrderCustID]) {
+//    if (!self.customer) {
+//        return;
+//    }
+//    order = [NSDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:kOrderCustID],kOrderCustID,[self.customer objectForKey:kShipNotes],kShipNotes,[self.customer objectForKey:kNotes],kNotes,[self.customer objectForKey:kAuthorizedBy],kAuthorizedBy,[self.customer objectForKey:kEmail],kEmail,[self.customer objectForKey:kSendEmail],kSendEmail, arr,kOrderItems, nil];
+//    //    }
+//    //    else{
+//    //        order = [NSDictionary dictionaryWithObjectsAndKeys:[info objectForKey:kCustName],kCustName,[info objectForKey:kStoreName],kStoreName,[info objectForKey:kCity],kCity,arr,kOrderItems, nil];
+//    //    }
+//    NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:order,kOrder, nil];
 //    
-//    //DLog(@"pure:%@",[request postBody]);
+//    NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
+//    DLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
 //    
-//    [request setCompletionBlock:^{
-//        //DLog(@"Order complete:%@",[request responseString]);
-//        dispatch_async(dispatch_get_main_queue(), ^{
+//    AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:url]];
+//    [client setParameterEncoding:AFJSONParameterEncoding];
+//    NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:@"" parameters:final];
+//    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+//        
+//        [self dismissViewControllerAnimated:YES completion:^{
 //            if (self.delegate != nil) {
 //                [self.delegate Return];
-//                //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
 //                [self.delegate setBackFromCart:YES];
 //            }
-//            [self dismissViewControllerAnimated:YES completion:nil];
-//        });
+//
+//        }];
+//    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+//        
+//        [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",error.localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+//
 //    }];
 //    
-//    [request setFailedBlock:^{
-//        //DLog(@"Order Error:%@",[request error]);
-//        [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",request.error] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-//    }];
+//    [operation start];
 //    
-//    DLog(@"request content-type:%@",request.requestHeaders);
+////    __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
+////    [request addRequestHeader:@"Accept" value:@"application/json"];
+////    [request addRequestHeader:@"Content-Type" value:@"application/json"];
+////    //[request appendPostData:[dataContent dataUsingEncoding:NSUTF8StringEncoding]];
+////    [request setRequestMethod:@"POST"];
+////    
+////    //[request addRequestHeader:@"Content-Type" value:@"application/json; charset=utf-8"];
+////    
+////    //[request setPostValue:self.authToken forKey:kAuthToken];
+////    
+////    //[request.postBody appendData:[final JSONData]];
+////    [request appendPostData:[[final JSONString] dataUsingEncoding:NSUTF8StringEncoding]];
+////    
+////    //DLog(@"pure:%@",[request postBody]);
+////    
+////    [request setCompletionBlock:^{
+////        //DLog(@"Order complete:%@",[request responseString]);
+////        dispatch_async(dispatch_get_main_queue(), ^{
+////            if (self.delegate != nil) {
+////                [self.delegate Return];
+////                //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
+////                [self.delegate setBackFromCart:YES];
+////            }
+////            [self dismissViewControllerAnimated:YES completion:nil];
+////        });
+////    }];
+////    
+////    [request setFailedBlock:^{
+////        //DLog(@"Order Error:%@",[request error]);
+////        [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",request.error] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+////    }];
+////    
+////    DLog(@"request content-type:%@",request.requestHeaders);
+////    
+////    [request startAsynchronous];
 //    
-//    [request startAsynchronous];
-    
-    
-    //    [self dismissModalViewControllerAnimated:YES];
-}
+//    
+//    //    [self dismissModalViewControllerAnimated:YES];
+//}
 
 - (IBAction)finishOrder:(id)sender {
     if ([[self.productCart allKeys] count] <= 0) {
@@ -471,6 +470,7 @@
     NSMutableDictionary* dict = [self.productCart objectForKey:key];
     [dict setObject:[NSNumber numberWithDouble:price] forKey:kEditablePrice];
 }
+
 -(void)QtyChange:(double)qty forIndex:(int)idx{
     NSString* key = [[self.productData allKeys] objectAtIndex:idx];
     NSMutableDictionary* dict = [self.productCart objectForKey:key];

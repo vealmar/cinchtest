@@ -14,8 +14,8 @@
 
 @interface CIOrderViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate,
     UISearchBarDelegate, UITextViewDelegate, UIAlertViewDelegate, CIItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
-    CIStoreQtyDelegate, PullToRefreshViewDelegate, ReachabilityDelegate> {
-	
+    CIStoreQtyDelegate, PullToRefreshViewDelegate, ReachabilityDelegate>
+{
 	ReachabilityDelegation *reachDelegation;
 }
 @property (nonatomic, strong) IBOutlet UISearchBar *sBar;

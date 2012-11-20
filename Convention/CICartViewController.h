@@ -53,7 +53,7 @@
 - (IBAction)Cancel:(id)sender;
 
  
-- (IBAction)submit:(id)sender;
+//- (IBAction)submit:(id)sender;
 - (IBAction)finishOrder:(id)sender;
 
 

@@ -9,11 +9,13 @@
 #import <UIKit/UIKit.h>
 
 @interface CIOrderCell : UITableViewCell
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *Customer;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *auth;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *numItems;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *total;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *vouchers;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblSC;
+
+@property (weak, nonatomic) IBOutlet UILabel *Customer;
+@property (weak, nonatomic) IBOutlet UILabel *auth;
+@property (weak, nonatomic) IBOutlet UILabel *numItems;
+@property (weak, nonatomic) IBOutlet UILabel *total;
+@property (weak, nonatomic) IBOutlet UILabel *vouchers;
+@property (weak, nonatomic) IBOutlet UILabel *lblSC;
+@property (weak, nonatomic) IBOutlet UILabel *orderStatus;
 
 @end

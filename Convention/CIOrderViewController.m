@@ -30,6 +30,7 @@
 @interface CIOrderViewController (){
     int currentOrderID;
     BOOL isLoadingOrders;
+    UITextField *activeField;
     PullToRefreshView *pull;
 }
 @end
@@ -160,8 +161,11 @@ bool showHud = true;
 {
     // register for keyboard notifications
 	
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow)
                                                  name:UIKeyboardWillShowNotification object:self.view.window];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
+                                                 name:UIKeyboardDidHideNotification object:self.view.window];
     
     self.sideContainer.layer.cornerRadius = 5.f;
     self.sideContainer.layer.masksToBounds = YES;
@@ -198,6 +202,7 @@ bool showHud = true;
 {
     // unregister for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -394,15 +399,7 @@ bool showHud = true;
         
         if (cell == nil){
             NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIOrderCell" owner:nil options:nil]; 
-            
-            for(id currentObject in topLevelObjects)
-            {
-                if([currentObject isKindOfClass:[CIOrderCell class]])
-                {
-                    cell = (CIOrderCell *)currentObject;
-                    break;
-                }
-            }
+            cell = [topLevelObjects objectAtIndex:0];
         }
         
         NSDictionary* data = [self.orders objectAtIndex:[indexPath row]];
@@ -438,7 +435,16 @@ bool showHud = true;
         else
             cell.tag = [[data objectForKey:kID] intValue];
         
-//        DLog(@"Cell(%@-%@) is set to tag:%d",cell.Customer.text,cell.auth.text,cell.tag);
+        if ([data objectForKey:kOrderStatus] != nil) {
+            cell.orderStatus.text = [data objectForKey:kOrderStatus];
+            if ([[cell.orderStatus.text lowercaseString] isEqualToString:@"pending"])
+                cell.orderStatus.textColor = [UIColor redColor];
+            else
+                cell.orderStatus.textColor = [UIColor blackColor];
+        } else {
+            cell.orderStatus.text = @"Unknown";
+            cell.orderStatus.textColor = [UIColor orangeColor];
+        }
         
         return cell;
     }
@@ -451,25 +457,15 @@ bool showHud = true;
         CIItemEditCell *cell = [self.itemsTable dequeueReusableCellWithIdentifier:cellIdentifier];
         
         if (cell == nil){
-            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIItemEditCell" owner:nil options:nil]; 
-            
-            for(id currentObject in topLevelObjects)
-            {
-                if([currentObject isKindOfClass:[CIItemEditCell class]])
-                {
-                    cell = (CIItemEditCell *)currentObject;
-                    break;
-                }
-            }
+            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIItemEditCell" owner:nil options:nil];
+            cell = [topLevelObjects objectAtIndex:0];
         }
         
         cell.delegate = self;
         
-        //cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [[self.itemsDB objectAtIndex:[indexPath row]] objectForKey:kBillName],[[self.itemsDB objectAtIndex:[indexPath row]] objectForKey:kCustID]];
-        //cell.tag = [[[self.itemsDB objectAtIndex:[indexPath row]] objectForKey:kID] intValue];
-        if ([[self.itemsDB objectForKey:kItemCount] intValue]>[indexPath row]) {
+        if ([[self.itemsDB objectForKey:kItemCount] intValue] > [indexPath row]) {
+
             NSDictionary* data = [[self.itemsDB objectForKey:kItems] objectAtIndex:[indexPath row]];
-            //DLog(@"items: %@",data);
             if ([data objectForKey:@"desc"]) {
                 cell.desc.text = [NSString stringWithFormat:@"%@",[data objectForKey:@"desc"]];
             }
@@ -480,9 +476,7 @@ bool showHud = true;
                 cell.voucher.text = @"0";
             
             BOOL isJSON = NO;
-            
             double q = 0;
-            
             if ([self.itemsQty objectAtIndex:indexPath.row]) {
                 cell.qty.text = [self.itemsQty objectAtIndex:indexPath.row];//[[data objectForKey:@"quantity"] stringValue];
                 DLog(@"setting qty:(%@)%@",[self.itemsQty objectAtIndex:indexPath.row],cell.qty.text);
@@ -497,16 +491,15 @@ bool showHud = true;
             if(!err&&dict&&![dict isKindOfClass:[NSNull class]]&&dict.allKeys.count>0){
                 DLog(@"Cell JSon got:%@", dict);
                 isJSON = YES;
-            }else{
-                //                DLog(@"not JSON err:%@, dict:%@",err,dict);
             }
             
             if (isJSON) {
-                cell.qtyBtn.hidden = NO;
-                
+                [cell.qtyBtn setHidden:NO];
                 for (NSString* key in dict.allKeys) {
                     q += [[dict objectForKey:key] doubleValue];
                 }
+            } else {
+                [cell.qtyBtn setHidden:YES];
             }
             
             int lblsd = 0;
@@ -518,10 +511,9 @@ bool showHud = true;
             
             DLog(@"Shipdate count:%d nd:%d array:%@",((NSArray*)[self.itemsShipDates objectAtIndex:indexPath.row]).count,nd,((NSArray*)[self.itemsShipDates objectAtIndex:indexPath.row]));
             
-            cell.btnShipdates.titleLabel.text = [NSString stringWithFormat:@"SD:%d",lblsd];
+            [cell.btnShipdates setTitle:[NSString stringWithFormat:@"SD:%d",lblsd] forState:UIControlStateNormal];
             
             DLog(@"price:%@", [self.itemsPrice objectAtIndex:indexPath.row]);
-            
             if ([self.itemsPrice objectAtIndex:indexPath.row]&&![[self.itemsPrice objectAtIndex:indexPath.row] isKindOfClass:[NSNull class]]) {
                 NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
                 nf.formatterBehavior = NSNumberFormatterBehavior10_4;
@@ -533,13 +525,13 @@ bool showHud = true;
                 
                 cell.price.text = [nf stringFromNumber:[NSNumber numberWithDouble:price]];
                 cell.priceLbl.text = cell.price.text;
-                cell.price.hidden = YES;
+                [cell.price setHidden:YES];
                 cell.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(price * q * nd)] numberStyle:NSNumberFormatterCurrencyStyle];
             }
             else {
                 cell.price.text = @"0.00";
                 cell.priceLbl.text = cell.price.text;
-                cell.price.hidden = YES;
+                [cell.price setHidden:YES];
                 cell.total.text = @"$0.00";    
             }
             cell.tag = indexPath.row;
@@ -597,7 +589,7 @@ bool showHud = true;
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(tableView==self.sideTable)
-        return 101;
+        return 114; // was 101
     else
         return 44;
 }
@@ -640,6 +632,147 @@ bool showHud = true;
         self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal] numberStyle:NSNumberFormatterCurrencyStyle];
         self.SCtotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];
     }
+}
+
+-(void)setVoucher:(NSString *)voucher atIndex:(int)idx{
+    //DLog(@"%@",self.itemsPrice);
+    [self.itemsVouchers removeObjectAtIndex:idx];
+    [self.itemsVouchers insertObject:voucher atIndex:idx];
+}
+
+-(void)setPrice:(NSString*)prc atIndex:(int)idx{
+    //DLog(@"%@",self.itemsPrice);
+    [self.itemsPrice removeObjectAtIndex:idx];
+    [self.itemsPrice insertObject:prc atIndex:idx];
+}
+
+-(void)setQuantity:(NSString*)qty atIndex:(int)idx{
+    //DLog(@"%@",self.itemsQty);
+    [self.itemsQty removeObjectAtIndex:idx];
+    [self.itemsQty insertObject:qty atIndex:idx];
+}
+
+-(void)QtyTouchForIndex:(int)idx{
+    if ([popoverController isPopoverVisible]) {
+        [popoverController dismissPopoverAnimated:YES];
+    }else{
+        if (!storeQtysPO) {
+            storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
+        }
+        
+        NSMutableDictionary* dict = [[[self.itemsQty objectAtIndex:idx] objectFromJSONString] mutableCopy];
+        storeQtysPO.stores = dict;
+        storeQtysPO.tag = idx;
+        storeQtysPO.delegate = self;
+        CGRect frame = [self.itemsTable rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
+        frame = CGRectOffset(frame, 0, 0);
+        DLog(@"pop from frame:%@",NSStringFromCGRect(frame));
+        popoverController = [[UIPopoverController alloc] initWithContentViewController:storeQtysPO];
+        [popoverController presentPopoverFromRect:frame inView:self.itemsTable permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    }
+}
+
+-(void)ShipDatesTouchForIndex:(int)idx{
+    CICalendarViewController* calView = [[CICalendarViewController alloc] initWithNibName:@"CICalendarViewController" bundle:nil];
+    NSDateFormatter* df = [[NSDateFormatter alloc] init];
+    //            DLog(@"date(%@):%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:kProductShipDate1],date);
+    //    [df setDateFormat:@"yyyy-MM-dd"];
+    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
+    
+    NSDate* startDate = [[NSDate alloc]init];
+    NSDate* endDate = [[NSDate alloc]init];
+    
+    if ([self.itemsDB objectForKey:kItems] == nil) {
+        DLog(@"no items");
+        return;
+    }
+    if ([[self.itemsDB objectForKey:kItems] objectAtIndex:idx] == nil) {
+        DLog(@"not for idx:%d",idx);
+        return;
+    }
+    if ([[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] == nil) {
+        DLog(@"no product");
+        return;
+    }
+    NSString* start = [[[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] objectForKey:kProductShipDate1];
+    NSString* end = [[[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] objectForKey:kProductShipDate2];
+    
+    if(start&&end&&![start isKindOfClass:[NSNull class]]&&![end isKindOfClass:[NSNull class]]&&start.length > 0 && end.length > 0){
+        startDate = [df dateFromString:start];
+        endDate = [df dateFromString:end];
+    }else{
+        DLog(@"bad luck on dates themselves, %@-%@",start, end);
+        return;
+    }
+    
+    __block NSMutableArray *dateList = [NSMutableArray array];
+    NSCalendar *currentCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
+    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    [comps setDay:1];
+    
+    [dateList addObject: startDate];
+    NSDate *currentDate = startDate;
+    // add one the first time through, so that we can use NSOrderedAscending (prevents millisecond infinite loop)
+    currentDate = [currentCalendar dateByAddingComponents:comps toDate:currentDate  options:0];
+    while ( [endDate compare: currentDate] != NSOrderedAscending) {
+        [dateList addObject: currentDate];
+        currentDate = [currentCalendar dateByAddingComponents:comps toDate:currentDate  options:0];
+    }
+    
+    calView.startDate = startDate;
+    __weak CICalendarViewController *calViewW = calView;
+    calView.cancelTouched = ^{
+        DLog(@"calender canceled");
+        [calViewW dismissViewControllerAnimated:YES completion:nil];
+        
+        [self.itemsTable reloadData];
+		
+    };
+    
+    calView.doneTouched = ^(NSArray* dates){
+        [self.itemsShipDates removeObjectAtIndex:idx];
+        [self.itemsShipDates insertObject:[dates copy] atIndex:idx];
+        [calViewW dismissViewControllerAnimated:YES completion:nil];
+        
+        [self.itemsTable reloadData];
+        [self UpdateTotal];
+    };
+    
+    calView.afterLoad = ^{
+        NSArray* dates = [self.itemsShipDates objectAtIndex:idx];
+        calView.calendarView.selectedDates = [dates mutableCopy];
+        calView.calendarView.avalibleDates = dateList;
+        DLog(@"dates:%@ what it got:%@",dates, calView.calendarView.selectedDates);
+    };
+    
+    [self presentViewController:calView animated:YES completion:nil];
+}
+
+-(void)setViewMovedUpDouble:(BOOL)movedUp
+{
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
+    
+    CGRect rect = self.OrderDetailScroll.frame;
+    if (movedUp)
+    {
+        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
+        // 2. increase the size of the view so that the area behind the keyboard is covered up.
+        rect.origin.y += kOFFSET_FOR_KEYBOARD * 3;//was -
+        // rect.size.height += kOFFSET_FOR_KEYBOARD;
+    }
+    else
+    {
+        // revert back to original position relative to the top of the OrderDetailScroll.
+        rect.origin.y = 0;
+    }
+    self.OrderDetailScroll.contentOffset = CGPointMake(0, rect.origin.y);//rect.origin;
+    
+    [UIView commitAnimations];
+}
+
+-(void)setActiveField:(UITextField *)textField {
+    activeField = textField;
 }
 
 #pragma mark - CIProductViewDelegate
@@ -860,43 +993,21 @@ bool showHud = true;
     else
     {
         // revert back to the normal state.
-        //rect.origin.y -= kOFFSET_FOR_KEYBOARD;//was +
-        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
+        rect.origin.y = 0;
     }
     self.OrderDetailScroll.contentOffset = CGPointMake(0, rect.origin.y);
     
     [UIView commitAnimations];
 }
 
--(void)setViewMovedUpDouble:(BOOL)movedUp
-{
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-    
-    CGRect rect = self.OrderDetailScroll.frame;
-    if (movedUp)
-    {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
-        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += kOFFSET_FOR_KEYBOARD*3;//was -
-       // rect.size.height += kOFFSET_FOR_KEYBOARD;
-    }
-    else
-    {
-        // revert back to the normal state.
-        //rect.origin.y -= kOFFSET_FOR_KEYBOARD;//was +
-        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
-    }
-    self.OrderDetailScroll.contentOffset = CGPointMake(0, rect.origin.y);//rect.origin;
-    
-    [UIView commitAnimations];
-}
-
-- (void)keyboardWillShow:(NSNotification *)notif
-{
+- (void)keyboardWillShow {
     //keyboard will be shown now. depending for which textfield is active, move up or move down the view appropriately
     
-    if ([self.shipNotes isFirstResponder] && self.view.frame.origin.y >= 0)
+    if (activeField)
+    {
+        [self setViewMovedUpDouble:YES];
+        
+    } else if ([self.shipNotes isFirstResponder] && self.view.frame.origin.y >= 0)
     {
         [self setViewMovedUp:YES];
     }
@@ -906,41 +1017,12 @@ bool showHud = true;
     }
 }
 
--(void)setVoucher:(NSString *)voucher atIndex:(int)idx{
-    //DLog(@"%@",self.itemsPrice);
-    [self.itemsVouchers removeObjectAtIndex:idx];
-    [self.itemsVouchers insertObject:voucher atIndex:idx];
-}
-
--(void)setPrice:(NSString*)prc atIndex:(int)idx{
-    //DLog(@"%@",self.itemsPrice);
-    [self.itemsPrice removeObjectAtIndex:idx];
-    [self.itemsPrice insertObject:prc atIndex:idx];
-}
-
--(void)setQuantity:(NSString*)qty atIndex:(int)idx{
-    //DLog(@"%@",self.itemsQty);
-    [self.itemsQty removeObjectAtIndex:idx];
-    [self.itemsQty insertObject:qty atIndex:idx];
-}
-
--(void)QtyTouchForIndex:(int)idx{
-    if ([popoverController isPopoverVisible]) {
-        [popoverController dismissPopoverAnimated:YES];
-    }else{
-        if (!storeQtysPO) {
-            storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
-        }
-        
-        NSMutableDictionary* dict = [[[self.itemsQty objectAtIndex:idx] objectFromJSONString] mutableCopy];
-        storeQtysPO.stores = dict;
-        storeQtysPO.tag = idx;
-        storeQtysPO.delegate = self;
-        CGRect frame = [self.itemsTable rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-        frame = CGRectOffset(frame, 0, 0);
-        DLog(@"pop from frame:%@",NSStringFromCGRect(frame));
-        popoverController = [[UIPopoverController alloc] initWithContentViewController:storeQtysPO];
-        [popoverController presentPopoverFromRect:frame inView:self.itemsTable permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+-(void)keyboardDidHide {
+    if (activeField) {
+        [self setViewMovedUpDouble:NO];
+        [self setActiveField:nil];
+    } else {
+        [self setViewMovedUp:NO];
     }
 }
 
@@ -958,82 +1040,6 @@ bool showHud = true;
     [self.itemsQty insertObject:JSON atIndex:idx];
     [self.itemsTable reloadData];
     [self UpdateTotal];
-}
-
--(void)ShipDatesTouchForIndex:(int)idx{
-    CICalendarViewController* calView = [[CICalendarViewController alloc] initWithNibName:@"CICalendarViewController" bundle:nil];
-    NSDateFormatter* df = [[NSDateFormatter alloc] init];
-    //            DLog(@"date(%@):%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:kProductShipDate1],date);
-    //    [df setDateFormat:@"yyyy-MM-dd"];
-    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-    
-    NSDate* startDate = [[NSDate alloc]init];
-    NSDate* endDate = [[NSDate alloc]init];
-    
-    if ([self.itemsDB objectForKey:kItems] == nil) {
-        DLog(@"no items");
-        return;
-    }
-    if ([[self.itemsDB objectForKey:kItems] objectAtIndex:idx] == nil) {
-        DLog(@"not for idx:%d",idx);
-        return;
-    }
-    if ([[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] == nil) {
-        DLog(@"no product");
-        return;
-    }
-    NSString* start = [[[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] objectForKey:kProductShipDate1];
-    NSString* end = [[[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] objectForKey:kProductShipDate2];
-    
-    if(start&&end&&![start isKindOfClass:[NSNull class]]&&![end isKindOfClass:[NSNull class]]&&start.length > 0 && end.length > 0){
-    startDate = [df dateFromString:start];
-    endDate = [df dateFromString:end];
-    }else{
-        DLog(@"bad luck on dates themselves, %@-%@",start, end);
-        return;
-    }
-    
-    __block NSMutableArray *dateList = [NSMutableArray array];
-    NSCalendar *currentCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-    NSDateComponents *comps = [[NSDateComponents alloc] init];
-    [comps setDay:1];
-    
-    [dateList addObject: startDate];
-    NSDate *currentDate = startDate;
-    // add one the first time through, so that we can use NSOrderedAscending (prevents millisecond infinite loop)
-    currentDate = [currentCalendar dateByAddingComponents:comps toDate:currentDate  options:0];
-    while ( [endDate compare: currentDate] != NSOrderedAscending) {
-        [dateList addObject: currentDate];
-        currentDate = [currentCalendar dateByAddingComponents:comps toDate:currentDate  options:0];
-    }
-    
-    calView.startDate = startDate;
-    __weak CICalendarViewController *calViewW = calView;
-    calView.cancelTouched = ^{
-        DLog(@"calender canceled");
-        [calViewW dismissViewControllerAnimated:YES completion:nil];
-		 
-        [self.itemsTable reloadData];
-		
-    };
-    
-    calView.doneTouched = ^(NSArray* dates){
-        [self.itemsShipDates removeObjectAtIndex:idx];
-        [self.itemsShipDates insertObject:[dates copy] atIndex:idx];
-        [calViewW dismissViewControllerAnimated:YES completion:nil];
-		 
-        [self.itemsTable reloadData];
-        [self UpdateTotal];
-    };
-    
-    calView.afterLoad = ^{
-        NSArray* dates = [self.itemsShipDates objectAtIndex:idx];
-        calView.calendarView.selectedDates = [dates mutableCopy];
-        calView.calendarView.avalibleDates = dateList;
-        DLog(@"dates:%@ what it got:%@",dates, calView.calendarView.selectedDates);
-    };
-    
-    [self presentViewController:calView animated:YES completion:nil];
 }
 
 #pragma mark - PullToRefreshViewDelegate
@@ -1159,6 +1165,7 @@ bool showHud = true;
         }
     }
 }
+
 -(void)textViewDidEndEditing:(UITextView *)sender
 {
     if ([sender isEqual:self.shipNotes])
@@ -1170,5 +1177,35 @@ bool showHud = true;
         }
     }
 }
+
+//// Called when the UIKeyboardDidShowNotification is sent.
+//- (void)keyboardWasShown:(NSNotification*)aNotification
+//{
+//    if (activeField) {
+//        NSDictionary* info = [aNotification userInfo];
+//        CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+//
+//        UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height, 0.0);
+//        OrderDetailScroll.contentInset = contentInsets;
+//        OrderDetailScroll.scrollIndicatorInsets = contentInsets;
+//        
+//        // If active text field is hidden by keyboard, scroll it so it's visible
+//        // Your application might not need or want this behavior.
+//        CGRect aRect = self.view.frame;
+//        aRect.size.height += kbSize.height;
+//        if (!CGRectContainsPoint(aRect, activeField.frame.origin) ) {
+//            CGPoint scrollPoint = CGPointMake(0.0, activeField.frame.origin.y - kbSize.height);
+//            [OrderDetailScroll setContentOffset:scrollPoint animated:YES];
+//        }
+//    }
+//}
+//
+//// Called when the UIKeyboardWillHideNotification is sent
+//- (void)keyboardWillBeHidden:(NSNotification*)aNotification
+//{
+//    UIEdgeInsets contentInsets = UIEdgeInsetsZero;
+//    OrderDetailScroll.contentInset = contentInsets;
+//    OrderDetailScroll.scrollIndicatorInsets = contentInsets;
+//}
 
 @end

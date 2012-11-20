@@ -28,6 +28,7 @@
         self.total.font = [UIFont fontWithName:kFontName size:13.f];
         self.vouchers.font = [UIFont fontWithName:kFontName size:13.f];
         self.lblSC.font = [UIFont fontWithName:kFontName size:14.f];
+        self.orderStatus.font = [UIFont fontWithName:kFontName size:13.f];
     }
     return self;
 }
