@@ -833,10 +833,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6E118582145F2F2200568ED1 /* Build configuration list for PBXNativeTarget "Convention" */;
 			buildPhases = (
+				831EC61E16644D1900D253CD /* ShellScript */,
 				6E11855D145F2F2200568ED1 /* Sources */,
 				6E11855E145F2F2200568ED1 /* Frameworks */,
 				6E11855F145F2F2200568ED1 /* Resources */,
-				831EC61E16644D1900D253CD /* ShellScript */,
 			);
 			buildRules = (
 			);
