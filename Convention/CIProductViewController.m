@@ -7,7 +7,6 @@
 //
 
 #import "CIProductViewController.h"
-#import "ASIHTTPRequest.h"
 #import "config.h"
 #import "JSONKit.h"
 #import "CIViewController.h"
@@ -73,7 +72,7 @@
 @synthesize storeQtysPO;
 @synthesize multiStore;
 @synthesize managedObjectContext;
-@synthesize order;
+@synthesize order = _order;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -135,7 +134,7 @@
     if(!backFromCart){
         
         NSString* url;
-        if (self.vendorGroup&&![self.vendorGroup isKindOfClass:[NSNull class]]) {
+        if (self.vendorGroup && ![self.vendorGroup isKindOfClass:[NSNull class]]) {
             url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@",kDBGETPRODUCTS,kAuthToken,self.authToken,kVendorGroupID,self.vendorGroup];
         }else {
             url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETPRODUCTS,kAuthToken,self.authToken];
@@ -144,14 +143,10 @@
         [self loadProductsForUrl:url withLoadLabel:@"Loading Products..."];
         
         navBar.topItem.title = self.title;
-        //[self getCustomers];
     }
     
 	self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
     [self.vendorTable reloadData];
-    
-//    gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)];
-//    [self.products addGestureRecognizer:gestureRecognizer];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -197,45 +192,31 @@
     loadProductsHUD.labelText = label;
     [loadProductsHUD show:NO];
     
-    // Do any additional setup after loading the view from its nib.
     DLog(@"Sending %@",url);
-    ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    [request setNumberOfTimesToRetryOnTimeout:3];
     
-    ASIHTTPRequest __weak *weakRequest = request;
-    [request setCompletionBlock:^{
-        ASIHTTPRequest *strongRequest = weakRequest;
-        
-        //DLog(@"response:%@",[request responseString]);
-        NSArray* data = [[strongRequest responseString] objectFromJSONString];
-        
-        //        DLog(@"data:%@",data);
-        self.productData = [data mutableCopy];
-        //PW---        if (showPrice) {
-        for( int i=0;i< self.productData.count;i++){
-            NSMutableDictionary* dict = [[self.productData objectAtIndex:i] mutableCopy];
-            
-            //            DLog(@"invtid:%@",[dict objectForKey:kProductInvtid]);
-            
-            [self.productData removeObjectAtIndex:i];
-            [self.productData insertObject:dict atIndex:i];
-        }
-        //        }
-        //        DLog(@"Json:%@",self.productData);
-        self.resultData = [self.productData mutableCopy];
-        [self.products reloadData];
-        [loadProductsHUD hide:NO];
-        [self loadCustomersView];
-    }];
-    
-    [request setFailedBlock:^{
-        //DLog(@"error:%@", [request error]);
-        ASIHTTPRequest *strongRequest = weakRequest;
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got error:%@",[strongRequest error]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-        [loadProductsHUD hide:NO];
-    }];
-    
-    [request startAsynchronous];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    AFJSONRequestOperation *jsonOp = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                 
+                 self.productData = [JSON mutableCopy];
+                 
+//                 [JSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//                     [self.productData replaceObjectAtIndex:idx withObject:[obj mutableCopy]];
+//                 }];
+                 
+                 self.resultData = [self.productData mutableCopy];
+                 [self.products reloadData];
+                 [loadProductsHUD hide:NO];
+                 [self loadCustomersView];
+                 
+             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                 
+                 [[[UIAlertView alloc] initWithTitle:@"Error!" message:error.localizedDescription delegate:nil
+                                   cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+                 [loadProductsHUD hide:NO];
+             }];
+
+    [jsonOp start];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -322,15 +303,7 @@
         
         if (cell == nil){
             NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIProductCell" owner:nil options:nil]; 
-            
-            for(id currentObject in topLevelObjects)
-            {
-                if([currentObject isKindOfClass:[CIProductCell class]])
-                {
-                    cell = (CIProductCell *)currentObject;
-                    break;
-                }
-            }
+            cell = [topLevelObjects objectAtIndex:0];
         }
         
         NSMutableDictionary* dict = [self.resultData objectAtIndex:[indexPath row]];
@@ -548,50 +521,25 @@
         currentVendor = cell.tag;
         NSString* url;
         if (cell.tag == 0) {
-            if (self.vendorGroup&&![self.vendorGroup isKindOfClass:[NSNull class]]) {
+            if (self.vendorGroup && ![self.vendorGroup isKindOfClass:[NSNull class]]) {
                 url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@",kDBGETPRODUCTS,kAuthToken,self.authToken,kVendorGroupID,self.vendorGroup];
             }else {
                 url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETPRODUCTS,kAuthToken,self.authToken];
             }
             
             [self loadProductsForUrl:url withLoadLabel:@"Loading all Products..."];
+            
         }else {
             url = [NSString stringWithFormat:@"%@?%@=%@&%@=%d",kDBGETPRODUCTS,kAuthToken,self.authToken,@"vendor_id",cell.tag];
-            
             [self loadProductsForUrl:url withLoadLabel:@"Loading Products for Selection..."];
         }
 		
 		NSDictionary* details = [vendorsData objectAtIndex:[indexPath row]];
        self.vendorLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID], [details objectForKey:kVendorUsername]];
-
     }
 }
 
 #pragma mark - Other
--(void)logout
-{
-    NSString* url = kDBLOGOUT;
-    if (authToken) {
-        url = [NSString stringWithFormat:@"%@?%@=%@",kDBLOGOUT,kAuthToken,authToken];
-    }
-    
-    DLog(@"Signout url:%@",url);
-    
-    __block ASIHTTPRequest* signout = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-    [signout setRequestMethod:@"DELETE"];
-    
-    [signout setCompletionBlock:^{
-        //DLog(@"Signout:%@",[signout responseString]);
-        isInitialized = NO;
-        [self Cancel];
-    }];
-    
-    [signout setFailedBlock:^{
-        //DLog(@"Signout Error:%@",[signout error]);
-    }];
-    
-    [signout startAsynchronous];
-}
 
 -(void)Cancel{
    
@@ -613,9 +561,9 @@
     [self Cancel];
 }
 
-- (IBAction)logout:(id)sender {
-    [self logout];
-}
+//- (IBAction)logout:(id)sender {
+//    [self logout];
+//}
 
 -(void)setCustomerInfo:(NSDictionary*)info
 {
@@ -638,20 +586,20 @@
     }
     
     if (!isInitialized) {
-        order = (Order *)[coreDataManager createNewEntity:@"Order"];
-        [order setCustomer_id:[NSNumber numberWithInt:[[self.customer objectForKey:@"id"] integerValue]]];
-        [order setCustid:[NSNumber numberWithInt:[[self.customer objectForKey:@"custid"] integerValue]]];
-        [order setMultiStore:[NSNumber numberWithBool:multiStore]];
-        [order setPartial:[NSNumber numberWithBool:YES]];
-        [order setCreated_at:[NSDate date]];
+        _order = (Order *)[coreDataManager createNewEntity:@"Order"];
+        [_order setCustomer_id:[NSNumber numberWithInt:[[self.customer objectForKey:@"id"] integerValue]]];
+        [_order setCustid:[NSNumber numberWithInt:[[self.customer objectForKey:@"custid"] integerValue]]];
+        [_order setMultiStore:[NSNumber numberWithBool:multiStore]];
+        [_order setStatus:@"pending"];
+        [_order setCreated_at:[NSDate date]];
         [coreDataManager saveObjects];
         isInitialized = YES;
     }
     else {
-        //NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)", customer_id, custid];
-        //order = [[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:predicate];
+        NSNumber *numCustId = [NSNumber numberWithInt:custid];
+        if (_order.custid != numCustId)
+            [_order setCustid:numCustId];
         
-        [order setCustid:[NSNumber numberWithInt:custid]];
         [coreDataManager saveObjects];
     }
 }
@@ -708,18 +656,19 @@
     [arr removeObjectIdenticalTo:nil];
     
     DLog(@"array:%@",arr);
-    NSDictionary* _order;
-    //if ([info objectForKey:kOrderCustID]) {
+    
     if (!self.customer) {
         return;
     }
-    _order = [NSDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:@"id"],kOrderCustID,[self.customer objectForKey:kShipNotes],kShipNotes,[self.customer objectForKey:kNotes],kNotes,[self.customer objectForKey:kAuthorizedBy],kAuthorizedBy,[self.customer objectForKey:kEmail],kEmail,[self.customer objectForKey:kSendEmail],kSendEmail, arr,kOrderItems, nil];
+
+    NSDictionary* newOrder;
+    newOrder = [NSDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:@"id"],kOrderCustID,[self.customer objectForKey:kShipNotes],kShipNotes,[self.customer objectForKey:kNotes],kNotes,[self.customer objectForKey:kAuthorizedBy],kAuthorizedBy,[self.customer objectForKey:kEmail],kEmail,[self.customer objectForKey:kSendEmail],kSendEmail, arr,kOrderItems, nil];
     //    }
     //    else{
     //        order = [NSDictionary dictionaryWithObjectsAndKeys:[info objectForKey:kCustName],kCustName,[info objectForKey:kStoreName],kStoreName,[info objectForKey:kCity],kCity,arr,kOrderItems, nil];
     //    }
     
-    NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:_order,kOrder, nil];
+    NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:newOrder,kOrder, nil];
     
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
     DLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
@@ -802,61 +751,54 @@
     [self.searchBar resignFirstResponder];
     [selectedIdx removeAllObjects];
     
-    //lazy load this bizal
     if (vendorsData == nil) {
         MBProgressHUD* venderLoading = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         venderLoading.labelText = @"Loading vendors from your vendor group...";
         [venderLoading show:YES];
         
-        if (self.vendorGroup&&![self.vendorGroup isKindOfClass:[NSNull class]]) {
+        if (self.vendorGroup && ![self.vendorGroup isKindOfClass:[NSNull class]]) {
+            
             NSString* url = [NSString stringWithFormat:@"%@&%@=%@",kDBGETVENDORSWithVG(self.vendorGroup),kAuthToken,self.authToken];
-            ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-            [request setNumberOfTimesToRetryOnTimeout:3];
-            __weak ASIHTTPRequest* weakRequest = request;
-            [request setCompletionBlock:^{
-                //DLog(@"success got:%@",[request responseString]);
-                ASIHTTPRequest* strongRequest = weakRequest;
-                NSArray* results = [[strongRequest responseString] objectFromJSONString];
-                if (!results||![results objectAtIndex:0]||![[results objectAtIndex:0] objectForKey:@"vendors"]) {
-                    [venderLoading hide:YES];
-                    [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Something weird happened! If this problem persists people notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-                    return;
-                }
-                
-                NSArray* vendors = [[results objectAtIndex:0] objectForKey:@"vendors"];
-                
-                NSMutableArray* vs = [NSMutableArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any",kVendorUsername,@"0",@"id", nil], nil];
-                
-                [vendors enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL* stop){
-                    NSDictionary* dict = (NSDictionary*)obj;
-                    [vs addObject:dict];
-                }];
-                
-                vendorsData = [vs mutableCopy];
-                
-                [venderLoading hide:YES];
-                [self.vendorTable reloadData];
-            }];
+            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+            AFJSONRequestOperation *jsonOp = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                 success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+
+                     NSArray *results = [NSArray arrayWithArray:JSON];
+                     if (!results || ![results objectAtIndex:0] || ![[results objectAtIndex:0] objectForKey:@"vendors"]) {
+                         [venderLoading hide:YES];
+                         [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Problem loading vendors! If this problem persists people notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+                         return;
+                     }
+                     
+                     NSArray* vendors = [[results objectAtIndex:0] objectForKey:@"vendors"];
+                     NSMutableArray* vs = [NSMutableArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any",kVendorUsername,@"0",@"id", nil], nil];
+                     
+                     [vendors enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL* stop){
+                         NSDictionary* dict = (NSDictionary*)obj;
+                         [vs addObject:dict];
+                     }];
+                     
+                     vendorsData = [vs mutableCopy];
+                     [venderLoading hide:YES];
+                     [self.vendorTable reloadData];
+
+                 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+
+                     [[[UIAlertView alloc] initWithTitle:@"Error!"
+                                 message:[NSString stringWithFormat:@"Got error retrieving vendors for vendor group:%@", error.localizedDescription]
+                                    delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+                     
+                     vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any",kVendorUsername,@"0",@"id", nil], nil];
+                     [venderLoading hide:YES];
+                     [self.vendorTable reloadData];
+                 }];
             
-            [request setFailedBlock:^{
-                ASIHTTPRequest* strongRequest = weakRequest;
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"Got error retrieving vendors for vendor group:%@",[strongRequest error]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-                
-                vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any",kVendorUsername,@"0",@"id", nil], nil];
-                
-                [venderLoading hide:YES];
-                [self.vendorTable reloadData];
-            }];
-            
-            [request startAsynchronous];
+            [jsonOp start];
             
         }else{
             [venderLoading hide:YES];
-            
             vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any",kVendorUsername,@"0",@"id", nil], nil];
-        
             [self.vendorTable reloadData];
-            DLog(@"reloading vendor table");
         }
     }
     
@@ -972,6 +914,9 @@
                 DLog(@"index(%@) shipdates updated to: %@",idx,dates);
                 NSMutableDictionary* dict2 = [self.productCart objectForKey:[dict objectForKey:@"id"]];
                 [dict2 setObject:dates forKey:kOrderItemShipDates];
+                
+                [self updateShipDatesInCart:dates forId:[[dict objectForKey:@"id"] integerValue]];
+                
             }
         }];
         [selectedIdx removeAllObjects];
@@ -1027,7 +972,7 @@
             [self presentViewController:calView animated:NO completion:nil];
 //            DLog(@"presented");
         }else{
-            DLog(@"empty date range... er... shite");
+            DLog(@"empty date range");
         }
     }
 //    DLog(@"don't need thinking loader anymore");
@@ -1157,7 +1102,8 @@
 //    }
 //
     
-    Cart *oldCart = [order fetchCart:[[dict objectForKey:kID] integerValue]];
+    Cart *oldCart = [_order fetchCart:[[dict objectForKey:kID] integerValue]];
+    NSArray* dates = [dict objectForKey:kOrderItemShipDates];
     
     if (!oldCart)
     {
@@ -1167,7 +1113,6 @@
         Cart *cart = (Cart*)[coreDataManager createNewEntity:@"Cart"];
         [cart setValuesForKeysWithDictionary:valuesForCart];
         
-        NSArray* dates = [dict objectForKey:kOrderItemShipDates];
         if (dates.count > 0)
         {
             NSMutableArray *shipDates = [NSMutableArray arrayWithCapacity:dates.count];
@@ -1190,10 +1135,15 @@
             [cart setValue:orderedSet forKey:@"shipdates"];
         }
         
-        [order addCartsObject:cart];
+        [_order addCartsObject:cart];
     }
     else {
         [oldCart setEditableQty:[self getNumberFromDictionary:dict forKey:kEditableQty asFloat:NO]];
+
+        //TODO: Need to update ship dates at this point in case we are editing an order that already
+        //  existed when the app was launched.
+        [self updateShipDatesInCart:dates forId:[[dict objectForKey:@"id"] integerValue]];
+
     }
     
     [coreDataManager saveObjects];
@@ -1236,6 +1186,30 @@
     return cartValues;
 }
 
+-(void)updateShipDatesInCart:(NSArray *)dates forId:(NSInteger)_id {
+
+    Cart *oldCart = (Cart *)[coreDataManager fetchObject:@"Cart"
+           withPredicate:[NSPredicate predicateWithFormat:@"id=%@",[NSNumber numberWithInt:_id]]];
+    
+    if (oldCart)
+    {
+        NSMutableArray *newShipDates = [NSMutableArray arrayWithCapacity:dates.count];
+        NSArray *sortedDates = [dates sortedArrayUsingSelector:@selector(compare:)];
+        for (NSDate *aDate in sortedDates) {
+
+            ShipDate *sd = (ShipDate *)[coreDataManager createNewEntity:@"ShipDate"];
+            [sd setShipdate:aDate];
+            [sd setCart:oldCart];
+            [newShipDates addObject:sd];
+        }
+        
+        NSOrderedSet *orderedSet = [NSOrderedSet orderedSetWithArray:newShipDates];
+        [oldCart setValue:orderedSet forKey:@"shipdates"];
+
+        [coreDataManager saveObjects];
+    }
+}
+
 // Returns an NSNumber object from the dictonary for a given key. If asFloat=YES, returns floatValue, otherwise integerValue.
 -(NSNumber*)getNumberFromDictionary:(NSMutableDictionary*)dict forKey:(NSString*)key asFloat:(BOOL)asFloat {
     NSNumber *num;
@@ -1250,7 +1224,7 @@
 
 // Removes a Cart object from the data store for a given product id.
 -(void)removeLineItemFromProductCart:(int)productId {
-    Cart *oldCart = [order fetchCart:productId];
+    Cart *oldCart = [_order fetchCart:productId];
     if (oldCart) {
         [coreDataManager deleteObject:oldCart];
         [coreDataManager saveObjects];
@@ -1258,9 +1232,9 @@
 }
 
 -(void)cancelOrder {
-    if (isInitialized && order)
+    if (isInitialized && _order)
     {
-        [coreDataManager deleteObject:order];
+        [coreDataManager deleteObject:_order];
         [coreDataManager saveObjects];
     }
 }

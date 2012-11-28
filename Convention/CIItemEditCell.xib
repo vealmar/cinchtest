@@ -131,6 +131,7 @@
 								<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 								<float key="IBUIMinimumFontSize">17</float>
 								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
+									<int key="IBUIKeyboardType">4</int>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="907013907"/>
@@ -201,6 +202,7 @@
 								<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 								<float key="IBUIMinimumFontSize">17</float>
 								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
+									<int key="IBUIKeyboardType">4</int>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="907013907"/>
@@ -209,7 +211,7 @@
 							<object class="IBUITextField" id="5518204">
 								<reference key="NSNextResponder" ref="68095321"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{494, 7}, {62, 30}}</string>
+								<string key="NSFrame">{{496, 7}, {58, 30}}</string>
 								<reference key="NSSuperview" ref="68095321"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="218509051"/>
@@ -229,6 +231,7 @@
 								<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 								<float key="IBUIMinimumFontSize">17</float>
 								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
+									<int key="IBUIKeyboardType">4</int>
 									<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="907013907"/>
@@ -237,7 +240,7 @@
 							<object class="IBUILabel" id="218509051">
 								<reference key="NSNextResponder" ref="68095321"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{569, 11}, {62, 21}}</string>
+								<string key="NSFrame">{{561, 11}, {74, 21}}</string>
 								<reference key="NSSuperview" ref="68095321"/>
 								<reference key="NSWindow"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>

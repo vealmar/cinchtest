@@ -11,7 +11,6 @@
 #import "CIViewController.h"
 #import "CIOrderCell.h"
 #import "config.h"
-#import "ASIHTTPRequest.h"
 #import "CIProductViewController.h"
 #import "MBProgressHUD.h"
 #import "JSONKit.h"
@@ -244,24 +243,30 @@ bool showHud = true;
     
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                            success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                                                
-                                                self.orders = [NSMutableArray arrayWithArray:JSON];
-                                                DLog(@"order count: %i", self.orders.count);
-                                                
-                                                self.orderData = [self.orders mutableCopy];
-                                                [self.sideTable reloadData];
-                                                if ([self.orders count] > 0) {
-                                                    self.NoOrders.hidden = YES;
-                                                }
-                                                cleanup();
-                                                
-                                            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                                                
-                                                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@",[error localizedDescription]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-                                                
-                                                cleanup();
-                                            }];
+            success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                
+                self.orders = [NSMutableArray arrayWithArray:JSON];
+                DLog(@"order count: %i", self.orders.count);
+                
+                self.orderData = [self.orders mutableCopy];
+                
+//                [JSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+//                    [self.orderData replaceObjectAtIndex:idx withObject:[obj mutableCopy]];
+//                }];
+                
+                [self.sideTable reloadData];
+                if ([self.orders count] > 0) {
+                    self.NoOrders.hidden = YES;
+                }
+                cleanup();
+                
+            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                
+                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@",[error localizedDescription]] delegate:nil
+                                  cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+                
+                cleanup();
+            }];
     [operation start];
 }
 
@@ -916,43 +921,6 @@ bool showHud = true;
     }];
     
     [operation start];
-    
-
-//    DLog(@"final URL:%@\n JSON:%@",url,[final JSONString]);
-//    
-//    __weak  ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-//    [request addRequestHeader:@"Accept" value:@"application/json"];
-//    [request addRequestHeader:@"Content-Type" value:@"application/json"];
-//    [request setRequestMethod:@"PUT"];
-//    [request setNumberOfTimesToRetryOnTimeout:3];
-//    [request appendPostData:[[final JSONString] dataUsingEncoding:NSUTF8StringEncoding]];
-//    [request setCompletionBlock:^{
-//        NSDictionary* results = [[request responseString] objectFromJSONString];
-//        if (results) {
-//            [self Return];
-//            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Success!" message:@"Updated order successfully!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-//            [alert show];
-//            
-//        }else {
-//            [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"It seems there was an odd error updating your order. Please contact Convention Innovations!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-//        }
-//    }];
-//    
-//    [request setFailedBlock:^{
-//        [self Return];
-//        //DLog(@"Order Error:%@",[request error]);
-//        if (request.error.code == 2) {
-//            [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Update timed out, please try again!" delegate:self cancelButtonTitle:@"OK!" otherButtonTitles: nil] show];
-//        }else{
-//            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:request.error.localizedDescription delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-//            [alert show];
-//        }
-//    }];
-//    
-//    DLog(@"request content-type:%@",request.requestHeaders);
-//    
-//    [request startAsynchronous];
-    
 }
 
 - (IBAction)Refresh:(id)sender {

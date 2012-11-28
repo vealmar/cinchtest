@@ -18,4 +18,12 @@
     return cart;
 }
 
+- (void)addCartsObject:(NSManagedObject *)value {
+    [self willChangeValueForKey:@"carts"];
+    NSMutableOrderedSet *_carts = [NSMutableOrderedSet orderedSetWithOrderedSet:self.carts];
+    [_carts addObject:value];
+    self.carts = _carts;
+    [self didChangeValueForKey:@"carts"];
+}
+
 @end

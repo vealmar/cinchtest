@@ -23,9 +23,10 @@
 
 @end
 
-@interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UIAlertViewDelegate,
-    CICustomerDelegate, CIProductCellDelegate, CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate> {
-	
+@interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,
+    UISearchBarDelegate, UIAlertViewDelegate, CICustomerDelegate, CIProductCellDelegate,
+    CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate>
+{
 	ReachabilityDelegation *reachDelegation;
 }
 
@@ -51,7 +52,7 @@
 @property (nonatomic, strong) UIPopoverController *popoverController;
 @property (nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 
-@property (nonatomic, unsafe_unretained) NSManagedObjectContext* managedObjectContext;
+@property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) Order *order;
 
 @property (unsafe_unretained, nonatomic) IBOutlet UINavigationBar *navBar;
@@ -68,7 +69,7 @@
 
 - (IBAction)Cancel:(id)sender;
 
-- (IBAction)logout:(id)sender;
+//- (IBAction)logout:(id)sender;
 - (IBAction)submit:(id)sender;
 - (IBAction)finishOrder:(id)sender;
 - (IBAction)reviewCart:(id)sender;
