@@ -2,7 +2,7 @@
 //  Order.h
 //  Convention
 //
-//  Created by Kerry Sanders on 11/20/12.
+//  Created by Kerry Sanders on 11/28/12.
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
@@ -18,6 +18,7 @@
 @property (nonatomic, retain) NSNumber * customer_id;
 @property (nonatomic, retain) NSNumber * multiStore;
 @property (nonatomic, retain) NSString * status;
+@property (nonatomic, retain) NSString * billname;
 @property (nonatomic, retain) NSOrderedSet *carts;
 @end
 
