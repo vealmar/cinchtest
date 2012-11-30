@@ -46,6 +46,7 @@
 - (void) deleteAllObjects: (NSString *) entityDescription;
 
 - (void) deleteObject: (NSManagedObject *) managedObject;
+- (BOOL) deleteObjectWithConfirmation: (NSManagedObject *) managedObject;
 
 - (void) saveObjects;
 

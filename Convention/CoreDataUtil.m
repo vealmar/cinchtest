@@ -195,6 +195,17 @@ static CoreDataUtil * sharedInstance;
     }
 }
 
+-(BOOL) deleteObjectWithConfirmation:(NSManagedObject *) managedObject {
+	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
+    NSError *error;
+    [delegate.managedObjectContext deleteObject:managedObject];
+    if (![delegate.managedObjectContext save:&error]) {
+        DLog(@"Error deleting - error:%@",error);
+        return NO;
+    }
+    return YES;
+}
+
 - (void) saveObjects {
     CIAppDelegate *delegate = (CIAppDelegate*)[UIApplication sharedApplication].delegate;
     [delegate saveContext];
