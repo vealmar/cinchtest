@@ -587,6 +587,7 @@
     
     if (!isInitialized) {
         _order = (Order *)[coreDataManager createNewEntity:@"Order"];
+        [_order setBillname:self.customerLabel.text];
         [_order setCustomer_id:[NSNumber numberWithInt:[[self.customer objectForKey:@"id"] integerValue]]];
         [_order setCustid:[NSNumber numberWithInt:[[self.customer objectForKey:@"custid"] integerValue]]];
         [_order setMultiStore:[NSNumber numberWithBool:multiStore]];
@@ -843,15 +844,18 @@
         
         NSDate* startDate = [[NSDate alloc]init];
         NSDate* endDate = [[NSDate alloc]init];
-        
+
         DLog(@"about to get data from cell");
-        if([dict objectForKey:kProductShipDate1]&&![[dict objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]){
+        if([dict objectForKey:kProductShipDate1] && ![[dict objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]){
             startDate = [df dateFromString:[dict objectForKey:kProductShipDate1]];
         }
         
-        if([dict objectForKey:kProductShipDate2]&&![[dict objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]){
+        if([dict objectForKey:kProductShipDate2] && ![[dict objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]){
             endDate = [df dateFromString:[dict objectForKey:kProductShipDate2]];
         }
+
+//        if (endDate < startDate)
+//            endDate = startDate;
         
         DLog(@"got %@(%@) - %@(%@)",startDate,[dict objectForKey:kProductShipDate1],endDate,[dict objectForKey:kProductShipDate2]);
         
@@ -861,6 +865,7 @@
         [comps setDay:1];
         
         [dateList addObject: startDate];
+
         NSDate *currentDate = startDate;
         // add one the first time through, so that we can use NSOrderedAscending (prevents millisecond infinite loop)
         currentDate = [currentCalendar dateByAddingComponents:comps toDate:currentDate  options:0];
@@ -879,6 +884,8 @@
     calView.modalPresentationStyle = UIModalPresentationFormSheet;
     
     CICalendarViewController __weak *weakCalView = calView;
+
+    //calView.startDate = [NSDate date];
     
     calView.cancelTouched = ^{
         DLog(@"calender canceled");
@@ -1139,11 +1146,7 @@
     }
     else {
         [oldCart setEditableQty:[self getNumberFromDictionary:dict forKey:kEditableQty asFloat:NO]];
-
-        //TODO: Need to update ship dates at this point in case we are editing an order that already
-        //  existed when the app was launched.
         [self updateShipDatesInCart:dates forId:[[dict objectForKey:@"id"] integerValue]];
-
     }
     
     [coreDataManager saveObjects];
@@ -1161,8 +1164,8 @@
     [cartValues setValue:[dict objectForKey:kProductDescr] forKey:kProductDescr];
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kProductDirShip asFloat:NO] forKey:kProductDirShip];
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kProductDiscount asFloat:YES] forKey:kProductDiscount];
-    [cartValues setValue:[self getNumberFromDictionary:dict forKey:kEditablePrice asFloat:NO] forKey:kEditablePrice];
-    [cartValues setValue:[self getNumberFromDictionary:dict forKey:kEditableQty asFloat:NO] forKey:kEditableQty];
+    [cartValues setValue:[self getNumberFromDictionary:dict forKey:kEditablePrice asFloat:YES] forKey:kEditablePrice];
+    [cartValues setValue:[self getNumberFromDictionary:dict forKey:kEditableQty asFloat:YES] forKey:kEditableQty];
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kEditableVoucher asFloat:YES] forKey:kEditableVoucher];
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kID asFloat:NO] forKey:kID];
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kProductIdx asFloat:NO] forKey:kProductIdx];

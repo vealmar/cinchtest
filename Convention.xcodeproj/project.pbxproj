@@ -325,6 +325,8 @@
 		C7BA94F81653462C00E6705B /* Order+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Order+Extensions.m"; sourceTree = "<group>"; };
 		C7EB25E61665CA8D00B1CD4F /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = Reachability/Reachability.h; sourceTree = SOURCE_ROOT; };
 		C7EB25E71665CA8D00B1CD4F /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
+		C7EB25EE1667216000B1CD4F /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Order.h; path = Convention/Order.h; sourceTree = "<group>"; };
+		C7EB25EF1667216000B1CD4F /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Order.m; path = Convention/Order.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -375,6 +377,8 @@
 			isa = PBXGroup;
 			children = (
 				335A4306164D7529007B872A /* Settings.bundle */,
+				C7EB25EE1667216000B1CD4F /* Order.h */,
+				C7EB25EF1667216000B1CD4F /* Order.m */,
 				6EDBF908154EFD8000D4A0E7 /* CI_72logo.png */,
 				6EDBF905154EFD6100D4A0E7 /* CI_144logo.png */,
 				6E11856B145F2F2200568ED1 /* Convention */,
