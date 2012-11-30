@@ -841,7 +841,7 @@
         }
         DLog(@"not in cell");
         
-        
+// FIXME: Setup calendar to show starting at current date
         NSDate* startDate = [[NSDate alloc]init];
         NSDate* endDate = [[NSDate alloc]init];
 
