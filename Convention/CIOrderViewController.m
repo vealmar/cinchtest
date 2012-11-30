@@ -25,12 +25,17 @@
 #import "StringManipulation.h"
 #import "AFHTTPClient.h"
 #import "AFJSONRequestOperation.h"
+#import "CoreDataUtil.h"
+#import "Order.h"
+#import "Cart.h"
 
 @interface CIOrderViewController (){
     int currentOrderID;
     BOOL isLoadingOrders;
     UITextField *activeField;
     PullToRefreshView *pull;
+    Order *orderToDelete;
+    NSInteger rowToDelete;
 }
 @end
 
@@ -83,6 +88,9 @@
 @synthesize managedObjectContext;
 
 bool showHud = true;
+
+#define kDeleteCompletedOrder 42
+#define kDeletePendingOrder 999
 
 #pragma mark - initializer
 
@@ -248,6 +256,7 @@ bool showHud = true;
                 self.orders = [NSMutableArray arrayWithArray:JSON];
                 DLog(@"order count: %i", self.orders.count);
                 
+                [self loadPartialOrders];
                 self.orderData = [self.orders mutableCopy];
                 
 //                [JSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -258,6 +267,7 @@ bool showHud = true;
                 if ([self.orders count] > 0) {
                     self.NoOrders.hidden = YES;
                 }
+                
                 cleanup();
                 
             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
@@ -270,15 +280,56 @@ bool showHud = true;
     [operation start];
 }
 
--(void)loadOrdersCleanup {
-    [pull finishedLoading];
-    self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
-    showHud = true;
-    isLoadingOrders = NO;
+-(void) loadPartialOrders {
+    NSArray *partialOrders = [[CoreDataUtil sharedManager] fetchObjects:@"Order" sortField:@"created_at"];
+    for (Order *order in partialOrders) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObject:@"" forKey:kAuthorizedBy];
+        [dict setObject:order.created_at forKey:kVendorCreatedAt];
+        [dict setObject:@"pending" forKey:kOrderStatus];
+        
+        NSMutableDictionary *_customer = [[NSMutableDictionary alloc] init];
+        [_customer setObject:order.billname forKey:kBillName];
+        [_customer setObject:[order.custid stringValue] forKey:kCustID];
+        [_customer setObject:[order.customer_id stringValue] forKey:@"id"];
+        
+        [dict setObject:_customer forKey:@"customer"];
+        [dict setObject:[order.customer_id stringValue] forKey:kOrderCustID];
+        [dict setObject:[NSString stringWithFormat:@"%d", [order.carts count]] forKey:kItemCount];
+        
+// TODO: setup line items
+        NSMutableDictionary *lineItems = [[NSMutableDictionary alloc] init];
+        [dict setObject:lineItems forKey:kItems];
+        
+        double itemTotal = 0.f;
+        for (int i=0; i < order.carts.count; i++) {
+            
+            Cart *lineItem = (Cart *)[order.carts objectAtIndex:i];
+            
+//            __autoreleasing NSError* err = nil;
+//            NSMutableDictionary* dict = [self.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
+//            
+//            double q = 0;
+//            if (err) {
+//                DLog(@"UT JSON error:%@",err);
+//                q = [self.qty.text doubleValue];
+//            }else{
+//                DLog(@"UT JSon got:%@", dict);
+//                for (NSString* key in dict.allKeys) {
+//                    q += [[dict objectForKey:key] doubleValue];
+//                }
+//            }
+            
+            itemTotal += [lineItem.editableQty doubleValue] * [lineItem.editablePrice doubleValue];
+        };
+        
+        [dict setObject:[NSNumber numberWithDouble:itemTotal] forKey:kTotal];
+        [dict setObject:[NSNumber numberWithInt:0] forKey:kVoucherTotal];
+        
+        [self.orders insertObject:dict atIndex:0];
+    }
 }
 
 #pragma mark - Order detail display
-
 
 -(void) displayOrderDetail:(NSDictionary *)detail {
     self.itemsDB = [NSDictionary dictionaryWithDictionary:detail];
@@ -334,10 +385,9 @@ bool showHud = true;
         //            DLog(@"items Json:%@",itemsDB);
         [self.itemsTable reloadData];
         
-        __block NSMutableArray* SDs = [NSMutableArray array];
-        
+        NSMutableArray* SDs = [NSMutableArray array];
         [self.itemsShipDates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            __block NSMutableArray* dates = (NSMutableArray*)obj;
+            NSMutableArray* dates = (NSMutableArray*)obj;
             [dates enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
                 NSDate* date = (NSDate*)obj1;
                 if (![SDs containsObject:date]) {
@@ -346,8 +396,7 @@ bool showHud = true;
             }];
         }];
         
-        __block NSString* sdtext = @"";
-        
+        NSString __block *sdtext = @"";
         [SDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if (idx!=0) {
                 sdtext = [sdtext stringByAppendingString:@", "];
@@ -359,6 +408,7 @@ bool showHud = true;
         }];
         
         self.shipdates.text = sdtext;
+        sdtext = nil;
         
         if (![[self.itemsDB objectForKey:kShipNotes] isKindOfClass:[NSNull class]]) {
             self.shipNotes.text = [self.itemsDB objectForKey:kShipNotes];
@@ -441,7 +491,7 @@ bool showHud = true;
             cell.tag = [[data objectForKey:kID] intValue];
         
         if ([data objectForKey:kOrderStatus] != nil) {
-            cell.orderStatus.text = [data objectForKey:kOrderStatus];
+            cell.orderStatus.text = [[data objectForKey:kOrderStatus] capitalizedString];
             if ([[cell.orderStatus.text lowercaseString] isEqualToString:@"pending"])
                 cell.orderStatus.textColor = [UIColor redColor];
             else
@@ -557,37 +607,90 @@ bool showHud = true;
             [self.sBar resignFirstResponder];
         }
         
-        self.EditorView.hidden = NO;
-        self.toolWithSave.hidden = NO;
-        self.orderContainer.hidden = NO;
-        self.OrderDetailScroll.hidden = NO;
-        
-        self.itemsAct.hidden = NO;
-        [self.itemsAct startAnimating];
-        
-        self.customer.text = @"";
-        self.authorizer.text = @"";
-        self.shipNotes.text = @"";
-        self.notes.text = @"";
-        self.itemsDB = nil;
-        self.itemsPrice = nil;
-        self.itemsQty = nil;
-        self.itemsVouchers = nil;
-        self.itemsShipDates = nil;
-        [self.itemsTable reloadData];
-        
-        CIOrderCell* cell = (CIOrderCell*)[self.sideTable cellForRowAtIndexPath:indexPath];
-        
-        self.customer.text = cell.Customer.text;
-        self.authorizer.text = cell.auth.text;
-        
-        self.EditorView.tag = cell.tag;
-        currentOrderID = cell.tag;
-
-        [self displayOrderDetail:[self.orders objectAtIndex:indexPath.row]];
+        NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
+        NSString *status = [[selectedOrder objectForKey:kOrderStatus] lowercaseString];
+        if (![status isEqualToString:@"pending"])
+        {
+            self.EditorView.hidden = NO;
+            self.toolWithSave.hidden = NO;
+            self.orderContainer.hidden = NO;
+            self.OrderDetailScroll.hidden = NO;
+            
+            self.itemsAct.hidden = NO;
+            [self.itemsAct startAnimating];
+            
+            self.customer.text = @"";
+            self.authorizer.text = @"";
+            self.shipNotes.text = @"";
+            self.notes.text = @"";
+            self.itemsDB = nil;
+            self.itemsPrice = nil;
+            self.itemsQty = nil;
+            self.itemsVouchers = nil;
+            self.itemsShipDates = nil;
+            [self.itemsTable reloadData];
+            
+            CIOrderCell* cell = (CIOrderCell*)[self.sideTable cellForRowAtIndexPath:indexPath];
+            
+            self.customer.text = cell.Customer.text;
+            self.authorizer.text = cell.auth.text;
+            
+            self.EditorView.tag = cell.tag;
+            currentOrderID = cell.tag;
+            
+            [self displayOrderDetail:[self.orders objectAtIndex:indexPath.row]];
+        } else {
+            
+            self.EditorView.hidden = YES;
+            self.toolWithSave.hidden = YES;
+            self.orderContainer.hidden = YES;
+            self.OrderDetailScroll.hidden = YES;
+            
+            [[[UIAlertView alloc] initWithTitle:@"TODO" message:@"Continue editing pending order here." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+        }
     }
     else if(tableView == self.itemsTable){
         
+    }
+}
+
+-(UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (tableView == self.sideTable) {
+//        NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
+//        NSString *status = [[selectedOrder objectForKey:kOrderStatus] lowercaseString];
+//        return [status isEqualToString:@"pending"] ? UITableViewCellEditingStyleDelete : UITableViewCellEditingStyleNone;
+        return UITableViewCellEditingStyleDelete;
+    }
+    else
+        return UITableViewCellEditingStyleNone;
+}
+
+-(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (tableView == self.sideTable) {
+        if (editingStyle == UITableViewCellEditingStyleDelete) {
+            NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"DELETE" message:@"Are you sure you want to delete this order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
+
+            if ([[[selectedOrder objectForKey:kOrderStatus] lowercaseString] isEqualToString:@"pending"]) {
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)",
+                                          [selectedOrder objectForKey:@"customer_id"], [[selectedOrder objectForKey:@"customer"] objectForKey:@"custid"]];
+                
+                orderToDelete = (Order *)[[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:predicate];
+                if (orderToDelete)
+                {
+                    rowToDelete = indexPath.row;
+//                    NSString *msg = [NSString stringWithFormat:@"Are you sure you want to delete the order for customer: %@?", cell.Customer.text];
+//                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Pending Order Deletion" message:msg delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
+                    [alert setTag:kDeletePendingOrder];
+                    [alert show];
+                }
+            } else {
+                self.itemsDB = [NSDictionary dictionaryWithDictionary:[self.orders objectAtIndex:indexPath.row]];
+                rowToDelete = indexPath.row;
+                [alert setTag:kDeleteCompletedOrder];
+                [alert show];
+            }
+        }
     }
 }
 
@@ -701,20 +804,26 @@ bool showHud = true;
     }
     NSString* start = [[[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] objectForKey:kProductShipDate1];
     NSString* end = [[[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] objectForKey:kProductShipDate2];
-    
-    if(start&&end&&![start isKindOfClass:[NSNull class]]&&![end isKindOfClass:[NSNull class]]&&start.length > 0 && end.length > 0){
+
+// FIXME: Setup calendar to show starting at current date
+
+    //NSDate *now = [NSDate date];
+    if(start && end && ![start isKindOfClass:[NSNull class]] && ![end isKindOfClass:[NSNull class]] && start.length > 0 && end.length > 0){
         startDate = [df dateFromString:start];
+//        if (startDate < now)
+//            startDate = now;
         endDate = [df dateFromString:end];
+//        if (endDate < startDate)
+//            endDate = startDate;
     }else{
-        DLog(@"bad luck on dates themselves, %@-%@",start, end);
         return;
     }
     
-    __block NSMutableArray *dateList = [NSMutableArray array];
     NSCalendar *currentCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
     NSDateComponents *comps = [[NSDateComponents alloc] init];
     [comps setDay:1];
     
+    NSMutableArray *dateList = [NSMutableArray array];
     [dateList addObject: startDate];
     NSDate *currentDate = startDate;
     // add one the first time through, so that we can use NSOrderedAscending (prevents millisecond infinite loop)
@@ -729,7 +838,6 @@ bool showHud = true;
     calView.cancelTouched = ^{
         DLog(@"calender canceled");
         [calViewW dismissViewControllerAnimated:YES completion:nil];
-        
         [self.itemsTable reloadData];
 		
     };
@@ -940,7 +1048,7 @@ bool showHud = true;
 
 - (IBAction)Delete:(id)sender {
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"DELETE" message:@"Are you sure you want to delete this order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
-    alert.tag = 42;
+    alert.tag = kDeleteCompletedOrder;
     [alert show];
 }
 
@@ -1033,7 +1141,7 @@ bool showHud = true;
 #pragma mark - UIAlertViewDelegate
 
 -(void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex{
-    if (alertView.tag == 42) {
+    if (alertView.tag == kDeleteCompletedOrder) {
         if (buttonIndex == 1) {
             MBProgressHUD* deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
             deleteHUD.labelText = @"Deleting Order";
@@ -1051,7 +1159,13 @@ bool showHud = true;
                 success:^(AFHTTPRequestOperation *operation, id responseObject) {
                     
                     DLog(@"DELETE success");
-                    [self Return];
+//                    [self Return];
+                    [self deleteRowFromOrderListAtIndex:rowToDelete];
+                    self.itemsDB = nil;
+                    self.EditorView.hidden = YES;
+                    self.toolWithSave.hidden = YES;
+                    self.orderContainer.hidden = YES;
+                    self.OrderDetailScroll.hidden = YES;
                     [deleteHUD hide:NO];
                     
                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -1064,7 +1178,30 @@ bool showHud = true;
             
             [operation start];
         }
+    } else if (alertView.tag == kDeletePendingOrder && buttonIndex == 1) {
+        if (orderToDelete) {
+            MBProgressHUD* deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+            deleteHUD.labelText = @"Deleting Order";
+            [deleteHUD show:NO];
+
+            if ([[CoreDataUtil sharedManager] deleteObjectWithConfirmation:orderToDelete])
+            {
+                [self deleteRowFromOrderListAtIndex:rowToDelete];
+            } else {
+                [[[UIAlertView alloc] initWithTitle:@"Error" message:@"Error deleting order from data store." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+            }
+            
+            orderToDelete = nil;
+            [deleteHUD hide:NO];
+        }
     }
+}
+
+- (void)deleteRowFromOrderListAtIndex:(NSInteger)index {
+    NSDictionary *anOrder = [self.orders objectAtIndex:index];
+    [self.orderData removeObjectIdenticalTo:anOrder];
+    [self.orders removeObjectAtIndex:index];
+    [self.sideTable reloadData];
 }
 
 #pragma mark - UISearchBarDelegate
@@ -1086,9 +1223,9 @@ bool showHud = true;
 			NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
 			NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
             NSString *authorized = [dict objectForKey:@"authorized"];
-			DLog(@"Bill Name: %@", storeName);
-			DLog(@"Cust Id: %@", custId);
-            DLog(@"Authorized: %@", authorized);
+//			DLog(@"Bill Name: %@", storeName);
+//			DLog(@"Cust Id: %@", custId);
+//            DLog(@"Authorized: %@", authorized);
 			
 			return [[storeName uppercaseString] contains:[searchText uppercaseString]] ||
                     [[custId uppercaseString] hasPrefix:[searchText uppercaseString]] ||
