@@ -33,6 +33,7 @@
         <relationship name="shipdates" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ShipDate" inverseName="cart" inverseEntity="ShipDate" syncable="YES"/>
     </entity>
     <entity name="Order" representedClassName="Order" syncable="YES">
+        <attribute name="billname" attributeType="String" syncable="YES"/>
         <attribute name="created_at" attributeType="Date" syncable="YES"/>
         <attribute name="custid" attributeType="Integer 32" indexed="YES" syncable="YES"/>
         <attribute name="customer_id" attributeType="Integer 32" indexed="YES" syncable="YES"/>
@@ -46,7 +47,7 @@
     </entity>
     <elements>
         <element name="Cart" positionX="90" positionY="11" width="128" height="493"/>
-        <element name="Order" positionX="-200" positionY="18" width="128" height="133"/>
+        <element name="Order" positionX="-200" positionY="27" width="128" height="148"/>
         <element name="ShipDate" positionX="331" positionY="215" width="128" height="73"/>
     </elements>
 </model>
