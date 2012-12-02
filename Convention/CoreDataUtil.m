@@ -30,13 +30,23 @@ static CoreDataUtil * sharedInstance;
     return sharedInstance;
 }
 
+-(NSManagedObject *) createNewEntity:(NSString *)entityDescription
+                          forContext:(NSManagedObjectContext *)managedObjectContext {
+    
+	return [NSEntityDescription insertNewObjectForEntityForName:entityDescription
+                                         inManagedObjectContext:managedObjectContext];
+}
+
 -(NSManagedObject *) createNewEntity:(NSString *)entityDescription {
 	
 	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
 	
-	return [NSEntityDescription insertNewObjectForEntityForName:entityDescription
-                                         inManagedObjectContext:delegate.managedObjectContext];
+//	return [NSEntityDescription insertNewObjectForEntityForName:entityDescription
+//                                         inManagedObjectContext:delegate.managedObjectContext];
+    
+    return [self createNewEntity:entityDescription forContext:delegate.managedObjectContext];
 }
+
 
 -(NSArray *) fetchObjects:(NSString *)entityDescription sortField:(NSString *)sortField {
 	

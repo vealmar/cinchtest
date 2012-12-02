@@ -25,23 +25,22 @@
 #pragma mark Singleton
 + (CoreDataUtil*)sharedManager;
 
- 
-
-
 -(NSManagedObject *) createNewEntity:(NSString *)entityDescription;
+-(NSManagedObject *) createNewEntity:(NSString *)entityDescription
+                          forContext:(NSManagedObjectContext *)managedObjectContext;
 
 -(NSArray *) fetchObjects:(NSString *)entityDescription sortField:(NSString *)sortField;
 
--(NSFetchedResultsController *) fetchGroupedObjects:(NSString *)entityDescription 
-										  sortField:(NSString *)sortField 
+-(NSFetchedResultsController *) fetchGroupedObjects:(NSString *)entityDescription
+										  sortField:(NSString *)sortField
 									  withPredicate:(NSPredicate *)predicate;
 
--(NSManagedObject *) fetchObject:(NSString *)entityDescription 
-										withPredicate:(NSPredicate *)predicate;
+-(NSManagedObject *) fetchObject:(NSString *)entityDescription
+                   withPredicate:(NSPredicate *)predicate;
 
 
--(NSArray *) fetchArray:(NSString *)entityDescription 
-			withPredicate:(NSPredicate *)predicate;
+-(NSArray *) fetchArray:(NSString *)entityDescription
+          withPredicate:(NSPredicate *)predicate;
 
 - (void) deleteAllObjects: (NSString *) entityDescription;
 
