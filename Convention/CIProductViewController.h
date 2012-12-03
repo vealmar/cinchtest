@@ -12,10 +12,10 @@
 #import "CICartViewController.h"
 #import "CIProductCell.h"
 #import "CIStoreQtyTableViewController.h"
-#import "Order.h"
 #import "ReachabilityDelegation.h"
 
 @class CIViewController;
+@class Order;
 
 @protocol CIProductViewDelegate <NSObject>
 
@@ -42,11 +42,12 @@
 @property (nonatomic, strong) NSArray* customerDB;
 @property (nonatomic, strong) NSMutableDictionary* productCart;
 @property (nonatomic) BOOL showPrice;
-
+@property (nonatomic) BOOL showCustomers;
 @property (nonatomic) BOOL backFromCart;
 @property (nonatomic) BOOL finishOrder;
 @property (nonatomic) BOOL multiStore;
 @property (nonatomic) int tOffset;
+@property (nonatomic) int customerId;
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property (nonatomic, strong) UIPopoverController *popoverController;

@@ -26,4 +26,8 @@
     [self didChangeValueForKey:@"carts"];
 }
 
+-(BOOL)isMultiStore {
+    return [self.multiStore boolValue];
+}
+
 @end

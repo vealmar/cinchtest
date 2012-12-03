@@ -11,11 +11,9 @@
 
 @protocol ReachabilityDelegate;
 
-
 /**
  
- 
-  Implement this delegate in order to receive Reachability events. This is a standard objective-C delegate
+ Implement this delegate in order to receive Reachability events. This is a standard objective-C delegate
  pattern. 
  
  example usage...
@@ -23,14 +21,11 @@
  reachDelegation = 
  [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:[[SettingsManager sharedManager] lookupSettingByString:CHECK_URL]];	
  
- 
- 
  */
 @interface ReachabilityDelegation : NSObject {
 	
 	id <ReachabilityDelegate> delegate;
 	Reachability *reach;
-    
 }
 
 @property (strong) id <ReachabilityDelegate> delegate;
@@ -44,19 +39,11 @@
 @end
 
 
- 
-
-
 @protocol ReachabilityDelegate <NSObject>
 
 //@optional
 
-
 - (void)networkLost;
-
 - (void)networkRestored;
-
-
- 
 
 @end

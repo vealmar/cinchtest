@@ -17,11 +17,10 @@
 
 @implementation CICustomerInfoViewController {
     MBProgressHUD* refreshing;
+    NSString *selectedCustomer;
 }
 @synthesize tablelayer;
-@synthesize customerID;
 @synthesize custTable;
-@synthesize scroll;
 @synthesize custView;
 @synthesize search;
 @synthesize delegate;
@@ -43,26 +42,16 @@
     return self;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc that aren't in use.
-}
-
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     [self.custTable reloadData];
-    if ([self.tableData count] > 0) {
-        self.search.text = [[self.tableData objectAtIndex:0] objectForKey:kCustID];
-        [self.custTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
-    }
-    else
-        self.customerID.text = @"";
+//    if ([self.tableData count] > 0) {
+//        self.search.text = [[self.tableData objectAtIndex:0] objectForKey:kCustID];
+//        [self.custTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
+//    }
     
     self.tablelayer.layer.masksToBounds = YES;
     self.tablelayer.layer.cornerRadius = 10.f;
@@ -85,11 +74,11 @@
 
     NSMutableArray* arr = [NSMutableArray array];
     for (int i=0; i<[customerData count]; i++) {
-        if (i==0) {
-            DLog(@"search before:%@",self.search.text);
-            self.search.text = [[customerData objectAtIndex:0] objectForKey:kCustID];
-            DLog(@"search after:%@, %@",self.search.text,[[customerData objectAtIndex:0] objectForKey:kCustID]);
-        }
+//        if (i==0) {
+//            DLog(@"search before:%@",self.search.text);
+//            self.search.text = [[customerData objectAtIndex:0] objectForKey:kCustID];
+//            DLog(@"search after:%@, %@",self.search.text,[[customerData objectAtIndex:0] objectForKey:kCustID]);
+//        }
         NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:[[customerData objectAtIndex:i] objectForKey:kCustID],kCustID,[[customerData objectAtIndex:i] objectForKey:kBillName],kBillName,[[customerData objectAtIndex:i] objectForKey:kID],kID,[[customerData objectAtIndex:i] objectForKey:kEmail],kEmail,[[customerData objectAtIndex:i] objectForKey:kStores],kStores, nil];
         [arr addObject:dict];
     }
@@ -100,8 +89,8 @@
     self.filteredtableData = [arr mutableCopy];
     [self.custTable reloadData];
     
-    if ([self.tableData count] > 0)
-        [self.custTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
+//    if ([self.tableData count] > 0)
+//        [self.custTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
     
     if (refreshing) {
         [refreshing hide:YES];
@@ -126,9 +115,7 @@
 
 - (void)viewDidUnload
 {
-    [self setCustomerID:nil];
     [self setCustTable:nil];
-    [self setScroll:nil];
     [self setCustView:nil];
     [self setSearch:nil];
     [self setTablelayer:nil];
@@ -145,7 +132,7 @@
 
 - (IBAction)submit:(id)sender {
     //if (IS_EMPTY_STRING(self.customerID.text)||[self.customerID.text isEqualToString:@"New Customer"]) {
-        if (!IS_EMPTY_STRING(self.search.text)) {
+        if (!IS_EMPTY_STRING(selectedCustomer)) {
         //if (self.delegate) {
             //NSDictionary* arr = [[NSDictionary alloc] initWithObjectsAndKeys:customerName.text,kCustName,storeName.text,kStoreName,city.text,kCity, nil];
             //[self.delegate setCustomerInfo:arr];
@@ -157,7 +144,8 @@
                     if ([obj isKindOfClass:[NSDictionary class]]) {
                         NSDictionary* dict = (NSDictionary*)obj;
                         
-                        if ([[dict objectForKey:kCustID]isEqualToString:self.search.text]){//self.customerID.text]) {
+//                        if ([[dict objectForKey:kCustID]isEqualToString:self.search.text]){//self.customerID.text]) {
+                        if ([[dict objectForKey:kCustID] isEqualToString:selectedCustomer]) {
                             custid = [[dict objectForKey:kID] intValue];
                             results = [dict copy];
                             *stop = YES;
@@ -211,10 +199,8 @@
 }
 
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
-    if (self.filteredtableData) {
-        return [self.filteredtableData count];
-    }
-    return 0;
+    
+    return self.filteredtableData != nil ? [self.filteredtableData count] : 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -240,105 +226,99 @@
 {
     DLog(@"customer details:%@",[self.filteredtableData objectAtIndex:[indexPath row]]);
     //self.customerID.text = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
-    self.search.text = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
+
+//    self.search.text = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
+    selectedCustomer = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
+
+    [self.search resignFirstResponder];
+//    [tableView becomeFirstResponder];
+//    [tableView resignFirstResponder];
 }
 
-//method to move the view up/down whenever the keyboard is shown/dismissed
-//method to move the view up/down whenever the keyboard is shown/dismissed
--(void)setViewMovedUp:(BOOL)movedUp
-{
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-    
-    CGRect rect = self.scroll.frame;
-    if (movedUp)
-    {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
-        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += kOFFSET_FOR_KEYBOARD;//was -
-        //rect.size.height += kOFFSET_FOR_KEYBOARD;
-    }
-    else
-    {
-        // revert back to the normal state.
-        rect.origin.y -= (kOFFSET_FOR_KEYBOARD-15);//was +
-        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
-    }
-    self.scroll.contentOffset = rect.origin;
-    
-    [UIView commitAnimations];
-}
--(void)setViewMovedUpDouble:(BOOL)movedUp
-{
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-    
-    CGRect rect = self.scroll.frame;
-    if (movedUp)
-    {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
-        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += kOFFSET_FOR_KEYBOARD*2;//was -
-        //rect.size.height += kOFFSET_FOR_KEYBOARD;
-    }
-    else
-    {
-        // revert back to the normal state.
-        rect.origin.y -= (kOFFSET_FOR_KEYBOARD-7);//was +
-        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
-    }
-    self.scroll.contentOffset = rect.origin;
-    
-    [UIView commitAnimations];
-}
-
--(void)textViewDidBeginEditing:(UITextView *)sender
-{
-    
-}
-
--(void)textViewDidEndEditing:(UITextView *)sender
-{
-    
-}
-
-- (void)keyboardWillShow:(NSNotification *)notif
-{
-    //keyboard will be shown now. depending for which textfield is active, move up or move down the view appropriately
-    
-    
-}
+////method to move the view up/down whenever the keyboard is shown/dismissed
+////method to move the view up/down whenever the keyboard is shown/dismissed
+//-(void)setViewMovedUp:(BOOL)movedUp
+//{
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
+//    
+//    CGRect rect = self.scroll.frame;
+//    if (movedUp)
+//    {
+//        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
+//        // 2. increase the size of the view so that the area behind the keyboard is covered up.
+//        rect.origin.y += kOFFSET_FOR_KEYBOARD;//was -
+//        //rect.size.height += kOFFSET_FOR_KEYBOARD;
+//    }
+//    else
+//    {
+//        // revert back to the normal state.
+//        rect.origin.y -= (kOFFSET_FOR_KEYBOARD-15);//was +
+//        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
+//    }
+//    self.scroll.contentOffset = rect.origin;
+//    
+//    [UIView commitAnimations];
+//}
+//
+//-(void)setViewMovedUpDouble:(BOOL)movedUp
+//{
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
+//    
+//    CGRect rect = self.scroll.frame;
+//    if (movedUp)
+//    {
+//        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
+//        // 2. increase the size of the view so that the area behind the keyboard is covered up.
+//        rect.origin.y += kOFFSET_FOR_KEYBOARD*2;//was -
+//        //rect.size.height += kOFFSET_FOR_KEYBOARD;
+//    }
+//    else
+//    {
+//        // revert back to the normal state.
+//        rect.origin.y -= (kOFFSET_FOR_KEYBOARD-7);//was +
+//        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
+//    }
+//    self.scroll.contentOffset = rect.origin;
+//    
+//    [UIView commitAnimations];
+//}
 
 - (void)viewWillAppear:(BOOL)animated
 {
     // register for keyboard notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) 
-                                                 name:UIKeyboardWillShowNotification object:self.view.window]; 
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) 
+//                                                 name:UIKeyboardWillShowNotification object:self.view.window]; 
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     // unregister for keyboard notifications while not visible.
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil]; 
+//    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil]; 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationCustomersLoaded object:nil];
 }
 
 #pragma mark UISearchBarDelegate
+
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     // only show the status bar’s cancel button while in edit mode
     searchBar.showsCancelButton = YES;
     searchBar.autocorrectionType = UITextAutocorrectionTypeNo;
     // flush the previous search content
-    [self.filteredtableData removeAllObjects];
-    self.filteredtableData = [tableData mutableCopy];
+//    [self.filteredtableData removeAllObjects];
+//    self.filteredtableData = [tableData mutableCopy];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-    searchBar.showsCancelButton = NO;
+//    searchBar.showsCancelButton = NO;
+    if ([searchBar isFirstResponder])
+        [searchBar resignFirstResponder];
     if (searchBar.text.length == 0) {
         self.filteredtableData = [tableData mutableCopy];
+        [self.custTable reloadData];
     }
 }
 
@@ -350,10 +330,8 @@
         [self.custTable reloadData];
         return;
     }
-    NSInteger counter = 0;
     for(NSDictionary *dict in tableData)
     {
-        //NSAutoreleasePool *pool = [[NSAutoreleasePool alloc]init];
         NSRange r = [[dict objectForKey:kCustID] rangeOfString:searchText options:NSCaseInsensitiveSearch];
         if(r.location != NSNotFound)
         {
@@ -368,19 +346,20 @@
                 [self.filteredtableData addObject:dict];
             }
         }
-        counter++;
-        //[pool release];
     }
     [self.custTable reloadData];
 }
+
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     // if a valid search was entered but the user wanted to cancel, bring back the main list content
+    searchBar.showsCancelButton = NO;
     [self.filteredtableData removeAllObjects];
-    [self.filteredtableData addObjectsFromArray:tableData];
+//    [self.filteredtableData addObjectsFromArray:tableData];
+    self.filteredtableData = [tableData mutableCopy];
     @try{
         [self.custTable reloadData];
-        self.search.text = [[self.filteredtableData objectAtIndex:0] objectForKey:kCustID];
+//        self.search.text = [[self.filteredtableData objectAtIndex:0] objectForKey:kCustID];
     }
     @catch(NSException *e){
         DLog(@"Exception:%@",e);
@@ -388,10 +367,11 @@
     [searchBar resignFirstResponder];
     //searchBar.text = @"";
 }
-// called when Search (in our case “Done”) button pressed
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
-{
-    [searchBar resignFirstResponder];
-}
+
+//// called when Search (in our case “Done”) button pressed
+//- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
+//{
+//    [searchBar resignFirstResponder];
+//}
 
 @end

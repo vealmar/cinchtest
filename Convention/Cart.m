@@ -2,7 +2,7 @@
 //  Cart.m
 //  Convention
 //
-//  Created by Kerry Sanders on 11/13/12.
+//  Created by Kerry Sanders on 12/2/12.
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
@@ -41,7 +41,7 @@
 @dynamic vendid;
 @dynamic vendor_id;
 @dynamic voucher;
-@dynamic shipdates;
 @dynamic order;
+@dynamic shipdates;
 
 @end

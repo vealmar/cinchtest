@@ -13,5 +13,6 @@
 
 -(Cart *)fetchCart:(int)productId;
 - (void)addCartsObject:(NSManagedObject *)value;
+-(BOOL)isMultiStore;
 
 @end

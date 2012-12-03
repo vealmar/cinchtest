@@ -9,7 +9,7 @@
         <attribute name="dirship" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="discount" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="editablePrice" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="editableQty" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="editableQty" attributeType="String" syncable="YES"/>
         <attribute name="editableVoucher" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
         <attribute name="id" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="idx" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -46,7 +46,7 @@
         <relationship name="cart" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Cart" inverseName="shipdates" inverseEntity="Cart" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Cart" positionX="90" positionY="11" width="128" height="493"/>
+        <element name="Cart" positionX="90" positionY="20" width="128" height="493"/>
         <element name="Order" positionX="-200" positionY="27" width="128" height="148"/>
         <element name="ShipDate" positionX="331" positionY="215" width="128" height="73"/>
     </elements>

@@ -106,6 +106,7 @@
 #define kOrderItemVoucher @"voucherPrice"
 #define kOrderItemShipDates @"shipdates"
 #define kOrderStatus @"status"
+#define kPartialOrder @"partial"
 
 #define kProductShowPrice @"showprc"
 #define kProductIdx @"idx"

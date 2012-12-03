@@ -2,7 +2,7 @@
 //  Cart.h
 //  Convention
 //
-//  Created by Kerry Sanders on 11/13/12.
+//  Created by Kerry Sanders on 12/2/12.
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
@@ -21,7 +21,7 @@
 @property (nonatomic, retain) NSNumber * dirship;
 @property (nonatomic, retain) NSNumber * discount;
 @property (nonatomic, retain) NSNumber * editablePrice;
-@property (nonatomic, retain) NSNumber * editableQty;
+@property (nonatomic, retain) NSString * editableQty;
 @property (nonatomic, retain) NSNumber * editableVoucher;
 @property (nonatomic, retain) NSNumber * id;
 @property (nonatomic, retain) NSNumber * idx;
@@ -41,8 +41,8 @@
 @property (nonatomic, retain) NSNumber * vendid;
 @property (nonatomic, retain) NSNumber * vendor_id;
 @property (nonatomic, retain) NSString * voucher;
-@property (nonatomic, retain) NSOrderedSet *shipdates;
 @property (nonatomic, retain) Order *order;
+@property (nonatomic, retain) NSOrderedSet *shipdates;
 @end
 
 @interface Cart (CoreDataGeneratedAccessors)

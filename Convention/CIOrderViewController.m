@@ -36,6 +36,7 @@
     PullToRefreshView *pull;
     Order *orderToDelete;
     NSInteger rowToDelete;
+    CIProductViewController* productView;
 }
 @end
 
@@ -89,8 +90,9 @@
 
 bool showHud = true;
 
-#define kDeleteCompletedOrder 42
-#define kDeletePendingOrder 999
+#define kDeleteCompletedOrder 10
+#define kDeletePartialOrder 11
+#define kEditPartialOrder 12
 
 #pragma mark - initializer
 
@@ -285,7 +287,7 @@ bool showHud = true;
     for (Order *order in partialOrders) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObject:@"" forKey:kAuthorizedBy];
         [dict setObject:order.created_at forKey:kVendorCreatedAt];
-        [dict setObject:@"pending" forKey:kOrderStatus];
+        [dict setObject:kPartialOrder forKey:kOrderStatus];
         
         NSMutableDictionary *_customer = [[NSMutableDictionary alloc] init];
         [_customer setObject:order.billname forKey:kBillName];
@@ -428,6 +430,37 @@ bool showHud = true;
     }
 }
 
+#pragma mark - Load Product View Conroller
+
+-(void) loadProductView:(BOOL)newOrder {
+    productView = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
+    productView.authToken = self.authToken;
+    productView.vendorGroup = self.vendorGroup;
+    productView.delegate = self;
+    productView.managedObjectContext = self.managedObjectContext;
+    productView.showCustomers = newOrder;
+    if (!newOrder) {
+        NSUInteger index = [self.orders indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+            return [[obj objectForKey:kID] intValue] == currentOrderID;
+        }];
+        if (index != NSNotFound) {
+            productView.customerId = [[[[self.orders objectAtIndex:index] objectForKey:@"customer"] objectForKey:kID] intValue];
+        }
+    }
+    [productView setTitle:@"Select Products"];//[venderInfo objectForKey:kName]];
+    if (venderInfo && venderInfo.count > 0) {
+        
+        NSString *venderHidePrice = [[venderInfo objectAtIndex:currentVender] objectForKey:kVenderHidePrice];
+        if(venderHidePrice != nil){
+            productView.showPrice = ![venderHidePrice boolValue];
+        }
+        
+        DLog(@"Vendor Name:%@, navTitle:%@",[[venderInfo objectAtIndex:currentVender] objectForKey:kName],productView.navBar.topItem.title);
+    }
+    
+    [self presentViewController:productView animated:NO completion:nil];
+}
+
 #pragma mark - UITableView Datasource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -492,7 +525,7 @@ bool showHud = true;
         
         if ([data objectForKey:kOrderStatus] != nil) {
             cell.orderStatus.text = [[data objectForKey:kOrderStatus] capitalizedString];
-            if ([[cell.orderStatus.text lowercaseString] isEqualToString:@"pending"])
+            if ([[cell.orderStatus.text lowercaseString] isEqualToString:kPartialOrder])
                 cell.orderStatus.textColor = [UIColor redColor];
             else
                 cell.orderStatus.textColor = [UIColor blackColor];
@@ -609,7 +642,7 @@ bool showHud = true;
         
         NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
         NSString *status = [[selectedOrder objectForKey:kOrderStatus] lowercaseString];
-        if (![status isEqualToString:@"pending"])
+        if (![status isEqualToString:kPartialOrder])
         {
             self.EditorView.hidden = NO;
             self.toolWithSave.hidden = NO;
@@ -646,7 +679,10 @@ bool showHud = true;
             self.orderContainer.hidden = YES;
             self.OrderDetailScroll.hidden = YES;
             
-            [[[UIAlertView alloc] initWithTitle:@"TODO" message:@"Continue editing pending order here." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to edit this pending order?"
+                                       delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Edit", nil];
+            [alert setTag:kEditPartialOrder];
+            [alert show];
         }
     }
     else if(tableView == self.itemsTable){
@@ -656,9 +692,6 @@ bool showHud = true;
 
 -(UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
-//        NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
-//        NSString *status = [[selectedOrder objectForKey:kOrderStatus] lowercaseString];
-//        return [status isEqualToString:@"pending"] ? UITableViewCellEditingStyleDelete : UITableViewCellEditingStyleNone;
         return UITableViewCellEditingStyleDelete;
     }
     else
@@ -671,7 +704,7 @@ bool showHud = true;
             NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
             UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"DELETE" message:@"Are you sure you want to delete this order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
 
-            if ([[[selectedOrder objectForKey:kOrderStatus] lowercaseString] isEqualToString:@"pending"]) {
+            if ([[[selectedOrder objectForKey:kOrderStatus] lowercaseString] isEqualToString:kPartialOrder]) {
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)",
                                           [selectedOrder objectForKey:@"customer_id"], [[selectedOrder objectForKey:@"customer"] objectForKey:@"custid"]];
                 
@@ -681,7 +714,7 @@ bool showHud = true;
                     rowToDelete = indexPath.row;
 //                    NSString *msg = [NSString stringWithFormat:@"Are you sure you want to delete the order for customer: %@?", cell.Customer.text];
 //                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Pending Order Deletion" message:msg delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
-                    [alert setTag:kDeletePendingOrder];
+                    [alert setTag:kDeletePartialOrder];
                     [alert show];
                 }
             } else {
@@ -907,27 +940,7 @@ bool showHud = true;
 #pragma mark - Events
 
 - (IBAction)AddNewOrder:(id)sender {
-    
-    CIProductViewController* page;
-    
-    page = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
-    page.authToken = self.authToken;
-    page.vendorGroup = self.vendorGroup;
-    page.delegate = self;
-    page.managedObjectContext = self.managedObjectContext;
-    
-    [page setTitle:@"Select Products"];//[venderInfo objectForKey:kName]];
-    if (venderInfo && venderInfo.count > 0) {
-        
-        NSString *venderHidePrice = [[venderInfo objectAtIndex:currentVender] objectForKey:kVenderHidePrice];
-        if(venderHidePrice != nil){
-            page.showPrice = ![venderHidePrice boolValue];
-        }
-        
-        DLog(@"Vendor Name:%@, navTitle:%@",[[venderInfo objectAtIndex:currentVender] objectForKey:kName],page.navBar.topItem.title);
-    }
-    
-    [self presentViewController:page animated:NO completion:nil];
+    [self loadProductView:YES];
 }
 
 -(void)logout
@@ -1141,44 +1154,37 @@ bool showHud = true;
 #pragma mark - UIAlertViewDelegate
 
 -(void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex{
-    if (alertView.tag == kDeleteCompletedOrder) {
-        if (buttonIndex == 1) {
-            MBProgressHUD* deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
-            deleteHUD.labelText = @"Deleting Order";
-            [deleteHUD show:NO];
-            
-            NSURL *url = [NSURL URLWithString:kDBORDEREDITS([[self.itemsDB objectForKey:@"id"] integerValue])];
-            AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
-            
-            NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
-            
-//            NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
-//            [request setHTTPMethod:@"DELETE"];
-            
-            AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
-                success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                    
-                    DLog(@"DELETE success");
-//                    [self Return];
-                    [self deleteRowFromOrderListAtIndex:rowToDelete];
-                    self.itemsDB = nil;
-                    self.EditorView.hidden = YES;
-                    self.toolWithSave.hidden = YES;
-                    self.orderContainer.hidden = YES;
-                    self.OrderDetailScroll.hidden = YES;
-                    [deleteHUD hide:NO];
-                    
-                } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                    
-                    DLog(@"DELETE failed");
-                    NSString *errorMsg = [NSString stringWithFormat:@"Error deleting order. %@", error.localizedDescription];
-                    [[[UIAlertView alloc] initWithTitle:@"Error" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-                    [deleteHUD hide:NO];
-                }];
-            
-            [operation start];
-        }
-    } else if (alertView.tag == kDeletePendingOrder && buttonIndex == 1) {
+    if (alertView.tag == kDeleteCompletedOrder && buttonIndex == 1) {
+        MBProgressHUD* deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+        deleteHUD.labelText = @"Deleting Order";
+        [deleteHUD show:NO];
+        
+        NSURL *url = [NSURL URLWithString:kDBORDEREDITS([[self.itemsDB objectForKey:@"id"] integerValue])];
+        AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
+        NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
+        AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
+            success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                
+                DLog(@"DELETE success");
+                //                    [self Return];
+                [self deleteRowFromOrderListAtIndex:rowToDelete];
+                self.itemsDB = nil;
+                self.EditorView.hidden = YES;
+                self.toolWithSave.hidden = YES;
+                self.orderContainer.hidden = YES;
+                self.OrderDetailScroll.hidden = YES;
+                [deleteHUD hide:NO];
+                
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                
+                DLog(@"DELETE failed");
+                NSString *errorMsg = [NSString stringWithFormat:@"Error deleting order. %@", error.localizedDescription];
+                [[[UIAlertView alloc] initWithTitle:@"Error" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+                [deleteHUD hide:NO];
+            }];
+        
+        [operation start];
+    } else if (alertView.tag == kDeletePartialOrder && buttonIndex == 1) {
         if (orderToDelete) {
             MBProgressHUD* deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
             deleteHUD.labelText = @"Deleting Order";
@@ -1193,6 +1199,14 @@ bool showHud = true;
             
             orderToDelete = nil;
             [deleteHUD hide:NO];
+        }
+    } else if (alertView.tag == kEditPartialOrder) {
+        if (buttonIndex == 1) {
+            [self loadProductView:NO];
+        } else {
+            NSIndexPath *selection = [self.sideTable indexPathForSelectedRow];
+            if (selection)
+                [self.sideTable deselectRowAtIndexPath:selection animated:YES];
         }
     }
 }

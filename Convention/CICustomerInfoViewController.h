@@ -15,11 +15,9 @@
 
 @end
 
-@interface CICustomerInfoViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UITextViewDelegate,UISearchBarDelegate>
+@interface CICustomerInfoViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UISearchBarDelegate>
 @property (unsafe_unretained, nonatomic) IBOutlet UIView *tablelayer;
-@property (unsafe_unretained, nonatomic) IBOutlet UITextField *customerID;
 @property (unsafe_unretained, nonatomic) IBOutlet UITableView *custTable;
-@property (strong, nonatomic) IBOutlet UIScrollView *scroll;
 @property (strong, nonatomic) IBOutlet UIView *custView;
 @property (unsafe_unretained, nonatomic) IBOutlet UISearchBar *search;
 
