@@ -2,7 +2,7 @@
 //  Order.m
 //  Convention
 //
-//  Created by Kerry Sanders on 11/28/12.
+//  Created by Kerry Sanders on 12/5/12.
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
@@ -12,12 +12,12 @@
 
 @implementation Order
 
+@dynamic billname;
 @dynamic created_at;
 @dynamic custid;
 @dynamic customer_id;
 @dynamic multiStore;
 @dynamic status;
-@dynamic billname;
 @dynamic carts;
 
 @end
