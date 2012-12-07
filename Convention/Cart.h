@@ -2,7 +2,7 @@
 //  Cart.h
 //  Convention
 //
-//  Created by Kerry Sanders on 12/5/12.
+//  Created by Kerry Sanders on 12/6/12.
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
@@ -23,7 +23,7 @@
 @property (nonatomic) float editablePrice;
 @property (nonatomic, retain) NSString * editableQty;
 @property (nonatomic) float editableVoucher;
-@property (nonatomic) int32_t id;
+@property (nonatomic) int32_t cartId;
 @property (nonatomic) int32_t idx;
 @property (nonatomic) int32_t import_id;
 @property (nonatomic, retain) NSString * initial_show;
@@ -53,6 +53,7 @@
 - (void)removeShipdatesAtIndexes:(NSIndexSet *)indexes;
 - (void)replaceObjectInShipdatesAtIndex:(NSUInteger)idx withObject:(ShipDate *)value;
 - (void)replaceShipdatesAtIndexes:(NSIndexSet *)indexes withShipdates:(NSArray *)values;
+- (void)addShipdatesObject:(ShipDate *)value;
 - (void)removeShipdatesObject:(ShipDate *)value;
 - (void)addShipdates:(NSOrderedSet *)values;
 - (void)removeShipdates:(NSOrderedSet *)values;

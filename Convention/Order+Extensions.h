@@ -11,7 +11,6 @@
 
 @interface Order (Extensions)
 
--(Cart *)fetchCart:(int)productId;
 - (void)addCartsObject:(NSManagedObject *)value;
 
 @end

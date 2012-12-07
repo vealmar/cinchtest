@@ -8,14 +8,12 @@
 
 #import <Foundation/Foundation.h>
  
-
 /**
  
  ConnectionManager will manage several different types of connections to HTTP or HTTPS in an automated fashion.
  This class works well when you need to make a quick HTTP call. 
- 
- 
- */
+
+**/
 
 @interface CoreDataUtil : NSObject {
 		
@@ -29,19 +27,29 @@
 
 -(NSArray *) fetchObjects:(NSString *)entityDescription sortField:(NSString *)sortField;
 
--(NSFetchedResultsController *) fetchGroupedObjects:(NSString *)entityDescription
-										  sortField:(NSString *)sortField
+-(NSFetchedResultsController *) fetchGroupedObjects:(NSString *)entityDescription 
+										  sortField:(NSString *)sortField 
 									  withPredicate:(NSPredicate *)predicate;
 
--(NSManagedObject *) fetchObject:(NSString *)entityDescription withPredicate:(NSPredicate *)predicate;
+-(NSManagedObject *) fetchObject:(NSString *)entityDescription 
+										withPredicate:(NSPredicate *)predicate;
 
--(NSArray *) fetchArray:(NSString *)entityDescription
-          withPredicate:(NSPredicate *)predicate;
+-(NSArray *) fetchArrayWithTemplate:(NSString *)templateName subs:(NSDictionary *) subs;
+
+- (void) deleteObjectsWithTemplate:(NSString *)templateName  subs:(NSDictionary *) subs;
+
+
+-(NSManagedObject *) fetchObjectWithTemplate:(NSString *)templateName subs:(NSDictionary *) subs;
+
+
+-(NSArray *) fetchArray:(NSString *)entityDescription 
+			withPredicate:(NSPredicate *)predicate;
 
 - (void) deleteAllObjects: (NSString *) entityDescription;
 
-- (void) deleteObject: (NSManagedObject *) managedObject;
-- (BOOL) deleteObjectWithConfirmation: (NSManagedObject *) managedObject;
+- (BOOL) deleteObject: (NSManagedObject *) managedObject;
+
+- (void) deleteObjects: (NSString *) entityDescription  withPredicate:(NSPredicate *)predicate;
 
 - (void) saveObjects;
 

@@ -17,7 +17,6 @@
 		33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FD164D743E007B872A /* ErrorHandler.m */; };
 		33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FF164D743E007B872A /* SettingsManager.m */; };
 		33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F6164D740A007B872A /* GroupedObject.m */; };
-		33B7047F164DD29F00CF2E96 /* CoreDataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F8164D740A007B872A /* CoreDataUtil.m */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
 		6414A6F11496B9A10088586B /* bluebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6F01496B9A10088586B /* bluebutton.png */; };
 		6E07A38F1461D26E0043C22B /* CICustomerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E07A38D1461D26E0043C22B /* CICustomerInfoViewController.m */; };
@@ -127,7 +126,8 @@
 		C71653A41670F43600F65D02 /* popupadjustitemNEWNoEmail.png in Resources */ = {isa = PBXBuildFile; fileRef = C71653A31670F43600F65D02 /* popupadjustitemNEWNoEmail.png */; };
 		C71653A81671173900F65D02 /* SetupInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = C71653A71671173900F65D02 /* SetupInfo.m */; };
 		C721C9F81654BD69003F42A6 /* bump_build_number.sh in Resources */ = {isa = PBXBuildFile; fileRef = C721C9F71654BD69003F42A6 /* bump_build_number.sh */; };
-		C730D9BE166FFD270013B87B /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9BD166FFD270013B87B /* Cart.m */; };
+		C727F6901671A2AC00F2847D /* CoreDataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C727F68F1671A2AC00F2847D /* CoreDataUtil.m */; };
+		C727F6981671A88C00F2847D /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = C727F6971671A88C00F2847D /* Cart.m */; };
 		C730D9C1166FFD270013B87B /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9C0166FFD270013B87B /* Order.m */; };
 		C730D9C4166FFD270013B87B /* ShipDate.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9C3166FFD270013B87B /* ShipDate.m */; };
 		C730D9CF16705F330013B87B /* Cart+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9CE16705F330013B87B /* Cart+Extensions.m */; };
@@ -146,8 +146,6 @@
 		335A42F2164D7306007B872A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		335A42F5164D740A007B872A /* GroupedObject.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GroupedObject.h; sourceTree = "<group>"; };
 		335A42F6164D740A007B872A /* GroupedObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GroupedObject.m; sourceTree = "<group>"; };
-		335A42F7164D740A007B872A /* CoreDataUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreDataUtil.h; sourceTree = "<group>"; };
-		335A42F8164D740A007B872A /* CoreDataUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoreDataUtil.m; sourceTree = "<group>"; };
 		335A42FA164D743E007B872A /* DateUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
 		335A42FB164D743E007B872A /* DateUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		335A42FC164D743E007B872A /* ErrorHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ErrorHandler.h; sourceTree = "<group>"; };
@@ -319,8 +317,10 @@
 		C71653A61671173900F65D02 /* SetupInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupInfo.h; sourceTree = "<group>"; };
 		C71653A71671173900F65D02 /* SetupInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupInfo.m; sourceTree = "<group>"; };
 		C721C9F71654BD69003F42A6 /* bump_build_number.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = bump_build_number.sh; path = tools/bump_build_number.sh; sourceTree = SOURCE_ROOT; };
-		C730D9BC166FFD270013B87B /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
-		C730D9BD166FFD270013B87B /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
+		C727F68E1671A2AC00F2847D /* CoreDataUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataUtil.h; sourceTree = "<group>"; };
+		C727F68F1671A2AC00F2847D /* CoreDataUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataUtil.m; sourceTree = "<group>"; };
+		C727F6961671A88C00F2847D /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
+		C727F6971671A88C00F2847D /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
 		C730D9BF166FFD270013B87B /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
 		C730D9C0166FFD270013B87B /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		C730D9C2166FFD270013B87B /* ShipDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShipDate.h; sourceTree = "<group>"; };
@@ -562,10 +562,10 @@
 		6E7698A7153E8BD0003CF4AC /* models */ = {
 			isa = PBXGroup;
 			children = (
+				C727F68E1671A2AC00F2847D /* CoreDataUtil.h */,
+				C727F68F1671A2AC00F2847D /* CoreDataUtil.m */,
 				335A42F5164D740A007B872A /* GroupedObject.h */,
 				335A42F6164D740A007B872A /* GroupedObject.m */,
-				335A42F7164D740A007B872A /* CoreDataUtil.h */,
-				335A42F8164D740A007B872A /* CoreDataUtil.m */,
 				6E7698A8153E8BF2003CF4AC /* product.h */,
 				6E7698A9153E8BF2003CF4AC /* product.m */,
 				6EB78B3B153F7C0B005291EE /* customer.h */,
@@ -574,8 +574,8 @@
 				6EB78B3F153F7C17005291EE /* vender.m */,
 				6EB78B41153F7C23005291EE /* lineItem.h */,
 				6EB78B42153F7C23005291EE /* lineItem.m */,
-				C730D9BC166FFD270013B87B /* Cart.h */,
-				C730D9BD166FFD270013B87B /* Cart.m */,
+				C727F6961671A88C00F2847D /* Cart.h */,
+				C727F6971671A88C00F2847D /* Cart.m */,
 				C730D9CD16705F330013B87B /* Cart+Extensions.h */,
 				C730D9CE16705F330013B87B /* Cart+Extensions.m */,
 				C730D9BF166FFD270013B87B /* Order.h */,
@@ -931,7 +931,6 @@
 				33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */,
 				33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */,
 				33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */,
-				33B7047F164DD29F00CF2E96 /* CoreDataUtil.m in Sources */,
 				6E118572145F2F2200568ED1 /* main.m in Sources */,
 				6E118576145F2F2200568ED1 /* CIAppDelegate.m in Sources */,
 				6E118579145F2F2200568ED1 /* CIViewController.m in Sources */,
@@ -983,11 +982,12 @@
 				C73E2FDE165C810B00FE8DE9 /* ProductCart.xcmappingmodel in Sources */,
 				C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */,
 				C75A1B6816691E770008A466 /* UIAlertViewDelegateWithBlock.m in Sources */,
-				C730D9BE166FFD270013B87B /* Cart.m in Sources */,
 				C730D9C1166FFD270013B87B /* Order.m in Sources */,
 				C730D9C4166FFD270013B87B /* ShipDate.m in Sources */,
 				C730D9CF16705F330013B87B /* Cart+Extensions.m in Sources */,
 				C71653A81671173900F65D02 /* SetupInfo.m in Sources */,
+				C727F6901671A2AC00F2847D /* CoreDataUtil.m in Sources */,
+				C727F6981671A88C00F2847D /* Cart.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

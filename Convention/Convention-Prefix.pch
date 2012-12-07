@@ -26,5 +26,6 @@
     #import <MobileCoreServices/MobileCoreServices.h>
 #endif
 
+#define DELEGATE (CIAppDelegate *)[UIApplication sharedApplication].delegate
 
 #define GROUP_NAME @"groupName"

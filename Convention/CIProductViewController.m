@@ -29,7 +29,6 @@
 #import "AFHTTPClient.h"
 #import "CustomerDataController.h"
 #import "UIAlertViewDelegateWithBlock.h"
-#import "UIColor+Tools.h"
 
 @interface CIProductViewController (){
     //MBProgressHUD* loading;
@@ -39,7 +38,7 @@
     NSMutableSet* selectedIdx;
 //    void(^loadCustomers)(void);
     BOOL isInitialized;
-    CoreDataUtil* coreDataManager;
+//    CoreDataUtil* coreDataManager;
     UITapGestureRecognizer *gestureRecognizer;
     UITextField *currentTextField;
 }
@@ -97,7 +96,6 @@
         isInitialized = NO;
         _showCustomers = YES;
         currentTextField = nil;
-        coreDataManager = [CoreDataUtil sharedManager];
     }
 	
 	reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
@@ -649,7 +647,7 @@
             [item setObject:cart.editableQty forKey:kEditableQty];
         }
         [item setObject:[NSNumber numberWithFloat:cart.editableVoucher] forKey:kEditableVoucher];
-        [item setObject:[NSNumber numberWithInt:cart.id] forKey:@"id"];
+        [item setObject:[NSNumber numberWithInt:cart.cartId] forKey:@"id"];
         [item setObject:[NSNumber numberWithInt:cart.idx] forKey:kProductIdx];
         [item setObject:[NSNumber numberWithInt:cart.import_id] forKey:kVendorImportID];
         [item setObject:[NSString stringWithFormat:@"%d", cart.invtid] forKey:kProductInvtid];
@@ -678,7 +676,7 @@
         [item setObject:[NSNumber numberWithInt:cart.vendor_id] forKey:@"vendor_id"];
         [item setObject:cart.voucher forKey:kProductVoucher];
         
-        [self.productCart setObject:item forKey:[NSNumber numberWithInt:cart.id]];
+        [self.productCart setObject:item forKey:[NSNumber numberWithInt:cart.cartId]];
         
         NSNumber *invt_id = [NSNumber numberWithInt:cart.invtid];
         NSUInteger index = [self.resultData indexOfObjectPassingTest:^BOOL(id dictionary, NSUInteger idx, BOOL *stop) {
@@ -759,7 +757,7 @@
                     if (buttonIndex == 0) {
                         [self deserializeOrder];
                     } else {
-                        [coreDataManager deleteObject:_order];
+                        [[CoreDataUtil sharedManager] deleteObject:_order];
                         _order = nil;
                         [self createNewOrderForCustomer:customerId andStore:custId];
                     }
@@ -777,7 +775,7 @@
         if (_order.custid != [custId intValue])
             [_order setCustid:[custId intValue]];
         
-        [coreDataManager saveObjects];
+        [[CoreDataUtil sharedManager] saveObjects];
     }
 }
 
@@ -883,9 +881,9 @@
             
             NSString *status = [JSON valueForKey:@"status"];
             DLog(@"status = %@", status);
-            
-//            self.productCart = [NSMutableDictionary dictionary];
-//            [self.products reloadData];
+
+            [[CoreDataUtil sharedManager] deleteObject:_order];
+            _order = nil;
             [self Return];
             
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
@@ -1364,35 +1362,11 @@
 #pragma mark - Core Data routines
 
 - (Cart *)findCartForId:(int)cartId {
-//    NSManagedObjectContext *context = _order.managedObjectContext;
-//    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"order = %@", _order];
-//    
-//    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"Cart"];
-//    [request setPredicate:predicate];
-//    [request setRelationshipKeyPathsForPrefetching:[NSArray arrayWithObject:@"shipdates"]];
-//    [request setReturnsObjectsAsFaults:NO];
-//    
-//    Cart *cart = nil;
-//    NSError *error;
-//    NSArray *fetchedObjects = [context executeFetchRequest:request error:&error];
-//    if (!error && [fetchedObjects count] > 0) {
-//        NSUInteger index = [fetchedObjects indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-//            Cart *cartObj = (Cart *)obj;
-//            if (cartObj.id == cartId)
-//                return YES;
-//            return NO;
-//        }];
-//        if (index != NSNotFound) {
-//            cart = [fetchedObjects objectAtIndex:index];
-//        }
-//    }
-//    return cart;
-    
     for (Cart *cart in _order.carts) {
-        if (cart.id == cartId)
+        if (cart.cartId == cartId)
             return cart;
     }
-
+    
     return nil;
 }
 
@@ -1557,18 +1531,18 @@
 
 // Removes a Cart object from the data store for a given product id.
 -(void)removeLineItemFromProductCart:(int)productId {
-    Cart *oldCart = [_order fetchCart:productId];
+    Cart *oldCart = [self findCartForId:productId];
     if (oldCart) {
-        [coreDataManager deleteObject:oldCart];
-        [coreDataManager saveObjects];
+        [[CoreDataUtil sharedManager] deleteObject:oldCart];
+        [[CoreDataUtil sharedManager] saveObjects];
     }
 }
 
 -(void)cancelOrder {
     if (isInitialized && _order)
     {
-        [coreDataManager deleteObject:_order];
-        [coreDataManager saveObjects];
+        [[CoreDataUtil sharedManager] deleteObject:_order];
+        [[CoreDataUtil sharedManager] saveObjects];
     }
 }
 

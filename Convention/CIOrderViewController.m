@@ -1192,7 +1192,7 @@ bool showHud = true;
             deleteHUD.labelText = @"Deleting Order";
             [deleteHUD show:NO];
 
-            if ([[CoreDataUtil sharedManager] deleteObjectWithConfirmation:orderToDelete])
+            if ([[CoreDataUtil sharedManager] deleteObject:orderToDelete])
             {
                 [self deleteRowFromOrderListAtIndex:rowToDelete];
             } else {

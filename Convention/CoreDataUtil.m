@@ -10,13 +10,9 @@
 #import "GroupedObject.h"
 #import "CIAppDelegate.h"
 
-
-
 static CoreDataUtil * sharedInstance;
 
 @implementation CoreDataUtil
-
-
 
 #pragma mark Singleton Implementation
 
@@ -61,6 +57,7 @@ static CoreDataUtil * sharedInstance;
 	
 	return fetchedObjects;
 }
+
 
 -(NSFetchedResultsController *) fetchGroupedObjects:(NSString *)entityDescription
 										  sortField:(NSString *)sortField
@@ -110,22 +107,27 @@ static CoreDataUtil * sharedInstance;
 												   cacheName:nil]; //Don't use a cache
     
     return fetchedResultsController; //You can't autorelease this thing... the requestor must  do that.
+	
+	
 }
 
 -(NSManagedObject *) fetchObject:(NSString *)entityDescription
 				   withPredicate:(NSPredicate *)predicate {
+	
 	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
+	NSManagedObjectContext *context = delegate.managedObjectContext;
 	NSError *error;
 	
 	//Fetch the data....
 	NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-	NSEntityDescription *entity = [NSEntityDescription entityForName:entityDescription inManagedObjectContext:delegate.managedObjectContext];
+	NSEntityDescription *entity = [NSEntityDescription
+								   entityForName:entityDescription inManagedObjectContext:context];
 	[fetchRequest setEntity:entity];
-    
+
 	if (predicate != nil)
 		[fetchRequest setPredicate:predicate];
     
-	NSArray *fetchedObjects = [delegate.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+	NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
 	
 	DLog(@"Objects Found: %d", [fetchedObjects count]);
     
@@ -159,41 +161,118 @@ static CoreDataUtil * sharedInstance;
     return fetchedObjects;
 }
 
+
+
+-(NSArray *) fetchArrayWithTemplate:(NSString *)templateName subs:(NSDictionary *) subs {
+	
+	  
+	NSManagedObjectModel *model = [DELEGATE managedObjectModel];
+    NSManagedObjectContext *context = [DELEGATE managedObjectContext];
+	NSError *error;
+	
+	//Fetch the data....
+	NSFetchRequest *fetchRequest = [model fetchRequestFromTemplateWithName:templateName substitutionVariables:subs];
+	     
+ 
+    
+	  
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+	
+	DLog(@"Objects Found: %d", [fetchedObjects count]);
+    
+    return fetchedObjects;
+}
+
+
+-(NSManagedObject *) fetchObjectWithTemplate:(NSString *)templateName subs:(NSDictionary *) subs {
+	
+ 	NSManagedObjectModel *model = [DELEGATE managedObjectModel];
+    NSManagedObjectContext *context = [DELEGATE managedObjectContext];
+	NSError *error;
+	
+	//Fetch the data....
+	NSFetchRequest *fetchRequest = [model fetchRequestFromTemplateWithName:templateName substitutionVariables:subs];
+    
+    DLog(@"Fetch: %@", fetchRequest);
+    
+	NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+	
+	DLog(@"Objects Found: %d", [fetchedObjects count]);
+    
+ 	if ([fetchedObjects count] > 0)
+        return [fetchedObjects objectAtIndex:0];
+    else
+        return nil;
+}
+
+
+- (void) deleteObjectsWithTemplate:(NSString *)templateName  subs:(NSDictionary *) subs{
+	
+    NSManagedObjectModel *model = [DELEGATE managedObjectModel];
+    NSManagedObjectContext *context = [DELEGATE managedObjectContext];
+        
+	//Fetch the data....
+	NSFetchRequest *fetchRequest = [model fetchRequestFromTemplateWithName:templateName substitutionVariables:subs];
+    
+    NSError *error;
+    NSArray *items = [context executeFetchRequest:fetchRequest error:&error];
+    
+    for (NSManagedObject *managedObject in items) {
+        [context deleteObject:managedObject];
+        DLog(@"%@ object deleted",templateName);
+    }
+    if (![context save:&error]) {
+        DLog(@"Error deleting %@ - error:%@",templateName,error);
+    }
+}
+
+
 - (void) deleteAllObjects: (NSString *) entityDescription  {
 	
-	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
-	
+	 
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:entityDescription inManagedObjectContext:delegate.managedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:entityDescription inManagedObjectContext:[DELEGATE managedObjectContext]];
     [fetchRequest setEntity:entity];
 	
     NSError *error;
-    NSArray *items = [delegate.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    NSArray *items = [[DELEGATE managedObjectContext] executeFetchRequest:fetchRequest error:&error];
     
     for (NSManagedObject *managedObject in items) {
-        [delegate.managedObjectContext deleteObject:managedObject];
+        [[DELEGATE managedObjectContext] deleteObject:managedObject];
         DLog(@"%@ object deleted",entityDescription);
     }
-    if (![delegate.managedObjectContext save:&error]) {
+    if (![[DELEGATE managedObjectContext] save:&error]) {
         DLog(@"Error deleting %@ - error:%@",entityDescription,error);
     }
 }
 
-- (void) deleteObject: (NSManagedObject *) managedObject  {
+- (void) deleteObjects: (NSString *) entityDescription  withPredicate:(NSPredicate *)predicate {
+	 
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:entityDescription inManagedObjectContext:[DELEGATE managedObjectContext]];
+    [fetchRequest setEntity:entity];
+    
+    if (predicate != nil)
+		[fetchRequest setPredicate:predicate];
+
 	
-	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
     NSError *error;
-    [delegate.managedObjectContext deleteObject:managedObject];
-    if (![delegate.managedObjectContext save:&error]) {
-        DLog(@"Error deleting - error:%@",error);
+    NSArray *items = [[DELEGATE managedObjectContext] executeFetchRequest:fetchRequest error:&error];
+    
+    for (NSManagedObject *managedObject in items) {
+        [[DELEGATE managedObjectContext] deleteObject:managedObject];
+        DLog(@"%@ object deleted",entityDescription);
+    }
+    if (![[DELEGATE managedObjectContext] save:&error]) {
+        DLog(@"Error deleting %@ - error:%@",entityDescription,error);
     }
 }
 
--(BOOL) deleteObjectWithConfirmation:(NSManagedObject *) managedObject {
-	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
+- (BOOL) deleteObject: (NSManagedObject *) managedObject  {
+
     NSError *error;
-    [delegate.managedObjectContext deleteObject:managedObject];
-    if (![delegate.managedObjectContext save:&error]) {
+    [[DELEGATE managedObjectContext] deleteObject:managedObject];
+    if (![[DELEGATE managedObjectContext] save:&error]) {
         DLog(@"Error deleting - error:%@",error);
         return NO;
     }
@@ -201,8 +280,7 @@ static CoreDataUtil * sharedInstance;
 }
 
 - (void) saveObjects {
-    CIAppDelegate *delegate = (CIAppDelegate*)[UIApplication sharedApplication].delegate;
-    [delegate saveContext];
+     [DELEGATE  saveContext];
 }
 
 @end
