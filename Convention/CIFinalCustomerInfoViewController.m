@@ -9,8 +9,14 @@
 #import "CIFinalCustomerInfoViewController.h"
 #import "Macros.h"
 #import "config.h"
+#import "CoreDataUtil.h"
+#import "CIAppDelegate.h"
+#import "SetupInfo.h"
 
-@interface CIFinalCustomerInfoViewController ()
+@interface CIFinalCustomerInfoViewController () {
+    SetupInfo *authorizedBy;
+    NSManagedObjectContext *context;
+}
 
 @end
 
@@ -19,8 +25,6 @@
 @synthesize Notes;
 @synthesize Authorizer;
 @synthesize scroll;
-@synthesize sendEmail;
-@synthesize email;
 @synthesize delegate;
 @synthesize tableData;
 @synthesize filteredtableData;
@@ -46,14 +50,21 @@
 
 #pragma mark - View lifecycle
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    //[self.scroll addSubview:self.custView];
-    //for testing
-    //WARNING!!!
-    //self.Authorizer.text = @"testing";
-    // Do any additional setup after loading the view from its nib.
+-(void) viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    NSDictionary *subs = [NSDictionary dictionaryWithObject:@"authorizedBy" forKey:@"ITEMNAME"];
+    
+    CIAppDelegate *appDelegate = (CIAppDelegate *)[[UIApplication sharedApplication] delegate];
+    NSManagedObjectModel *model = appDelegate.managedObjectModel;
+    NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getAuthorizedBy" substitutionVariables:subs];
+    NSError *error = nil;
+    
+    context = appDelegate.managedObjectContext;
+    NSArray *results = [context executeFetchRequest:req error:&error];
+    if (!error && results && [results count] > 0) {
+        authorizedBy = [results objectAtIndex:0];
+        Authorizer.text = authorizedBy.value;
+    }
 }
 
 -(void) setCustomerData:(NSArray *)customerData
@@ -70,49 +81,26 @@
     [self setNotes:nil];
     [self setAuthorizer:nil];
     [self setScroll:nil];
-    [self setSendEmail:nil];
-    [self setEmail:nil];
     [super viewDidDisappear:animated];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    //for testing
-    //    self.Authorizer.text = @"testing";
-    
-    if (self.delegate) {
-        NSDictionary* dict = [self.delegate getCustomerInfo];
-        DLog(@"trying to load email:%@",dict);
-        if ([dict objectForKey:kEmail]&&![[dict objectForKey:kEmail] isKindOfClass:[NSNull class]]) {
-            self.email.text = [dict objectForKey:kEmail];
-        }else {
-            self.sendEmail.on = NO;
-        }
-    }else {
-        self.sendEmail.on = NO;
-    }
-    
-    // register for keyboard notifications
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
-//                                                 name:UIKeyboardWillShowNotification object:self.view.window];
-}
-
-//- (void)viewWillDisappear:(BOOL)animated
-//{
-//    // unregister for keyboard notifications while not visible.
-//    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-//}
-
-//- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-//{
-//    // Return YES for supported orientations
-//    return YES;
-//}
-
 - (IBAction)submit:(id)sender {
     if (!IS_EMPTY_STRING(self.Authorizer.text)) {
+        
+        if (![self.Authorizer.text isEqualToString:authorizedBy.value]) {
+            if (authorizedBy) {
+                authorizedBy.value = self.Authorizer.text;
+            } else {
+                SetupInfo *setup = (SetupInfo *)[[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
+                setup.item = @"authorizedBy";
+                setup.value = self.Authorizer.text;
+            }
+            NSError *error;
+            [context save:&error];
+        }
+        
         if (self.delegate) {
             NSMutableDictionary* dict = [[self.delegate getCustomerInfo] mutableCopy];
             DLog(@"customer data:%@",dict);
@@ -120,37 +108,9 @@
                 return;
             }
             
-            NSString* semail = @"";
-            NSString* sdEmail = @"0";
-            if (self.sendEmail.on) {
-                if (IS_POPULATED_STRING(self.email.text)) {
-                    BOOL stricterFilter = YES;
-                    NSString *stricterFilterString = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}";
-                    NSString *laxString = @".+@.+\\.[A-Za-z]{2}[A-Za-z]*";
-                    NSString *emailRegex = stricterFilter ? stricterFilterString : laxString;
-                    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
-                    // check that our NSRange object is not equal to range of NSNotFound
-                    if (![emailTest evaluateWithObject:self.email.text]) {
-                        //if so let the user know and cancel
-                        [[[UIAlertView alloc] initWithTitle:@"Oops!" message:@"It looks like your email isn't a valid email! Please correct it and try again!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-                        
-                        return;
-                    }else{
-                        semail = self.email.text;
-                        sdEmail = @"1";
-                    }
-                }
-                else {
-                    UIAlertView* alert =[[UIAlertView alloc] initWithTitle:@"Missing Receipt Email!" message:@"You have selected to send an email receipt, but not provided an email." delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-                    [alert show];
-                    return;
-                }
-            }
             [dict setObject:self.shippingNotes.text forKey:kShipNotes];
             [dict setObject:self.Notes.text forKey:kNotes ];
             [dict setObject:self.Authorizer.text forKey:kAuthorizedBy];
-            [dict setObject:sdEmail forKey:kSendEmail];
-            [dict setObject:semail forKey:kEmail];
             DLog(@"info to send:%@",dict);
             [self.delegate setCustomerInfo:[dict copy]];
             [self.delegate submit:nil];

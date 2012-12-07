@@ -286,16 +286,16 @@ bool showHud = true;
     NSArray *partialOrders = [[CoreDataUtil sharedManager] fetchObjects:@"Order" sortField:@"created_at"];
     for (Order *order in partialOrders) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObject:@"" forKey:kAuthorizedBy];
-        [dict setObject:order.created_at forKey:kVendorCreatedAt];
+        [dict setObject:[NSDate dateWithTimeIntervalSinceReferenceDate:order.created_at] forKey:kVendorCreatedAt];
         [dict setObject:kPartialOrder forKey:kOrderStatus];
         
         NSMutableDictionary *_customer = [[NSMutableDictionary alloc] init];
         [_customer setObject:order.billname forKey:kBillName];
-        [_customer setObject:[order.custid stringValue] forKey:kCustID];
-        [_customer setObject:[order.customer_id stringValue] forKey:@"id"];
+        [_customer setObject:[NSString stringWithFormat:@"%d", order.custid] forKey:kCustID];
+        [_customer setObject:[NSString stringWithFormat:@"%d", order.customer_id] forKey:@"id"];
         
         [dict setObject:_customer forKey:@"customer"];
-        [dict setObject:[order.customer_id stringValue] forKey:kOrderCustID];
+        [dict setObject:[NSString stringWithFormat:@"%d", order.customer_id] forKey:kOrderCustID];
         [dict setObject:[NSString stringWithFormat:@"%d", [order.carts count]] forKey:kItemCount];
         
 // TODO: setup line items
@@ -307,21 +307,19 @@ bool showHud = true;
             
             Cart *lineItem = (Cart *)[order.carts objectAtIndex:i];
             
-//            __autoreleasing NSError* err = nil;
-//            NSMutableDictionary* dict = [self.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-//            
-//            double q = 0;
-//            if (err) {
-//                DLog(@"UT JSON error:%@",err);
-//                q = [self.qty.text doubleValue];
-//            }else{
-//                DLog(@"UT JSon got:%@", dict);
-//                for (NSString* key in dict.allKeys) {
-//                    q += [[dict objectForKey:key] doubleValue];
-//                }
-//            }
+            __autoreleasing NSError* err = nil;
+            NSMutableDictionary* dict = [lineItem.editableQty objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
             
-            itemTotal += [lineItem.editableQty doubleValue] * [lineItem.editablePrice doubleValue];
+            double itemQty = 0;
+            if (err) {
+                itemQty = [lineItem.editableQty doubleValue];
+            }else{
+                for (NSString* key in dict.allKeys) {
+                    itemQty += [[dict objectForKey:key] doubleValue];
+                }
+            }
+            
+            itemTotal += itemQty * lineItem.editablePrice;
         };
         
         [dict setObject:[NSNumber numberWithDouble:itemTotal] forKey:kTotal];
@@ -994,10 +992,11 @@ bool showHud = true;
         return;
     }
     
-    NSMutableArray* arr = [[NSMutableArray alloc] initWithCapacity:[self.itemsTable numberOfRowsInSection:0]];
+//    NSMutableArray* arr = [[NSMutableArray alloc] initWithCapacity:[self.itemsTable numberOfRowsInSection:0]];
+    NSMutableArray *arr = [[NSMutableArray alloc] init];
     NSArray* data = [self.itemsDB objectForKey:kItems];
-    for (NSInteger i =0; i<[self.itemsTable numberOfRowsInSection:0]; i++) {
-        NSString* productID = [[data objectAtIndex:i] objectForKey:kOrderItemID];
+    for (NSInteger i = 0; i < [self.itemsTable numberOfRowsInSection:0]; i++) {
+        NSString* productID = [[[data objectAtIndex:i] objectForKey:kOrderItemID] stringValue];
         CIItemEditCell* cell = (CIItemEditCell*)[self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
         NSString* qty = cell.qty.text;
         if (self.itemsQty.count > i) {
@@ -1013,15 +1012,18 @@ bool showHud = true;
             [strs addObject:str];
         }
         
-        NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[[data objectAtIndex:i] objectForKey:kID],kID,qty,kOrderItemNum,cell.price.text,kOrderItemPRICE,cell.voucher.text,kOrderItemVoucher,strs,kOrderItemShipDates, nil];
+        NSString *myId = [[[data objectAtIndex:i] objectForKey:kID] stringValue];
+        NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,myId,kID,qty,kOrderItemNum,cell.price.text,kOrderItemPRICE,cell.voucher.text,kOrderItemVoucher,strs,kOrderItemShipDates, nil];
         [arr addObject:(id)proDict];
     }
     
     [arr removeObjectIdenticalTo:nil];
     DLog(@"array:%@",arr);
     NSDictionary* order;
-    order = [NSDictionary dictionaryWithObjectsAndKeys:[self.itemsDB objectForKey:kOrderCustID],kOrderCustID,self.shipNotes.text,
-             kShipNotes,self.notes.text,kNotes,[self.itemsDB objectForKey:kAuthorizedBy],kAuthorizedBy, arr, kOrderItems, nil];
+    NSString *custid = [self.itemsDB objectForKey:kOrderCustID];
+    NSString *authorizedBy = [self.itemsDB objectForKey:kAuthorizedBy];
+    order = [NSDictionary dictionaryWithObjectsAndKeys:custid,kOrderCustID,self.shipNotes.text,
+             kShipNotes,self.notes.text,kNotes,authorizedBy,kAuthorizedBy, arr, kOrderItems, nil];
     
     NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@",[NSString stringWithFormat:kDBORDEREDITS(currentOrderID)],kAuthToken,self.authToken];
@@ -1033,8 +1035,8 @@ bool showHud = true;
     
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         
-        NSString *status = [JSON valueForKey:@"status"];
-        DLog(@"status = %@", status);
+        DLog(@"status = %@", [JSON valueForKey:@"status"]);
+        [self Return];
         
     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
         NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];

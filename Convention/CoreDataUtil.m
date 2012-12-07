@@ -30,23 +30,13 @@ static CoreDataUtil * sharedInstance;
     return sharedInstance;
 }
 
--(NSManagedObject *) createNewEntity:(NSString *)entityDescription
-                          forContext:(NSManagedObjectContext *)managedObjectContext {
-    
-	return [NSEntityDescription insertNewObjectForEntityForName:entityDescription
-                                         inManagedObjectContext:managedObjectContext];
-}
-
 -(NSManagedObject *) createNewEntity:(NSString *)entityDescription {
 	
 	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
 	
-//	return [NSEntityDescription insertNewObjectForEntityForName:entityDescription
-//                                         inManagedObjectContext:delegate.managedObjectContext];
-    
-    return [self createNewEntity:entityDescription forContext:delegate.managedObjectContext];
+	return [NSEntityDescription insertNewObjectForEntityForName:entityDescription
+                                         inManagedObjectContext:delegate.managedObjectContext];
 }
-
 
 -(NSArray *) fetchObjects:(NSString *)entityDescription sortField:(NSString *)sortField {
 	
@@ -71,7 +61,6 @@ static CoreDataUtil * sharedInstance;
 	
 	return fetchedObjects;
 }
-
 
 -(NSFetchedResultsController *) fetchGroupedObjects:(NSString *)entityDescription
 										  sortField:(NSString *)sortField
@@ -121,27 +110,22 @@ static CoreDataUtil * sharedInstance;
 												   cacheName:nil]; //Don't use a cache
     
     return fetchedResultsController; //You can't autorelease this thing... the requestor must  do that.
-	
-	
 }
 
 -(NSManagedObject *) fetchObject:(NSString *)entityDescription
 				   withPredicate:(NSPredicate *)predicate {
-	
 	CIAppDelegate *delegate = (CIAppDelegate *)[UIApplication sharedApplication].delegate;
-	NSManagedObjectContext *context = delegate.managedObjectContext;
 	NSError *error;
 	
 	//Fetch the data....
 	NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-	NSEntityDescription *entity = [NSEntityDescription
-								   entityForName:entityDescription inManagedObjectContext:context];
+	NSEntityDescription *entity = [NSEntityDescription entityForName:entityDescription inManagedObjectContext:delegate.managedObjectContext];
 	[fetchRequest setEntity:entity];
-
+    
 	if (predicate != nil)
 		[fetchRequest setPredicate:predicate];
     
-	NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+	NSArray *fetchedObjects = [delegate.managedObjectContext executeFetchRequest:fetchRequest error:&error];
 	
 	DLog(@"Objects Found: %d", [fetchedObjects count]);
     

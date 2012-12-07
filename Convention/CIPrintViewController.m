@@ -92,8 +92,7 @@
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         
         DLog(@"JSON: %@", JSON);
-        NSString *status = [JSON valueForKey:@"created_at"];
-        DLog(@"status = %@", status);
+        DLog(@"status = %@", [JSON valueForKey:@"created_at"]);
         [hud hide:YES];
         [self dismissViewControllerAnimated:YES completion:nil];
         

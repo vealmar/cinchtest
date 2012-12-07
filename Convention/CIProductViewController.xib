@@ -121,7 +121,7 @@
 									<object class="IBUILabel" id="20363548">
 										<reference key="NSNextResponder" ref="540074920"/>
 										<int key="NSvFlags">294</int>
-										<string key="NSFrame">{{101, 7}, {340, 31}}</string>
+										<string key="NSFrame">{{101, 7}, {320, 31}}</string>
 										<reference key="NSSuperview" ref="540074920"/>
 										<reference key="NSNextKeyView" ref="736586108"/>
 										<string key="NSReuseIdentifierKey">_NS:345</string>
@@ -130,7 +130,7 @@
 										<int key="IBUIContentMode">7</int>
 										<bool key="IBUIUserInteractionEnabled">NO</bool>
 										<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-										<string key="IBUIText">Descr</string>
+										<string key="IBUIText">Description</string>
 										<reference key="IBUITextColor" ref="520912433"/>
 										<nil key="IBUIHighlightedColor"/>
 										<int key="IBUIBaselineAdjustment">1</int>
@@ -229,7 +229,7 @@
 									<object class="IBUILabel" id="909870313">
 										<reference key="NSNextResponder" ref="540074920"/>
 										<int key="NSvFlags">293</int>
-										<string key="NSFrame">{{549, 7}, {70, 31}}</string>
+										<string key="NSFrame">{{545, 7}, {81, 31}}</string>
 										<reference key="NSSuperview" ref="540074920"/>
 										<reference key="NSNextKeyView" ref="96303204"/>
 										<string key="NSReuseIdentifierKey">_NS:345</string>
@@ -251,7 +251,7 @@
 									<object class="IBUILabel" id="736586108">
 										<reference key="NSNextResponder" ref="540074920"/>
 										<int key="NSvFlags">295</int>
-										<string key="NSFrame">{{449, 7}, {70, 31}}</string>
+										<string key="NSFrame">{{435, 7}, {84, 31}}</string>
 										<reference key="NSSuperview" ref="540074920"/>
 										<reference key="NSNextKeyView" ref="909870313"/>
 										<string key="NSReuseIdentifierKey">_NS:345</string>
@@ -335,7 +335,7 @@
 									<object class="IBUILabel" id="1021141555">
 										<reference key="NSNextResponder" ref="540074920"/>
 										<int key="NSvFlags">289</int>
-										<string key="NSFrame">{{799, 7}, {57, 31}}</string>
+										<string key="NSFrame">{{794, 7}, {66, 31}}</string>
 										<reference key="NSSuperview" ref="540074920"/>
 										<reference key="NSNextKeyView" ref="1026219049"/>
 										<string key="NSReuseIdentifierKey">_NS:345</string>
@@ -344,15 +344,24 @@
 										<int key="IBUIContentMode">7</int>
 										<bool key="IBUIUserInteractionEnabled">NO</bool>
 										<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-										<string key="IBUIText">#ShipDates</string>
+										<string key="IBUIText"># Ship Dates</string>
 										<reference key="IBUITextColor" ref="520912433"/>
 										<nil key="IBUIHighlightedColor"/>
 										<int key="IBUIBaselineAdjustment">1</int>
+										<int key="IBUINumberOfLines">2</int>
 										<int key="IBUITextAlignment">1</int>
 										<int key="IBUILineBreakMode">0</int>
-										<reference key="IBUIFontDescription" ref="245318793"/>
-										<reference key="IBUIFont" ref="671354687"/>
+										<object class="IBUIFontDescription" key="IBUIFontDescription">
+											<int key="type">1</int>
+											<double key="pointSize">13</double>
+										</object>
+										<object class="NSFont" key="IBUIFont">
+											<string key="NSName">Helvetica</string>
+											<double key="NSSize">13</double>
+											<int key="NSfFlags">16</int>
+										</object>
 										<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+										<double key="preferredMaxLayoutWidth">66</double>
 									</object>
 									<object class="IBUILabel" id="161922231">
 										<reference key="NSNextResponder" ref="540074920"/>

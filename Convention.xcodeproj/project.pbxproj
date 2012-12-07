@@ -124,14 +124,17 @@
 		C71484CA1658C98500C57E24 /* AFXMLRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = C71484C01658C98500C57E24 /* AFXMLRequestOperation.m */; };
 		C71484CB1658C98500C57E24 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = C71484C21658C98500C57E24 /* UIImageView+AFNetworking.m */; };
 		C71484CE1659977E00C57E24 /* CustomerDataController.m in Sources */ = {isa = PBXBuildFile; fileRef = C71484CD1659977D00C57E24 /* CustomerDataController.m */; };
+		C71653A41670F43600F65D02 /* popupadjustitemNEWNoEmail.png in Resources */ = {isa = PBXBuildFile; fileRef = C71653A31670F43600F65D02 /* popupadjustitemNEWNoEmail.png */; };
+		C71653A81671173900F65D02 /* SetupInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = C71653A71671173900F65D02 /* SetupInfo.m */; };
 		C721C9F81654BD69003F42A6 /* bump_build_number.sh in Resources */ = {isa = PBXBuildFile; fileRef = C721C9F71654BD69003F42A6 /* bump_build_number.sh */; };
+		C730D9BE166FFD270013B87B /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9BD166FFD270013B87B /* Cart.m */; };
+		C730D9C1166FFD270013B87B /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9C0166FFD270013B87B /* Order.m */; };
+		C730D9C4166FFD270013B87B /* ShipDate.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9C3166FFD270013B87B /* ShipDate.m */; };
+		C730D9CF16705F330013B87B /* Cart+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9CE16705F330013B87B /* Cart+Extensions.m */; };
 		C73E2FDE165C810B00FE8DE9 /* ProductCart.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = C73E2FDD165C810B00FE8DE9 /* ProductCart.xcmappingmodel */; };
-		C73E2FE1165C846800FE8DE9 /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = C73E2FE0165C846700FE8DE9 /* Order.m */; };
 		C75A1B6816691E770008A466 /* UIAlertViewDelegateWithBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = C75A1B6716691E770008A466 /* UIAlertViewDelegateWithBlock.m */; };
 		C7BA948F1651DA3700E6705B /* ProductCart.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */; };
-		C7BA94F016532C1900E6705B /* ShipDate.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BA94EF16532C1900E6705B /* ShipDate.m */; };
 		C7BA94F91653462E00E6705B /* Order+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BA94F81653462C00E6705B /* Order+Extensions.m */; };
-		C7D23AB1166BC1FC00C3F095 /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = C7D23AB0166BC1FC00C3F095 /* Cart.m */; };
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
 /* End PBXBuildFile section */
 
@@ -312,20 +315,25 @@
 		C71484C21658C98500C57E24 /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
 		C71484CC1659977C00C57E24 /* CustomerDataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomerDataController.h; sourceTree = "<group>"; };
 		C71484CD1659977D00C57E24 /* CustomerDataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomerDataController.m; sourceTree = "<group>"; };
+		C71653A31670F43600F65D02 /* popupadjustitemNEWNoEmail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = popupadjustitemNEWNoEmail.png; sourceTree = "<group>"; };
+		C71653A61671173900F65D02 /* SetupInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupInfo.h; sourceTree = "<group>"; };
+		C71653A71671173900F65D02 /* SetupInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupInfo.m; sourceTree = "<group>"; };
 		C721C9F71654BD69003F42A6 /* bump_build_number.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = bump_build_number.sh; path = tools/bump_build_number.sh; sourceTree = SOURCE_ROOT; };
+		C730D9BC166FFD270013B87B /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
+		C730D9BD166FFD270013B87B /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
+		C730D9BF166FFD270013B87B /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
+		C730D9C0166FFD270013B87B /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
+		C730D9C2166FFD270013B87B /* ShipDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShipDate.h; sourceTree = "<group>"; };
+		C730D9C3166FFD270013B87B /* ShipDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShipDate.m; sourceTree = "<group>"; };
+		C730D9CD16705F330013B87B /* Cart+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Cart+Extensions.h"; sourceTree = "<group>"; };
+		C730D9CE16705F330013B87B /* Cart+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Cart+Extensions.m"; sourceTree = "<group>"; };
 		C73E2FDB165C7FB600FE8DE9 /* ProductCart2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart2.xcdatamodel; sourceTree = "<group>"; };
 		C73E2FDD165C810B00FE8DE9 /* ProductCart.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = ProductCart.xcmappingmodel; sourceTree = "<group>"; };
-		C73E2FDF165C846700FE8DE9 /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
-		C73E2FE0165C846700FE8DE9 /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		C75A1B6616691E770008A466 /* UIAlertViewDelegateWithBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAlertViewDelegateWithBlock.h; sourceTree = "<group>"; };
 		C75A1B6716691E770008A466 /* UIAlertViewDelegateWithBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAlertViewDelegateWithBlock.m; sourceTree = "<group>"; };
 		C7BA948E1651DA3700E6705B /* ProductCart.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart.xcdatamodel; sourceTree = "<group>"; };
-		C7BA94EE16532C1800E6705B /* ShipDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShipDate.h; sourceTree = "<group>"; };
-		C7BA94EF16532C1900E6705B /* ShipDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShipDate.m; sourceTree = "<group>"; };
 		C7BA94F71653462B00E6705B /* Order+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Order+Extensions.h"; sourceTree = "<group>"; };
 		C7BA94F81653462C00E6705B /* Order+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Order+Extensions.m"; sourceTree = "<group>"; };
-		C7D23AAF166BC1FC00C3F095 /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
-		C7D23AB0166BC1FC00C3F095 /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
 		C7EB25E61665CA8D00B1CD4F /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = Reachability/Reachability.h; sourceTree = SOURCE_ROOT; };
 		C7EB25E71665CA8D00B1CD4F /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
 		C7EB25EE1667216000B1CD4F /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Order.h; path = Convention/Order.h; sourceTree = "<group>"; };
@@ -467,6 +475,7 @@
 				6EDC7BA915478CAF00F16F66 /* neworderback.jpg */,
 				6414A6E91496AE960088586B /* orangebutton.png */,
 				6EDC7BAD1547946000F16F66 /* order_template_areaRIGHT.png */,
+				C71653A31670F43600F65D02 /* popupadjustitemNEWNoEmail.png */,
 				6E21EF2A1548AB57002CF4B7 /* popupadjustitemNEW.png */,
 				743944B815CC1ACD00D0D90E /* printbutton.png */,
 				743944BB15CC1B8A00D0D90E /* printform.png */,
@@ -565,15 +574,19 @@
 				6EB78B3F153F7C17005291EE /* vender.m */,
 				6EB78B41153F7C23005291EE /* lineItem.h */,
 				6EB78B42153F7C23005291EE /* lineItem.m */,
-				C7D23AAF166BC1FC00C3F095 /* Cart.h */,
-				C7D23AB0166BC1FC00C3F095 /* Cart.m */,
-				C73E2FDF165C846700FE8DE9 /* Order.h */,
-				C73E2FE0165C846700FE8DE9 /* Order.m */,
+				C730D9BC166FFD270013B87B /* Cart.h */,
+				C730D9BD166FFD270013B87B /* Cart.m */,
+				C730D9CD16705F330013B87B /* Cart+Extensions.h */,
+				C730D9CE16705F330013B87B /* Cart+Extensions.m */,
+				C730D9BF166FFD270013B87B /* Order.h */,
+				C730D9C0166FFD270013B87B /* Order.m */,
+				C730D9C2166FFD270013B87B /* ShipDate.h */,
+				C730D9C3166FFD270013B87B /* ShipDate.m */,
 				C7BA94F71653462B00E6705B /* Order+Extensions.h */,
 				C7BA94F81653462C00E6705B /* Order+Extensions.m */,
-				C7BA94EE16532C1800E6705B /* ShipDate.h */,
-				C7BA94EF16532C1900E6705B /* ShipDate.m */,
 				C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */,
+				C71653A61671173900F65D02 /* SetupInfo.h */,
+				C71653A71671173900F65D02 /* SetupInfo.m */,
 				C73E2FDD165C810B00FE8DE9 /* ProductCart.xcmappingmodel */,
 			);
 			name = models;
@@ -886,6 +899,7 @@
 				C713AFAA1656E18F00E151EA /* README in Resources */,
 				C71484A31658ABF200C57E24 /* MyProductCell.xib in Resources */,
 				831EC61C16644D1200D253CD /* bump_build_on_archive.sh in Resources */,
+				C71653A41670F43600F65D02 /* popupadjustitemNEWNoEmail.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -953,7 +967,6 @@
 				7498340415DE3EB600F3EB26 /* CICalendarViewController.m in Sources */,
 				331AF38C165068AE00C74117 /* ReachabilityDelegation.m in Sources */,
 				C7BA948F1651DA3700E6705B /* ProductCart.xcdatamodeld in Sources */,
-				C7BA94F016532C1900E6705B /* ShipDate.m in Sources */,
 				C7BA94F91653462E00E6705B /* Order+Extensions.m in Sources */,
 				C713AFA91656E18F00E151EA /* PullToRefreshView.m in Sources */,
 				C71484A11658ABDD00C57E24 /* MyProductCell.m in Sources */,
@@ -968,10 +981,13 @@
 				C71484CB1658C98500C57E24 /* UIImageView+AFNetworking.m in Sources */,
 				C71484CE1659977E00C57E24 /* CustomerDataController.m in Sources */,
 				C73E2FDE165C810B00FE8DE9 /* ProductCart.xcmappingmodel in Sources */,
-				C73E2FE1165C846800FE8DE9 /* Order.m in Sources */,
 				C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */,
 				C75A1B6816691E770008A466 /* UIAlertViewDelegateWithBlock.m in Sources */,
-				C7D23AB1166BC1FC00C3F095 /* Cart.m in Sources */,
+				C730D9BE166FFD270013B87B /* Cart.m in Sources */,
+				C730D9C1166FFD270013B87B /* Order.m in Sources */,
+				C730D9C4166FFD270013B87B /* ShipDate.m in Sources */,
+				C730D9CF16705F330013B87B /* Cart+Extensions.m in Sources */,
+				C71653A81671173900F65D02 /* SetupInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

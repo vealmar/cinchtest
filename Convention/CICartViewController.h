@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "CICustomerInfoViewController.h"
-#import "CIFinalCustomerInfoViewController.h"
 #import "CIProductCell.h"
 #import "CIStoreQtyTableViewController.h"
 

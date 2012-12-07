@@ -158,56 +158,59 @@
     NSString* key = [[self.productData allKeys] objectAtIndex:indexPath.row];
     DLog(@"data:%@",[self.productData objectForKey:key]);
     
+    NSMutableDictionary* dict = [self.productData objectForKey:key];
+    
     //idx, invtid, descr, partnbr, uom, showprc, caseqty, dirship, linenbr, new, adv, discount
     if ([[self.productData objectForKey:key] objectForKey:@"idx"]&&![[[self.productData objectForKey:key] objectForKey:@"idx"] isKindOfClass:[NSNull class]]) {
         cell.ridx.text = [[[self.productData objectForKey:key] objectForKey:@"idx"] stringValue];
     }else{
         cell.ridx.text = @"";
     }
-    cell.InvtID.text = [[self.productData objectForKey:key] objectForKey:@"invtid"];
-    cell.descr.text = [[self.productData objectForKey:key] objectForKey:@"descr"];
+    
+    cell.InvtID.text = [dict objectForKey:@"invtid"];
+    cell.descr.text = [dict objectForKey:@"descr"];
     
     cell.delegate = (id<CIProductCellDelegate>) self;
     
     //PW -- swapping out partnbr and UOM for Ship date range
-    if([[self.productData objectForKey:key] objectForKey:kProductShipDate1]&&![[[self.productData objectForKey:key] objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]){
+    if([dict objectForKey:kProductShipDate1]&&![[dict objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]){
         NSDateFormatter* df = [[NSDateFormatter alloc] init];
         [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
         NSDate* date = [[NSDate alloc]init];
-        date = [df dateFromString:[[self.productData objectForKey:key] objectForKey:kProductShipDate1]];
+        date = [df dateFromString:[dict objectForKey:kProductShipDate1]];
         [df setDateFormat:@"yyyy-MM-dd"];
         cell.PartNbr.text = [df stringFromDate:date];
     }else
         cell.PartNbr.text = @"";
-    if([[self.productData objectForKey:key] objectForKey:kProductShipDate2]&&![[[self.productData objectForKey:key] objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]){
+    if([dict objectForKey:kProductShipDate2]&&![[dict objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]){
         NSDateFormatter* df = [[NSDateFormatter alloc] init];
         [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
         NSDate* date = [[NSDate alloc]init];
-        date = [df dateFromString:[[self.productData objectForKey:key] objectForKey:kProductShipDate2]];
+        date = [df dateFromString:[dict objectForKey:kProductShipDate2]];
         [df setDateFormat:@"yyyy-MM-dd"];
         cell.Uom.text = [df stringFromDate:date];
     }else
         cell.Uom.text = @"";
     //PW---
     
-    if([[self.productData objectForKey:key] objectForKey:@"caseqty"]&&![[[self.productData objectForKey:key] objectForKey:@"caseqty"] isKindOfClass:[NSNull class]])
-        cell.CaseQty.text = [[self.productData objectForKey:key] objectForKey:@"caseqty"];
+    if([dict objectForKey:@"caseqty"] && ![[dict objectForKey:@"caseqty"] isKindOfClass:[NSNull class]])
+        cell.CaseQty.text = [dict objectForKey:@"caseqty"];
     else
         cell.CaseQty.text = @"";
-    cell.DirShip.text = ([[self.productData objectForKey:key] objectForKey:@"dirship"]?@"Y":@"N");
-    if ([[self.productData objectForKey:key] objectForKey:@"linenbr"]&&![[[self.productData objectForKey:key] objectForKey:@"linenbr"] isKindOfClass:[NSNull class]]) {
-        cell.LineNbr.text = [[self.productData objectForKey:key] objectForKey:@"linenbr"];
+    cell.DirShip.text = ([dict objectForKey:@"dirship"] ? @"Y" : @"N");
+    if ([dict objectForKey:@"linenbr"] && ![[dict objectForKey:@"linenbr"] isKindOfClass:[NSNull class]]) {
+        cell.LineNbr.text = [dict objectForKey:@"linenbr"];
     }else{
         cell.LineNbr.text = @"";
     }
-    cell.New.text = ([[self.productData objectForKey:key] objectForKey:@"new"]?@"Y":@"N");
-    cell.Adv.text = ([[self.productData objectForKey:key] objectForKey:@"adv"]?@"Y":@"N");
+    cell.New.text = ([dict objectForKey:@"new"]?@"Y":@"N");
+    cell.Adv.text = ([dict objectForKey:@"adv"]?@"Y":@"N");
     //DLog(@"regPrc:%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:@"regprc"]);
     //    cell.regPrc.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[[[self.productData objectForKey:key] objectForKey:@"regprc"] doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
-    cell.regPrc.text = ([[[self.productData objectForKey:key] objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]]?[NSString stringWithFormat:@"%d",((NSArray*)[[self.productData objectForKey:key] objectForKey:kOrderItemShipDates]).count]:@"0");
+    cell.regPrc.text = ([[dict objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]]?[NSString stringWithFormat:@"%d",
+                                                                             ((NSArray*)[dict objectForKey:kOrderItemShipDates]).count]:@"0");
     cell.quantity.hidden = YES;
-    NSMutableDictionary* dict = [self.productCart objectForKey:key];
-    if ([dict objectForKey:kEditableQty]&&!multiStore) {
+    if ([dict objectForKey:kEditableQty] && !multiStore) {
         cell.quantity.text = [[dict objectForKey:kEditableQty] stringValue];
         cell.qtyLbl.text = cell.quantity.text;
     }
@@ -253,6 +256,43 @@
     cell.cartBtn.hidden = YES;
     //cell.subtitle.text = [[[self.productData objectAtIndex:[indexPath row]] objectForKey:@"id"] stringValue];
     
+    BOOL hasQty = NO;
+    
+    //if you want it to highlight based on qty uncomment this:
+    if (multiStore && dict && [[dict objectForKey:kEditableQty] isKindOfClass:[NSString class]]
+        && [[[dict objectForKey:kEditableQty] objectFromJSONString] isKindOfClass:[NSDictionary class]]
+        && ((NSDictionary*)[[dict objectForKey:kEditableQty] objectFromJSONString]).allKeys.count>0) {
+        for(NSNumber* n in [[[dict objectForKey:kEditableQty] objectFromJSONString] allObjects]){
+            if(n>0)
+                hasQty = YES;
+        }
+    }else if (dict && [dict objectForKey:kEditableQty] && [[dict objectForKey:kEditableQty] isKindOfClass:[NSString class]]
+              && [[dict objectForKey:kEditableQty] integerValue] >0){
+        hasQty = YES;
+    }else if (dict && [dict objectForKey:kEditableQty] && [[dict objectForKey:kEditableQty] isKindOfClass:[NSNumber class]]
+              && [[dict objectForKey:kEditableQty] intValue] > 0){
+        hasQty = YES;
+    }else{
+        cell.backgroundView = nil;
+    }
+    
+    BOOL hasShipDates = NO;
+    NSArray *shipDates = [dict objectForKey:kOrderItemShipDates];
+    if (shipDates && [shipDates count] > 0) {
+        hasShipDates = YES;
+    }
+    
+    if (hasQty ^ hasShipDates) {
+        UIView *view = [[UIView alloc] initWithFrame:cell.frame];
+        view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
+        cell.backgroundView = view;
+    }
+//    else if (hasQty && hasShipDates) {
+//        UIView *view = [[UIView alloc] initWithFrame:cell.frame];
+//        view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
+//        cell.backgroundView = view;
+//    }
+
     return (UITableViewCell *)cell;
 }
 
@@ -260,7 +300,6 @@
 {
     //DLog(@"product details:%@",[self.productData objectForKey:[NSNumber numberWithInteger:[indexPath row]]]);
 }
-
 
 #pragma mark - Other
 
@@ -398,13 +437,6 @@
         [[[UIAlertView alloc] initWithTitle:@"Cart Empty." message:@"You don't have anything in your cart!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         return;
     }
-    //    CIFinalCustomerInfoViewController* ci = [[CIFinalCustomerInfoViewController alloc] initWithNibName:@"CIFinalCustomerInfoViewController" bundle:nil];
-    //    ci.modalPresentationStyle = UIModalPresentationFormSheet;
-    //    ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    //    ci.delegate = self.delegate;
-    //    //    [ci setCustomerData:self.customerDB];
-    //    [self presentModalViewController:ci animated:NO];
-    
     DLog(@"FO self class:%@",NSStringFromClass([self class]));
     DLog(@"FO delegate class:%@",NSStringFromClass([self.delegate class]));
     if ([self.delegate respondsToSelector:@selector(setFinishOrder:)]&&[self.delegate respondsToSelector:@selector(setBackFromCart:)]) {
@@ -416,9 +448,6 @@
     else{
         DLog(@"no delegate class at all");
     }
-    //    else if(self.finishTheOrder){
-    //        self.finishTheOrder();
-    //    }
     [self dismissViewControllerAnimated:NO completion:nil];
 }
 

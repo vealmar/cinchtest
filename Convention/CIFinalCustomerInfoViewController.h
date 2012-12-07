@@ -21,8 +21,6 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UITextView *Notes;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *Authorizer;
 @property (strong, nonatomic) IBOutlet UIScrollView *scroll;
-@property (unsafe_unretained, nonatomic) IBOutlet UISwitch *sendEmail;
-@property (unsafe_unretained, nonatomic) IBOutlet UITextField *email;
 
 @property (nonatomic, strong) NSArray* tableData;
 @property (nonatomic, strong) NSMutableArray* filteredtableData;

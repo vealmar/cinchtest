@@ -2,7 +2,7 @@
 //  Order.h
 //  Convention
 //
-//  Created by Kerry Sanders on 11/28/12.
+//  Created by Kerry Sanders on 12/5/12.
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
@@ -13,12 +13,12 @@
 
 @interface Order : NSManagedObject
 
-@property (nonatomic, retain) NSDate * created_at;
-@property (nonatomic, retain) NSNumber * custid;
-@property (nonatomic, retain) NSNumber * customer_id;
-@property (nonatomic, retain) NSNumber * multiStore;
-@property (nonatomic, retain) NSString * status;
 @property (nonatomic, retain) NSString * billname;
+@property (nonatomic) NSTimeInterval created_at;
+@property (nonatomic) int32_t custid;
+@property (nonatomic) int32_t customer_id;
+@property (nonatomic) BOOL multiStore;
+@property (nonatomic, retain) NSString * status;
 @property (nonatomic, retain) NSOrderedSet *carts;
 @end
 

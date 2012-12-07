@@ -26,8 +26,6 @@
 + (CoreDataUtil*)sharedManager;
 
 -(NSManagedObject *) createNewEntity:(NSString *)entityDescription;
--(NSManagedObject *) createNewEntity:(NSString *)entityDescription
-                          forContext:(NSManagedObjectContext *)managedObjectContext;
 
 -(NSArray *) fetchObjects:(NSString *)entityDescription sortField:(NSString *)sortField;
 
@@ -35,9 +33,7 @@
 										  sortField:(NSString *)sortField
 									  withPredicate:(NSPredicate *)predicate;
 
--(NSManagedObject *) fetchObject:(NSString *)entityDescription
-                   withPredicate:(NSPredicate *)predicate;
-
+-(NSManagedObject *) fetchObject:(NSString *)entityDescription withPredicate:(NSPredicate *)predicate;
 
 -(NSArray *) fetchArray:(NSString *)entityDescription
           withPredicate:(NSPredicate *)predicate;
