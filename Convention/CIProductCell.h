@@ -40,7 +40,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *LineNbr;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *New;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *Adv;
-@property (unsafe_unretained, nonatomic) IBOutlet UIButton *cartBtn;
+//@property (unsafe_unretained, nonatomic) IBOutlet UIButton *cartBtn;
 @property (unsafe_unretained, nonatomic) IBOutlet UIButton *qtyBtn;
 
 @property (nonatomic, assign) id<CIProductCellDelegate> delegate;

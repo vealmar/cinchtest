@@ -35,7 +35,7 @@
 @synthesize LineNbr;
 @synthesize New;
 @synthesize Adv;
-@synthesize cartBtn;
+//@synthesize cartBtn;
 @synthesize qtyBtn;
 @synthesize delegate;
 

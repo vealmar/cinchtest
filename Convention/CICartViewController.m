@@ -253,7 +253,7 @@
         cell.price.text = @"0.00";
     cell.delegate = (id<CIProductCellDelegate>) self;
     cell.tag = [indexPath row];
-    cell.cartBtn.hidden = YES;
+//    cell.cartBtn.hidden = YES;
     //cell.subtitle.text = [[[self.productData objectAtIndex:[indexPath row]] objectForKey:@"id"] stringValue];
     
     BOOL hasQty = NO;

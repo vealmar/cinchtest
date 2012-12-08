@@ -476,62 +476,13 @@
             cell.price.hidden = YES;//PW changes!
         }
         
-        
-        if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]) {
-//            [[self.products cellForRowAtIndexPath:indexPath] setSelected:NO];
+        if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]
+                && ![[dict objectForKey:@"invtid"] isEqualToString:@"0"]) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }else{
-            //            [[self.products cellForRowAtIndexPath:indexPath] setSelected:YES];
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
         
-        
-        //if you want it to highlight based on shipdates uncomment this:
-//        if ([[editableDict objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]]&&((NSArray*)[editableDict objectForKey:kOrderItemShipDates]).count>0) {
-////            DLog(@"highlight");
-//            UIView* view = [[UIView alloc] initWithFrame:cell.frame];
-//            view.backgroundColor = [UIColor colorWithRed:.9 green:.9 blue:.9 alpha:1.0];
-//            cell.backgroundView = view;
-//        }else{
-////            DLog(@"no highlight");
-//            cell.backgroundView = nil;
-//        }
-        
-//        BOOL hasQty = NO;
-//        
-//        //if you want it to highlight based on qty uncomment this:
-//        if (multiStore && editableDict && [[editableDict objectForKey:kEditableQty] isKindOfClass:[NSString class]]
-//            && [[[editableDict objectForKey:kEditableQty] objectFromJSONString] isKindOfClass:[NSDictionary class]]
-//            && ((NSDictionary*)[[editableDict objectForKey:kEditableQty] objectFromJSONString]).allKeys.count>0) {
-//            for(NSNumber* n in [[[editableDict objectForKey:kEditableQty] objectFromJSONString] allObjects]){
-//                if(n>0)
-//                    hasQty = YES;
-//            }
-//        }else if (editableDict&&[editableDict objectForKey:kEditableQty]&&[[editableDict objectForKey:kEditableQty] isKindOfClass:[NSString class]]&&[[editableDict objectForKey:kEditableQty] integerValue] >0){
-//            hasQty = YES;
-//        }else if (editableDict&&[editableDict objectForKey:kEditableQty]&&[[editableDict objectForKey:kEditableQty] isKindOfClass:[NSNumber class]]&&[[editableDict objectForKey:kEditableQty] intValue] > 0){
-//            hasQty = YES;
-//        }else{
-//            cell.backgroundView = nil;
-//        }
-//        
-//        BOOL hasShipDates = NO;
-//        NSArray *shipDates = [editableDict objectForKey:kOrderItemShipDates];
-//        if (shipDates && [shipDates count] > 0) {
-//            hasShipDates = YES;
-//        }
-//        
-//        if (hasQty ^ hasShipDates) {
-//            UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-//            view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
-//            cell.backgroundView = view;
-//        } else if (hasQty && hasShipDates) {
-//            UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-//            view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
-//            cell.backgroundView = view;
-//        }
-        
-        cell.cartBtn.hidden = YES;
         cell.delegate = self;
         cell.tag = [indexPath row];
         //cell.subtitle.text = [[dict objectForKey:@"id"] stringValue];
@@ -543,7 +494,8 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (tableView == self.products) {
-        DLog(@"product details:%@",[self.resultData objectAtIndex:[indexPath row]]);
+        NSDictionary* dict = [self.resultData objectAtIndex:[indexPath row]];
+        DLog(@"product details:%@", dict);
         if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]) {
             [selectedIdx removeObject:[NSNumber numberWithInteger:[indexPath row]]];
             //            [[tableView cellForRowAtIndexPath:indexPath] setSelected:NO];
@@ -551,7 +503,9 @@
         }else{
             [selectedIdx addObject:[NSNumber numberWithInteger:[indexPath row]]];
             //            [[tableView cellForRowAtIndexPath:indexPath] setSelected:YES];
-            [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
+            if (![[dict objectForKey:@"invtid"] isEqualToString:@"0"]) {
+                [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
+            }
         }
     }else if(tableView == self.vendorTable){
         [self dismissVendorTouched:nil];
@@ -1446,7 +1400,7 @@
         [cartValues setValue:[dict objectForKey:kEditableQty] forKey:kEditableQty];
     }
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kEditableVoucher asFloat:YES] forKey:kEditableVoucher];
-    [cartValues setValue:[self getNumberFromDictionary:dict forKey:kID asFloat:NO] forKey:kID];
+    [cartValues setValue:[self getNumberFromDictionary:dict forKey:kID asFloat:NO] forKey:@"cartId"];
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kProductIdx asFloat:NO] forKey:kProductIdx];
 //    if ([dict objectForKey:kVendorImportID] && ![[dict objectForKey:kVendorImportID] isKindOfClass:[NSNull class]]) {
     if ([dict objectForKey:kVendorImportID] && ![[dict objectForKey:kVendorImportID] isEqual:[NSNull null]]) {
@@ -1501,12 +1455,21 @@
         NSArray *sortedDates = [newDates sortedArrayUsingSelector:@selector(compare:)];
         
         if (![sortedDates isEqualToArray:sortedCartDates]) {
-            [cart removeShipdates:[cart shipdates]];
+            NSMutableArray *newShipDates = [[NSMutableArray alloc] init];
+//            [cart removeShipdates:[cart shipdates]];
             for (NSDate *aDate in sortedDates) {
                 ShipDate *sd = [NSEntityDescription insertNewObjectForEntityForName:@"ShipDate" inManagedObjectContext:cart.managedObjectContext];
-                [cart addShipdatesObject:sd];
+//                [cart addShipdatesObject:sd];
                 [sd setShipdate:[aDate timeIntervalSinceReferenceDate]];
+                [newShipDates addObject:sd];
             }
+            
+            for (ShipDate *shipDate in cart.shipdates) {
+                [managedObjectContext deleteObject:shipDate];
+            }
+            
+            NSOrderedSet *orderedDates = [NSOrderedSet orderedSetWithArray:newShipDates];
+            [cart setShipdates:orderedDates];
             
             NSError *error = nil;
             BOOL success = [managedObjectContext save:&error];
@@ -1732,7 +1695,11 @@
 				DLog(@"Text : %@", [dict objectForKey:kProductDescr]);
 				
                 if ([dict objectForKey:kProductInvtid] && ![[dict objectForKey:kProductInvtid] isKindOfClass:[NSNull class]]) {
-                    invtid = [[dict objectForKey:kProductInvtid] stringValue];
+                    if ([[dict objectForKey:kProductInvtid] respondsToSelector:@selector(stringValue)]) {
+                        invtid = [[dict objectForKey:kProductInvtid] stringValue];
+                    } else {
+                        invtid = [dict objectForKey:kProductInvtid];
+                    }
 				 
                }else{
                     invtid = @"";
