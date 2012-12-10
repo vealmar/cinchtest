@@ -11,10 +11,11 @@
 #import "CIProductViewController.h"
 #import "CIStoreQtyTableViewController.h"
 #import "PullToRefreshView.h"
+#import "PrinterSelectionViewController.h"
 
 @interface CIOrderViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate,
     UISearchBarDelegate, UITextViewDelegate, UIAlertViewDelegate, CIItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
-    CIStoreQtyDelegate, PullToRefreshViewDelegate, ReachabilityDelegate>
+    CIStoreQtyDelegate, PullToRefreshViewDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate>
 {
 	ReachabilityDelegation *reachDelegation;
 }
@@ -65,6 +66,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblVoucher;
 @property (weak, nonatomic) IBOutlet UILabel *lblItems;
 @property (weak, nonatomic) IBOutlet UILabel *lblTotalPrice;
+@property (weak, nonatomic) IBOutlet UIButton *printButton;
 
 - (IBAction)AddNewOrder:(id)sender;
 - (IBAction)logout:(id)sender;
@@ -72,6 +74,8 @@
 - (IBAction)Refresh:(id)sender;
 - (IBAction)Print:(id)sender;
 - (IBAction)Delete:(id)sender;
+
+-(void)setSelectedPrinter:(NSString *)printer;
 
 -(void)UpdateTotal;
 -(void)Return;

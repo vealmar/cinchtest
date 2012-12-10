@@ -37,6 +37,8 @@
     Order *orderToDelete;
     NSInteger rowToDelete;
     CIProductViewController* productView;
+    NSDictionary *availablePrinters;
+    NSString *currentPrinter;
 }
 @end
 
@@ -87,6 +89,7 @@
 @synthesize storeQtysPO;
 @synthesize itemsShipDates;
 @synthesize managedObjectContext;
+@synthesize printButton;
 
 bool showHud = true;
 
@@ -124,13 +127,14 @@ bool showHud = true;
     self.OrderDetailScroll.hidden = YES;
     
     self.placeholderContainer.hidden = NO;
+    currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
     
     pull = [[PullToRefreshView alloc] initWithScrollView:(UIScrollView *) self.sideTable];
     [pull setDelegate:self];
     [self.sideTable addSubview:pull];
 	
 	self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
-	
+
 	[self Return];
 }
 
@@ -212,6 +216,7 @@ bool showHud = true;
     // unregister for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -437,12 +442,16 @@ bool showHud = true;
     productView.delegate = self;
     productView.managedObjectContext = self.managedObjectContext;
     productView.showCustomers = newOrder;
+    productView.availablePrinters = [availablePrinters copy];
+    if (![currentPrinter isEmpty])
+        productView.printStationId = [[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue];
+    
     if (!newOrder) {
         NSUInteger index = [self.orders indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
             return [[obj objectForKey:kID] intValue] == currentOrderID;
         }];
         if (index != NSNotFound) {
-            productView.customerId = [[[[self.orders objectAtIndex:index] objectForKey:@"customer"] objectForKey:kID] intValue];
+            productView.customerId = [[[[self.orders objectAtIndex:index] objectForKey:@"customer"] objectForKey:kCustID] intValue];
         }
     }
     [productView setTitle:@"Select Products"];//[venderInfo objectForKey:kName]];
@@ -1052,12 +1061,107 @@ bool showHud = true;
     [self Return];
 }
 
+-(void)selectPrintStation {
+    if ([popoverController isPopoverVisible]) {
+        [popoverController dismissPopoverAnimated:YES];
+    }
+    PrinterSelectionViewController *psvc = [[PrinterSelectionViewController alloc] initWithNibName:@"PrinterSelectionViewController" bundle:nil];
+    psvc.title = @"Available Printers";
+    NSArray *keys = [[[availablePrinters allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] copy];
+    psvc.availablePrinters = [NSArray arrayWithArray:keys];
+    psvc.delegate = self;
+    
+    CGRect frame = printButton.frame;
+    frame = CGRectOffset(frame, 0, 0);
+    
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:psvc];
+    popoverController = [[UIPopoverController alloc] initWithContentViewController:nav];
+    [popoverController presentPopoverFromRect:frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+}
+
+-(void)loadPrinters {
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETPRINTERS]];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        
+        DLog(@"printers: %@", JSON);
+        if (JSON && [JSON isKindOfClass:[NSArray class]] && [JSON count] > 0) {
+            NSMutableDictionary *printStations = [[NSMutableDictionary alloc] initWithCapacity:[JSON count]];
+            for (NSDictionary *printer in JSON) {
+                [printStations setObject:printer forKey:[printer objectForKey:@"name"]];
+            }
+            
+            availablePrinters = [NSDictionary dictionaryWithDictionary:printStations];
+            if (![currentPrinter isEmpty] && [self printerIsOnline:currentPrinter])
+            {
+                [[NSNotificationCenter defaultCenter] postNotificationName:kPrintersLoaded object:nil];
+            } else {
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
+                [self selectPrintStation];
+            }
+        }
+        
+    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
+        NSString *msg = [NSString stringWithFormat:@"Unable to load available printers. %@", [error localizedDescription]];
+        [[[UIAlertView alloc] initWithTitle:@"No Printers" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+    }];
+    
+    [operation start];
+}
+
+-(void)printOrder {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
+    if (availablePrinters && [availablePrinters count] > 0 && ![currentPrinter isEmpty]) {
+
+        MBProgressHUD* hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"Printing ...";
+        [hud show:YES];
+        
+        NSString *orderID = [NSString stringWithFormat:@"%@",[self.itemsDB objectForKey:@"id"]];
+        NSNumber *printStationId = [NSNumber numberWithInt:[[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue]];
+        NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:orderID, kReportPrintOrderId, printStationId, @"printer_id", nil];
+        
+        AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kDBREPORTPRINTS]];
+        [client setParameterEncoding:AFJSONParameterEncoding];
+        NSMutableURLRequest *request = [client requestWithMethod:@"PUT" path:nil parameters:params];
+        
+        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+            
+            DLog(@"JSON: %@", JSON);
+            DLog(@"status = %@", [JSON valueForKey:@"created_at"]);
+            [hud hide:YES];
+            
+        } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+            [hud hide:YES];
+            NSString *errorMsg = [NSString stringWithFormat:@"There was an error printing the order. %@", error.localizedDescription];
+            [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+        }];
+        
+        [operation start];
+        
+    }
+}
+
+-(BOOL)printerIsOnline:(NSString *)printer {
+    NSUInteger index = [[availablePrinters allKeys] indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        *stop = [obj isEqualToString:printer] && [[[availablePrinters objectForKey:obj] objectForKey:@"online"] boolValue];
+        return *stop;
+    }];
+    
+    return index != NSNotFound;
+}
+
 - (IBAction)Print:(id)sender {
-    if (self.itemsDB&&self.itemsDB.allKeys.count > 0&&[self.itemsDB objectForKey:@"id"]) {
-        CIPrintViewController* print = [[CIPrintViewController alloc] initWithNibName:@"CIPrintViewController" bundle:nil];
-        print.modalPresentationStyle = UIModalPresentationFormSheet;
-        print.orderID = [NSString stringWithFormat:@"%@",[self.itemsDB objectForKey:@"id"]];
-        [self presentViewController:print animated:YES completion:nil];
+    if (self.itemsDB && self.itemsDB.allKeys.count > 0 && [self.itemsDB objectForKey:@"id"]) {
+        
+        if (!availablePrinters || ![self printerIsOnline:[[SettingsManager sharedManager] lookupSettingByString:@"printer"]]) {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(printOrder) name:kPrintersLoaded object:nil];
+            [self loadPrinters];
+        } else {
+            [self printOrder];
+        }
+        
     }else{
         [[[UIAlertView alloc]initWithTitle:@"Oops!" message:@"Please select an order to print!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
     }
@@ -1220,6 +1324,15 @@ bool showHud = true;
     [self.orderData removeObjectIdenticalTo:anOrder];
     [self.orders removeObjectAtIndex:index];
     [self.sideTable reloadData];
+}
+
+#pragma mark - UIPrinterSelectedDelegate
+
+-(void)setSelectedPrinter:(NSString *)printer {
+    currentPrinter = printer;
+    [[SettingsManager sharedManager] saveSetting:@"printer" value:printer];
+//    [[NSNotificationCenter defaultCenter] postNotificationName:@"PrintersLoaded" object:nil];
+    [self printOrder];
 }
 
 #pragma mark - UISearchBarDelegate

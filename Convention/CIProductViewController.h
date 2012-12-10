@@ -13,6 +13,7 @@
 #import "CIProductCell.h"
 #import "CIStoreQtyTableViewController.h"
 #import "ReachabilityDelegation.h"
+#import "PrinterSelectionViewController.h"
 
 @class CIViewController;
 @class Order;
@@ -25,7 +26,7 @@
 
 @interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,
     UISearchBarDelegate, UIAlertViewDelegate, CICustomerDelegate, CIProductCellDelegate,
-    CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate>
+    CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate>
 {
 	ReachabilityDelegation *reachDelegation;
 }
@@ -48,6 +49,8 @@
 @property (nonatomic) BOOL multiStore;
 @property (nonatomic) int tOffset;
 @property (nonatomic) int customerId;
+@property (nonatomic) int printStationId;
+@property (nonatomic) NSDictionary *availablePrinters;
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property (nonatomic, strong) UIPopoverController *popoverController;
@@ -69,6 +72,7 @@
 -(void)QtyChange:(double)qty forIndex:(int)idx;
 
 - (IBAction)Cancel:(id)sender;
+@property (weak, nonatomic) IBOutlet UIButton *cartButton;
 
 //- (IBAction)logout:(id)sender;
 - (IBAction)submit:(id)sender;

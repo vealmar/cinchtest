@@ -64,6 +64,28 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Printer</string>
+			<key>Key</key>
+			<string>printer</string>
+			<key>AutocapitalizationType</key>
+			<string>None</string>
+			<key>AutocorrectionType</key>
+			<string>No</string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+			<key>IsSecure</key>
+			<false/>
+			<key>DefaultValue</key>
+			<string></string>
+		</dict>
 	</array>
 	<key>StringsTable</key>
 	<string>Root</string>

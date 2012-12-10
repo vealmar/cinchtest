@@ -2,7 +2,7 @@
 //  Order.h
 //  Convention
 //
-//  Created by Kerry Sanders on 12/5/12.
+//  Created by Kerry Sanders on 12/7/12.
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
@@ -19,6 +19,8 @@
 @property (nonatomic) int32_t customer_id;
 @property (nonatomic) BOOL multiStore;
 @property (nonatomic, retain) NSString * status;
+@property (nonatomic, retain) NSString * vendorGroup;
+@property (nonatomic) int32_t vendor_id;
 @property (nonatomic, retain) NSOrderedSet *carts;
 @end
 
@@ -30,6 +32,7 @@
 - (void)removeCartsAtIndexes:(NSIndexSet *)indexes;
 - (void)replaceObjectInCartsAtIndex:(NSUInteger)idx withObject:(Cart *)value;
 - (void)replaceCartsAtIndexes:(NSIndexSet *)indexes withCarts:(NSArray *)values;
+- (void)addCartsObject:(Cart *)value;
 - (void)removeCartsObject:(Cart *)value;
 - (void)addCarts:(NSOrderedSet *)values;
 - (void)removeCarts:(NSOrderedSet *)values;

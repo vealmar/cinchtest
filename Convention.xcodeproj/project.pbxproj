@@ -128,11 +128,16 @@
 		C721C9F81654BD69003F42A6 /* bump_build_number.sh in Resources */ = {isa = PBXBuildFile; fileRef = C721C9F71654BD69003F42A6 /* bump_build_number.sh */; };
 		C727F6901671A2AC00F2847D /* CoreDataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = C727F68F1671A2AC00F2847D /* CoreDataUtil.m */; };
 		C727F6981671A88C00F2847D /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = C727F6971671A88C00F2847D /* Cart.m */; };
-		C730D9C1166FFD270013B87B /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9C0166FFD270013B87B /* Order.m */; };
 		C730D9C4166FFD270013B87B /* ShipDate.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9C3166FFD270013B87B /* ShipDate.m */; };
 		C730D9CF16705F330013B87B /* Cart+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C730D9CE16705F330013B87B /* Cart+Extensions.m */; };
 		C73E2FDE165C810B00FE8DE9 /* ProductCart.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = C73E2FDD165C810B00FE8DE9 /* ProductCart.xcmappingmodel */; };
 		C75A1B6816691E770008A466 /* UIAlertViewDelegateWithBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = C75A1B6716691E770008A466 /* UIAlertViewDelegateWithBlock.m */; };
+		C77220071672E151006CD415 /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = C77220061672E151006CD415 /* Order.m */; };
+		C77220161673F0E7006CD415 /* CIPrinterSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C77220141673F0E7006CD415 /* CIPrinterSelectionViewController.m */; };
+		C77220171673F0E7006CD415 /* CIPrinterSelectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C77220151673F0E7006CD415 /* CIPrinterSelectionViewController.xib */; };
+		C779A6F9167509B0001C2032 /* PrinterSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C779A6F7167509B0001C2032 /* PrinterSelectionViewController.m */; };
+		C779A6FA167509B0001C2032 /* PrinterSelectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C779A6F8167509B0001C2032 /* PrinterSelectionViewController.xib */; };
+		C779A6FC16751EBE001C2032 /* AccDisclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = C779A6FB16751EBE001C2032 /* AccDisclosure.png */; };
 		C7BA948F1651DA3700E6705B /* ProductCart.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */; };
 		C7BA94F91653462E00E6705B /* Order+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BA94F81653462C00E6705B /* Order+Extensions.m */; };
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
@@ -321,8 +326,6 @@
 		C727F68F1671A2AC00F2847D /* CoreDataUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataUtil.m; sourceTree = "<group>"; };
 		C727F6961671A88C00F2847D /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
 		C727F6971671A88C00F2847D /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
-		C730D9BF166FFD270013B87B /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
-		C730D9C0166FFD270013B87B /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		C730D9C2166FFD270013B87B /* ShipDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShipDate.h; sourceTree = "<group>"; };
 		C730D9C3166FFD270013B87B /* ShipDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShipDate.m; sourceTree = "<group>"; };
 		C730D9CD16705F330013B87B /* Cart+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Cart+Extensions.h"; sourceTree = "<group>"; };
@@ -331,6 +334,15 @@
 		C73E2FDD165C810B00FE8DE9 /* ProductCart.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = ProductCart.xcmappingmodel; sourceTree = "<group>"; };
 		C75A1B6616691E770008A466 /* UIAlertViewDelegateWithBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIAlertViewDelegateWithBlock.h; sourceTree = "<group>"; };
 		C75A1B6716691E770008A466 /* UIAlertViewDelegateWithBlock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAlertViewDelegateWithBlock.m; sourceTree = "<group>"; };
+		C77220051672E151006CD415 /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
+		C77220061672E151006CD415 /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
+		C77220131673F0E7006CD415 /* CIPrinterSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIPrinterSelectionViewController.h; sourceTree = "<group>"; };
+		C77220141673F0E7006CD415 /* CIPrinterSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIPrinterSelectionViewController.m; sourceTree = "<group>"; };
+		C77220151673F0E7006CD415 /* CIPrinterSelectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CIPrinterSelectionViewController.xib; sourceTree = "<group>"; };
+		C779A6F6167509B0001C2032 /* PrinterSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterSelectionViewController.h; sourceTree = "<group>"; };
+		C779A6F7167509B0001C2032 /* PrinterSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterSelectionViewController.m; sourceTree = "<group>"; };
+		C779A6F8167509B0001C2032 /* PrinterSelectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PrinterSelectionViewController.xib; sourceTree = "<group>"; };
+		C779A6FB16751EBE001C2032 /* AccDisclosure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AccDisclosure.png; sourceTree = "<group>"; };
 		C7BA948E1651DA3700E6705B /* ProductCart.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart.xcdatamodel; sourceTree = "<group>"; };
 		C7BA94F71653462B00E6705B /* Order+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Order+Extensions.h"; sourceTree = "<group>"; };
 		C7BA94F81653462C00E6705B /* Order+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Order+Extensions.m"; sourceTree = "<group>"; };
@@ -446,6 +458,7 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C779A6FB16751EBE001C2032 /* AccDisclosure.png */,
 				C71484AF1658C98400C57E24 /* AFNetworking */,
 				C7EB25E91665CAA900B1CD4F /* Reachability */,
 				6EE39929155D6A7100EE1194 /* addtocartbutton.old.png */,
@@ -578,10 +591,10 @@
 				C727F6971671A88C00F2847D /* Cart.m */,
 				C730D9CD16705F330013B87B /* Cart+Extensions.h */,
 				C730D9CE16705F330013B87B /* Cart+Extensions.m */,
-				C730D9BF166FFD270013B87B /* Order.h */,
-				C730D9C0166FFD270013B87B /* Order.m */,
 				C730D9C2166FFD270013B87B /* ShipDate.h */,
 				C730D9C3166FFD270013B87B /* ShipDate.m */,
+				C77220051672E151006CD415 /* Order.h */,
+				C77220061672E151006CD415 /* Order.m */,
 				C7BA94F71653462B00E6705B /* Order+Extensions.h */,
 				C7BA94F81653462C00E6705B /* Order+Extensions.m */,
 				C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */,
@@ -727,6 +740,12 @@
 				74AC165615C91E0700977A09 /* CIPrintViewController.h */,
 				74AC165715C91E0700977A09 /* CIPrintViewController.m */,
 				74AC165815C91E0700977A09 /* CIPrintViewController.xib */,
+				C77220131673F0E7006CD415 /* CIPrinterSelectionViewController.h */,
+				C77220141673F0E7006CD415 /* CIPrinterSelectionViewController.m */,
+				C77220151673F0E7006CD415 /* CIPrinterSelectionViewController.xib */,
+				C779A6F6167509B0001C2032 /* PrinterSelectionViewController.h */,
+				C779A6F7167509B0001C2032 /* PrinterSelectionViewController.m */,
+				C779A6F8167509B0001C2032 /* PrinterSelectionViewController.xib */,
 			);
 			name = Print;
 			sourceTree = "<group>";
@@ -900,6 +919,9 @@
 				C71484A31658ABF200C57E24 /* MyProductCell.xib in Resources */,
 				831EC61C16644D1200D253CD /* bump_build_on_archive.sh in Resources */,
 				C71653A41670F43600F65D02 /* popupadjustitemNEWNoEmail.png in Resources */,
+				C77220171673F0E7006CD415 /* CIPrinterSelectionViewController.xib in Resources */,
+				C779A6FA167509B0001C2032 /* PrinterSelectionViewController.xib in Resources */,
+				C779A6FC16751EBE001C2032 /* AccDisclosure.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -982,12 +1004,14 @@
 				C73E2FDE165C810B00FE8DE9 /* ProductCart.xcmappingmodel in Sources */,
 				C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */,
 				C75A1B6816691E770008A466 /* UIAlertViewDelegateWithBlock.m in Sources */,
-				C730D9C1166FFD270013B87B /* Order.m in Sources */,
 				C730D9C4166FFD270013B87B /* ShipDate.m in Sources */,
 				C730D9CF16705F330013B87B /* Cart+Extensions.m in Sources */,
 				C71653A81671173900F65D02 /* SetupInfo.m in Sources */,
 				C727F6901671A2AC00F2847D /* CoreDataUtil.m in Sources */,
 				C727F6981671A88C00F2847D /* Cart.m in Sources */,
+				C77220071672E151006CD415 /* Order.m in Sources */,
+				C77220161673F0E7006CD415 /* CIPrinterSelectionViewController.m in Sources */,
+				C779A6F9167509B0001C2032 /* PrinterSelectionViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

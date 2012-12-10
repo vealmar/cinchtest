@@ -28,7 +28,8 @@
 #define kDBORDEREDIT(ID) [NSString stringWithFormat:@"%@/vendor/orders/%d.json",kBASEURL,ID]
 #define kDBORDEREDITS(ID) [NSString stringWithFormat:@"%@/vendor/shows/%@/orders/%d.json",kBASEURL,kShowID,ID]
 #define kDBREPORTPRINTS [NSString stringWithFormat:@"%@/vendor/shows/%@/report_prints.json",kBASEURL,kShowID]
-
+#define kDBGETPRINTERS [NSString stringWithFormat:@"%@/vendor/shows/%@/printers.json", kBASEURL, kShowID]
+#define kDBGETBULLETINS [NSString stringWithFormat:@"%@/vendor/shows/%@/bulletins.json", kBASEURL, kShowID]
 
 //temp not needed...
 #define kDBMasterLOGIN [NSString stringWithFormat:@"%@/hosts/sign_in.json",kBASEURL]
@@ -147,5 +148,6 @@
 //notifications
 #define kNotificationCustomersLoaded @"NotificationCustomersLoaded"
 #define kCustomerNotificationKey @"customers"
+#define kPrintersLoaded @"PrintersLoaded"
 
 #endif
