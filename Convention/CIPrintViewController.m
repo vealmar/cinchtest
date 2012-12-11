@@ -42,19 +42,6 @@
     // Do any additional setup after loading the view from its nib.
 }
 
--(void)viewDidDisappear:(BOOL)animated
-{
-    [self setPrintHeader:nil];
-    [self setIsle:nil];
-    [self setNotes:nil];
-    [self setNotesLbl:nil];
-    [self setBooth:nil];
-    [self setLblorder:nil];
-    [super viewDidDisappear:animated];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
 	return YES;

@@ -44,6 +44,7 @@
     UITextField *currentTextField;
     NSDictionary *bulletins;
     BOOL isShowingBulletins;
+    BOOL customerHasBeenSelected;
 }
 
 -(void) getCustomers;
@@ -111,6 +112,7 @@
         currentTextField = nil;
         isShowingBulletins = NO;
         _printStationId = 0;
+        customerHasBeenSelected = NO;
     }
 	
 	reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
@@ -142,34 +144,14 @@
         [self loadProductsForUrl:url withLoadLabel:@"Loading Products..."];
         
         navBar.topItem.title = self.title;
-    } else {
+    } else if (!_showCustomers) {
         [self getCustomers];
+    } else {
+        [self.products reloadData];
     }
     
 	self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
     [self.vendorTable reloadData];
-}
-
-- (void)viewDidDisappear:(BOOL)animated
-{
-    // unregister for keyboard notifications while not visible.
-    //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-
-//    [self.products removeGestureRecognizer:gestureRecognizer];
-    [self setProducts:nil];
-    [self setNavBar:nil];
-    [self setIndicator:nil];
-    [self setHiddenTxt:nil];
-    [self setVendorView:nil];
-    [self setVendorTable:nil];
-    [self setDismissVendor:nil];
-    [self setCustomerLabel:nil];
-	[self setVendorLabel:nil];
-    [self setSearchBar:nil];
-    
-    [super viewDidDisappear:animated];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 -(NSMutableDictionary*)createIfDoesntExist:(NSMutableDictionary*) dict orig:(NSDictionary*)odict{
@@ -228,9 +210,9 @@
                  
                  [self.products reloadData];
                  [loadProductsHUD hide:NO];
-                 if (_showCustomers) {
+                 if (_showCustomers && !customerHasBeenSelected) {
                      [self loadCustomersView];
-                 } else {
+                 } else if (!_showCustomers) {
                      [[NSNotificationCenter defaultCenter] postNotificationName:kDeserializeOrder object:nil];
                  }
                  
@@ -253,23 +235,27 @@
             [JSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL* stop){
                 NSDictionary* dict = (NSDictionary*)obj;
                 NSNumber *vendid = [NSNumber numberWithInt:[[dict objectForKey:@"vendid"] intValue]];
-                if (![bulls objectForKey:vendid])
-                    [bulls setObject:[[NSMutableArray alloc] init] forKey:vendid];
+                if (![bulls objectForKey:vendid]) {
+                    NSDictionary *any = [NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", [NSNumber numberWithInt:0], @"id", nil];
+                    NSMutableArray *arr = [[NSMutableArray alloc] init];
+                    [arr addObject:any];
+                    [bulls setObject:arr forKey:vendid];
+                }
                 [[bulls objectForKey:vendid] addObject:dict];
             }];
             
             bulletins = [NSDictionary dictionaryWithDictionary:bulls];
-//            [[NSNotificationCenter defaultCenter] postNotificationName:kBulletinsLoaded object:nil];
+            [self.vendorTable reloadData];
+            
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
             bulletins = nil;
-//            [[NSNotificationCenter defaultCenter] postNotificationName:kBulletinsLoaded object:nil];
+            [self.vendorTable reloadData];
         }];
     
     [operation start];
 }
 
 -(void)selectBulletin {
-//    [[NSNotificationCenter defaultCenter] removeObserver:self name:kBulletinsLoaded object:nil];
     if (bulletins && [[bulletins allKeys ] count] > 0) {
         isShowingBulletins = YES;
         [self.vendorTable reloadData];
@@ -290,11 +276,6 @@
 #pragma mark - Customer data
 
 -(void)loadCustomersView {
-//    loading.labelText = @"Loading...";
-//    [loading show:NO];
-//    
-//    [loading hide:NO];
-    
     CICustomerInfoViewController* ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
     
     // fire off this call to load customers asynchronously while the view continues to load.
@@ -402,13 +383,21 @@
             cell.tag = [[details objectForKey:@"id"] intValue];
             cell.textLabel.textColor = [UIColor whiteColor];
             
-            if (bulletins && [bulletins objectForKey:[NSNumber numberWithInt:currentVendId]]) {
+            
+            NSNumber *vendId = [NSNumber numberWithInt:0];
+            if (cell.tag > 0)
+                vendId = [NSNumber numberWithInt:[[details objectForKey:@"vendid"] intValue]];
+            
+            if (cell.tag > 0 && bulletins && [bulletins objectForKey:vendId]) {
+                [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
                 cell.selectionStyle = UITableViewCellSelectionStyleGray;
                 UIView* accessoryView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 50)];
                 UIImageView* accessoryViewImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"AccDisclosure.png"]];
                 accessoryViewImage.center = CGPointMake(12, 25);
                 [accessoryView addSubview:accessoryViewImage];
                 [cell setAccessoryView:accessoryView];
+            } else {
+                [cell setAccessoryType:UITableViewCellAccessoryNone];
             }
             
             UIView* bg = [[UIView alloc] init];
@@ -426,6 +415,7 @@
             cell.textLabel.textColor = [UIColor whiteColor];
             cell.selectionStyle = UITableViewCellSelectionStyleGray;
             cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.accessoryView = nil;
 
             UIView* bg = [[UIView alloc] init];
             bg.backgroundColor = [UIColor colorWithRed:.94 green:.74 blue:.36 alpha:1.0];
@@ -611,25 +601,25 @@
         UITableViewCell* cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
         if (!isShowingBulletins) {
             [selectedIdx removeAllObjects];
-//            if (cell.tag == currentVendor) {
-//                [self dismissVendorTouched:nil];
-//                return;
-//            }  
-            
             currentVendor = cell.tag;
-            NSUInteger index = [vendorsData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-                int _id = [[obj objectForKey:@"id"] intValue];
-                *stop = currentVendor == _id;
-                return *stop;
-            }];
-            
-            if (index != NSNotFound)
-                currentVendId = [[[vendorsData objectAtIndex:index] objectForKey:@"vendid"] intValue];
-            
-            if (currentVendor > 0 && bulletins && [[bulletins allKeys] count] > 0) {
-//                [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectBulletin) name:kBulletinsLoaded object:nil];
-//                [self loadBulletins];
-                [self selectBulletin];
+            if (currentVendor != 0) {
+                NSUInteger index = [vendorsData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                    int _id = [[obj objectForKey:@"id"] intValue];
+                    *stop = currentVendor == _id;
+                    return *stop;
+                }];
+                
+                if (index != NSNotFound)
+                    currentVendId = [[[vendorsData objectAtIndex:index] objectForKey:@"vendid"] intValue];
+                
+                if (bulletins && [[bulletins allKeys] count] > 0) {
+                    [self selectBulletin];
+                }
+            } else {
+                [self dismissVendorTouched:nil];
+                currentVendId = 0;
+                currentBulletin = 0;
+                [self loadProducts];
             }
             
             if (cell.tag != currentVendor) {
@@ -794,8 +784,6 @@
 
 -(void)setCustomerInfo:(NSDictionary*)info
 {
-//    [self.products reloadData];
-    
     self.customer = [info copy];
     DLog(@"set customerinfo:%@",self.customer);
 
@@ -803,6 +791,7 @@
         self.customerLabel.text = [self.customer objectForKey:kBillName];
     }
     
+    customerHasBeenSelected = YES;
     NSNumber *custId = [NSNumber numberWithInt:[[self.customer objectForKey:@"custid"] integerValue]];
     NSNumber *customerId = [NSNumber numberWithInt:[[self.customer objectForKey:@"id"] integerValue]];
     
@@ -1162,7 +1151,6 @@
                      
                      vendorsData = [vs mutableCopy];
                      [venderLoading hide:YES];
-                     [self.vendorTable reloadData];
                      [self loadBulletins];
                      
                  } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {

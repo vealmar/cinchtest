@@ -138,38 +138,6 @@ bool showHud = true;
 	[self Return];
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [self setSaveBtn:nil];
-    [self setEditorView:nil];
-    [self setToolWithSave:nil];
-    [self setToolPlain:nil];
-    [self setCustomer:nil];
-    [self setAuthorizer:nil];
-    [self setShipNotes:nil];
-    [self setNotes:nil];
-    [self setTotal:nil];
-    [self setItemsAct:nil];
-    [self setOrdersAct:nil];
-    [self setNoOrders:nil];
-    //[self setOrderDetailScroll:nil]; //Don't do this
-    [self setSideContainer:nil];
-    [self setPlaceholderContainer:nil];
-    [self setOrderContainer:nil];
-    [self setNoOrdersLabel:nil];
-    [self setLblCompany:nil];
-    [self setLblAuthBy:nil];
-    [self setLblNotes:nil];
-    [self setLblShipNotes:nil];
-    [self setLblItems:nil];
-    [self setLblTotalPrice:nil];
-    [self setSCtotal:nil];
-    [self setShipdates:nil];
-    [super viewDidDisappear:animated];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     // register for keyboard notifications
@@ -1139,7 +1107,6 @@ bool showHud = true;
         }];
         
         [operation start];
-        
     }
 }
 

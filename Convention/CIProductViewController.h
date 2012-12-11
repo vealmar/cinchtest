@@ -31,10 +31,10 @@
 	ReachabilityDelegation *reachDelegation;
 }
 
-@property (unsafe_unretained, nonatomic) IBOutlet UITableView *products;
+@property (nonatomic, strong) IBOutlet UITableView *products;
 @property (nonatomic, strong) IBOutlet UIImageView *ciLogo;
-@property (unsafe_unretained, nonatomic) IBOutlet UITextField *hiddenTxt;
-@property (unsafe_unretained, nonatomic) IBOutlet UISearchBar *searchBar;
+@property (nonatomic, strong) IBOutlet UITextField *hiddenTxt;
+@property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray* productData;
 @property (nonatomic, strong) NSMutableArray* resultData;
 @property (nonatomic, strong) NSDictionary* customer;
@@ -59,12 +59,12 @@
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 @property (nonatomic, strong) Order *order;
 
-@property (unsafe_unretained, nonatomic) IBOutlet UINavigationBar *navBar;
-@property (unsafe_unretained, nonatomic) IBOutlet UIView *vendorView;
-@property (unsafe_unretained, nonatomic) IBOutlet UITableView *vendorTable;
-@property (unsafe_unretained, nonatomic) IBOutlet UIButton *dismissVendor;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *customerLabel;
-@property (unsafe_unretained, nonatomic) IBOutlet UILabel *vendorLabel;
+@property (strong, nonatomic) IBOutlet UINavigationBar *navBar;
+@property (strong, nonatomic) IBOutlet UIView *vendorView;
+@property (strong, nonatomic) IBOutlet UITableView *vendorTable;
+@property (strong, nonatomic) IBOutlet UIButton *dismissVendor;
+@property (strong, nonatomic) IBOutlet UILabel *customerLabel;
+@property (strong, nonatomic) IBOutlet UILabel *vendorLabel;
 
 @property (nonatomic, assign) id<CIProductViewDelegate> delegate;
 

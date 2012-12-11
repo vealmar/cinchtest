@@ -76,16 +76,6 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
--(void)viewDidDisappear:(BOOL)animated {
-    [self setShippingNotes:nil];
-    [self setNotes:nil];
-    [self setAuthorizer:nil];
-    [self setScroll:nil];
-    [super viewDidDisappear:animated];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
 - (IBAction)submit:(id)sender {
     if (!IS_EMPTY_STRING(self.Authorizer.text)) {
         

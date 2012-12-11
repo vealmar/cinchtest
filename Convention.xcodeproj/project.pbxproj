@@ -141,6 +141,8 @@
 		C7BA948F1651DA3700E6705B /* ProductCart.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */; };
 		C7BA94F91653462E00E6705B /* Order+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BA94F81653462C00E6705B /* Order+Extensions.m */; };
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
+		C7F30D041676FE5000FA36F8 /* CICartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F30D021676FE5000FA36F8 /* CICartViewCell.m */; };
+		C7F30D051676FE5000FA36F8 /* CICartViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -350,6 +352,9 @@
 		C7EB25E71665CA8D00B1CD4F /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
 		C7EB25EE1667216000B1CD4F /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Order.h; path = Convention/Order.h; sourceTree = "<group>"; };
 		C7EB25EF1667216000B1CD4F /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Order.m; path = Convention/Order.m; sourceTree = "<group>"; };
+		C7F30D011676FE5000FA36F8 /* CICartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICartViewCell.h; sourceTree = "<group>"; };
+		C7F30D021676FE5000FA36F8 /* CICartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICartViewCell.m; sourceTree = "<group>"; };
+		C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CICartViewCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -679,6 +684,9 @@
 		6EE39931155D795D00EE1194 /* Cart */ = {
 			isa = PBXGroup;
 			children = (
+				C7F30D011676FE5000FA36F8 /* CICartViewCell.h */,
+				C7F30D021676FE5000FA36F8 /* CICartViewCell.m */,
+				C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */,
 				6EE3992C155D795200EE1194 /* CICartViewController.h */,
 				6EE3992D155D795300EE1194 /* CICartViewController.m */,
 				6EE3992E155D795300EE1194 /* CICartViewController.xib */,
@@ -922,6 +930,7 @@
 				C77220171673F0E7006CD415 /* CIPrinterSelectionViewController.xib in Resources */,
 				C779A6FA167509B0001C2032 /* PrinterSelectionViewController.xib in Resources */,
 				C779A6FC16751EBE001C2032 /* AccDisclosure.png in Resources */,
+				C7F30D051676FE5000FA36F8 /* CICartViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1012,6 +1021,7 @@
 				C77220071672E151006CD415 /* Order.m in Sources */,
 				C77220161673F0E7006CD415 /* CIPrinterSelectionViewController.m in Sources */,
 				C779A6F9167509B0001C2032 /* PrinterSelectionViewController.m in Sources */,
+				C7F30D041676FE5000FA36F8 /* CICartViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

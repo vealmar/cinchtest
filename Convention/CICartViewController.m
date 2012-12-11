@@ -12,7 +12,7 @@
 #import "config.h"
 #import "JSONKit.h"
 #import "CIViewController.h"
-#import "CIProductCell.h"
+#import "CICartViewCell.h"
 #import "CICustomerInfoViewController.h"
 #import "MBProgressHUD.h"
 #import "Macros.h"
@@ -124,32 +124,33 @@
 
 #pragma mark - Table stuff
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    
     return 1;
 }
+
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
     if (self.productData) {
         return [self.productData count];
     }
     return 0;
 }
+
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 	if (!self.productData) {
         return nil;
     }
     
-    static NSString *CellIdentifier = @"CIProductCell";
+    static NSString *CellIdentifier = @"CICartViewCell";
     
-    CIProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    CICartViewCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil){
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIProductCell" owner:nil options:nil];
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CICartViewCell" owner:nil options:nil];
         
         for(id currentObject in topLevelObjects)
         {
-            if([currentObject isKindOfClass:[CIProductCell class]])
+            if([currentObject isKindOfClass:[CICartViewCell class]])
             {
-                cell = (CIProductCell *)currentObject;
+                cell = (CICartViewCell *)currentObject;
                 break;
             }
         }
@@ -296,11 +297,6 @@
     return (UITableViewCell *)cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    //DLog(@"product details:%@",[self.productData objectForKey:[NSNumber numberWithInteger:[indexPath row]]]);
-}
-
 #pragma mark - Other
 
 -(void)Cancel{
@@ -313,17 +309,9 @@
         [self.delegate setFinishOrder:NO];
     }
     
-    dispatch_queue_t myQueue;
-    myQueue = dispatch_queue_create("myQueue", NULL);
+    [loading hide:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
     
-    dispatch_async(myQueue, ^{
-        sleep(1);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [loading hide:YES];
-            [self dismissViewControllerAnimated:YES completion:nil];
-            
-        });
-    });
 }
 
 - (IBAction)Cancel:(id)sender {
