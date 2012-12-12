@@ -123,7 +123,8 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-	[[searchBar.subviews objectAtIndex:0] removeFromSuperview];
+    if (searchBar.subviews && [searchBar.subviews count] > 0)
+        [[searchBar.subviews objectAtIndex:0] removeFromSuperview];
     
     if(backFromCart && finishOrder) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -144,7 +145,7 @@
         [self loadProductsForUrl:url withLoadLabel:@"Loading Products..."];
         
         navBar.topItem.title = self.title;
-    } else if (!_showCustomers) {
+    } else if (!backFromCart && !_showCustomers) {
         [self getCustomers];
     } else {
         [self.products reloadData];
@@ -791,6 +792,11 @@
         self.customerLabel.text = [self.customer objectForKey:kBillName];
     }
     
+    multiStore = [[customer objectForKey:kStores] isKindOfClass:[NSArray class]]
+                    && [((NSArray*)[customer objectForKey:kStores]) count] > 0;
+
+    [self.products reloadData];
+    
     customerHasBeenSelected = YES;
     NSNumber *custId = [NSNumber numberWithInt:[[self.customer objectForKey:@"custid"] integerValue]];
     NSNumber *customerId = [NSNumber numberWithInt:[[self.customer objectForKey:@"id"] integerValue]];
@@ -846,11 +852,7 @@
             [_order setCustid:[custId intValue]];
             [_order setCustomer_id:[customerId intValue]];
             [_order setBillname:[self.customer objectForKey:kBillName]];
-            
-            BOOL isMultiStore = [[customer objectForKey:kStores] isKindOfClass:[NSArray class]]
-                && [((NSArray*)[customer objectForKey:kStores]) count] > 0;
-            
-            [_order setMultiStore:isMultiStore];
+            [_order setMultiStore:multiStore];
         }
                                  
         [[CoreDataUtil sharedManager] saveObjects];
@@ -1099,12 +1101,8 @@
  
     CICartViewController* cart = [[CICartViewController alloc] initWithNibName:@"CICartViewController" bundle:nil];
     cart.delegate = self;
-//    cart.finishTheOrder = ^{
-//        [self finishOrder:nil];  
-//    };
-    cart.customerDB = self.customerDB;
     cart.productData = [NSMutableDictionary dictionaryWithDictionary:self.productCart];
-    cart.productCart = self.productCart;
+    cart.productCart = [NSMutableDictionary dictionaryWithDictionary:self.productCart];
     cart.multiStore = multiStore;
     cart.modalPresentationStyle = UIModalPresentationFullScreen;
 //    cart.modalTransitionStyle = UIModalTransitionStylePartialCurl;
@@ -1288,10 +1286,9 @@
             DLog(@"DT cart data:%@",self.productCart);
             
             if ([self.productCart objectForKey:[dict objectForKey:@"id"]]) {
-//                DLog(@"index(%@) shipdates updated to: %@",idx,dates);
-//                NSMutableDictionary* dict2 = [self.productCart objectForKey:[dict objectForKey:@"id"]];
-//                [dict2 setObject:dates forKey:kOrderItemShipDates];
-                
+                DLog(@"index(%@) shipdates updated to: %@",idx,dates);
+                NSMutableDictionary* dict2 = [self.productCart objectForKey:[dict objectForKey:@"id"]];
+                [dict2 setObject:dates forKey:kOrderItemShipDates];
                 [self updateShipDatesInCartWithId:[[dict objectForKey:@"id"] intValue] forDates:dates];
             }
             [self updateCellColorForId:[idx integerValue]];

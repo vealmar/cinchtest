@@ -50,7 +50,7 @@
 @property (nonatomic) int tOffset;
 @property (nonatomic) int customerId;
 @property (nonatomic) int printStationId;
-@property (nonatomic) NSDictionary *availablePrinters;
+@property (nonatomic, strong) NSDictionary *availablePrinters;
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property (nonatomic, strong) UIPopoverController *popoverController;

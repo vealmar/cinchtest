@@ -25,19 +25,20 @@
 @end
 
 @interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
-@property (unsafe_unretained, nonatomic) IBOutlet UITableView *products;
+
+@property (nonatomic, strong) IBOutlet UITableView *products;
 @property (nonatomic, strong) NSMutableDictionary* productData;
 @property (nonatomic, strong) NSDictionary* customer;
 @property (nonatomic, strong) NSString* authToken;
-@property (nonatomic, strong) NSArray* customerDB;
+//@property (nonatomic, strong) NSArray* customerDB;
 @property (nonatomic, strong) NSMutableDictionary* productCart;
 @property (nonatomic) BOOL showPrice;
 @property (nonatomic) BOOL multiStore;
 @property (nonatomic) BOOL customersReady;
 @property (nonatomic) int tOffset;
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
-@property (nonatomic, retain) UIPopoverController *popoverController;
-@property (nonatomic, retain) CIStoreQtyTableViewController *storeQtysPO;
+@property (nonatomic, strong) UIPopoverController *popoverController;
+@property (nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 
 @property (unsafe_unretained, nonatomic) IBOutlet UINavigationBar *navBar;
 

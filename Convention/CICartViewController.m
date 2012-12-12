@@ -12,7 +12,7 @@
 #import "config.h"
 #import "JSONKit.h"
 #import "CIViewController.h"
-#import "CICartViewCell.h"
+#import "CIProductCell.h"
 #import "CICustomerInfoViewController.h"
 #import "MBProgressHUD.h"
 #import "Macros.h"
@@ -21,7 +21,6 @@
 //#import "AFJSONRequestOperation.h"
 
 @interface CICartViewController (){
-    MBProgressHUD* loading;
 }
 //-(void) getCustomers;
 
@@ -35,7 +34,7 @@
 @synthesize title;
 @synthesize showPrice;
 @synthesize indicator;
-@synthesize customerDB;
+//@synthesize customerDB;
 @synthesize customer;
 @synthesize delegate;
 @synthesize customersReady;
@@ -79,7 +78,6 @@
 {
     // register for keyboard notifications
     DLog(@"in view will appear... need CI");
-    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:self.view.window];
     [self.products reloadData];
     [self.indicator stopAnimating];
     self.indicator.hidden = YES;
@@ -90,12 +88,6 @@
     }
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    // unregister for keyboard notifications while not visible.
-    //[[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -104,16 +96,6 @@
     
     navBar.topItem.title = self.title;
     //    [self getCustomers];
-}
-
-- (void)viewDidUnload
-{
-    [self setProducts:nil];
-    [self setNavBar:nil];
-    [self setIndicator:nil];
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -139,18 +121,18 @@
         return nil;
     }
     
-    static NSString *CellIdentifier = @"CICartViewCell";
+    static NSString *CellIdentifier = @"CIProductCell";
     
-    CICartViewCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    CIProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
     
     if (cell == nil){
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CICartViewCell" owner:nil options:nil];
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIProductCell" owner:nil options:nil];
         
         for(id currentObject in topLevelObjects)
         {
-            if([currentObject isKindOfClass:[CICartViewCell class]])
+            if([currentObject isKindOfClass:[CIProductCell class]])
             {
-                cell = (CICartViewCell *)currentObject;
+                cell = (CIProductCell *)currentObject;
                 break;
             }
         }
@@ -255,7 +237,7 @@
     cell.delegate = (id<CIProductCellDelegate>) self;
     cell.tag = [indexPath row];
 //    cell.cartBtn.hidden = YES;
-    //cell.subtitle.text = [[[self.productData objectAtIndex:[indexPath row]] objectForKey:@"id"] stringValue];
+    //cell.subtitle.text = [[[self.` objectAtIndex:[indexPath row]] objectForKey:@"id"] stringValue];
     
     BOOL hasQty = NO;
     
@@ -304,12 +286,11 @@
     [self.indicator startAnimating];
     
     if (self.delegate) {
-        [self.delegate setProductCart:self.productCart];
+        [self.delegate setProductCart:[NSMutableDictionary dictionaryWithDictionary:self.productCart]];
         [self.delegate setBackFromCart:YES];
         [self.delegate setFinishOrder:NO];
     }
     
-    [loading hide:YES];
     [self dismissViewControllerAnimated:YES completion:nil];
     
 }
@@ -318,12 +299,10 @@
     [self Cancel];
 }
 
--(void)setCustomerInfo:(NSDictionary*)info
-{
-    [loading hide:YES];
-    self.customer = [info copy];
-    
-}
+//-(void)setCustomerInfo:(NSDictionary*)info
+//{
+//    self.customer = [info copy];
+//}
 
 //- (IBAction)submit:(id)sender {
 //    NSMutableArray* arr = [[NSMutableArray alloc] initWithCapacity:[self.products numberOfRowsInSection:0]];
@@ -438,42 +417,6 @@
     }
     [self dismissViewControllerAnimated:NO completion:nil];
 }
-
-//-(void) getCustomers{
-//    NSString* url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETCUSTOMERS,kAuthToken,self.authToken];
-//    DLog(@"Sending %@", url);
-//    
-//    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-//    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-//        
-//        DLog(@"JSON: %@", JSON);
-//        
-////        self.customerDB = [
-//        
-//    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-//        self.customerDB = nil;
-//        [self dismissViewControllerAnimated:YES completion:nil];
-//    }];
-//    
-//    [operation start];
-//    
-////    DLog(@"Sending %@",url);
-////    __block ASIHTTPRequest* request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-////    
-////    [request setCompletionBlock:^{
-////        self.customerDB = [[request responseString] objectFromJSONString];
-////        // DLog(@"Json:%@",self.customerDB);
-////        customersReady = YES;
-////    }];
-////    
-////    [request setFailedBlock:^{
-////        self.customerDB = nil;
-////        [self dismissViewControllerAnimated:YES completion:nil];
-////        //DLog(@"error:%@", [request error]);
-////    }];
-////    
-////    [request startAsynchronous];
-//}
 
 -(void)VoucherChange:(double)price forIndex:(int)idx{
     NSString* key = [[self.productData allKeys] objectAtIndex:idx];
