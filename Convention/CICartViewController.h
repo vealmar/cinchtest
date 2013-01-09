@@ -56,10 +56,4 @@
 //- (IBAction)submit:(id)sender;
 - (IBAction)finishOrder:(id)sender;
 
-
-
--(void)setCustomerInfo:(NSDictionary*)info;
-
- 
-
 @end
