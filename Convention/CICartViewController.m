@@ -20,6 +20,8 @@
 //#import "AFHTTPClient.h"
 //#import "AFJSONRequestOperation.h"
 
+#import "UIAlertViewDelegateWithBlock.h"
+
 @interface CICartViewController (){
 }
 //-(void) getCustomers;
@@ -265,10 +267,15 @@
         hasShipDates = YES;
     }
     
-    if (hasQty ^ hasShipDates) {
-        UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-        view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
-        cell.backgroundView = view;
+    NSNumber *zero = [NSNumber numberWithInt:0];
+    BOOL isVoucher = [[dict objectForKey:kProductIdx] isEqualToNumber:zero]
+    && [[dict objectForKey:kProductInvtid] isEqualToString:[zero stringValue]];
+    if (!isVoucher) {
+        if (hasQty ^ hasShipDates) {
+            UIView *view = [[UIView alloc] initWithFrame:cell.frame];
+            view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
+            cell.backgroundView = view;
+        }
     }
 //    else if (hasQty && hasShipDates) {
 //        UIView *view = [[UIView alloc] initWithFrame:cell.frame];
@@ -416,6 +423,34 @@
         DLog(@"no delegate class at all");
     }
     [self dismissViewControllerAnimated:NO completion:nil];
+}
+
+-(IBAction)clearVouchers:(id)sender {
+    if ([[self.productCart allKeys] count] <= 0) {
+        [[[UIAlertView alloc] initWithTitle:@"Cart Empty." message:@"You don't have anything in your cart!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+        return;
+    }
+
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Zero out all vouchers?"
+                                                   delegate:nil cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
+    [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+        
+        if (buttonIndex == 1) {
+            [self zeroAllVouchers];
+        }
+        
+    }];
+
+}
+
+-(void)zeroAllVouchers {
+    for (NSString *key in [self.productData allKeys]) {
+        NSMutableDictionary *dict = [self.productData objectForKey:key];
+        [dict setObject:[NSNumber numberWithDouble:0.0] forKey:kEditableVoucher];
+    }
+
+    [self.products reloadData];
+    DLog(@"Set voucher values for all cart items to zero.");
 }
 
 -(void)VoucherChange:(double)price forIndex:(int)idx{

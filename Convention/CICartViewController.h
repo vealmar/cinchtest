@@ -43,6 +43,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UINavigationBar *navBar;
 
 @property (nonatomic, assign) id<CICartViewDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UIButton *zeroVouchers;
 
 @property (readwrite, copy) void(^finishTheOrder)(void);
 
@@ -55,5 +56,6 @@
  
 //- (IBAction)submit:(id)sender;
 - (IBAction)finishOrder:(id)sender;
+- (IBAction)clearVouchers:(id)sender;
 
 @end
