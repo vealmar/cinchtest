@@ -13,9 +13,12 @@
 @end
 
 @implementation CIPrinterSelectionViewController
-
+{
+    NSInteger selectedPrinter;
+}
 @synthesize availablePrinters = _availablePrinters;
 @synthesize printerPicker = _printerPicker;
+@synthesize btnDone;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -28,6 +31,8 @@
 -(void)viewDidLoad {
     [super viewDidLoad];
 //    [self.navigationController setTitle:@"Available Printers"];
+    selectedPrinter = -1;
+    self.btnDone.enabled = NO;
     self.contentSizeForViewInPopover = self.view.frame.size;
 }
 
@@ -44,9 +49,16 @@
 }
 
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    if (self.delegate) {
-        [self.delegate setSelectedPrinter:[_availablePrinters objectAtIndex:row]];
-    }
+//    if (self.delegate) {
+//        [self.delegate setSelectedPrinter:[_availablePrinters objectAtIndex:row]];
+//    }
+    selectedPrinter = row;
+    self.btnDone.enabled = YES;
 }
 
+- (IBAction)selectPrinter:(id)sender {
+    if (self.delegate) {
+        [self.delegate setSelectedPrinter:[_availablePrinters objectAtIndex:selectedPrinter]];
+    }
+}
 @end

@@ -20,4 +20,8 @@
 
 @property (nonatomic, assign) id<UIPrinterSelectedDelegate> delegate;
 
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *selectPrinter;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *btnDone;
+- (IBAction)selectPrinter:(id)sender;
+
 @end
