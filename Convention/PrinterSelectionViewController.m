@@ -13,6 +13,10 @@
 @end
 
 @implementation PrinterSelectionViewController
+{
+    NSInteger selectedPrinter;
+    UIBarButtonItem *btnDone;
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -26,7 +30,14 @@
 -(void)viewDidLoad {
     [super viewDidLoad];
     //    [self.navigationController setTitle:@"Available Printers"];
+    selectedPrinter = -1;
     self.contentSizeForViewInPopover = self.view.frame.size;
+    UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    btnDone = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(selectPrinter:)];
+    btnDone.enabled = NO;
+    NSArray *items = [NSArray arrayWithObjects:flex, btnDone, nil];
+    self.navigationController.toolbarHidden = NO;
+    self.toolbarItems = items;
 }
 
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
@@ -42,8 +53,14 @@
 }
 
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    selectedPrinter = row;
+    btnDone.enabled = YES;
+}
+
+-(IBAction)selectPrinter:(id)sender {
     if (self.delegate) {
-        [self.delegate setSelectedPrinter:[_availablePrinters objectAtIndex:row]];
+        [self.delegate setSelectedPrinter:[_availablePrinters objectAtIndex:selectedPrinter]];
     }
 }
+
 @end
