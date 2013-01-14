@@ -139,9 +139,10 @@
 		C7BA948F1651DA3700E6705B /* ProductCart.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */; };
 		C7BA94F91653462E00E6705B /* Order+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BA94F81653462C00E6705B /* Order+Extensions.m */; };
 		C7DCDEF816A1E76700F66C52 /* zero_vouchers_button.png in Resources */ = {isa = PBXBuildFile; fileRef = C7DCDEF716A1E76600F66C52 /* zero_vouchers_button.png */; };
-		C7DCDEFA16A1F97300F66C52 /* zero_vouchers_button 2.png in Resources */ = {isa = PBXBuildFile; fileRef = C7DCDEF916A1F97300F66C52 /* zero_vouchers_button 2.png */; };
 		C7DCDF0316A26C4B00F66C52 /* VendorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7DCDF0116A26C4B00F66C52 /* VendorViewController.m */; };
 		C7DCDF0416A26C4B00F66C52 /* VendorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DCDF0216A26C4B00F66C52 /* VendorViewController.xib */; };
+		C7DCDF0816A297FE00F66C52 /* BulletinViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7DCDF0616A297FD00F66C52 /* BulletinViewController.m */; };
+		C7DCDF0916A297FE00F66C52 /* BulletinViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DCDF0716A297FD00F66C52 /* BulletinViewController.xib */; };
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
 		C7F30D041676FE5000FA36F8 /* CICartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F30D021676FE5000FA36F8 /* CICartViewCell.m */; };
 		C7F30D051676FE5000FA36F8 /* CICartViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */; };
@@ -348,10 +349,13 @@
 		C7BA94F71653462B00E6705B /* Order+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Order+Extensions.h"; sourceTree = "<group>"; };
 		C7BA94F81653462C00E6705B /* Order+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Order+Extensions.m"; sourceTree = "<group>"; };
 		C7DCDEF716A1E76600F66C52 /* zero_vouchers_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zero_vouchers_button.png; sourceTree = "<group>"; };
-		C7DCDEF916A1F97300F66C52 /* zero_vouchers_button 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "zero_vouchers_button 2.png"; sourceTree = "<group>"; };
 		C7DCDF0016A26C4B00F66C52 /* VendorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VendorViewController.h; sourceTree = "<group>"; };
 		C7DCDF0116A26C4B00F66C52 /* VendorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VendorViewController.m; sourceTree = "<group>"; };
 		C7DCDF0216A26C4B00F66C52 /* VendorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VendorViewController.xib; sourceTree = "<group>"; };
+		C7DCDF0516A297FC00F66C52 /* BulletinViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinViewController.h; sourceTree = "<group>"; };
+		C7DCDF0616A297FD00F66C52 /* BulletinViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BulletinViewController.m; sourceTree = "<group>"; };
+		C7DCDF0716A297FD00F66C52 /* BulletinViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BulletinViewController.xib; sourceTree = "<group>"; };
+		C7DCDF0A16A29D4D00F66C52 /* VendorViewDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VendorViewDelegate.h; sourceTree = "<group>"; };
 		C7EB25E61665CA8D00B1CD4F /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = Reachability/Reachability.h; sourceTree = SOURCE_ROOT; };
 		C7EB25E71665CA8D00B1CD4F /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
 		C7F30D011676FE5000FA36F8 /* CICartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICartViewCell.h; sourceTree = "<group>"; };
@@ -463,7 +467,6 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				C7DCDEF916A1F97300F66C52 /* zero_vouchers_button 2.png */,
 				C779A6FB16751EBE001C2032 /* AccDisclosure.png */,
 				C71484AF1658C98400C57E24 /* AFNetworking */,
 				C7EB25E91665CAA900B1CD4F /* Reachability */,
@@ -530,15 +533,19 @@
 		6E3BEC891490568C00BF8E15 /* order form */ = {
 			isa = PBXGroup;
 			children = (
-				6E3BEC8B149056C100BF8E15 /* Product Cell */,
+				6EE39931155D795D00EE1194 /* Cart */,
 				6E3BEC881490567100BF8E15 /* Customer Info */,
+				6E3BEC8B149056C100BF8E15 /* Product Cell */,
 				6EAFF9EE145FB04800491B42 /* CIProductViewController.h */,
 				6EAFF9EF145FB04800491B42 /* CIProductViewController.m */,
 				6E3BECDB1491B07700BF8E15 /* CIProductViewController.xib */,
-				6EE39931155D795D00EE1194 /* Cart */,
+				C7DCDF0516A297FC00F66C52 /* BulletinViewController.h */,
+				C7DCDF0616A297FD00F66C52 /* BulletinViewController.m */,
+				C7DCDF0716A297FD00F66C52 /* BulletinViewController.xib */,
 				C7DCDF0016A26C4B00F66C52 /* VendorViewController.h */,
 				C7DCDF0116A26C4B00F66C52 /* VendorViewController.m */,
 				C7DCDF0216A26C4B00F66C52 /* VendorViewController.xib */,
+				C7DCDF0A16A29D4D00F66C52 /* VendorViewDelegate.h */,
 			);
 			name = "order form";
 			sourceTree = "<group>";
@@ -933,8 +940,8 @@
 				C779A6FC16751EBE001C2032 /* AccDisclosure.png in Resources */,
 				C7F30D051676FE5000FA36F8 /* CICartViewCell.xib in Resources */,
 				C7DCDEF816A1E76700F66C52 /* zero_vouchers_button.png in Resources */,
-				C7DCDEFA16A1F97300F66C52 /* zero_vouchers_button 2.png in Resources */,
 				C7DCDF0416A26C4B00F66C52 /* VendorViewController.xib in Resources */,
+				C7DCDF0916A297FE00F66C52 /* BulletinViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1026,6 +1033,7 @@
 				C779A6F9167509B0001C2032 /* PrinterSelectionViewController.m in Sources */,
 				C7F30D041676FE5000FA36F8 /* CICartViewCell.m in Sources */,
 				C7DCDF0316A26C4B00F66C52 /* VendorViewController.m in Sources */,
+				C7DCDF0816A297FE00F66C52 /* BulletinViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

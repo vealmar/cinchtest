@@ -18,7 +18,9 @@
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
 
 //#define kBASEURL @"http://:3000"
-#define kShowID @"1"
+//#define kShowID @"2"
+#define SHOW @"show"
+#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
 #define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
 #define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]
 #define kDBGETPRODUCTS [NSString stringWithFormat:@"%@/vendor/shows/%@/products.json",kBASEURL,kShowID]

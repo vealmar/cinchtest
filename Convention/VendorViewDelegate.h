@@ -10,4 +10,8 @@
 
 @protocol VendorViewDelegate <NSObject>
 
+-(void)setVendor:(NSInteger) vendorId;
+-(void)setBulletin:(NSInteger) bulletinId;
+-(void)dismissVendorPopover;
+
 @end

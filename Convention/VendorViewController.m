@@ -7,12 +7,19 @@
 //
 
 #import "VendorViewController.h"
+#import "BulletinViewController.h"
+#import "config.h"
 
 @interface VendorViewController ()
 
 @end
 
 @implementation VendorViewController
+
+@synthesize vendors;
+@synthesize bulletins;
+@synthesize parentPopover;
+@synthesize delegate;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -26,34 +33,27 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    [self.tableView reloadData];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+-(void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.title = @"Vendors";
+    //self.navigationItem.leftBarButtonItem = nil;
+    self.navigationItem.backBarButtonItem = nil;
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return vendors.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -64,61 +64,71 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    // Configure the cell...
+    NSDictionary *details = [vendors objectAtIndex:indexPath.row];
+    if ([details objectForKey:kVendorVendID] != nil)
+        cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID] != nil ? [details objectForKey:kVendorVendID] : @"", [details objectForKey:kVendorUsername]];
+    else
+        cell.textLabel.text = [NSString stringWithFormat:@"%@", [details objectForKey:kVendorUsername]];
+    
+    cell.textLabel.textColor = [UIColor whiteColor];
+    cell.tag = [[details objectForKey:@"id"] intValue];
+    
+    NSNumber *vendId = [NSNumber numberWithInt:0];
+    if (cell.tag > 0)
+        vendId = [NSNumber numberWithInt:[[details objectForKey:@"vendid"] intValue]];
+    
+    if (cell.tag > 0 && bulletins != nil && [bulletins objectForKey:vendId]) {
+        [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+        cell.selectionStyle = UITableViewCellSelectionStyleGray;
+        UIView* accessoryView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 50)];
+        UIImageView* accessoryViewImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"AccDisclosure.png"]];
+        accessoryViewImage.center = CGPointMake(12, 25);
+        [accessoryView addSubview:accessoryViewImage];
+        [cell setAccessoryView:accessoryView];
+    } else {
+        [cell setAccessoryType:UITableViewCellAccessoryNone];
+    }
+    
+    UIView* bg = [[UIView alloc] init];
+    bg.backgroundColor = [UIColor colorWithRed:.94 green:.74 blue:.36 alpha:1.0];
+    cell.selectedBackgroundView = bg;
     
     return cell;
 }
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+    if ([self.delegate respondsToSelector:@selector(setVendor:)]) {
+        UITableViewCell* cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
+        int currentVendor = cell.tag;
+        [self.delegate setVendor:currentVendor];
+        if (currentVendor != 0) {
+            int currentVendId = 0;
+            NSUInteger index = [vendors indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+                int _id = [[obj objectForKey:@"id"] intValue];
+                *stop = currentVendor == _id;
+                return *stop;
+            }];
+            
+            if (index != NSNotFound)
+                currentVendId = [[[vendors objectAtIndex:index] objectForKey:@"vendid"] intValue];
+            
+            if (bulletins != nil && bulletins.count > 0) {
+                BulletinViewController *bulletinViewController = [[BulletinViewController alloc] initWithNibName:@"BulletinViewController" bundle:nil];
+                bulletinViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
+                bulletinViewController.currentVendId = currentVendId;
+                bulletinViewController.delegate = self.delegate;
+                [self.navigationController pushViewController:bulletinViewController animated:YES];
+            } else
+                [self.delegate dismissVendorPopover];
+            
+        } else {
+            [self.delegate setBulletin:0];
+            [self.delegate dismissVendorPopover];
+        }
+    }
 }
 
 @end

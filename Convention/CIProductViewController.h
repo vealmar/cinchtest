@@ -14,6 +14,7 @@
 #import "CIStoreQtyTableViewController.h"
 #import "ReachabilityDelegation.h"
 #import "PrinterSelectionViewController.h"
+#import "VendorViewController.h"
 
 @class CIViewController;
 @class Order;
@@ -26,7 +27,7 @@
 
 @interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,
     UISearchBarDelegate, UIAlertViewDelegate, CICustomerDelegate, CIProductCellDelegate,
-    CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate>
+    CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate, VendorViewDelegate>
 {
 	ReachabilityDelegation *reachDelegation;
 }
@@ -65,6 +66,7 @@
 @property (strong, nonatomic) IBOutlet UIButton *dismissVendor;
 @property (strong, nonatomic) IBOutlet UILabel *customerLabel;
 @property (strong, nonatomic) IBOutlet UILabel *vendorLabel;
+@property (weak, nonatomic) IBOutlet UIButton *vendorDropdown;
 
 @property (nonatomic, assign) id<CIProductViewDelegate> delegate;
 
@@ -81,11 +83,15 @@
 - (IBAction)vendorTouch:(id)sender;
 - (IBAction)dismissVendorTouched:(id)sender;
 
+//@property (weak, nonatomic) IBOutlet UIToolbar *vendorNav;
+//@property (weak, nonatomic) IBOutlet UIBarButtonItem *vendorNavBack;
+//-(IBAction)backToVendors:(id)sender;
+
 - (IBAction)shipdatesTouched:(id)sender;
 
-
 -(void)setCustomerInfo:(NSDictionary*)info;
-
- 
+-(void)setVendor:(NSInteger)vendorId;
+-(void)setBulletin:(NSInteger)bulletinId;
+-(void)dismissVendorPopover;
 
 @end

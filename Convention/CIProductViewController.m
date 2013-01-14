@@ -34,7 +34,7 @@
 @interface CIProductViewController (){
     //MBProgressHUD* loading;
     int currentVendor;
-    int currentVendId;
+//    int currentVendId;
     int currentBulletin;
     NSArray* vendorsData;
     NSMutableDictionary* editableData;
@@ -45,6 +45,7 @@
     NSDictionary *bulletins;
     BOOL isShowingBulletins;
     BOOL customerHasBeenSelected;
+    NSArray *navItems;
 }
 
 -(void) getCustomers;
@@ -86,6 +87,9 @@
 @synthesize printStationId = _printStationId;
 @synthesize availablePrinters = _availablePrinters;
 @synthesize cartButton;
+//@synthesize vendorNav;
+//@synthesize vendorNavBack;
+@synthesize vendorDropdown;
 
 #pragma mark - constructor
 
@@ -101,7 +105,7 @@
         backFromCart = NO;
         tOffset = 0;
         currentVendor = 0;
-        currentVendId = 0;
+//        currentVendId = 0;
         currentBulletin = 0;
         productCart = [NSMutableDictionary dictionary];
         editableData = [NSMutableDictionary dictionary];
@@ -113,6 +117,8 @@
         isShowingBulletins = NO;
         _printStationId = 0;
         customerHasBeenSelected = NO;
+//        navItems = [NSArray arrayWithArray:vendorNav.items];
+//        [vendorNav setItems:[NSArray array]];
     }
 	
 	reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
@@ -247,27 +253,52 @@
             }];
             
             bulletins = [NSDictionary dictionaryWithDictionary:bulls];
-            [self.vendorTable reloadData];
+            //[self.vendorTable reloadData];
+            [self showVendorView];
             
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
             bulletins = nil;
-            [self.vendorTable reloadData];
+            //[self.vendorTable reloadData];
+            [self showVendorView];
         }];
     
     [operation start];
 }
 
--(void)selectBulletin {
-    if (bulletins && [[bulletins allKeys ] count] > 0) {
-        isShowingBulletins = YES;
-        [self.vendorTable reloadData];
-    } else {
-        isShowingBulletins = NO;
-        [self dismissVendorTouched:nil];
-        currentBulletin = 0;
-        [self loadProducts];
-    }
+-(void)showVendorView {
+    VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
+    vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
+    
+    if (bulletins != nil)
+        vendorViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
+    
+    vendorViewController.delegate = self;
+    
+    CGRect frame = vendorDropdown.frame;
+    frame = CGRectOffset(frame, 0, 0);
+    
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vendorViewController];
+    nav.navigationBarHidden = NO;
+    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil];
+    nav.navigationItem.backBarButtonItem = backButton;
+
+    popoverController = [[UIPopoverController alloc] initWithContentViewController:nav];
+    vendorViewController.parentPopover = popoverController;
+    [popoverController presentPopoverFromRect:frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
+
+//-(void)selectBulletin {
+//    if (bulletins && [[bulletins allKeys ] count] > 0) {
+//        isShowingBulletins = YES;
+//        [self.vendorTable reloadData];
+//        [vendorNav setItems:[NSArray arrayWithObject:vendorNavBack] animated:YES];
+//    } else {
+//        isShowingBulletins = NO;
+//        [self dismissVendorTouched:nil];
+//        currentBulletin = 0;
+//        [self loadProducts];
+//    }
+//}
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -301,14 +332,15 @@
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
     if (self.resultData && myTableView == self.products) {
         return [self.resultData count];
-    }else if (vendorsData != nil && myTableView == self.vendorTable) {
-        if (!isShowingBulletins)
-            return vendorsData.count;
-        else {
-            NSArray *bulls = [bulletins objectForKey:[NSNumber numberWithInt:currentVendId]];
-            if (bulls != nil) return [bulls count];
-        }
     }
+//    else if (vendorsData != nil && myTableView == self.vendorTable) {
+//        if (!isShowingBulletins)
+//            return vendorsData.count;
+//        else {
+//            NSArray *bulls = [bulletins objectForKey:[NSNumber numberWithInt:currentVendId]];
+//            if (bulls != nil) return [bulls count];
+//        }
+//    }
     return 0;
 }
 
@@ -363,71 +395,72 @@
 	if (myTableView == self.products && self.resultData == nil) {
         return nil;
     }
-    if (!isShowingBulletins && myTableView == self.vendorTable && vendorsData == nil) {
-        return nil;
-    }
-    if (isShowingBulletins && (bulletins == nil || [[bulletins allKeys] count] == 0) && myTableView == self.vendorTable) {
-        return nil;
-    }
+//    if (!isShowingBulletins && myTableView == self.vendorTable && vendorsData == nil) {
+//        return nil;
+//    }
+//    if (isShowingBulletins && (bulletins == nil || [[bulletins allKeys] count] == 0) && myTableView == self.vendorTable) {
+//        return nil;
+//    }
     
-    if (myTableView == self.vendorTable) {
-        static NSString* CellId = @"CIVendorCell";
-        UITableViewCell* cell = [myTableView dequeueReusableCellWithIdentifier:CellId];
-        
-        if (cell == nil) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellId];
-        }
-        if (!isShowingBulletins) {
-            NSDictionary* details = [vendorsData objectAtIndex:[indexPath row]];
-            if ([details objectForKey:kVendorVendID] != nil)
-                cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID] != nil ? [details objectForKey:kVendorVendID] : @"", [details objectForKey:kVendorUsername]];
-            else
-                cell.textLabel.text = [NSString stringWithFormat:@"%@", [details objectForKey:kVendorUsername]];
-            
-            cell.tag = [[details objectForKey:@"id"] intValue];
-            cell.textLabel.textColor = [UIColor whiteColor];
-            
-            
-            NSNumber *vendId = [NSNumber numberWithInt:0];
-            if (cell.tag > 0)
-                vendId = [NSNumber numberWithInt:[[details objectForKey:@"vendid"] intValue]];
-            
-            if (cell.tag > 0 && bulletins != nil && [bulletins objectForKey:vendId]) {
-                [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
-                cell.selectionStyle = UITableViewCellSelectionStyleGray;
-                UIView* accessoryView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 50)];
-                UIImageView* accessoryViewImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"AccDisclosure.png"]];
-                accessoryViewImage.center = CGPointMake(12, 25);
-                [accessoryView addSubview:accessoryViewImage];
-                [cell setAccessoryView:accessoryView];
-            } else {
-                [cell setAccessoryType:UITableViewCellAccessoryNone];
-            }
-            
-            UIView* bg = [[UIView alloc] init];
-            bg.backgroundColor = [UIColor colorWithRed:.94 green:.74 blue:.36 alpha:1.0];
-            cell.selectedBackgroundView = bg;
-            
-            return cell;
-        } else {
-            NSDictionary *details = [[bulletins objectForKey:[NSNumber numberWithInt:currentVendId]] objectAtIndex:[indexPath row]];
-            if ([details objectForKey:@"name"] != nil)
-                cell.textLabel.text = [details objectForKey:@"name"];
-            else
-                cell.textLabel.text = [details objectForKey:@"id"];
-            cell.tag = [[details objectForKey:@"id"] intValue];
-            cell.textLabel.textColor = [UIColor whiteColor];
-            cell.selectionStyle = UITableViewCellSelectionStyleGray;
-            cell.accessoryType = UITableViewCellAccessoryNone;
-            cell.accessoryView = nil;
-
-            UIView* bg = [[UIView alloc] init];
-            bg.backgroundColor = [UIColor colorWithRed:.94 green:.74 blue:.36 alpha:1.0];
-            cell.selectedBackgroundView = bg;
-            
-            return cell;
-        }
-    } else {
+//    if (myTableView == self.vendorTable) {
+//        static NSString* CellId = @"CIVendorCell";
+//        UITableViewCell* cell = [myTableView dequeueReusableCellWithIdentifier:CellId];
+//        
+//        if (cell == nil) {
+//            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellId];
+//        }
+//        if (!isShowingBulletins) {
+//            NSDictionary* details = [vendorsData objectAtIndex:[indexPath row]];
+//            if ([details objectForKey:kVendorVendID] != nil)
+//                cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID] != nil ? [details objectForKey:kVendorVendID] : @"", [details objectForKey:kVendorUsername]];
+//            else
+//                cell.textLabel.text = [NSString stringWithFormat:@"%@", [details objectForKey:kVendorUsername]];
+//            
+//            cell.tag = [[details objectForKey:@"id"] intValue];
+//            cell.textLabel.textColor = [UIColor whiteColor];
+//            
+//            
+//            NSNumber *vendId = [NSNumber numberWithInt:0];
+//            if (cell.tag > 0)
+//                vendId = [NSNumber numberWithInt:[[details objectForKey:@"vendid"] intValue]];
+//            
+//            if (cell.tag > 0 && bulletins != nil && [bulletins objectForKey:vendId]) {
+//                [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+//                cell.selectionStyle = UITableViewCellSelectionStyleGray;
+//                UIView* accessoryView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 24, 50)];
+//                UIImageView* accessoryViewImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"AccDisclosure.png"]];
+//                accessoryViewImage.center = CGPointMake(12, 25);
+//                [accessoryView addSubview:accessoryViewImage];
+//                [cell setAccessoryView:accessoryView];
+//            } else {
+//                [cell setAccessoryType:UITableViewCellAccessoryNone];
+//            }
+//            
+//            UIView* bg = [[UIView alloc] init];
+//            bg.backgroundColor = [UIColor colorWithRed:.94 green:.74 blue:.36 alpha:1.0];
+//            cell.selectedBackgroundView = bg;
+//            
+//            return cell;
+//        } else {
+//            NSDictionary *details = [[bulletins objectForKey:[NSNumber numberWithInt:currentVendId]] objectAtIndex:[indexPath row]];
+//            if ([details objectForKey:@"name"] != nil)
+//                cell.textLabel.text = [details objectForKey:@"name"];
+//            else
+//                cell.textLabel.text = [details objectForKey:@"id"];
+//            cell.tag = [[details objectForKey:@"id"] intValue];
+//            cell.textLabel.textColor = [UIColor whiteColor];
+//            cell.selectionStyle = UITableViewCellSelectionStyleGray;
+//            cell.accessoryType = UITableViewCellAccessoryNone;
+//            cell.accessoryView = nil;
+//
+//            UIView* bg = [[UIView alloc] init];
+//            bg.backgroundColor = [UIColor colorWithRed:.94 green:.74 blue:.36 alpha:1.0];
+//            cell.selectedBackgroundView = bg;
+//            
+//            return cell;
+//        }
+//    } else
+    {
         
         static NSString *CellIdentifier = @"CIProductCell";
         
@@ -600,49 +633,56 @@
                 [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
             }
         }
-    }else if (tableView == self.vendorTable) {
-        UITableViewCell* cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
-        if (!isShowingBulletins) {
-            [selectedIdx removeAllObjects];
-            currentVendor = cell.tag;
-            if (currentVendor != 0) {
-                NSUInteger index = [vendorsData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-                    int _id = [[obj objectForKey:@"id"] intValue];
-                    *stop = currentVendor == _id;
-                    return *stop;
-                }];
-                
-                if (index != NSNotFound)
-                    currentVendId = [[[vendorsData objectAtIndex:index] objectForKey:@"vendid"] intValue];
-                
-                if (bulletins != nil && [[bulletins allKeys] count] > 0) {
-                    [self selectBulletin];
-                }
-            } else {
-                [self dismissVendorTouched:nil];
-                currentVendId = 0;
-                currentBulletin = 0;
-                [self loadProducts];
-            }
-            
-            if (cell.tag != currentVendor) {
-                _order.vendor_id = currentVendor;
-                [[CoreDataUtil sharedManager] saveObjects];
-            }
-            
-            NSDictionary* details = [vendorsData objectAtIndex:[indexPath row]];
-            self.vendorLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID],
-                                     [details objectForKey:kVendorUsername]];
-        } else {
-            isShowingBulletins = NO;
-            [self dismissVendorTouched:nil];
-            currentBulletin = cell.tag;
-            [self loadProducts];
-        }
     }
+//    else if (tableView == self.vendorTable) {
+//        UITableViewCell* cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
+//        if (!isShowingBulletins) {
+//            [selectedIdx removeAllObjects];
+//            currentVendor = cell.tag;
+//            if (currentVendor != 0) {
+//                NSUInteger index = [vendorsData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+//                    int _id = [[obj objectForKey:@"id"] intValue];
+//                    *stop = currentVendor == _id;
+//                    return *stop;
+//                }];
+//                
+//                if (index != NSNotFound)
+//                    currentVendId = [[[vendorsData objectAtIndex:index] objectForKey:@"vendid"] intValue];
+//                
+//                if (bulletins != nil && [[bulletins allKeys] count] > 0) {
+//                    [self selectBulletin];
+//                }
+//            } else {
+//                [self dismissVendorTouched:nil];
+//                currentVendId = 0;
+//                currentBulletin = 0;
+//                [self loadProducts];
+//            }
+//            
+//            if (cell.tag != currentVendor) {
+//                _order.vendor_id = currentVendor;
+//                [[CoreDataUtil sharedManager] saveObjects];
+//            }
+//            
+//            NSDictionary* details = [vendorsData objectAtIndex:[indexPath row]];
+//            self.vendorLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID],
+//                                     [details objectForKey:kVendorUsername]];
+//        } else {
+//            isShowingBulletins = NO;
+//            [self dismissVendorTouched:nil];
+//            currentBulletin = cell.tag;
+//            [self loadProducts];
+//        }
+//    }
 }
 
 #pragma mark - Other
+
+//-(IBAction)backToVendors:(id)sender {
+//    [vendorNav setItems:[NSArray array] animated:YES];
+//    [self.vendorTable reloadData];
+//    isShowingBulletins = NO;
+//}
 
 -(void)Cancel{
    
@@ -1071,7 +1111,10 @@
             }
         }
         
-        BOOL isVoucher = [dict objectForKey:kProductIdx] == 0 && [dict objectForKey:kProductInvtid] == 0;
+        int idx = [[dict objectForKey:kProductIdx] intValue];
+        int invtid = [[dict objectForKey:kProductInvtid] intValue];
+        
+        BOOL isVoucher =  idx == 0 && invtid == 0;
         
         if (!isVoucher && (!hasQty || !hasShipDates)) {
             [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have a quantity and ship date(s) before the order can be submitted. Check cart items and tray again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
@@ -1117,7 +1160,7 @@
         self.dismissVendor.hidden = YES;
         return;
     }
-    
+//    [vendorNav setItems:[NSArray array]];
     [self.searchBar becomeFirstResponder];
     [self.searchBar resignFirstResponder];
     [selectedIdx removeAllObjects];
@@ -1161,7 +1204,8 @@
                      
                      vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any",kVendorUsername,@"0",@"id", nil], nil];
                      [venderLoading hide:YES];
-                     [self.vendorTable reloadData];
+                     //[self.vendorTable reloadData];
+                     [self showVendorView];
                  }];
             
             [jsonOp start];
@@ -1169,14 +1213,16 @@
         }else{
             [venderLoading hide:YES];
             vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any",kVendorUsername,@"0",@"id", nil], nil];
-            [self.vendorTable reloadData];
+            //[self.vendorTable reloadData];
+            [self showVendorView];
         }
     } else {
-        [self.vendorTable reloadData];
+        //[self.vendorTable reloadData];
+        [self showVendorView];
     }
     
-    self.vendorView.hidden = NO;
-    self.dismissVendor.hidden = NO;
+    //self.vendorView.hidden = NO;
+    //self.dismissVendor.hidden = NO;
 }
 
 - (IBAction)dismissVendorTouched:(id)sender {
@@ -1353,6 +1399,9 @@
     }
 //    DLog(@"don't need thinking loader anymore");
     [thinking hide:NO];
+}
+
+- (IBAction)clearVouch:(id)sender {
 }
 
 -(void)postNotification{
@@ -1898,6 +1947,22 @@
 -(void)networkRestored {
 	
 	[ciLogo setImage:[UIImage imageNamed:@"ci_green.png"]];
+}
+
+#pragma mark - Vendor View Delegate
+
+-(void)setVendor:(NSInteger)vendorId {
+    currentVendor = vendorId;
+}
+
+-(void)setBulletin:(NSInteger)bulletinId {
+    currentBulletin = bulletinId;
+}
+
+-(void)dismissVendorPopover {
+    if ([popoverController isPopoverVisible])
+        [popoverController dismissPopoverAnimated:YES];
+    [self loadProducts];
 }
 
 @end

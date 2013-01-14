@@ -13,12 +13,14 @@
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBProxyObject</string>
 			<string>IBUIActivityIndicatorView</string>
+			<string>IBUIBarButtonItem</string>
 			<string>IBUIButton</string>
 			<string>IBUIImageView</string>
 			<string>IBUILabel</string>
 			<string>IBUISearchBar</string>
 			<string>IBUITableView</string>
 			<string>IBUITextField</string>
+			<string>IBUIToolbar</string>
 			<string>IBUIView</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
@@ -468,7 +470,6 @@
 						<string key="NSFrame">{{502, 364}, {20, 20}}</string>
 						<reference key="NSSuperview" ref="535335168"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:1062</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -629,10 +630,10 @@
 							<object class="IBUIImageView" id="389335690">
 								<reference key="NSNextResponder" ref="356833177"/>
 								<int key="NSvFlags">274</int>
-								<string key="NSFrameSize">{292, 368}</string>
+								<string key="NSFrame">{{-21, 20}, {331, 348}}</string>
 								<reference key="NSSuperview" ref="356833177"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="646067156"/>
+								<reference key="NSNextKeyView" ref="836836167"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -641,10 +642,35 @@
 									<string key="NSResourceName">dropdown.png</string>
 								</object>
 							</object>
+							<object class="IBUIToolbar" id="836836167">
+								<reference key="NSNextResponder" ref="356833177"/>
+								<int key="NSvFlags">266</int>
+								<string key="NSFrame">{{10, 15}, {273, 44}}</string>
+								<reference key="NSSuperview" ref="356833177"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="646067156"/>
+								<string key="NSReuseIdentifierKey">_NS:9</string>
+								<bool key="IBUIOpaque">NO</bool>
+								<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
+								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+								<array class="NSMutableArray" key="IBUIItems">
+									<object class="IBUIBarButtonItem" id="61546889">
+										<string key="IBUITitle">Back</string>
+										<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+										<int key="IBUIStyle">1</int>
+										<reference key="IBUIToolbar" ref="836836167"/>
+										<reference key="IBUITintColor" ref="520912433"/>
+									</object>
+								</array>
+								<object class="NSColor" key="IBUITintColor">
+									<int key="NSColorSpace">2</int>
+									<bytes key="NSRGB">MC4yODYyNzQ1MjI1IDAuMjg2Mjc0NTIyNSAwLjI4NjI3NDUyMjUAA</bytes>
+								</object>
+							</object>
 							<object class="IBUITableView" id="646067156">
 								<reference key="NSNextResponder" ref="356833177"/>
 								<int key="NSvFlags">274</int>
-								<string key="NSFrame">{{20, 28}, {252, 312}}</string>
+								<string key="NSFrame">{{10, 59}, {273, 296}}</string>
 								<reference key="NSSuperview" ref="356833177"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="825011402"/>
@@ -916,6 +942,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">vendorDropdown</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="798714886"/>
+					</object>
+					<int key="connectionID">391</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="1067039406"/>
 						<reference key="destination" ref="372490531"/>
@@ -1062,6 +1096,7 @@
 						<array class="NSMutableArray" key="children">
 							<reference ref="646067156"/>
 							<reference ref="389335690"/>
+							<reference ref="836836167"/>
 						</array>
 						<reference key="parent" ref="535335168"/>
 					</object>
@@ -1267,6 +1302,19 @@
 						<array class="NSMutableArray" key="children"/>
 						<reference key="parent" ref="540074920"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">386</int>
+						<reference key="object" ref="836836167"/>
+						<array class="NSMutableArray" key="children">
+							<reference ref="61546889"/>
+						</array>
+						<reference key="parent" ref="356833177"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">387</int>
+						<reference key="object" ref="61546889"/>
+						<reference key="parent" ref="836836167"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1283,6 +1331,8 @@
 				<string key="135.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="14.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="27.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="386.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="387.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="63.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="66.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="67.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1313,7 +1363,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">383</int>
+			<int key="maxID">391</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1369,6 +1419,7 @@
 						<string key="navBar">UINavigationBar</string>
 						<string key="products">UITableView</string>
 						<string key="searchBar">UISearchBar</string>
+						<string key="vendorDropdown">UIButton</string>
 						<string key="vendorLabel">UILabel</string>
 						<string key="vendorTable">UITableView</string>
 						<string key="vendorView">UIView</string>
@@ -1409,6 +1460,10 @@
 						<object class="IBToOneOutletInfo" key="searchBar">
 							<string key="name">searchBar</string>
 							<string key="candidateClassName">UISearchBar</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="vendorDropdown">
+							<string key="name">vendorDropdown</string>
+							<string key="candidateClassName">UIButton</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="vendorLabel">
 							<string key="name">vendorLabel</string>

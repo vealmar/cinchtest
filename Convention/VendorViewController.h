@@ -7,7 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "VendorViewDelegate.h"
 
 @interface VendorViewController : UITableViewController
+
+@property (nonatomic, strong) NSArray *vendors;
+@property (nonatomic, strong) NSDictionary *bulletins;
+@property (nonatomic, assign) id<VendorViewDelegate> delegate;
+
+@property (nonatomic, weak) UIPopoverController *parentPopover;
 
 @end

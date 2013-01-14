@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "VendorViewDelegate.h"
 
 @interface BulletinViewController : UITableViewController
+
+@property (nonatomic) NSInteger currentVendId;
+@property (nonatomic, strong) NSDictionary *bulletins;
+@property (nonatomic, assign) id<VendorViewDelegate> delegate;
 
 @end
