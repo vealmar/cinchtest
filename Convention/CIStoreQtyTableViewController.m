@@ -110,16 +110,16 @@
 }
 
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == keys.count - 1) {
-        float height = 0;
-        for (int i = 0; i < [tableView numberOfSections]; i++)
-        {
-            CGRect sectionRect = [tableView rectForSection:i];
-            height += sectionRect.size.height;
-        }
-        if (height > 250) height = 200;
-        self.contentSizeForViewInPopover = CGSizeMake(252, height);
-    }
+//    if (indexPath.row == keys.count - 1) {
+//        float height = 0;
+//        for (int i = 0; i < [tableView numberOfSections]; i++)
+//        {
+//            CGRect sectionRect = [tableView rectForSection:i];
+//            height += sectionRect.size.height;
+//        }
+//        if (height > 250) height = 200;
+//        self.contentSizeForViewInPopover = CGSizeMake(252, height);
+//    }
 }
 
 #pragma mark - CIStoreQtyDelegate methods
