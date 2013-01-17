@@ -349,7 +349,8 @@ bool showHud = true;
                     [dates addObject:date];
                 }
                 
-                [self.itemsShipDates insertObject:dates atIndex:idx];
+                NSArray *selectedDates = [[NSOrderedSet orderedSetWithArray:dates] allObjects];
+                [self.itemsShipDates insertObject:selectedDates atIndex:idx];
                 //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
             }
             else
@@ -508,6 +509,9 @@ bool showHud = true;
             cell.orderStatus.text = @"Unknown";
             cell.orderStatus.textColor = [UIColor orangeColor];
         }
+        
+        if ([data objectForKey:kID] != nil)
+            cell.orderId.text = [[data objectForKey:kID] stringValue];
         
         return cell;
     }
@@ -1092,13 +1096,17 @@ bool showHud = true;
         
         AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kDBREPORTPRINTS]];
         [client setParameterEncoding:AFJSONParameterEncoding];
-        NSMutableURLRequest *request = [client requestWithMethod:@"PUT" path:nil parameters:params];
+        NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:nil parameters:params];
         
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
             
             DLog(@"JSON: %@", JSON);
             DLog(@"status = %@", [JSON valueForKey:@"created_at"]);
             [hud hide:YES];
+            
+            NSString *msg = [NSString stringWithFormat:@"Your order has printed successfully to station: %@", printStationId];
+            
+            [[[UIAlertView alloc] initWithTitle:@"Success" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
             
         } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
             [hud hide:YES];
@@ -1321,13 +1329,15 @@ bool showHud = true;
 			NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
 			NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
             NSString *authorized = [dict objectForKey:@"authorized"];
+            NSString *orderId = [[dict objectForKey:@"id"] stringValue];
 //			DLog(@"Bill Name: %@", storeName);
 //			DLog(@"Cust Id: %@", custId);
 //            DLog(@"Authorized: %@", authorized);
 			
-			return [[storeName uppercaseString] contains:[searchText uppercaseString]] ||
-                    [[custId uppercaseString] hasPrefix:[searchText uppercaseString]] ||
-                    [[authorized uppercaseString] hasPrefix:[searchText uppercaseString]];
+			return [[storeName uppercaseString] contains:[searchText uppercaseString]]
+                || [[custId uppercaseString] hasPrefix:[searchText uppercaseString]]
+                || [[authorized uppercaseString] hasPrefix:[searchText uppercaseString]]
+                || [orderId hasPrefix:searchText];
 		}];
 		
 		self.orders = [[self.orderData filteredArrayUsingPredicate:pred] mutableCopy];
