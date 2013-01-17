@@ -17,5 +17,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *vouchers;
 @property (weak, nonatomic) IBOutlet UILabel *lblSC;
 @property (weak, nonatomic) IBOutlet UILabel *orderStatus;
+@property (weak, nonatomic) IBOutlet UILabel *orderId;
 
 @end
