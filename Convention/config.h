@@ -18,9 +18,9 @@
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
 
 //#define kBASEURL @"http://:3000"
-//#define kShowID @"2"
-#define SHOW @"show"
-#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
+#define kShowID @"2"
+//#define SHOW @"show"
+//#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
 #define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
 #define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]
 #define kDBGETPRODUCTS [NSString stringWithFormat:@"%@/vendor/shows/%@/products.json",kBASEURL,kShowID]
@@ -137,7 +137,8 @@
 #define kReportPrintIsle @"report_print[isle]"
 #define kReportPrintBooth @"report_print[booth]"
 #define kReportPrintNotes @"report_print[notes]"
-#define kReportPrintOrderId @"report_print[order_id]"
+//#define kReportPrintOrderId @"report_print[order_id]"
+#define kReportPrintOrderId @"order_id"
 
 #define kOFFSET_FOR_KEYBOARD 60.0
 //#define kOFFSET_FOR_KEYBOARD 80.0

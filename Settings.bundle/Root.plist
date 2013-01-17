@@ -16,7 +16,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>pw-1110</string>
+			<string></string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -34,7 +34,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>31723</string>
+			<string></string>
 			<key>IsSecure</key>
 			<true/>
 			<key>Key</key>
@@ -52,7 +52,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>http://ci-pw1.herokuapp.com</string>
+			<string>http://192.168.1.30/</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
