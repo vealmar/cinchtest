@@ -997,17 +997,19 @@
         
         DLog(@"orig yo q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
         if (num > 0) {
-            NSArray* dates = [dict objectForKey:kOrderItemShipDates];
-            NSMutableArray* strs = [NSMutableArray array];
             
-            NSDateFormatter* df = [[NSDateFormatter alloc] init];
-            [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-            for(int i = 0; i < dates.count; i++){
-                NSString* str = [df stringFromDate:[dates objectAtIndex:i]];
-                [strs addObject:str];
+            NSMutableArray* strs = [NSMutableArray array];
+            NSArray* dates = [dict objectForKey:kOrderItemShipDates];
+            if ([dates count] > 0) {
+                NSDateFormatter* df = [[NSDateFormatter alloc] init];
+                [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
+                for(int i = 0; i < dates.count; i++){
+                    NSString* str = [df stringFromDate:[dates objectAtIndex:i]];
+                    [strs addObject:str];
+                }
             }
             
-            if ([strs count] > 0) {
+            if ([strs count] > 0 || itemIsVoucher(dict)) {
                 NSString *ePrice = [[dict objectForKey:kEditablePrice] stringValue];
                 NSString *eVoucher = [[dict objectForKey:kEditableVoucher] stringValue];
                 NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[dict objectForKey:kEditableQty],kOrderItemNum,ePrice,kOrderItemPRICE,eVoucher,kOrderItemVoucher,strs,kOrderItemShipDates, nil];
@@ -1024,7 +1026,8 @@
         return;
     }
     
-    NSMutableDictionary* newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:@"id"],kOrderCustID, [self.customer objectForKey:kShipNotes],kShipNotes, [self.customer objectForKey:kNotes], kNotes, [self.customer objectForKey:kAuthorizedBy],kAuthorizedBy,arr, kOrderItems, nil];
+    NSMutableDictionary* newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:@"id"],kOrderCustID, [self.customer objectForKey:kShipNotes],kShipNotes, [self.customer objectForKey:kNotes], kNotes, [self.customer objectForKey:kAuthorizedBy],kAuthorizedBy,arr, kOrderItems,
+                                     @"complete", kOrderStatus, nil];
     
     if (printThisOrder) {
         [newOrder setObject:@"TRUE" forKey:@"print"];
@@ -1071,6 +1074,13 @@
     }];
 }
 
+BOOL itemIsVoucher(NSDictionary *dict) {
+    int idx = [[dict objectForKey:kProductIdx] intValue];
+    int invtid = [[dict objectForKey:kProductInvtid] intValue];
+    
+    return idx == 0 && invtid == 0;
+}
+
 -(BOOL)orderReadyForSubmission {
     NSArray* keys = self.productCart.allKeys;
     for (NSString* i in keys) {
@@ -1111,12 +1121,7 @@
             }
         }
         
-        int idx = [[dict objectForKey:kProductIdx] intValue];
-        int invtid = [[dict objectForKey:kProductInvtid] intValue];
-        
-        BOOL isVoucher =  idx == 0 && invtid == 0;
-        
-        if (!isVoucher && (!hasQty || !hasShipDates)) {
+        if (!itemIsVoucher(dict) && (!hasQty || !hasShipDates)) {
             [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have a quantity and ship date(s) before the order can be submitted. Check cart items and tray again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
             return NO;
         }
@@ -1325,13 +1330,10 @@
                 edict = editableDict;
             }
             
-            DLog(@"after done touch(should never be nil):%@ vs orig%@",edict,editableDict);
-            
             [edict setObject:dates forKey:kOrderItemShipDates];
             [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
             
             DLog(@"done Touch idx(%@) iedict:%@ full data is now:%@",idx,edict,[editableData objectForKey:[dict objectForKey:@"id"]]);
-            DLog(@"DT cart data:%@",self.productCart);
             
             if ([self.productCart objectForKey:[dict objectForKey:@"id"]] != nil) {
                 DLog(@"index(%@) shipdates updated to: %@",idx,dates);
@@ -1360,6 +1362,7 @@
         }
     }
 
+    NSArray *selectedDates = [[NSOrderedSet orderedSetWithArray:selectedArr] allObjects];
     
     if (ranges.count>1) {
 //        DLog(@"more then one range");
@@ -1376,7 +1379,7 @@
 //            DLog(@"presenting multi range");
             calView.afterLoad =^{
                 calView.calendarView.avalibleDates = [[final allObjects] mutableCopy];
-                calView.calendarView.selectedDates = [selectedArr mutableCopy];
+                calView.calendarView.selectedDates = [selectedDates mutableCopy];
             };
             [self presentViewController:calView animated:NO completion:nil];
 //            DLog(@"presented");
@@ -1387,7 +1390,7 @@
 //            DLog(@"presenting single range:%@",[ranges objectAtIndex:0]);
             calView.afterLoad =^{
                 calView.calendarView.avalibleDates =[[ranges objectAtIndex:0] mutableCopy];
-                calView.calendarView.selectedDates = [selectedArr mutableCopy];
+                calView.calendarView.selectedDates = [selectedDates mutableCopy];
             };
             
 //            DLog(@"copied");
@@ -1399,9 +1402,6 @@
     }
 //    DLog(@"don't need thinking loader anymore");
     [thinking hide:NO];
-}
-
-- (IBAction)clearVouch:(id)sender {
 }
 
 -(void)postNotification{
@@ -1829,6 +1829,9 @@
 }
 
 -(void)QtyTableChange:(NSMutableDictionary *)qty forIndex:(int)idx{
+    
+    
+    
     NSString* JSON = [qty JSONString];
     DLog(@"setting qtys on index(%d) to %@",idx,JSON);
     
