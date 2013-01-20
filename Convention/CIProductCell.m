@@ -38,6 +38,7 @@
 //@synthesize cartBtn;
 @synthesize qtyBtn;
 @synthesize delegate;
+@synthesize hyphenBetweenShipDates;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {

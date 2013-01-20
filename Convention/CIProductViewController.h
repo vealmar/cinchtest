@@ -67,6 +67,10 @@
 @property (strong, nonatomic) IBOutlet UILabel *customerLabel;
 @property (strong, nonatomic) IBOutlet UILabel *vendorLabel;
 @property (weak, nonatomic) IBOutlet UIButton *vendorDropdown;
+@property (weak, nonatomic) IBOutlet UILabel *lblShipDate1;
+@property (weak, nonatomic) IBOutlet UILabel *lblShipDate2;
+@property (weak, nonatomic) IBOutlet UILabel *lblShipDateCount;
+@property (weak, nonatomic) IBOutlet UIButton *btnSelectShipDates;
 
 @property (nonatomic, assign) id<CIProductViewDelegate> delegate;
 

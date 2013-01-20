@@ -15,6 +15,8 @@
 
 @interface CIFinalCustomerInfoViewController () {
     SetupInfo *authorizedBy;
+    SetupInfo *shipFlag;
+    BOOL contactFirst;
     NSManagedObjectContext *context;
 }
 
@@ -28,6 +30,7 @@
 @synthesize delegate;
 @synthesize tableData;
 @synthesize filteredtableData;
+@synthesize contactBeforeShipping;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -56,14 +59,23 @@
     
     CIAppDelegate *appDelegate = (CIAppDelegate *)[[UIApplication sharedApplication] delegate];
     NSManagedObjectModel *model = appDelegate.managedObjectModel;
-    NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getAuthorizedBy" substitutionVariables:subs];
+    NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs];
     NSError *error = nil;
     
     context = appDelegate.managedObjectContext;
     NSArray *results = [context executeFetchRequest:req error:&error];
-    if (!error && results && [results count] > 0) {
+    if (!error && results != nil && [results count] > 0) {
         authorizedBy = [results objectAtIndex:0];
         Authorizer.text = authorizedBy.value;
+    }
+    
+    subs = [NSDictionary dictionaryWithObject:@"ship_flag" forKey:@"ITEMNAME"];
+    req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs];
+    results = [context executeFetchRequest:req error:&error];
+    if (!error && results != nil && [results count] > 0) {
+        shipFlag = [results objectAtIndex:0];
+        contactFirst = [shipFlag.value isEqualToString:@"YES"];
+        contactBeforeShipping.isChecked = contactFirst;
     }
 }
 
@@ -80,17 +92,32 @@
     if (!IS_EMPTY_STRING(self.Authorizer.text)) {
         
         if (![self.Authorizer.text isEqualToString:authorizedBy.value]) {
-            if (authorizedBy) {
+            if (authorizedBy != nil) {
                 authorizedBy.value = self.Authorizer.text;
             } else {
                 SetupInfo *setup = (SetupInfo *)[[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
                 setup.item = @"authorizedBy";
                 setup.value = self.Authorizer.text;
             }
+            
             NSError *error;
             [context save:&error];
         }
         
+        
+        if (shipFlag == nil || contactBeforeShipping.isChecked != contactFirst) {
+            if (shipFlag != nil) {
+                shipFlag.value = contactBeforeShipping.isChecked ? @"YES" : @"NO";
+            } else {
+                SetupInfo *setup = (SetupInfo *)[[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
+                setup.item = @"ship_flag";
+                setup.value = contactBeforeShipping.isChecked ? @"YES" : @"NO";
+            }
+            
+            NSError *error;
+            [context save:&error];
+        }
+
         if (self.delegate) {
             NSMutableDictionary* dict = [[self.delegate getCustomerInfo] mutableCopy];
             DLog(@"customer data:%@",dict);
@@ -101,6 +128,9 @@
             [dict setObject:self.shippingNotes.text forKey:kShipNotes];
             [dict setObject:self.Notes.text forKey:kNotes ];
             [dict setObject:self.Authorizer.text forKey:kAuthorizedBy];
+            
+            NSString *isChecked = self.contactBeforeShipping.isChecked ? @"YES" : @"NO";
+            [dict setObject:isChecked forKey:kShipFlag];
             DLog(@"info to send:%@",dict);
             [self.delegate setCustomerInfo:[dict copy]];
             [self.delegate submit:nil];

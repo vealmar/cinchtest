@@ -915,6 +915,38 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">lblShipDate1</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="736586108"/>
+					</object>
+					<int key="connectionID">392</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">lblShipDate2</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="909870313"/>
+					</object>
+					<int key="connectionID">393</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">lblShipDateCount</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="1021141555"/>
+					</object>
+					<int key="connectionID">394</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">btnSelectShipDates</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="729951309"/>
+					</object>
+					<int key="connectionID">395</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="1067039406"/>
 						<reference key="destination" ref="372490531"/>
@@ -1328,7 +1360,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">391</int>
+			<int key="maxID">395</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes"/>
 		<int key="IBDocument.localizationMode">0</int>

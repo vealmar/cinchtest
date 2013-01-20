@@ -21,6 +21,10 @@
 #define kShowID @"2"
 //#define SHOW @"show"
 //#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
+
+#define kShowShipDates NO // set to NO for the Farris show; need to handle this dynamically from backend service
+#define kAllowPrinting NO // ditto
+
 #define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
 #define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]
 #define kDBGETPRODUCTS [NSString stringWithFormat:@"%@/vendor/shows/%@/products.json",kBASEURL,kShowID]
@@ -100,6 +104,7 @@
 #define kItems @"line_items"
 #define kTotal @"total"
 #define kVoucherTotal @"voucherTotal"
+#define kShipFlag @"ship_flag"
 
     //purchased Items keys:
 #define kOrderItems @"line_items_attributes"

@@ -138,6 +138,9 @@
 		C779A6FC16751EBE001C2032 /* AccDisclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = C779A6FB16751EBE001C2032 /* AccDisclosure.png */; };
 		C7BA948F1651DA3700E6705B /* ProductCart.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */; };
 		C7BA94F91653462E00E6705B /* Order+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = C7BA94F81653462C00E6705B /* Order+Extensions.m */; };
+		C7CF070716AC55A0001DADED /* checkbox_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = C7CF070516AC55A0001DADED /* checkbox_not_ticked.png */; };
+		C7CF070816AC55A0001DADED /* checkbox_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = C7CF070616AC55A0001DADED /* checkbox_ticked.png */; };
+		C7CF070C16AC55D8001DADED /* MICheckBox.m in Sources */ = {isa = PBXBuildFile; fileRef = C7CF070B16AC55D8001DADED /* MICheckBox.m */; };
 		C7DCDEF816A1E76700F66C52 /* zero_vouchers_button.png in Resources */ = {isa = PBXBuildFile; fileRef = C7DCDEF716A1E76600F66C52 /* zero_vouchers_button.png */; };
 		C7DCDF0316A26C4B00F66C52 /* VendorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7DCDF0116A26C4B00F66C52 /* VendorViewController.m */; };
 		C7DCDF0416A26C4B00F66C52 /* VendorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DCDF0216A26C4B00F66C52 /* VendorViewController.xib */; };
@@ -348,6 +351,10 @@
 		C7BA948E1651DA3700E6705B /* ProductCart.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart.xcdatamodel; sourceTree = "<group>"; };
 		C7BA94F71653462B00E6705B /* Order+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Order+Extensions.h"; sourceTree = "<group>"; };
 		C7BA94F81653462C00E6705B /* Order+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Order+Extensions.m"; sourceTree = "<group>"; };
+		C7CF070516AC55A0001DADED /* checkbox_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_not_ticked.png; sourceTree = "<group>"; };
+		C7CF070616AC55A0001DADED /* checkbox_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_ticked.png; sourceTree = "<group>"; };
+		C7CF070A16AC55D8001DADED /* MICheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MICheckBox.h; sourceTree = "<group>"; };
+		C7CF070B16AC55D8001DADED /* MICheckBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MICheckBox.m; sourceTree = "<group>"; };
 		C7DCDEF716A1E76600F66C52 /* zero_vouchers_button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zero_vouchers_button.png; sourceTree = "<group>"; };
 		C7DCDF0016A26C4B00F66C52 /* VendorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VendorViewController.h; sourceTree = "<group>"; };
 		C7DCDF0116A26C4B00F66C52 /* VendorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VendorViewController.m; sourceTree = "<group>"; };
@@ -452,6 +459,7 @@
 				6E118574145F2F2200568ED1 /* CIAppDelegate.h */,
 				6E118575145F2F2200568ED1 /* CIAppDelegate.m */,
 				335A4300164D7448007B872A /* Categories */,
+				C7CF070916AC55BB001DADED /* Components */,
 				335A42F9164D742F007B872A /* util */,
 				6E7698A7153E8BD0003CF4AC /* models */,
 				7498340615DE3EBB00F3EB26 /* Calendar */,
@@ -467,6 +475,8 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C7CF070516AC55A0001DADED /* checkbox_not_ticked.png */,
+				C7CF070616AC55A0001DADED /* checkbox_ticked.png */,
 				C779A6FB16751EBE001C2032 /* AccDisclosure.png */,
 				C71484AF1658C98400C57E24 /* AFNetworking */,
 				C7EB25E91665CAA900B1CD4F /* Reachability */,
@@ -817,6 +827,15 @@
 			name = tools;
 			sourceTree = "<group>";
 		};
+		C7CF070916AC55BB001DADED /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				C7CF070A16AC55D8001DADED /* MICheckBox.h */,
+				C7CF070B16AC55D8001DADED /* MICheckBox.m */,
+			);
+			name = Components;
+			sourceTree = "<group>";
+		};
 		C7EB25E91665CAA900B1CD4F /* Reachability */ = {
 			isa = PBXGroup;
 			children = (
@@ -942,6 +961,8 @@
 				C7DCDEF816A1E76700F66C52 /* zero_vouchers_button.png in Resources */,
 				C7DCDF0416A26C4B00F66C52 /* VendorViewController.xib in Resources */,
 				C7DCDF0916A297FE00F66C52 /* BulletinViewController.xib in Resources */,
+				C7CF070716AC55A0001DADED /* checkbox_not_ticked.png in Resources */,
+				C7CF070816AC55A0001DADED /* checkbox_ticked.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1034,6 +1055,7 @@
 				C7F30D041676FE5000FA36F8 /* CICartViewCell.m in Sources */,
 				C7DCDF0316A26C4B00F66C52 /* VendorViewController.m in Sources */,
 				C7DCDF0816A297FE00F66C52 /* BulletinViewController.m in Sources */,
+				C7CF070C16AC55D8001DADED /* MICheckBox.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "CICustomerInfoViewController.h"
+#import "MICheckBox.h"
+
 @protocol CIFinalCustomerDelegate <NSObject>
 
 -(NSDictionary*)getCustomerInfo;
@@ -26,6 +28,8 @@
 @property (nonatomic, strong) NSMutableArray* filteredtableData;
 -(void) setCustomerData:(NSArray *)customerData;
 - (IBAction)back:(id)sender;
+//@property (weak, nonatomic) IBOutlet UISwitch *contact;
+@property (nonatomic, strong) IBOutlet MICheckBox *contactBeforeShipping;
 
 @property (nonatomic, assign) id<CICustomerDelegate,CIFinalCustomerDelegate> delegate;
 

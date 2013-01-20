@@ -42,6 +42,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *Adv;
 //@property (unsafe_unretained, nonatomic) IBOutlet UIButton *cartBtn;
 @property (unsafe_unretained, nonatomic) IBOutlet UIButton *qtyBtn;
+@property (weak, nonatomic) IBOutlet UILabel *hyphenBetweenShipDates;
 
 @property (nonatomic, assign) id<CIProductCellDelegate> delegate;
 - (IBAction)priceDidEnd:(id)sender;

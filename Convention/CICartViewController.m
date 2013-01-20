@@ -271,17 +271,12 @@
     BOOL isVoucher = [[dict objectForKey:kProductIdx] isEqualToNumber:zero]
     && [[dict objectForKey:kProductInvtid] isEqualToString:[zero stringValue]];
     if (!isVoucher) {
-        if (hasQty ^ hasShipDates) {
+        if (hasQty ^ (hasShipDates || (kShowShipDates == NO))) {
             UIView *view = [[UIView alloc] initWithFrame:cell.frame];
             view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
             cell.backgroundView = view;
         }
     }
-//    else if (hasQty && hasShipDates) {
-//        UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-//        view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
-//        cell.backgroundView = view;
-//    }
 
     return (UITableViewCell *)cell;
 }
