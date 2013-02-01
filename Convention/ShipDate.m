@@ -2,8 +2,8 @@
 //  ShipDate.m
 //  Convention
 //
-//  Created by Kerry Sanders on 12/5/12.
-//  Copyright (c) 2012 MotionMobs. All rights reserved.
+//  Created by Kerry Sanders on 1/21/13.
+//  Copyright (c) 2013 MotionMobs. All rights reserved.
 //
 
 #import "ShipDate.h"

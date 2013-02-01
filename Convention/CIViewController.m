@@ -21,7 +21,7 @@
 @synthesize password;
 @synthesize error;
 @synthesize authToken;
-@synthesize venderInfo;
+@synthesize vendorInfo;
 @synthesize masterVender;
 @synthesize vendorGroup;
 @synthesize lblVersion;
@@ -74,7 +74,7 @@
 //    self.email.text = @"v1";
 //    self.password.text = @"testing";
     
-    self.venderInfo =nil;
+    self.vendorInfo =nil;
     
 	// Do any additional setup after loading the view, typically from a nib.
 }
@@ -83,7 +83,7 @@
 {
     [self setEmail:nil];
     [self setPassword:nil];
-    [self setVenderInfo:nil];
+    [self setVendorInfo:nil];
     [self setError:nil];
     [self setLblVersion:nil];
     [super viewDidUnload];
@@ -148,17 +148,31 @@
              
              if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
                  authToken = [JSON objectForKey:kAuthToken];
-                 [venderInfo addObject:JSON];
-                 NSDictionary *venderGroupId = [JSON objectForKey:kVendorGroupID];
-                 if (venderGroupId && [venderGroupId objectForKey:kID]) {
-                     vendorGroup = [[venderGroupId objectForKey:kID] stringValue];
+                 vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
+//                 NSInteger vendorGroupId = [[JSON objectForKey:kVendorGroupID] integerValue];
+//                 if (venderGroupId && [venderGroupId objectForKey:kID]) {
+//                     vendorGroup = [[venderGroupId objectForKey:kID] stringValue];
+//                 }
+
+                 DLog(@"Login JSON: %@", JSON);
+                 
+                 if ([JSON objectForKey:kID]) {
+                     vendorGroup = [[JSON objectForKey:kID] stringValue];
                  }
                  
                  CIOrderViewController *masterViewController = [[CIOrderViewController alloc] initWithNibName:@"CIOrderViewController" bundle:nil];
                  masterViewController.authToken = authToken;
-                 masterViewController.venderInfo = [venderInfo copy];
+                 masterViewController.vendorInfo = [vendorInfo copy];
                  masterViewController.vendorGroup = vendorGroup;
                  masterViewController.managedObjectContext = self.managedObjectContext;
+                 
+                 NSDictionary *shows = [JSON objectForKey:@"shows"];
+                 if (shows != nil) {
+                     NSString *showFeatures = [shows objectForKey:@"features"];
+                     NSDictionary *features = [showFeatures objectFromJSONString];
+                     masterViewController.allowPrinting = [[features objectForKey:@"printing"] intValue];
+                     masterViewController.showShipDates = [[features objectForKey:@"shipdates"] intValue];
+                 }
                  
                  [self presentViewController:masterViewController animated:YES completion:nil];
                  

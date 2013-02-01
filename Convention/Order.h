@@ -2,8 +2,8 @@
 //  Order.h
 //  Convention
 //
-//  Created by Kerry Sanders on 12/7/12.
-//  Copyright (c) 2012 MotionMobs. All rights reserved.
+//  Created by Kerry Sanders on 1/21/13.
+//  Copyright (c) 2013 MotionMobs. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -15,12 +15,15 @@
 
 @property (nonatomic, retain) NSString * billname;
 @property (nonatomic) NSTimeInterval created_at;
-@property (nonatomic) int32_t custid;
-@property (nonatomic) int32_t customer_id;
 @property (nonatomic) BOOL multiStore;
+@property (nonatomic) int32_t orderId;
 @property (nonatomic, retain) NSString * status;
-@property (nonatomic, retain) NSString * vendorGroup;
+@property (nonatomic) double totalCost;
 @property (nonatomic) int32_t vendor_id;
+@property (nonatomic, retain) NSString * vendorGroup;
+@property (nonatomic, retain) NSString * vendorGroupId;
+@property (nonatomic, retain) NSString * customer_id;
+@property (nonatomic, retain) NSString * custid;
 @property (nonatomic, retain) NSOrderedSet *carts;
 @end
 

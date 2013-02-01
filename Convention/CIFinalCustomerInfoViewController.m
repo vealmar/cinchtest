@@ -75,7 +75,7 @@
     if (!error && results != nil && [results count] > 0) {
         shipFlag = [results objectAtIndex:0];
         contactFirst = [shipFlag.value isEqualToString:@"YES"];
-        contactBeforeShipping.isChecked = contactFirst;
+        [contactBeforeShipping updateCheckBox:contactFirst];
     }
 }
 
@@ -125,7 +125,7 @@
                 return;
             }
             
-            [dict setObject:self.shippingNotes.text forKey:kShipNotes];
+//            [dict setObject:self.shippingNotes.text forKey:kShipNotes];
             [dict setObject:self.Notes.text forKey:kNotes ];
             [dict setObject:self.Authorizer.text forKey:kAuthorizedBy];
             

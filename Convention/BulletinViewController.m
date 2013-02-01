@@ -50,7 +50,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSArray *bulls = [bulletins objectForKey:[NSNumber numberWithInt:currentVendId]];
-    if (bulls != nil)
+    if (bulletins != nil)
         return [bulls count];
     else
         return 0;

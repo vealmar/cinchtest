@@ -2,8 +2,8 @@
 //  Cart.m
 //  Convention
 //
-//  Created by Kerry Sanders on 12/6/12.
-//  Copyright (c) 2012 MotionMobs. All rights reserved.
+//  Created by Kerry Sanders on 1/21/13.
+//  Copyright (c) 2013 MotionMobs. All rights reserved.
 //
 
 #import "Cart.h"
@@ -14,22 +14,25 @@
 @implementation Cart
 
 @dynamic adv;
+@dynamic cartId;
 @dynamic caseqty;
+@dynamic category;
 @dynamic company;
 @dynamic created_at;
 @dynamic descr;
+@dynamic descr2;
 @dynamic dirship;
 @dynamic discount;
 @dynamic editablePrice;
 @dynamic editableQty;
 @dynamic editableVoucher;
-@dynamic cartId;
 @dynamic idx;
 @dynamic import_id;
 @dynamic initial_show;
 @dynamic invtid;
 @dynamic linenbr;
 @dynamic new;
+@dynamic orderLineItem_id;
 @dynamic partnbr;
 @dynamic regprc;
 @dynamic shipdate1;

@@ -66,9 +66,9 @@
     
     NSDictionary *details = [vendors objectAtIndex:indexPath.row];
     if ([details objectForKey:kVendorVendID] != nil)
-        cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID] != nil ? [details objectForKey:kVendorVendID] : @"", [details objectForKey:kVendorUsername]];
+        cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID] != nil ? [details objectForKey:kVendorVendID] : @"", [details objectForKey:@"name"]];
     else
-        cell.textLabel.text = [NSString stringWithFormat:@"%@", [details objectForKey:kVendorUsername]];
+        cell.textLabel.text = [NSString stringWithFormat:@"%@", [details objectForKey:@"name"]];
     
     cell.textLabel.textColor = [UIColor whiteColor];
     cell.tag = [[details objectForKey:@"id"] intValue];
@@ -113,7 +113,9 @@
             }];
             
             if (index != NSNotFound)
-                currentVendId = [[[vendors objectAtIndex:index] objectForKey:@"vendid"] intValue];
+                currentVendId = [[[vendors objectAtIndex:index] objectForKey:@"id"] intValue];
+            
+//            currentVendId = [self.vendorGroupId intValue];
             
             if (bulletins != nil && bulletins.count > 0) {
                 BulletinViewController *bulletinViewController = [[BulletinViewController alloc] initWithNibName:@"BulletinViewController" bundle:nil];

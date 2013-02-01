@@ -32,6 +32,7 @@
 @property (nonatomic, strong) NSString* authToken;
 //@property (nonatomic, strong) NSArray* customerDB;
 @property (nonatomic, strong) NSMutableDictionary* productCart;
+@property (nonatomic, strong) NSMutableDictionary *discountItems;
 @property (nonatomic) BOOL showPrice;
 @property (nonatomic) BOOL multiStore;
 @property (nonatomic) BOOL customersReady;
@@ -44,6 +45,20 @@
 
 @property (nonatomic, assign) id<CICartViewDelegate> delegate;
 @property (weak, nonatomic) IBOutlet UIButton *zeroVouchers;
+
+@property (weak, nonatomic) IBOutlet UILabel *lblShipDate1;
+@property (weak, nonatomic) IBOutlet UILabel *lblShipDate2;
+@property (weak, nonatomic) IBOutlet UILabel *lblShipDateCount;
+
+@property (weak, nonatomic) IBOutlet UIView *tableHeaderPigglyWiggly;
+@property (weak, nonatomic) IBOutlet UIView *tableHeaderFarris;
+
+@property (nonatomic) BOOL allowPrinting;
+@property (nonatomic) BOOL showShipDates;
+
+@property (weak, nonatomic) IBOutlet UILabel *grossTotal;
+@property (weak, nonatomic) IBOutlet UILabel *discountTotal;
+@property (weak, nonatomic) IBOutlet UILabel *netTotal;
 
 @property (readwrite, copy) void(^finishTheOrder)(void);
 

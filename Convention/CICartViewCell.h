@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "JSONKit.h"
-#import "CIProductCell.h"
+#import "ProductCellDelegate.h"
 
 //@protocol CIProductCellDelegate <NSObject>
 //@required
@@ -44,7 +44,7 @@
 //@property (unsafe_unretained, nonatomic) IBOutlet UIButton *cartBtn;
 @property (unsafe_unretained, nonatomic) IBOutlet UIButton *qtyBtn;
 
-@property (nonatomic, assign) id<CIProductCellDelegate> delegate;
+@property (nonatomic, assign) id<ProductCellDelegate> delegate;
 - (IBAction)priceDidEnd:(id)sender;
 - (IBAction)priceDidChange:(id)sender;
 

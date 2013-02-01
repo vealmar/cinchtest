@@ -26,8 +26,9 @@
 @end
 
 @interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,
-    UISearchBarDelegate, UIAlertViewDelegate, CICustomerDelegate, CIProductCellDelegate,
-    CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate, VendorViewDelegate>
+    UISearchBarDelegate, UIAlertViewDelegate, CICustomerDelegate, ProductCellDelegate,
+    CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate,
+    UIPrinterSelectedDelegate, VendorViewDelegate>
 {
 	ReachabilityDelegation *reachDelegation;
 }
@@ -41,17 +42,21 @@
 @property (nonatomic, strong) NSDictionary* customer;
 @property (nonatomic, strong) NSString* authToken;
 @property (nonatomic, strong) NSString* vendorGroup;
+@property (nonatomic, strong) NSString* vendorGroupId;
 @property (nonatomic, strong) NSArray* customerDB;
 @property (nonatomic, strong) NSMutableDictionary* productCart;
+@property (nonatomic, strong) NSMutableDictionary* discountItems;
 @property (nonatomic) BOOL showPrice;
 @property (nonatomic) BOOL showCustomers;
 @property (nonatomic) BOOL backFromCart;
 @property (nonatomic) BOOL finishOrder;
 @property (nonatomic) BOOL multiStore;
 @property (nonatomic) int tOffset;
-@property (nonatomic) int customerId;
+@property (nonatomic) NSString* customerId;
 @property (nonatomic) int printStationId;
 @property (nonatomic, strong) NSDictionary *availablePrinters;
+@property (nonatomic) BOOL allowPrinting;
+@property (nonatomic) BOOL showShipDates;
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property (nonatomic, strong) UIPopoverController *popoverController;
@@ -71,6 +76,10 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblShipDate2;
 @property (weak, nonatomic) IBOutlet UILabel *lblShipDateCount;
 @property (weak, nonatomic) IBOutlet UIButton *btnSelectShipDates;
+@property (weak, nonatomic) IBOutlet UILabel *totalCost;
+
+@property (weak, nonatomic) IBOutlet UIView *tableHeaderPigglyWiggly;
+@property (weak, nonatomic) IBOutlet UIView *tableHeaderFarris;
 
 @property (nonatomic, assign) id<CIProductViewDelegate> delegate;
 
@@ -87,6 +96,9 @@
 - (IBAction)vendorTouch:(id)sender;
 - (IBAction)dismissVendorTouched:(id)sender;
 
+- (IBAction)calcOrder:(id)sender;
+
+
 //@property (weak, nonatomic) IBOutlet UIToolbar *vendorNav;
 //@property (weak, nonatomic) IBOutlet UIBarButtonItem *vendorNavBack;
 //-(IBAction)backToVendors:(id)sender;
@@ -94,7 +106,7 @@
 - (IBAction)shipdatesTouched:(id)sender;
 
 -(void)setCustomerInfo:(NSDictionary*)info;
--(void)setVendor:(NSInteger)vendorId;
+-(void)setVendor:(NSInteger) vendorId;
 -(void)setBulletin:(NSInteger)bulletinId;
 -(void)dismissVendorPopover;
 

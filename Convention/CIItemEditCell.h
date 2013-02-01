@@ -7,31 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@protocol CIItemEditDelegate <NSObject>
-
--(void)UpdateTotal;
--(void)setViewMovedUpDouble:(BOOL)movedUp;
--(void)setPrice:(NSString*)prc atIndex:(int)idx;
--(void)setQuantity:(NSString*)qty atIndex:(int)idx;
--(void)setVoucher:(NSString*)voucher atIndex:(int)idx;
--(void)QtyTouchForIndex:(int)idx;
--(void)ShipDatesTouchForIndex:(int) idx;
--(void)setActiveField:(UITextField *)textField;
-
-@end
+#import "ItemEditDelegate.h"
 
 @interface CIItemEditCell : UITableViewCell <UITextFieldDelegate>
+@property (weak, nonatomic) IBOutlet UILabel *invtid;
 @property (weak, nonatomic) IBOutlet UILabel *desc;
 @property (weak, nonatomic) IBOutlet UIButton *btnShipdates;
 @property (weak, nonatomic) IBOutlet UITextField *voucher;
 @property (weak, nonatomic) IBOutlet UITextField *qty;
+@property (weak, nonatomic) IBOutlet UILabel *qtyLbl;
 @property (weak, nonatomic) IBOutlet UIButton *qtyBtn;
 @property (weak, nonatomic) IBOutlet UITextField *price;
 @property (weak, nonatomic) IBOutlet UILabel *priceLbl;
 @property (weak, nonatomic) IBOutlet UILabel *total;
 
-@property (nonatomic, assign) id<CIItemEditDelegate> delegate;
+@property (nonatomic, assign) id<ItemEditDelegate> delegate;
 
 - (IBAction)voucherEdit:(id)sender;
 - (IBAction)qtyEdit:(id)sender;

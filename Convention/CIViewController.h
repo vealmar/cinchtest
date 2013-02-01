@@ -14,7 +14,7 @@
 @property (unsafe_unretained, nonatomic) IBOutlet UITextField *password;
 @property (unsafe_unretained, nonatomic) IBOutlet UITextView *error;
 @property (nonatomic, strong) NSString* authToken;
-@property (nonatomic, strong) NSMutableArray* venderInfo;
+@property (nonatomic, strong) NSDictionary* vendorInfo;
 @property (nonatomic, strong) NSString* vendorGroup;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblVersion;
 @property BOOL masterVender;

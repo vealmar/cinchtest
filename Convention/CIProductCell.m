@@ -18,27 +18,29 @@
 @end
 
 @implementation CIProductCell
-@synthesize regPrc;
+//@synthesize regPrc;
 @synthesize quantity;
 @synthesize qtyLbl;
 @synthesize price;
 @synthesize voucherLbl;
 @synthesize voucher;
 @synthesize priceLbl;
-@synthesize ridx;
+//@synthesize ridx;
 @synthesize InvtID;
 @synthesize descr;
-@synthesize PartNbr;
-@synthesize Uom;
+//@synthesize PartNbr;
+//@synthesize Uom;
+@synthesize shipDate1, shipDate2;
 @synthesize CaseQty;
-@synthesize DirShip;
-@synthesize LineNbr;
-@synthesize New;
-@synthesize Adv;
+//@synthesize DirShip;
+//@synthesize LineNbr;
+//@synthesize New;
+//@synthesize Adv;
 //@synthesize cartBtn;
 @synthesize qtyBtn;
 @synthesize delegate;
-@synthesize hyphenBetweenShipDates;
+//@synthesize hyphenBetweenShipDates;
+@synthesize numShipDates;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -51,7 +53,6 @@
     }
     return self;
 }
-
 
 - (IBAction)voucherDidChange:(id)sender {
     if ([oldVoucher isEqualToString:self.voucher.text]) {
@@ -143,15 +144,6 @@
     if (self.delegate) {
         [self.delegate QtyChange:[self.quantity.text doubleValue] forIndex:self.tag];
     }
-}
-
-- (id)init
-{
-    self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
-    if (self) {
-        // Initialization code
-    }
-    return self;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated

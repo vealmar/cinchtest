@@ -14,7 +14,7 @@
 #import "PrinterSelectionViewController.h"
 
 @interface CIOrderViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate,
-    UISearchBarDelegate, UITextViewDelegate, UIAlertViewDelegate, CIItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
+    UISearchBarDelegate, UITextViewDelegate, UIAlertViewDelegate, ItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
     CIStoreQtyDelegate, PullToRefreshViewDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate>
 {
 	ReachabilityDelegation *reachDelegation;
@@ -25,7 +25,7 @@
 @property (nonatomic, strong) NSMutableArray* orderData;
 @property (nonatomic, strong) NSString* authToken;
 @property (nonatomic) BOOL showPrice;
-@property (nonatomic, strong) NSMutableArray* venderInfo;
+@property (nonatomic, strong) NSDictionary* vendorInfo;
 @property (nonatomic, strong) NSString* vendorGroup;
 @property BOOL masterVender;
 @property int currentVender;
@@ -34,9 +34,13 @@
 @property (nonatomic, strong) NSMutableArray* itemsPrice;
 @property (nonatomic, strong) NSMutableArray* itemsVouchers;
 @property (nonatomic, strong) NSMutableArray* itemsShipDates;
+@property (nonatomic, strong) NSMutableArray* itemsDiscounts;
 @property (nonatomic, strong) UIPopoverController *popoverController;
 @property (nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 @property (nonatomic, weak) NSManagedObjectContext* managedObjectContext;
+
+@property (nonatomic) BOOL allowPrinting;
+@property (nonatomic) BOOL showShipDates;
 
 @property (weak, nonatomic) IBOutlet UITextView *shipdates;
 @property (weak, nonatomic) IBOutlet UITableView *sideTable;
@@ -62,11 +66,13 @@
 @property (weak, nonatomic) IBOutlet UILabel *lblCompany;
 @property (weak, nonatomic) IBOutlet UILabel *lblAuthBy;
 @property (weak, nonatomic) IBOutlet UILabel *lblNotes;
-@property (weak, nonatomic) IBOutlet UILabel *lblShipNotes;
 @property (weak, nonatomic) IBOutlet UILabel *lblVoucher;
 @property (weak, nonatomic) IBOutlet UILabel *lblItems;
 @property (weak, nonatomic) IBOutlet UILabel *lblTotalPrice;
 @property (weak, nonatomic) IBOutlet UIButton *printButton;
+@property (weak, nonatomic) IBOutlet UILabel *headerVoucherLbl;
+@property (weak, nonatomic) IBOutlet UILabel *grossTotal;
+@property (weak, nonatomic) IBOutlet UILabel *discountTotal;
 
 - (IBAction)AddNewOrder:(id)sender;
 - (IBAction)logout:(id)sender;

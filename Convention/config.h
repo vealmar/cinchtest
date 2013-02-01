@@ -18,12 +18,16 @@
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
 
 //#define kBASEURL @"http://:3000"
-#define kShowID @"2"
+#define kShowID @"3"
 //#define SHOW @"show"
 //#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
 
-#define kShowShipDates NO // set to NO for the Farris show; need to handle this dynamically from backend service
-#define kAllowPrinting NO // ditto
+#define kPigglyWiggly @"PigglyWiggly"
+#define kFarris @"Farris"
+#define kShowCorp kFarris
+
+#define kShowShipDates kShowCorp == kPigglyWiggly // set to NO for the Farris show; need to handle this dynamically from backend service
+#define kAllowPrinting kShowCorp == kPigglyWiggly // ditto
 
 #define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
 #define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]
@@ -33,6 +37,10 @@
 #define kDBORDER [NSString stringWithFormat:@"%@/vendor/shows/%@/orders.json",kBASEURL,kShowID]
 #define kDBORDEREDIT(ID) [NSString stringWithFormat:@"%@/vendor/orders/%d.json",kBASEURL,ID]
 #define kDBORDEREDITS(ID) [NSString stringWithFormat:@"%@/vendor/shows/%@/orders/%d.json",kBASEURL,kShowID,ID]
+
+//delete line item from given order
+#define kDBOrderLineItemDelete(ID) [NSString stringWithFormat:@"%@/vendor/line_items/%d.json", kBASEURL, ID]
+
 #define kDBREPORTPRINTS [NSString stringWithFormat:@"%@/vendor/shows/%@/report_prints.json",kBASEURL,kShowID]
 #define kDBGETPRINTERS [NSString stringWithFormat:@"%@/vendor/shows/%@/printers.json", kBASEURL, kShowID]
 #define kDBGETBULLETINS [NSString stringWithFormat:@"%@/vendor/shows/%@/bulletins.json", kBASEURL, kShowID]
@@ -115,11 +123,13 @@
 #define kOrderItemShipDates @"shipdates"
 #define kOrderStatus @"status"
 #define kPartialOrder @"partial"
+#define kOrderLineItemId @"lineitem_id"
 
 #define kProductShowPrice @"showprc"
 #define kProductIdx @"idx"
 #define kProductInvtid @"invtid"
 #define kProductDescr @"descr"
+#define kProductDescr2 @"descr2"
 #define kProductPartNbr @"partnbr"
 #define kProductUom @"uom"
 #define kProductCaseQty @"caseqty"
@@ -157,5 +167,9 @@
 #define kNotificationCustomersLoaded @"NotificationCustomersLoaded"
 #define kCustomerNotificationKey @"customers"
 #define kPrintersLoaded @"PrintersLoaded"
+
+#define NOTIF_PING_FAILURE @"NOTIF_PING_FAILURE"
+#define NOTIF_PING_SUCCESS @"NOTIF_PING_SUCCESS"
+
 
 #endif

@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) NSArray *vendors;
 @property (nonatomic, strong) NSDictionary *bulletins;
+@property (nonatomic, strong) NSString *vendorGroupId;
+
 @property (nonatomic, assign) id<VendorViewDelegate> delegate;
 
 @property (nonatomic, weak) UIPopoverController *parentPopover;
