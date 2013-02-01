@@ -134,10 +134,10 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    if (kShowCorp == kPigglyWiggly) {
+    if ([kShowCorp isEqual: kPigglyWiggly]) {
         tableHeaderPigglyWiggly.hidden = NO;
         tableHeaderFarris.hidden = YES;
-    } else if (kShowCorp == kFarris) {
+    } else if ([kShowCorp isEqualToString: kFarris]) {
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = NO;
     } else {
@@ -236,7 +236,7 @@
                  self.resultData = [[NSMutableArray alloc] init];
                  [JSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
                      int bulletinId = 0;
-//                     if (kShowCorp == kPigglyWiggly) {
+//                     if ([kShowCorp isEqualToString: kPigglyWiggly]) {
                          if ([obj objectForKey:@"bulletin_id"] != nil && ![[obj objectForKey:@"bulletin_id"] isKindOfClass:[NSNull class]])
                              bulletinId = [[obj objectForKey:@"bulletin_id"] intValue];
 //                     } else {
@@ -435,7 +435,7 @@
     NSMutableDictionary* dict = [self.resultData objectAtIndex:[indexPath row]];
     NSMutableDictionary* editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
     
-    if (kShowCorp == kPigglyWiggly) {
+    if ([kShowCorp isEqualToString: kPigglyWiggly]) {
         static NSString *CellIdentifier = @"CIProductCell";
         CIProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil){
@@ -553,7 +553,7 @@
         cell.tag = [indexPath row];
         return (UITableViewCell *)cell;
         
-    } else if (kShowCorp == kFarris) {
+    } else if ([kShowCorp isEqualToString: kFarris]) {
         static NSString *CellIdentifier = @"FarrisProductCell";
         FarrisProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil){
@@ -1099,8 +1099,7 @@
             
             [submit hide:YES];
             
-            NSString *status = [JSON valueForKey:@"status"];
-            DLog(@"status = %@", status);
+            DLog(@"status = %@", [JSON valueForKey:@"status"]);
             DLog(@"JSON = %@", JSON);
             
             if (asPending) {

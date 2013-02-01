@@ -21,7 +21,7 @@
     delegate.callback = ^(NSInteger buttonIndex) {
         callback(buttonIndex);
         alertView.delegate = nil;
-        delegate = nil;
+//        delegate = nil;
     };
     
     [alertView setDelegate:delegate];

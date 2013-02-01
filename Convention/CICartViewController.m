@@ -81,10 +81,10 @@
     // register for keyboard notifications
     DLog(@"in view will appear... need CI");
     
-    if (kShowCorp == kPigglyWiggly) {
+    if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         tableHeaderPigglyWiggly.hidden = NO;
         tableHeaderFarris.hidden = YES;
-    } else if (kShowCorp == kFarris) {
+    } else if ([kShowCorp isEqualToString: kFarris]) {
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = NO;
     } else {
@@ -177,7 +177,7 @@
 //    NSMutableDictionary* dict = [self.productData objectForKey:key];
 //    NSMutableDictionary *dict = [allCartItems objectForKey:key];
     NSDictionary *dict = [allCartItems objectAtIndex:indexPath.row];
-    if (kShowCorp == kPigglyWiggly) {
+    if ([kShowCorp isEqualToString: kPigglyWiggly]) {
         static NSString *CellIdentifier = @"CIProductCell";
         
         CIProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -312,7 +312,7 @@
 
         cell.delegate = (id<ProductCellDelegate>) self;
         return (UITableViewCell *)cell;
-    } else if (kShowCorp == kFarris) {
+    } else if ([kShowCorp isEqualToString: kFarris]) {
         static NSString *CellIdentifier = @"FarrisProductCell";
         FarrisProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
         if (cell == nil){

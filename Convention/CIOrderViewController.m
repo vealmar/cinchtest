@@ -194,9 +194,9 @@ bool showHud = true;
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
     }
     
-    if (kShowCorp == kFarris) {
-        
-    }
+//    if ([kShowCorp isEqualToString: kFarris]) {
+//        
+//    }
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -543,7 +543,7 @@ bool showHud = true;
         else
             cell.orderId.text = @"";
         
-        if (kShowCorp == kFarris) {
+        if ([kShowCorp isEqualToString: kFarris]) {
             cell.lblSC.hidden = YES;
             cell.vouchers.hidden = YES;
         }
@@ -578,7 +578,7 @@ bool showHud = true;
                 cell.desc.text = [NSString stringWithFormat:@"%@",[data objectForKey:@"desc"]];
             }
             
-            if (kShowCorp == kPigglyWiggly) {
+            if ([kShowCorp isEqualToString: kPigglyWiggly]) {
                 if ([self.itemsVouchers objectAtIndex:indexPath.row]) {
                     cell.voucher.text = [self.itemsVouchers objectAtIndex:indexPath.row];            }
                 else
@@ -755,7 +755,7 @@ bool showHud = true;
             self.EditorView.tag = cell.tag;
             currentOrderID = cell.tag;
             
-            if (kShowCorp == kFarris) {
+            if ([kShowCorp isEqualToString: kFarris]) {
                 self.headerVoucherLbl.hidden = YES;
                 lblVoucher.hidden = YES;
                 SCtotal.hidden = YES;
@@ -981,11 +981,12 @@ bool showHud = true;
         [self UpdateTotal];
     };
     
+    CICalendarViewController __weak *weakCalView = calView;
     calView.afterLoad = ^{
         NSArray* dates = [self.itemsShipDates objectAtIndex:idx];
-        calView.calendarView.selectedDates = [dates mutableCopy];
-        calView.calendarView.avalibleDates = dateList;
-        DLog(@"dates:%@ what it got:%@",dates, calView.calendarView.selectedDates);
+        weakCalView.calendarView.selectedDates = [dates mutableCopy];
+        weakCalView.calendarView.avalibleDates = dateList;
+        DLog(@"dates:%@ what it got:%@",dates, weakCalView.calendarView.selectedDates);
     };
     
     [self presentViewController:calView animated:YES completion:nil];
@@ -1127,7 +1128,7 @@ bool showHud = true;
              _notes, kNotes, authorizedBy, kAuthorizedBy, arr, kOrderItems, nil];
     
     NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@",[NSString stringWithFormat:kDBORDEREDITS(currentOrderID)],kAuthToken,self.authToken];
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDEREDITS(currentOrderID),kAuthToken,self.authToken];
     
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
     [client setParameterEncoding:AFJSONParameterEncoding];
