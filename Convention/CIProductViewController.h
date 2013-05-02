@@ -26,7 +26,7 @@
 @end
 
 @interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,
-    UISearchBarDelegate, UIAlertViewDelegate, CICustomerDelegate, ProductCellDelegate,
+    UIAlertViewDelegate, CICustomerDelegate, ProductCellDelegate,
     CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate,
     UIPrinterSelectedDelegate, VendorViewDelegate>
 {
@@ -36,7 +36,6 @@
 @property (nonatomic, strong) IBOutlet UITableView *products;
 @property (nonatomic, strong) IBOutlet UIImageView *ciLogo;
 @property (nonatomic, strong) IBOutlet UITextField *hiddenTxt;
-@property (nonatomic, strong) IBOutlet UISearchBar *searchBar;
 @property (nonatomic, strong) NSMutableArray* productData;
 @property (nonatomic, strong) NSMutableArray* resultData;
 @property (nonatomic, strong) NSDictionary* customer;
@@ -57,6 +56,8 @@
 @property (nonatomic, strong) NSDictionary *availablePrinters;
 @property (nonatomic) BOOL allowPrinting;
 @property (nonatomic) BOOL showShipDates;
+@property (weak, nonatomic) IBOutlet UITextField *searchText;
+
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property (nonatomic, strong) UIPopoverController *popoverController;
@@ -98,6 +99,7 @@
 
 - (IBAction)calcOrder:(id)sender;
 
+- (IBAction)searchProducts:(id)sender;
 
 //@property (weak, nonatomic) IBOutlet UIToolbar *vendorNav;
 //@property (weak, nonatomic) IBOutlet UIBarButtonItem *vendorNavBack;

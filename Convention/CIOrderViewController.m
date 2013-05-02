@@ -34,7 +34,7 @@
     UITextField *activeField;
     PullToRefreshView *pull;
     Order *orderToDelete;
-    NSInteger rowToDelete;
+    NSIndexPath *rowToDelete;
     CIProductViewController* productView;
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
@@ -45,7 +45,6 @@ bool pingInProgress = false;
 
 @implementation CIOrderViewController
 @synthesize sBar;
-@synthesize ciLogo;
 @synthesize orders;
 @synthesize orderData;
 @synthesize authToken;
@@ -91,6 +90,7 @@ bool pingInProgress = false;
 @synthesize itemsShipDates;
 @synthesize managedObjectContext;
 @synthesize printButton;
+@synthesize searchText;
 
 bool showHud = true;
 
@@ -802,7 +802,7 @@ bool showHud = true;
                 orderToDelete = (Order *)[[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:predicate];
                 if (orderToDelete)
                 {
-                    rowToDelete = indexPath.row;
+                    rowToDelete = indexPath;
 //                    NSString *msg = [NSString stringWithFormat:@"Are you sure you want to delete the order for customer: %@?", cell.Customer.text];
 //                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Pending Order Deletion" message:msg delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
                     [alert setTag:kDeletePartialOrder];
@@ -810,7 +810,7 @@ bool showHud = true;
                 }
             } else {
                 self.itemsDB = [NSDictionary dictionaryWithDictionary:[self.orders objectAtIndex:indexPath.row]];
-                rowToDelete = indexPath.row;
+                rowToDelete = indexPath;
                 [alert setTag:kDeleteCompletedOrder];
                 [alert show];
             }
@@ -1344,12 +1344,12 @@ bool showHud = true;
 
 -(void)networkLost {
 	
-	[ciLogo setImage:[UIImage imageNamed:@"ci_red.png"]];
+	//[ciLogo setImage:[UIImage imageNamed:@"ci_red.png"]];
 }
 
 -(void)networkRestored {
 	
-	[ciLogo setImage:[UIImage imageNamed:@"ci_green.png"]];
+	//[ciLogo setImage:[UIImage imageNamed:@"ci_green.png"]];
 }
 
 
@@ -1413,10 +1413,13 @@ bool showHud = true;
     }
 }
 
-- (void)deleteRowFromOrderListAtIndex:(NSInteger)index {
-    NSDictionary *anOrder = [self.orders objectAtIndex:index];
+- (void)deleteRowFromOrderListAtIndex:(NSIndexPath *)index {
+    NSDictionary *anOrder = [self.orders objectAtIndex:index.row];
     [self.orderData removeObjectIdenticalTo:anOrder];
-    [self.orders removeObjectAtIndex:index];
+    [self.orders removeObjectAtIndex:index.row];
+    
+    NSArray *indices = [NSArray arrayWithObject:index];
+    [self.sideTable deleteRowsAtIndexPaths:indices withRowAnimation:UITableViewRowAnimationAutomatic];
     
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)",
             [anOrder objectForKey:@"customer_id"], [[anOrder objectForKey:@"customer"] objectForKey:@"custid"]];
@@ -1427,7 +1430,7 @@ bool showHud = true;
         [[CoreDataUtil sharedManager] deleteObject:orderToDelete];
     }
     
-    [self.sideTable reloadData];
+    //[self.sideTable reloadData];
 }
 
 #pragma mark - UIPrinterSelectedDelegate
@@ -1439,22 +1442,21 @@ bool showHud = true;
     [self printOrder];
 }
 
-#pragma mark - UISearchBarDelegate
+#pragma mark - Search orders
 
--(void)searchBar:(UISearchBar *)sBar textDidChange:(NSString *)searchText{
- 
+- (IBAction)searchOrders:(id)sender {
 	if (self.orders == nil||[self.orders isKindOfClass:[NSNull class]]) {
         return;
     }
-	 
-	if ([searchText isEqualToString:@""]) {
+    
+	if ([searchText.text isEqualToString:@""]) {
 		self.orders = [self.orderData mutableCopy];
 		DLog(@"string is empty");
 	}else{
-		DLog(@"Search Text %@", searchText);
+		DLog(@"Search Text %@", searchText.text);
 		NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
 			NSMutableDictionary* dict = (NSMutableDictionary*)obj;
-		 
+            
 			NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
 			NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
             
@@ -1462,14 +1464,16 @@ bool showHud = true;
             if ([authorized isKindOfClass:[NSNull class]])
                 authorized = @"";
             NSString *orderId = [[dict objectForKey:@"id"] stringValue];
-//			DLog(@"Bill Name: %@", storeName);
-//			DLog(@"Cust Id: %@", custId);
-//            DLog(@"Authorized: %@", authorized);
+            //			DLog(@"Bill Name: %@", storeName);
+            //			DLog(@"Cust Id: %@", custId);
+            //            DLog(@"Authorized: %@", authorized);
 			
-			return [[storeName uppercaseString] contains:[searchText uppercaseString]]
-                || [[custId uppercaseString] hasPrefix:[searchText uppercaseString]]
-                || [[authorized uppercaseString] hasPrefix:[searchText uppercaseString]]
-                || [orderId hasPrefix:searchText];
+            NSString *test = [searchText.text uppercaseString];
+            
+			return [[storeName uppercaseString] contains:test]
+            || [[custId uppercaseString] hasPrefix:test]
+            || [[authorized uppercaseString] hasPrefix:test]
+            || [orderId hasPrefix:test];
 		}];
 		
 		self.orders = [[self.orderData filteredArrayUsingPredicate:pred] mutableCopy];
@@ -1478,24 +1482,63 @@ bool showHud = true;
 	[self.sideTable reloadData];
 }
 
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-    [searchBar setShowsCancelButton:YES animated:YES];
-}
-
--(void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
-    [searchBar setShowsCancelButton:NO animated:YES];
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    [searchBar setText:@""];
-    [searchBar resignFirstResponder];
-    self.orders = [self.orderData mutableCopy];
-    [self.sideTable reloadData];
-}
-
-- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-    [searchBar resignFirstResponder];
-}
+//#pragma mark - UISearchBarDelegate
+//
+//-(void)searchBar:(UISearchBar *)sBar textDidChange:(NSString *)searchText{
+// 
+//	if (self.orders == nil||[self.orders isKindOfClass:[NSNull class]]) {
+//        return;
+//    }
+//	 
+//	if ([searchText isEqualToString:@""]) {
+//		self.orders = [self.orderData mutableCopy];
+//		DLog(@"string is empty");
+//	}else{
+//		DLog(@"Search Text %@", searchText);
+//		NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
+//			NSMutableDictionary* dict = (NSMutableDictionary*)obj;
+//		 
+//			NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
+//			NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
+//            
+//            NSString *authorized = [dict objectForKey:@"authorized"];
+//            if ([authorized isKindOfClass:[NSNull class]])
+//                authorized = @"";
+//            NSString *orderId = [[dict objectForKey:@"id"] stringValue];
+////			DLog(@"Bill Name: %@", storeName);
+////			DLog(@"Cust Id: %@", custId);
+////            DLog(@"Authorized: %@", authorized);
+//			
+//			return [[storeName uppercaseString] contains:[searchText uppercaseString]]
+//                || [[custId uppercaseString] hasPrefix:[searchText uppercaseString]]
+//                || [[authorized uppercaseString] hasPrefix:[searchText uppercaseString]]
+//                || [orderId hasPrefix:searchText];
+//		}];
+//		
+//		self.orders = [[self.orderData filteredArrayUsingPredicate:pred] mutableCopy];
+//		DLog(@"results count:%d", self.orders.count);
+//	}
+//	[self.sideTable reloadData];
+//}
+//
+//- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+//    [searchBar setShowsCancelButton:YES animated:YES];
+//}
+//
+//-(void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+//    [searchBar setShowsCancelButton:NO animated:YES];
+//}
+//
+//- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+//    [searchBar setText:@""];
+//    [searchBar resignFirstResponder];
+//    self.orders = [self.orderData mutableCopy];
+//    [self.sideTable reloadData];
+//}
+//
+//- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+//    [searchBar resignFirstResponder];
+//}
 
 #pragma mark - UITextFieldDelegate
 

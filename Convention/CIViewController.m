@@ -16,7 +16,11 @@
 #import "AFHTTPClient.h"
 #import "AFJSONRequestOperation.h"
 
-@implementation CIViewController
+@implementation CIViewController {
+    double keyboardOffset;
+    CGRect originalBounds;
+    CGRect originalFrame;
+}
 @synthesize email;
 @synthesize password;
 @synthesize error;
@@ -47,6 +51,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    originalBounds = self.view.bounds;
+    originalFrame = self.view.frame;
     authToken = nil;
     
     //for testing
@@ -109,7 +115,17 @@
     
 //    DLog(@"fonts:%@ %@ %@",[UIFont fontWithName:kFontName size:14.f],[UIFont fontWithName:@"bebas" size:14.f],[UIFont fontWithName:@"Bebas" size:14.f]);
     
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+
     [super viewWillAppear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    // unregister for keyboard notifications while not visible.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -129,6 +145,8 @@
 }
 
 - (IBAction)login:(id)sender {
+    
+    [sender setSelected:YES];
     
     NSString* Email = (email.text) ? email.text : @"";
     NSString* Password = (password.text) ? password.text : @"";
@@ -203,6 +221,37 @@
     [op start];
 }
 
+- (void) keyboardWillShow:(NSNotification*)notification {
+    if (keyboardOffset == 0) {
+        CGRect keyboardFrame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+        
+        UIWindow *window = [[[UIApplication sharedApplication] windows]objectAtIndex:0];
+        UIView *mainSubviewOfWindow = window.rootViewController.view;
+        CGRect keyboardFrameConverted = [mainSubviewOfWindow convertRect:keyboardFrame fromView:window];
+        keyboardOffset = keyboardFrameConverted.size.height;
+    }
+    
+    if (self.view.bounds.origin.y >= 0)
+    {
+        [self setViewMovedUp:YES];
+    }
+    else if (self.view.bounds.origin.y < 0)
+    {
+        [self setViewMovedUp:NO];
+    }
+}
+
+-(void)keyboardWillHide:(NSNotification *)notification {
+    if (self.view.bounds.origin.y < 0)
+    {
+        [self setViewMovedUp:YES];
+    }
+    else if (self.view.bounds.origin.y >= 0)
+    {
+        [self setViewMovedUp:NO];
+    }
+}
+
 - (IBAction)dismissKB:(id)sender {
     if ([self.email isFirstResponder]) {
         [self.email resignFirstResponder];
@@ -211,4 +260,33 @@
         [self.password resignFirstResponder];
     }
 }
+
+//method to move the view up/down whenever the keyboard is shown/dismissed
+-(void)setViewMovedUp:(BOOL)movedUp
+{
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.3]; // if you want to slide up the view
+    
+    CGRect rect = self.view.bounds;
+    if (movedUp)
+    {
+        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
+        // 2. increase the size of the view so that the area behind the keyboard is covered up.
+        rect.origin.y += kOFFSET_FOR_KEYBOARD + 15;
+        //rect.size.height -= keyboardOffset; // kOFFSET_FOR_KEYBOARD;
+        self.view.bounds = rect;
+    }
+    else
+    {
+        // revert back to the normal state.
+        //rect.origin.y = 0; //-= keyboardOffset; // kOFFSET_FOR_KEYBOARD;
+        //rect.size.height += keyboardOffset; // kOFFSET_FOR_KEYBOARD;
+        //rect = originalBounds;
+        
+        self.view.bounds = originalBounds;
+    }
+    
+    [UIView commitAnimations];
+}
+
 @end

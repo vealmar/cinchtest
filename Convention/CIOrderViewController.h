@@ -20,7 +20,6 @@
 	ReachabilityDelegation *reachDelegation;
 }
 @property (nonatomic, strong) IBOutlet UISearchBar *sBar;
-@property (nonatomic, strong) IBOutlet UIImageView *ciLogo;
 @property (nonatomic, strong) NSMutableArray* orders;
 @property (nonatomic, strong) NSMutableArray* orderData;
 @property (nonatomic, strong) NSString* authToken;
@@ -38,6 +37,7 @@
 @property (nonatomic, strong) UIPopoverController *popoverController;
 @property (nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 @property (nonatomic, weak) NSManagedObjectContext* managedObjectContext;
+@property (weak, nonatomic) IBOutlet UITextField *searchText;
 
 @property (nonatomic) BOOL allowPrinting;
 @property (nonatomic) BOOL showShipDates;
@@ -80,6 +80,8 @@
 - (IBAction)Refresh:(id)sender;
 - (IBAction)Print:(id)sender;
 - (IBAction)Delete:(id)sender;
+- (IBAction)searchOrders:(id)sender;
+
 
 -(void)setSelectedPrinter:(NSString *)printer;
 

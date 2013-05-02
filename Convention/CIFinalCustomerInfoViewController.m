@@ -125,7 +125,7 @@
                 return;
             }
             
-//            [dict setObject:self.shippingNotes.text forKey:kShipNotes];
+            [dict setObject:self.shippingNotes.text forKey:kShipNotes];
             [dict setObject:self.Notes.text forKey:kNotes ];
             [dict setObject:self.Authorizer.text forKey:kAuthorizedBy];
             

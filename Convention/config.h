@@ -18,13 +18,13 @@
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
 
 //#define kBASEURL @"http://:3000"
-#define kShowID @"3"
+#define kShowID @"4"
 //#define SHOW @"show"
 //#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
 
 #define kPigglyWiggly @"PigglyWiggly"
 #define kFarris @"Farris"
-#define kShowCorp kFarris
+#define kShowCorp kPigglyWiggly
 
 #define kShowShipDates kShowCorp == kPigglyWiggly // set to NO for the Farris show; need to handle this dynamically from backend service
 #define kAllowPrinting kShowCorp == kPigglyWiggly // ditto
@@ -155,8 +155,8 @@
 //#define kReportPrintOrderId @"report_print[order_id]"
 #define kReportPrintOrderId @"order_id"
 
-#define kOFFSET_FOR_KEYBOARD 60.0
-//#define kOFFSET_FOR_KEYBOARD 80.0
+//#define kOFFSET_FOR_KEYBOARD 60.0
+#define kOFFSET_FOR_KEYBOARD 80.0
 
 #define kFontName @"BEBAS"
 

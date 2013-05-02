@@ -18,6 +18,7 @@
 @property (nonatomic, strong) NSString* vendorGroup;
 @property (unsafe_unretained, nonatomic) IBOutlet UILabel *lblVersion;
 @property BOOL masterVender;
+@property (strong, nonatomic) IBOutlet UIView *mainView;
 
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
 

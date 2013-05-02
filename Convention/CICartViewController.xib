@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="8.00">
 	<data>
-		<int key="IBDocument.SystemTarget">1536</int>
-		<string key="IBDocument.SystemVersion">12C60</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2844</string>
-		<string key="IBDocument.AppKitVersion">1187.34</string>
-		<string key="IBDocument.HIToolboxVersion">625.00</string>
+		<int key="IBDocument.SystemTarget">1552</int>
+		<string key="IBDocument.SystemVersion">12D78</string>
+		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
+		<string key="IBDocument.AppKitVersion">1187.37</string>
+		<string key="IBDocument.HIToolboxVersion">626.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">1930</string>
+			<string key="NS.object.0">2083</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>IBProxyObject</string>
@@ -51,7 +51,7 @@
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">NEWbackground.jpg</string>
+							<string key="NSResourceName">cartBG.png</string>
 						</object>
 					</object>
 					<object class="IBUIView" id="540074920">
@@ -392,7 +392,7 @@
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 						</array>
-						<string key="NSFrame">{{0, 56}, {1024, 44}}</string>
+						<string key="NSFrame">{{0, 148}, {1024, 44}}</string>
 						<reference key="NSSuperview" ref="535335168"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="783491961"/>
@@ -567,7 +567,7 @@
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 						</array>
-						<string key="NSFrame">{{0, 56}, {1024, 44}}</string>
+						<string key="NSFrame">{{0, 148}, {1024, 44}}</string>
 						<reference key="NSSuperview" ref="535335168"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="591794958"/>
@@ -582,7 +582,7 @@
 						<reference key="NSNextResponder" ref="535335168"/>
 						<int key="NSvFlags">274</int>
 						<array class="NSMutableArray" key="NSSubviews"/>
-						<string key="NSFrame">{{0, 100}, {1024, 560}}</string>
+						<string key="NSFrame">{{0, 192}, {1024, 468}}</string>
 						<reference key="NSSuperview" ref="535335168"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="33600479"/>
@@ -623,7 +623,7 @@
 					<object class="IBUIButton" id="712546966">
 						<reference key="NSNextResponder" ref="535335168"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{12, 6}, {95, 37}}</string>
+						<string key="NSFrame">{{20, 6}, {63, 74}}</string>
 						<reference key="NSSuperview" ref="535335168"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="317995888"/>
@@ -632,6 +632,8 @@
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
+						<bool key="IBUIAdjustsImageWhenHighlighted">NO</bool>
+						<bool key="IBUIAdjustsImageWhenDisabled">NO</bool>
 						<reference key="IBUIHighlightedTitleColor" ref="189001537"/>
 						<object class="NSColor" key="IBUINormalTitleColor">
 							<int key="NSColorSpace">1</int>
@@ -640,10 +642,6 @@
 						<object class="NSColor" key="IBUINormalTitleShadowColor" id="791766158">
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC41AA</bytes>
-						</object>
-						<object class="NSCustomResource" key="IBUINormalImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">backbutton.png</string>
 						</object>
 						<object class="IBUIFontDescription" key="IBUIFontDescription" id="52710918">
 							<int key="type">2</int>
@@ -679,12 +677,13 @@
 					<object class="IBUIButton" id="1024781494">
 						<reference key="NSNextResponder" ref="535335168"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{895, 6}, {116, 37}}</string>
+						<string key="NSFrame">{{824, 11}, {187, 69}}</string>
 						<reference key="NSSuperview" ref="535335168"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="540074920"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
+						<int key="IBUIContentMode">1</int>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
@@ -696,7 +695,7 @@
 						<reference key="IBUINormalTitleShadowColor" ref="791766158"/>
 						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">submitorderbutton.png</string>
+							<string key="NSResourceName">submitout.png</string>
 						</object>
 						<reference key="IBUIFontDescription" ref="52710918"/>
 						<reference key="IBUIFont" ref="585311629"/>
@@ -711,6 +710,7 @@
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+						<bool key="IBUIEnabled">NO</bool>
 						<int key="IBUIContentHorizontalAlignment">0</int>
 						<int key="IBUIContentVerticalAlignment">0</int>
 						<reference key="IBUIHighlightedTitleColor" ref="189001537"/>
@@ -1067,8 +1067,6 @@
 						<reference key="object" ref="535335168"/>
 						<array class="NSMutableArray" key="children">
 							<reference ref="317995888"/>
-							<reference ref="1024781494"/>
-							<reference ref="712546966"/>
 							<reference ref="33600479"/>
 							<reference ref="1046822895"/>
 							<reference ref="614397271"/>
@@ -1076,6 +1074,8 @@
 							<reference ref="1045619784"/>
 							<reference ref="17294476"/>
 							<reference ref="1067039406"/>
+							<reference ref="712546966"/>
+							<reference ref="1024781494"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -1452,11 +1452,10 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="NEWbackground.jpg">{1024, 768}</string>
-			<string key="backbutton.png">{94, 38}</string>
-			<string key="submitorderbutton.png">{116, 38}</string>
+			<string key="cartBG.png">{1024, 768}</string>
+			<string key="submitout.png">{194, 73}</string>
 			<string key="zero_vouchers_button.png">{136, 38}</string>
 		</dictionary>
-		<string key="IBCocoaTouchPluginVersion">1930</string>
+		<string key="IBCocoaTouchPluginVersion">2083</string>
 	</data>
 </archive>

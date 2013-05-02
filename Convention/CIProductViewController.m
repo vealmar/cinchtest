@@ -58,7 +58,6 @@
 @synthesize products;
 @synthesize ciLogo;
 @synthesize hiddenTxt;
-@synthesize searchBar;
 @synthesize productData;
 @synthesize authToken;
 @synthesize navBar;
@@ -92,6 +91,7 @@
 @synthesize lblShipDate1, lblShipDate2, lblShipDateCount;
 @synthesize btnSelectShipDates;
 @synthesize tableHeaderPigglyWiggly, tableHeaderFarris;
+@synthesize searchText;
 
 #pragma mark - constructor
 
@@ -134,7 +134,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
-    if ([kShowCorp isEqual: kPigglyWiggly]) {
+    if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         tableHeaderPigglyWiggly.hidden = NO;
         tableHeaderFarris.hidden = YES;
     } else if ([kShowCorp isEqualToString: kFarris]) {
@@ -144,9 +144,6 @@
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = YES;
     }
-    
-    if (!isInitialized && searchBar.subviews != nil && [searchBar.subviews count] > 0)
-        [[searchBar.subviews objectAtIndex:0] removeFromSuperview];
     
     if (!self.showShipDates)
     {
@@ -738,7 +735,7 @@
         
         if (!_order.multiStore) {
             NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-            [f setNumberStyle:NSNumberFormatterBehavior10_4];
+            [f setFormatterBehavior:NSNumberFormatterBehavior10_4];
             [item setObject:[f numberFromString:cart.editableQty] forKey:kEditableQty];
         } else {
             [item setObject:cart.editableQty forKey:kEditableQty];
@@ -1224,7 +1221,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
         }
         
         if (!itemIsVoucher(dict) && (!hasQty || !(hasShipDates || (self.showShipDates == NO)))) {
-            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have a quantity and ship date(s) before the order can be submitted. Check cart items and tray again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have a quantity and ship date(s) before the order can be submitted. Check cart items and try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
             return NO;
         }
     }
@@ -1277,8 +1274,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
         return;
     }
 //    [vendorNav setItems:[NSArray array]];
-    [self.searchBar becomeFirstResponder];
-    [self.searchBar resignFirstResponder];
     [selectedIdx removeAllObjects];
     
     if (vendorsData == nil) {
@@ -1890,7 +1885,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     NSMutableDictionary* editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
     NSString *invtid = [dict objectForKey:@"invtid"];
     NSArray *cells = [self.products visibleCells];
-    if (kShowCorp == kPigglyWiggly) {
+    if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         for (CIProductCell *cell in cells) {
             if ([invtid isEqualToString:cell.InvtID.text]) {
                 BOOL hasQty = NO;
@@ -1933,7 +1928,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
                 }
             }
         }
-    } else if (kShowCorp == kFarris) {
+    } else if ([kShowCorp isEqualToString:kFarris]) {
         for (FarrisProductCell *cell in cells) {
             if ([invtid isEqualToString:cell.itemNumber.text]) {
                 BOOL hasQty = NO;
@@ -2072,53 +2067,57 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     }
 }
 
-#pragma mark - Search Delegate stuff
+#pragma mark - Product search
 
--(void)searchBar:(UISearchBar *)sBar textDidChange:(NSString *)searchText{
-//    DLog(@"search did change:%@ - %@",sBar.text,searchText);
+-(IBAction)searchProducts:(id)sender {
+    //    DLog(@"search did change:%@ - %@",sBar.text,searchText);
     if (self.productData == nil||[self.productData isKindOfClass:[NSNull class]]) {
         return;
     }
-//    if (sBar == self.searchBar) {
-        if ([searchText isEqualToString:@""]) {
-            self.resultData = [self.productData mutableCopy];
-            DLog(@"string is empty");
-        }else{
+    //    if (sBar == self.searchBar) {
+    if ([searchText.text isEqualToString:@""]) {
+        self.resultData = [self.productData mutableCopy];
+        DLog(@"string is empty");
+    }else{
+        
+        NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
+            NSMutableDictionary* dict = (NSMutableDictionary*)obj;
             
-            NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
-                NSMutableDictionary* dict = (NSMutableDictionary*)obj;
-                
-                NSString *invtid = nil;
-				
-                
-				DLog(@"Text : %@", [dict objectForKey:kProductDescr]);
-				
-                if ([dict objectForKey:kProductInvtid] && ![[dict objectForKey:kProductInvtid] isKindOfClass:[NSNull class]]) {
-                    if ([[dict objectForKey:kProductInvtid] respondsToSelector:@selector(stringValue)]) {
-                        invtid = [[dict objectForKey:kProductInvtid] stringValue];
-                    } else {
-                        invtid = [dict objectForKey:kProductInvtid];
-                    }
-				 
-               }else{
-                    invtid = @"";
+            NSString *invtid = nil;
+            
+            
+            DLog(@"Text : %@", [dict objectForKey:kProductDescr]);
+            
+            if ([dict objectForKey:kProductInvtid] && ![[dict objectForKey:kProductInvtid] isKindOfClass:[NSNull class]]) {
+                if ([[dict objectForKey:kProductInvtid] respondsToSelector:@selector(stringValue)]) {
+                    invtid = [[dict objectForKey:kProductInvtid] stringValue];
+                } else {
+                    invtid = [dict objectForKey:kProductInvtid];
                 }
-				NSString *descrip = [dict objectForKey:kProductDescr];
-//                DLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
-                NSString *desc2 = @"";
-                if (kShowCorp == kFarris)
-                    desc2 = [dict objectForKey:kProductDescr2];
                 
-                NSString *test = [searchText uppercaseString];
-                return [invtid hasPrefix:test] || [[descrip uppercaseString] contains:test] || [[desc2 uppercaseString]contains:test];
-            }];
+            }else{
+                invtid = @"";
+            }
+            NSString *descrip = [dict objectForKey:kProductDescr];
+            //                DLog(@"invtid:%@ - %@, %@",invtid,sBar.text,([invtid hasPrefix:sBar.text]?@"YES":@"NO"));
+            NSString *desc2 = @"";
+            if ([kShowCorp isEqualToString:kFarris])
+                desc2 = [dict objectForKey:kProductDescr2];
             
-            self.resultData = [[self.productData filteredArrayUsingPredicate:pred] mutableCopy];
-            [selectedIdx removeAllObjects];
-            DLog(@"results count:%d", self.resultData.count);
-        }
-        [self.products reloadData];
-//    }
+            NSString *test = [searchText.text uppercaseString];
+            return [invtid hasPrefix:test] || [[descrip uppercaseString] contains:test] || [[desc2 uppercaseString]contains:test];
+        }];
+        
+        self.resultData = [[self.productData filteredArrayUsingPredicate:pred] mutableCopy];
+        [selectedIdx removeAllObjects];
+        DLog(@"results count:%d", self.resultData.count);
+    }
+    
+    [self.products reloadData];
+}
+
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    return YES;
 }
 
 #pragma mark - Reachability delegate methods
