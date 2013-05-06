@@ -69,7 +69,7 @@
         cell.textLabel.text = [details objectForKey:@"name"];
     else
         cell.textLabel.text = [details objectForKey:@"id"];
-    cell.tag = [[details objectForKey:@"id"] intValue];
+    cell.tag = [[details objectForKey:@"number"] intValue];
     cell.textLabel.textColor = [UIColor whiteColor];
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
     cell.accessoryType = UITableViewCellAccessoryNone;
