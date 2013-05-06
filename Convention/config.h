@@ -18,9 +18,9 @@
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
 
 //#define kBASEURL @"http://:3000"
-#define kShowID @"4"
-//#define SHOW @"show"
-//#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
+//#define kShowID @"4"
+#define SHOW @"show"
+#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
 
 #define kPigglyWiggly @"PigglyWiggly"
 #define kFarris @"Farris"
