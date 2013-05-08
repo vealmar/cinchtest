@@ -539,6 +539,7 @@
             cell.price.hidden = YES;//PW changes!
         }
         
+        
         if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]
             && ![[dict objectForKey:@"invtid"] isEqualToString:@"0"]) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -546,6 +547,7 @@
             cell.accessoryType = UITableViewCellAccessoryNone;
         }
         
+        //cell.selectionStyle = UITableViewCellSelectionStyleGray;
         cell.delegate = self;
         cell.tag = [indexPath row];
         return (UITableViewCell *)cell;
@@ -560,7 +562,10 @@
         
         cell.itemNumber.text = [dict objectForKey:@"invtid"];
         cell.descr1.text = [dict objectForKey:kProductDescr];
-        cell.descr2.text = [dict objectForKey:kProductDescr2];
+        
+        if ([kShowCorp isEqualToString: kFarris])
+            cell.descr2.text = [dict objectForKey:kProductDescr2];
+        
         cell.min.text = [[dict objectForKey:@"min"] stringValue];
         if (editableDict != nil && [editableDict objectForKey:kEditableQty] != nil) {
             cell.quantity.text = [[editableDict objectForKey:kEditableQty] stringValue];
@@ -728,7 +733,10 @@
         [item setObject:cart.company forKey:kVendorCompany];
         [item setObject:cart.created_at forKey:@"created_at"];
         [item setObject:cart.descr forKey:kProductDescr];
-        [item setObject:cart.descr2 forKey:kProductDescr2];
+        
+        if ([kShowCorp isEqualToString: kFarris])
+            [item setObject:cart.descr2 forKey:kProductDescr2];
+        
         [item setObject:[NSString stringWithFormat:@"%d", cart.dirship] forKey:kProductDirShip];
         [item setObject:[NSNumber numberWithFloat:cart.discount] forKey:kProductDiscount];
         [item setObject:[NSNumber numberWithFloat:cart.editablePrice] forKey:kEditablePrice];
@@ -1761,7 +1769,10 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     [cartValues setValue:[dict objectForKey:kVendorCompany] forKey:kVendorCompany];
     [cartValues setValue:[dict objectForKey:kVendorCreatedAt] forKey:kVendorCreatedAt];
     [cartValues setValue:[dict objectForKey:kProductDescr] forKey:kProductDescr];
-    [cartValues setValue:[dict objectForKey:kProductDescr2] forKey:kProductDescr2];
+    
+    if ([kShowCorp isEqualToString: kFarris])
+        [cartValues setValue:[dict objectForKey:kProductDescr2] forKey:kProductDescr2];
+    
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kProductDirShip asFloat:NO] forKey:kProductDirShip];
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kProductDiscount asFloat:YES] forKey:kProductDiscount];
     [cartValues setValue:[self getNumberFromDictionary:dict forKey:kEditablePrice asFloat:YES] forKey:kEditablePrice];

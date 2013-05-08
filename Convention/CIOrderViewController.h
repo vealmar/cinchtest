@@ -51,7 +51,6 @@
 @property (weak, nonatomic) IBOutlet UITextField *customer;
 @property (weak, nonatomic) IBOutlet UITextField *authorizer;
 @property (weak, nonatomic) IBOutlet UITableView *itemsTable;
-@property (weak, nonatomic) IBOutlet UITextView *shipNotes;
 @property (weak, nonatomic) IBOutlet UITextView *notes;
 @property (weak, nonatomic) IBOutlet UILabel *SCtotal;
 @property (weak, nonatomic) IBOutlet UILabel *total;

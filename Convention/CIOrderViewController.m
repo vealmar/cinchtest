@@ -59,7 +59,6 @@ bool pingInProgress = false;
 @synthesize customer;
 @synthesize authorizer;
 @synthesize itemsTable;
-@synthesize shipNotes;
 @synthesize notes;
 @synthesize SCtotal;
 @synthesize total;
@@ -383,7 +382,7 @@ bool showHud = true;
         }];
         //            DLog(@"items Json:%@",itemsDB);
         [self.itemsTable reloadData];
-        
+
         NSMutableArray* SDs = [NSMutableArray array];
         [self.itemsShipDates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             NSMutableArray* dates = (NSMutableArray*)obj;
@@ -394,7 +393,7 @@ bool showHud = true;
                 }
             }];
         }];
-        
+
         NSString __block *sdtext = @"";
         [SDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             if (idx!=0) {
@@ -402,7 +401,7 @@ bool showHud = true;
             }
             NSDate* date = (NSDate*)obj;
             NSDateFormatter* df = [[NSDateFormatter alloc] init];
-            [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
+            [df setDateFormat:@"MM-dd-yyyy"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
             sdtext = [sdtext stringByAppendingString:[df stringFromDate:date]];
         }];
         
@@ -751,7 +750,7 @@ bool showHud = true;
             
             self.customer.text = cell.Customer.text;
             self.authorizer.text = cell.auth.text;
-            
+
             self.EditorView.tag = cell.tag;
             currentOrderID = cell.tag;
             
@@ -1297,11 +1296,11 @@ bool showHud = true;
     {
         [self setViewMovedUpDouble:YES];
         
-    } else if ([self.shipNotes isFirstResponder] && self.view.frame.origin.y >= 0)
+    } else if ([self.shipdates isFirstResponder] && self.view.frame.origin.y >= 0)
     {
         [self setViewMovedUp:YES];
     }
-    else if (![self.shipNotes isFirstResponder] && self.view.frame.origin.y < 0)
+    else if (![self.shipdates isFirstResponder] && self.view.frame.origin.y < 0)
     {
         [self setViewMovedUp:NO];
     }
@@ -1445,6 +1444,7 @@ bool showHud = true;
 #pragma mark - Search orders
 
 - (IBAction)searchOrders:(id)sender {
+    [searchText resignFirstResponder];
 	if (self.orders == nil||[self.orders isKindOfClass:[NSNull class]]) {
         return;
     }
@@ -1544,7 +1544,7 @@ bool showHud = true;
 
 -(void)textViewDidBeginEditing:(UITextView *)sender
 {
-    if ([sender isEqual:self.shipNotes])
+    if ([sender isEqual:self.shipdates])
     {
         //move the main view, so that the keyboard does not hide it.
         if  (self.view.frame.origin.y >= 0)
@@ -1556,7 +1556,7 @@ bool showHud = true;
 
 -(void)textViewDidEndEditing:(UITextView *)sender
 {
-    if ([sender isEqual:self.shipNotes])
+    if ([sender isEqual:self.shipdates])
     {
         //move the main view, so that the keyboard does not hide it.
         if  (self.view.frame.origin.y >= 0)
