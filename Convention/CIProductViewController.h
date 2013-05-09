@@ -15,6 +15,7 @@
 #import "ReachabilityDelegation.h"
 #import "PrinterSelectionViewController.h"
 #import "VendorViewController.h"
+#import "UIView+FindAndResignFirstResponder.h"
 
 @class CIViewController;
 @class Order;
@@ -100,6 +101,7 @@
 - (IBAction)calcOrder:(id)sender;
 
 - (IBAction)searchProducts:(id)sender;
+- (IBAction)handleTap:(UITapGestureRecognizer *)recognizer;
 
 //@property (weak, nonatomic) IBOutlet UIToolbar *vendorNav;
 //@property (weak, nonatomic) IBOutlet UIBarButtonItem *vendorNavBack;

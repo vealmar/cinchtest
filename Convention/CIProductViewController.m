@@ -871,6 +871,7 @@
                 [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
                     
                     if (buttonIndex == 0) {
+                        _showCustomers = false;
                         [self loadProductsForVendor];
                     } else {
                         [[CoreDataUtil sharedManager] deleteObject:_order];
@@ -1116,7 +1117,7 @@
                 nf.minimumIntegerDigits = 1;
                 
                 double grossTotal = 0.0;
-                int orderId = [[JSON objectForKey:kID] intValue];
+                int orderId = [[JSON objectForKey:kOrderId] intValue];
                 NSArray *lineItems = [JSON objectForKey:@"line_items"];
                 self.discountItems = [NSMutableDictionary dictionary];
                 for (int i = 0; i < [lineItems count]; i++) {
@@ -2125,6 +2126,17 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     }
     
     [self.products reloadData];
+}
+
+- (IBAction)handleTap:(UITapGestureRecognizer *)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        for (CIProductCell *cell in self.products.visibleCells) {
+            if ([cell.quantity isFirstResponder]) {
+                [cell.quantity resignFirstResponder];
+                break;
+            }
+        }
+    }
 }
 
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {

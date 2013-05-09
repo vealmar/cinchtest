@@ -17,14 +17,14 @@
 
 +(void)showAlertView:(UIAlertView *)alertView withCallBack:(AlertViewCompletionBlock)callback {
     
-    UIAlertViewDelegateWithBlock __block *delegate = [[UIAlertViewDelegateWithBlock alloc] init];
+    __block UIAlertViewDelegateWithBlock *delegate = [[UIAlertViewDelegateWithBlock alloc] init];
+    alertView.delegate = delegate;
     delegate.callback = ^(NSInteger buttonIndex) {
         callback(buttonIndex);
         alertView.delegate = nil;
-//        delegate = nil;
+        delegate = nil;
     };
     
-    [alertView setDelegate:delegate];
     [alertView show];
 }
 

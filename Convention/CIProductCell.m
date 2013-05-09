@@ -167,6 +167,21 @@
     return YES;
 }
 
+
+//-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+////    UITouch *touch = [[event allTouches] anyObject];
+////    if ([quantity isFirstResponder] && [touch view] != quantity)
+////        [quantity resignFirstResponder];
+////    else if ([price isFirstResponder] && [touch view] != price)
+////        [price resignFirstResponder];
+////    else if ([voucher isFirstResponder] && [touch view] != voucher)
+////        [voucher resignFirstResponder];
+////    [super touchesBegan:touches withEvent:event];
+//    [self endEditing:YES];
+//}
+
+
+
 -(void)textFieldDidEndEditing:(UITextField *)textField{
 //    DLog(@"textFieldDidEndEditing");
 //    if (self.delegate) {

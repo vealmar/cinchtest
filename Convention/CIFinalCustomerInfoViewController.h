@@ -13,7 +13,7 @@
 @protocol CIFinalCustomerDelegate <NSObject>
 
 -(NSDictionary*)getCustomerInfo;
-- (IBAction)Cancel:(id)sender;
+//- (IBAction)Cancel:(id)sender;
 - (IBAction)submit:(id)sender;
 
 @end
@@ -27,9 +27,9 @@
 @property (nonatomic, strong) NSArray* tableData;
 @property (nonatomic, strong) NSMutableArray* filteredtableData;
 -(void) setCustomerData:(NSArray *)customerData;
-- (IBAction)back:(id)sender;
+//- (IBAction)back:(id)sender;
 //@property (weak, nonatomic) IBOutlet UISwitch *contact;
-@property (nonatomic, strong) IBOutlet MICheckBox *contactBeforeShipping;
+//@property (nonatomic, strong) IBOutlet MICheckBox *contactBeforeShipping;
 
 @property (nonatomic, assign) id<CICustomerDelegate,CIFinalCustomerDelegate> delegate;
 

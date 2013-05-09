@@ -86,6 +86,8 @@
 #define kVendorGroupID @"vendorgroup_id"
 
 #define kID @"id"
+#define kOrderId @"id"
+#define kProductId @"id"
 
 #define kError @"error"
 

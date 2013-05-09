@@ -165,6 +165,7 @@
 		C76D3E5E16AE322400F055F4 /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = C76D3E5D16AE322400F055F4 /* Cart.m */; };
 		C76D3E6116AE322400F055F4 /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = C76D3E6016AE322400F055F4 /* Order.m */; };
 		C76D3E6416AE322400F055F4 /* ShipDate.m in Sources */ = {isa = PBXBuildFile; fileRef = C76D3E6316AE322400F055F4 /* ShipDate.m */; };
+		C76E63FE173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = C76E63FD173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m */; };
 		C779A6F9167509B0001C2032 /* PrinterSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C779A6F7167509B0001C2032 /* PrinterSelectionViewController.m */; };
 		C779A6FA167509B0001C2032 /* PrinterSelectionViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C779A6F8167509B0001C2032 /* PrinterSelectionViewController.xib */; };
 		C779A6FC16751EBE001C2032 /* AccDisclosure.png in Resources */ = {isa = PBXBuildFile; fileRef = C779A6FB16751EBE001C2032 /* AccDisclosure.png */; };
@@ -378,7 +379,6 @@
 		C75EF9611730D1A90086EC52 /* continuein.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = continuein.png; sourceTree = "<group>"; };
 		C75EF9621730D1A90086EC52 /* continueout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = continueout.png; sourceTree = "<group>"; };
 		C75EF9631730D1A90086EC52 /* customerBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = customerBG.png; sourceTree = "<group>"; };
-		C75EF9641730D1A90086EC52 /* customerBG_old.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = customerBG_old.png; sourceTree = "<group>"; };
 		C75EF9661730D1A90086EC52 /* deletein.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = deletein.png; sourceTree = "<group>"; };
 		C75EF9671730D1A90086EC52 /* deleteout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = deleteout.png; sourceTree = "<group>"; };
 		C75EF9681730D1A90086EC52 /* Detail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Detail.png; sourceTree = "<group>"; };
@@ -410,6 +410,8 @@
 		C76D3E6016AE322400F055F4 /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		C76D3E6216AE322400F055F4 /* ShipDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShipDate.h; sourceTree = "<group>"; };
 		C76D3E6316AE322400F055F4 /* ShipDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShipDate.m; sourceTree = "<group>"; };
+		C76E63FC173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FindAndResignFirstResponder.h"; sourceTree = "<group>"; };
+		C76E63FD173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+FindAndResignFirstResponder.m"; sourceTree = "<group>"; };
 		C779A6F6167509B0001C2032 /* PrinterSelectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterSelectionViewController.h; sourceTree = "<group>"; };
 		C779A6F7167509B0001C2032 /* PrinterSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterSelectionViewController.m; sourceTree = "<group>"; };
 		C779A6F8167509B0001C2032 /* PrinterSelectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PrinterSelectionViewController.xib; sourceTree = "<group>"; };
@@ -485,6 +487,8 @@
 			children = (
 				335A4301164D7455007B872A /* StringManipulation.h */,
 				335A4302164D7455007B872A /* StringManipulation.m */,
+				C76E63FC173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.h */,
+				C76E63FD173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -953,7 +957,6 @@
 				C75EF9611730D1A90086EC52 /* continuein.png */,
 				C75EF9621730D1A90086EC52 /* continueout.png */,
 				C75EF9631730D1A90086EC52 /* customerBG.png */,
-				C75EF9641730D1A90086EC52 /* customerBG_old.png */,
 			);
 			path = CustomerSelect;
 			sourceTree = "<group>";
@@ -1266,6 +1269,7 @@
 				C76D3E5E16AE322400F055F4 /* Cart.m in Sources */,
 				C76D3E6116AE322400F055F4 /* Order.m in Sources */,
 				C76D3E6416AE322400F055F4 /* ShipDate.m in Sources */,
+				C76E63FE173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

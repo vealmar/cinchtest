@@ -22,7 +22,7 @@
 @synthesize tablelayer;
 @synthesize custTable;
 @synthesize custView;
-@synthesize search;
+@synthesize searchText;
 @synthesize delegate;
 @synthesize tableData;
 @synthesize filteredtableData;
@@ -113,11 +113,19 @@
     [CustomerDataController loadCustomers:self.authToken];
 }
 
+- (IBAction)handleTap:(UITapGestureRecognizer *)sender {
+    if ([searchText isFirstResponder])
+        [searchText resignFirstResponder];
+}
+
+-(BOOL)disablesAutomaticKeyboardDismissal {
+    return NO;
+}
+
 - (void)viewDidUnload
 {
     [self setCustTable:nil];
     [self setCustView:nil];
-    [self setSearch:nil];
     [self setTablelayer:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
@@ -230,9 +238,9 @@
 //    self.search.text = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
     selectedCustomer = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
 
-    [self.search resignFirstResponder];
 //    [tableView becomeFirstResponder];
 //    [tableView resignFirstResponder];
+    [searchText resignFirstResponder];
 }
 
 ////method to move the view up/down whenever the keyboard is shown/dismissed
@@ -299,40 +307,23 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationCustomersLoaded object:nil];
 }
 
-#pragma mark UISearchBarDelegate
+#pragma mark search methods
 
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
-{
-    // only show the status bar’s cancel button while in edit mode
-    searchBar.showsCancelButton = YES;
-    searchBar.autocorrectionType = UITextAutocorrectionTypeNo;
-    // flush the previous search content
-//    [self.filteredtableData removeAllObjects];
-//    self.filteredtableData = [tableData mutableCopy];
-}
-
-- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
-{
-//    searchBar.showsCancelButton = NO;
-    if ([searchBar isFirstResponder])
-        [searchBar resignFirstResponder];
-    if (searchBar.text.length == 0) {
-        self.filteredtableData = [tableData mutableCopy];
-        [self.custTable reloadData];
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    
+    NSString *search = [textField.text stringByAppendingString:string];
+    if ([string isEqualToString:@""]) {
+        search = [search substringToIndex:range.location];
     }
-}
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
     [self.filteredtableData removeAllObjects];// remove all data that belongs to previous search
-    if([searchText isEqualToString:@""]||searchText==nil){
+    if([search isEqualToString:@""]){
         self.filteredtableData = [tableData mutableCopy];
         [self.custTable reloadData];
-        return;
+        return YES;
     }
     for(NSDictionary *dict in tableData)
     {
-        NSRange r = [[dict objectForKey:kCustID] rangeOfString:searchText options:NSCaseInsensitiveSearch];
+        NSRange r = [[dict objectForKey:kCustID] rangeOfString:search options:NSCaseInsensitiveSearch];
         if(r.location != NSNotFound)
         {
             if(r.location== 0)//that is we are checking only the start of the names.
@@ -340,7 +331,7 @@
                 [self.filteredtableData addObject:dict];
             }
         }else{
-            NSRange r = [[dict objectForKey:kBillName] rangeOfString:searchText options:NSCaseInsensitiveSearch];
+            NSRange r = [[dict objectForKey:kBillName] rangeOfString:search options:NSCaseInsensitiveSearch];
             if(r.location != NSNotFound)
             {
                 [self.filteredtableData addObject:dict];
@@ -348,25 +339,75 @@
         }
     }
     [self.custTable reloadData];
+    return YES;
 }
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    // if a valid search was entered but the user wanted to cancel, bring back the main list content
-    searchBar.showsCancelButton = NO;
-    [self.filteredtableData removeAllObjects];
-//    [self.filteredtableData addObjectsFromArray:tableData];
-    self.filteredtableData = [tableData mutableCopy];
-    @try{
-        [self.custTable reloadData];
-//        self.search.text = [[self.filteredtableData objectAtIndex:0] objectForKey:kCustID];
-    }
-    @catch(NSException *e){
-        DLog(@"Exception:%@",e);
-    }
-    [searchBar resignFirstResponder];
-    //searchBar.text = @"";
-}
+//- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
+//{
+//    // only show the status bar’s cancel button while in edit mode
+//    searchBar.showsCancelButton = YES;
+//    searchBar.autocorrectionType = UITextAutocorrectionTypeNo;
+//    // flush the previous search content
+////    [self.filteredtableData removeAllObjects];
+////    self.filteredtableData = [tableData mutableCopy];
+//}
+//
+//- (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
+//{
+////    searchBar.showsCancelButton = NO;
+//    if ([searchBar isFirstResponder])
+//        [searchBar resignFirstResponder];
+//    if (searchBar.text.length == 0) {
+//        self.filteredtableData = [tableData mutableCopy];
+//        [self.custTable reloadData];
+//    }
+//}
+//
+//- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+//{
+//    [self.filteredtableData removeAllObjects];// remove all data that belongs to previous search
+//    if([searchText isEqualToString:@""]||searchText==nil){
+//        self.filteredtableData = [tableData mutableCopy];
+//        [self.custTable reloadData];
+//        return;
+//    }
+//    for(NSDictionary *dict in tableData)
+//    {
+//        NSRange r = [[dict objectForKey:kCustID] rangeOfString:searchText options:NSCaseInsensitiveSearch];
+//        if(r.location != NSNotFound)
+//        {
+//            if(r.location== 0)//that is we are checking only the start of the names.
+//            {
+//                [self.filteredtableData addObject:dict];
+//            }
+//        }else{
+//            NSRange r = [[dict objectForKey:kBillName] rangeOfString:searchText options:NSCaseInsensitiveSearch];
+//            if(r.location != NSNotFound)
+//            {
+//                [self.filteredtableData addObject:dict];
+//            }
+//        }
+//    }
+//    [self.custTable reloadData];
+//}
+//
+//- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+//{
+//    // if a valid search was entered but the user wanted to cancel, bring back the main list content
+//    searchBar.showsCancelButton = NO;
+//    [self.filteredtableData removeAllObjects];
+////    [self.filteredtableData addObjectsFromArray:tableData];
+//    self.filteredtableData = [tableData mutableCopy];
+//    @try{
+//        [self.custTable reloadData];
+////        self.search.text = [[self.filteredtableData objectAtIndex:0] objectForKey:kCustID];
+//    }
+//    @catch(NSException *e){
+//        DLog(@"Exception:%@",e);
+//    }
+//    [searchBar resignFirstResponder];
+//    //searchBar.text = @"";
+//}
 
 //// called when Search (in our case “Done”) button pressed
 //- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar

@@ -442,7 +442,7 @@ bool showHud = true;
     
     if (!newOrder) {
         NSUInteger index = [self.orders indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-            int _id = [[obj objectForKey:kID] intValue];
+            int _id = [[obj objectForKey:kOrderId] intValue];
             *stop = _id == currentOrderID;
             return *stop;
         }];
@@ -523,7 +523,7 @@ bool showHud = true;
             cell.tag = [[[[data objectForKey:kItems] objectAtIndex:0] objectForKey:@"order_id"] intValue];
         }
         else
-            cell.tag = [[data objectForKey:kID] intValue];
+            cell.tag = [[data objectForKey:kOrderId] intValue];
         
         if ([data objectForKey:kOrderStatus] != nil) {
             cell.orderStatus.text = [[data objectForKey:kOrderStatus] capitalizedString];
@@ -537,8 +537,8 @@ bool showHud = true;
             cell.orderStatus.textColor = [UIColor orangeColor];
         }
         
-        if ([data objectForKey:kID] != nil)
-            cell.orderId.text = [[data objectForKey:kID] stringValue];
+        if ([data objectForKey:kOrderId] != nil)
+            cell.orderId.text = [[data objectForKey:kOrderId] stringValue];
         else
             cell.orderId.text = @"";
         
@@ -1111,8 +1111,8 @@ bool showHud = true;
             [strs addObject:str];
         }
         
-        NSString *myId = [[[data objectAtIndex:i] objectForKey:kID] stringValue];
-        NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,myId,kID,qty,kOrderItemNum,cell.price.text,kOrderItemPRICE,cell.voucher.text,kOrderItemVoucher,strs,kOrderItemShipDates, nil];
+        NSString *myId = [[[data objectAtIndex:i] objectForKey:kOrderId] stringValue];
+        NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,myId,kOrderId,qty,kOrderItemNum,cell.price.text,kOrderItemPRICE,cell.voucher.text,kOrderItemVoucher,strs,kOrderItemShipDates, nil];
         [arr addObject:(id)proDict];
     }
     
@@ -1207,7 +1207,7 @@ bool showHud = true;
         hud.labelText = @"Printing ...";
         [hud show:YES];
         
-        NSString *orderID = [NSString stringWithFormat:@"%@",[self.itemsDB objectForKey:@"id"]];
+        NSString *orderID = [NSString stringWithFormat:@"%@",[self.itemsDB objectForKey:kOrderId]];
         NSNumber *printStationId = [NSNumber numberWithInt:[[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue]];
         NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:orderID, kReportPrintOrderId, printStationId, @"printer_id", nil];
         
@@ -1245,7 +1245,7 @@ bool showHud = true;
 }
 
 - (IBAction)Print:(id)sender {
-    if (self.itemsDB && self.itemsDB.allKeys.count > 0 && [self.itemsDB objectForKey:@"id"]) {
+    if (self.itemsDB && self.itemsDB.allKeys.count > 0 && [self.itemsDB objectForKey:kOrderId]) {
         
         if (!availablePrinters || ![self printerIsOnline:[[SettingsManager sharedManager] lookupSettingByString:@"printer"]]) {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(printOrder) name:kPrintersLoaded object:nil];
@@ -1319,8 +1319,6 @@ bool showHud = true;
     NSString* JSON = [qty JSONString];
     DLog(@"setting qtys on index(%d) to %@",idx,JSON);
     
-//    NSString* key = [[self.resultData objectAtIndex:idx] objectForKey:@"id"];
-    
     CIItemEditCell* cell = (CIItemEditCell*)[self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
     
     cell.qty.text = JSON;
@@ -1360,7 +1358,7 @@ bool showHud = true;
         deleteHUD.labelText = @"Deleting Order";
         [deleteHUD show:NO];
         
-        NSURL *url = [NSURL URLWithString:kDBORDEREDITS([[self.itemsDB objectForKey:@"id"] integerValue])];
+        NSURL *url = [NSURL URLWithString:kDBORDEREDITS([[self.itemsDB objectForKey:kOrderId] integerValue])];
         AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
         NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
         AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
@@ -1463,7 +1461,7 @@ bool showHud = true;
             NSString *authorized = [dict objectForKey:@"authorized"];
             if ([authorized isKindOfClass:[NSNull class]])
                 authorized = @"";
-            NSString *orderId = [[dict objectForKey:@"id"] stringValue];
+            NSString *orderId = [[dict objectForKey:kOrderId] stringValue];
             //			DLog(@"Bill Name: %@", storeName);
             //			DLog(@"Cust Id: %@", custId);
             //            DLog(@"Authorized: %@", authorized);
@@ -1504,7 +1502,7 @@ bool showHud = true;
 //            NSString *authorized = [dict objectForKey:@"authorized"];
 //            if ([authorized isKindOfClass:[NSNull class]])
 //                authorized = @"";
-//            NSString *orderId = [[dict objectForKey:@"id"] stringValue];
+//            NSString *orderId = [[dict objectForKey:kOrderId] stringValue];
 ////			DLog(@"Bill Name: %@", storeName);
 ////			DLog(@"Cust Id: %@", custId);
 ////            DLog(@"Authorized: %@", authorized);

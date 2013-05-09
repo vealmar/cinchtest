@@ -17,9 +17,7 @@
 #import "AFJSONRequestOperation.h"
 
 @implementation CIViewController {
-    double keyboardOffset;
     CGRect originalBounds;
-    CGRect originalFrame;
 }
 @synthesize email;
 @synthesize password;
@@ -52,7 +50,6 @@
 {
     [super viewDidLoad];
     originalBounds = self.view.bounds;
-    originalFrame = self.view.frame;
     authToken = nil;
     
     //for testing
@@ -222,14 +219,14 @@
 }
 
 - (void) keyboardWillShow:(NSNotification*)notification {
-    if (keyboardOffset == 0) {
-        CGRect keyboardFrame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-        
-        UIWindow *window = [[[UIApplication sharedApplication] windows]objectAtIndex:0];
-        UIView *mainSubviewOfWindow = window.rootViewController.view;
-        CGRect keyboardFrameConverted = [mainSubviewOfWindow convertRect:keyboardFrame fromView:window];
-        keyboardOffset = keyboardFrameConverted.size.height;
-    }
+//    if (keyboardOffset == 0) {
+//        CGRect keyboardFrame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+//        
+//        UIWindow *window = [[[UIApplication sharedApplication] windows]objectAtIndex:0];
+//        UIView *mainSubviewOfWindow = window.rootViewController.view;
+//        CGRect keyboardFrameConverted = [mainSubviewOfWindow convertRect:keyboardFrame fromView:window];
+//        keyboardOffset = keyboardFrameConverted.size.height;
+//    }
     
     if (self.view.bounds.origin.y >= 0)
     {

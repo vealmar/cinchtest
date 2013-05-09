@@ -18,6 +18,7 @@
     SetupInfo *shipFlag;
     BOOL contactFirst;
     NSManagedObjectContext *context;
+    CGRect originalBounds;
 }
 
 @end
@@ -30,7 +31,7 @@
 @synthesize delegate;
 @synthesize tableData;
 @synthesize filteredtableData;
-@synthesize contactBeforeShipping;
+//@synthesize contactBeforeShipping;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -74,9 +75,14 @@
     results = [context executeFetchRequest:req error:&error];
     if (!error && results != nil && [results count] > 0) {
         shipFlag = [results objectAtIndex:0];
-        contactFirst = [shipFlag.value isEqualToString:@"YES"];
-        [contactBeforeShipping updateCheckBox:contactFirst];
+//        contactFirst = [shipFlag.value isEqualToString:@"YES"];
+//        [contactBeforeShipping updateCheckBox:contactFirst];
     }
+}
+
+-(void)viewDidLoad {
+    [super viewDidLoad];
+    originalBounds = self.view.bounds;
 }
 
 -(void) setCustomerData:(NSArray *)customerData
@@ -104,19 +110,21 @@
             [context save:&error];
         }
         
+
+        /// *** Farris?
         
-        if (shipFlag == nil || contactBeforeShipping.isChecked != contactFirst) {
-            if (shipFlag != nil) {
-                shipFlag.value = contactBeforeShipping.isChecked ? @"YES" : @"NO";
-            } else {
-                SetupInfo *setup = (SetupInfo *)[[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
-                setup.item = @"ship_flag";
-                setup.value = contactBeforeShipping.isChecked ? @"YES" : @"NO";
-            }
-            
-            NSError *error;
-            [context save:&error];
-        }
+//        if (shipFlag == nil || contactBeforeShipping.isChecked != contactFirst) {
+//            if (shipFlag != nil) {
+//                shipFlag.value = contactBeforeShipping.isChecked ? @"YES" : @"NO";
+//            } else {
+//                SetupInfo *setup = (SetupInfo *)[[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
+//                setup.item = @"ship_flag";
+//                setup.value = contactBeforeShipping.isChecked ? @"YES" : @"NO";
+//            }
+//            
+//            NSError *error;
+//            [context save:&error];
+//        }
 
         if (self.delegate) {
             NSMutableDictionary* dict = [[self.delegate getCustomerInfo] mutableCopy];
@@ -129,8 +137,8 @@
             [dict setObject:self.Notes.text forKey:kNotes ];
             [dict setObject:self.Authorizer.text forKey:kAuthorizedBy];
             
-            NSString *isChecked = self.contactBeforeShipping.isChecked ? @"YES" : @"NO";
-            [dict setObject:isChecked forKey:kShipFlag];
+//            NSString *isChecked = self.contactBeforeShipping.isChecked ? @"YES" : @"NO";
+//            [dict setObject:isChecked forKey:kShipFlag];
             DLog(@"info to send:%@",dict);
             [self.delegate setCustomerInfo:[dict copy]];
             [self.delegate submit:nil];
@@ -143,54 +151,57 @@
     }
 }
 
-////method to move the view up/down whenever the keyboard is shown/dismissed
-//-(void)setViewMovedUp:(BOOL)movedUp
-//{
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-//    
-//    CGRect rect = self.scroll.frame;
-//    if (movedUp)
-//    {
-//        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
-//        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-//        rect.origin.y += kOFFSET_FOR_KEYBOARD+40;//was -
-//        //rect.size.height += kOFFSET_FOR_KEYBOARD;
-//    }
-//    else
-//    {
-//        // revert back to the normal state.
-//        rect.origin.y =0;//-= (kOFFSET_FOR_KEYBOARD);//was +
-//        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
-//    }
-//    self.scroll.contentOffset = rect.origin;
-//    
-//    [UIView commitAnimations];
-//}
+-(void)setViewMovedUp:(BOOL)movedUp
+{
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.3]; // if you want to slide up the view
+    
+    CGRect rect = self.view.bounds;
+    if (movedUp)
+    {
+        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
+        // 2. increase the size of the view so that the area behind the keyboard is covered up.
+        rect.origin.y += kOFFSET_FOR_KEYBOARD + 40;
+        //rect.size.height -= keyboardOffset; // kOFFSET_FOR_KEYBOARD;
+        self.view.bounds = rect;
+    }
+    else
+    {
+        // revert back to the normal state.
+        //rect.origin.y = 0; //-= keyboardOffset; // kOFFSET_FOR_KEYBOARD;
+        //rect.size.height += keyboardOffset; // kOFFSET_FOR_KEYBOARD;
+        //rect = originalBounds;
+        
+        self.view.bounds = originalBounds;
+    }
+    
+    [UIView commitAnimations];
+}
 
-//-(void)setViewMovedUpDouble:(BOOL)movedUp
-//{
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-//    
-//    CGRect rect = self.scroll.frame;
-//    if (movedUp)
-//    {
-//        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
-//        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-//        rect.origin.y += (kOFFSET_FOR_KEYBOARD+40)*2;//was -
-//        //rect.size.height += kOFFSET_FOR_KEYBOARD;
-//    }
-//    else
-//    {
-//        // revert back to the normal state.
-//        rect.origin.y = 0;//-= (kOFFSET_FOR_KEYBOARD-7);//was +
-//        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
-//    }
-//    self.scroll.contentOffset = rect.origin;
-//    
-//    [UIView commitAnimations];
-//}
+-(void)setViewMovedUpDouble:(BOOL)movedUp
+{
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.3]; // if you want to slide up the view
+    
+    CGRect rect = self.view.bounds;
+    if (movedUp)
+    {
+        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
+        // 2. increase the size of the view so that the area behind the keyboard is covered up.
+        rect.origin.y += kOFFSET_FOR_KEYBOARD + 70;//was -
+        //rect.size.height += kOFFSET_FOR_KEYBOARD;
+        self.view.bounds = rect;
+    }
+    else
+    {
+        // revert back to the normal state.
+        //rect.origin.y = 0;//-= (kOFFSET_FOR_KEYBOARD-7);//was +
+        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
+        self.view.bounds = originalBounds;
+    }
+    
+    [UIView commitAnimations];
+}
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField {
     return YES;
@@ -206,45 +217,45 @@
         [textField resignFirstResponder];
 }
 
-//-(void)textViewDidBeginEditing:(UITextView *)sender
-//{
-//    if ([sender isEqual:self.Notes])
-//    {
-//        //move the main view, so that the keyboard does not hide it.
-//        if  (self.view.frame.origin.y >= 0)
-//        {
-//            [self setViewMovedUp:YES];
-//        }
-//    }
-//    if([sender isEqual:self.shippingNotes])
-//    {
-//        //move the main view, so that the keyboard does not hide it.
-//        if  (self.view.frame.origin.y >= 0)
-//        {
-//            [self setViewMovedUpDouble:YES];
-//        }
-//    }
-//}
+-(void)textViewDidBeginEditing:(UITextView *)sender
+{
+    if ([sender isEqual:self.shippingNotes])
+    {
+        //move the main view, so that the keyboard does not hide it.
+        if  (self.view.frame.origin.y >= 0)
+        {
+            [self setViewMovedUp:YES];
+        }
+    }
+    if([sender isEqual:self.Notes])
+    {
+        //move the main view, so that the keyboard does not hide it.
+        if  (self.view.frame.origin.y >= 0)
+        {
+            [self setViewMovedUpDouble:YES];
+        }
+    }
+}
 
-//-(void)textViewDidEndEditing:(UITextView *)sender
-//{
-//    if ([sender isEqual:self.Notes])
-//    {
-//        //move the main view, so that the keyboard does not hide it.
-//        if  (self.view.frame.origin.y >= 0)
-//        {
-//            [self setViewMovedUp:NO];
-//        }
-//    }
-//    if([sender isEqual:self.shippingNotes])
-//    {
-//        //move the main view, so that the keyboard does not hide it.
-//        if  (self.view.frame.origin.y >= 0)
-//        {
-//            [self setViewMovedUpDouble:NO];
-//        }
-//    }
-//}
+-(void)textViewDidEndEditing:(UITextView *)sender
+{
+    if ([sender isEqual:self.shippingNotes])
+    {
+        //move the main view, so that the keyboard does not hide it.
+        if  (self.view.frame.origin.y >= 0)
+        {
+            [self setViewMovedUp:NO];
+        }
+    }
+    if([sender isEqual:self.Notes])
+    {
+        //move the main view, so that the keyboard does not hide it.
+        if  (self.view.frame.origin.y >= 0)
+        {
+            [self setViewMovedUpDouble:NO];
+        }
+    }
+}
 
 //- (void)keyboardWillShow:(NSNotification *)notif
 //{
