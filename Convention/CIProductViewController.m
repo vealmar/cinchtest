@@ -1072,8 +1072,7 @@
     if (!asPending) {
         newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:@"id"], kOrderCustID,
              [self.customer objectForKey:kNotes], kNotes, [self.customer objectForKey:kAuthorizedBy], kAuthorizedBy,
-             [self.customer objectForKey:kShipFlag], kShipFlag, orderStatus, kOrderStatus,
-             arr, kOrderItems, nil];
+             orderStatus, kOrderStatus, arr, kOrderItems, nil];
     } else {
         newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:@"id"], kOrderCustID, orderStatus, kOrderStatus, arr, kOrderItems, nil];
     }
