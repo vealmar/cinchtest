@@ -753,6 +753,7 @@ bool showHud = true;
 
             self.EditorView.tag = cell.tag;
             currentOrderID = cell.tag;
+            rowToDelete = indexPath;
             
             if ([kShowCorp isEqualToString: kFarris]) {
                 self.headerVoucherLbl.hidden = YES;
