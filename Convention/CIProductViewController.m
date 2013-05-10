@@ -1023,9 +1023,12 @@
                     }
 
                     if ([strs count] > 0 || itemIsVoucher(dict)) {
+                        NSString *lineItemId = [dict objectForKey:kOrderLineItemId] ? [[dict objectForKey:kOrderLineItemId] stringValue] : @"";
                         NSString *ePrice = [[dict objectForKey:kEditablePrice] stringValue];
                         NSString *eVoucher = [[dict objectForKey:kEditableVoucher] stringValue];
-                        NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[dict objectForKey:kEditableQty],kOrderItemNum,ePrice,kOrderItemPRICE,eVoucher,kOrderItemVoucher,strs,kOrderItemShipDates, nil];
+                        NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:lineItemId, kID, productID, kOrderItemID,
+                                                 [dict objectForKey:kEditableQty], kOrderItemNum, ePrice, kOrderItemPRICE,
+                                                 eVoucher, kOrderItemVoucher, strs, kOrderItemShipDates, nil];
                         [arr addObject:(id)proDict];
                     }
                 } else {
