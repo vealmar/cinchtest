@@ -1119,14 +1119,10 @@ bool showHud = true;
     
     [arr removeObjectIdenticalTo:nil];
     DLog(@"array:%@",arr);
-    NSDictionary* order;
     NSString *custid = [self.itemsDB objectForKey:kOrderCustID];
     NSString *authorizedBy = [self.itemsDB objectForKey:kAuthorizedBy];
-//    NSString *_shipNotes = [self.shipNotes.text isEmpty] ? @"" : self.shipNotes.text;
-    NSString *_notes = !self.notes || [self.notes.text isEmpty] ? @"" : self.notes.text;
-    order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustID,
-             _notes, kNotes, authorizedBy, kAuthorizedBy, arr, kOrderItems, nil];
-    
+
+    NSDictionary* order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustID, authorizedBy, kAuthorizedBy, arr, kOrderItems, nil];
     NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDEREDITS(currentOrderID),kAuthToken,self.authToken];
     
