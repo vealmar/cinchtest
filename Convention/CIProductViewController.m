@@ -986,7 +986,7 @@
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     NSArray* keys = self.productCart.allKeys;
     
-//    if (_order.orderId == 0) {
+    if (_order.orderId == 0) {
         for (NSNumber* i in keys) {
             NSDictionary* dict = [self.productCart objectForKey:i];
             NSString* productID = [i stringValue];//[[self.productData objectAtIndex:] objectForKey:@"id"];
@@ -1043,20 +1043,20 @@
                 }
             }
         }
-//    } else {
-//        for (NSNumber* i in keys) {
-//            NSDictionary* dict = [self.productCart objectForKey:i];
-//            NSString* productID = [i stringValue];//[[self.productData objectAtIndex:] objectForKey:@"id"];            
-//            NSString *myId = [dict objectForKey:kOrderLineItemId] != nil ? [[dict objectForKey:kOrderLineItemId] stringValue] : @"";
-//            NSString *ePrice = [[dict objectForKey:kEditablePrice] stringValue];
-//            NSDictionary *proDict;
-//            if (![myId isEqualToString:@""])
-//                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, nil];
-//            else
-//                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, nil];
-//            [arr addObject:(id)proDict];
-//        }
-//    }
+    } else {
+        for (NSNumber* i in keys) {
+            NSDictionary* dict = [self.productCart objectForKey:i];
+            NSString* productID = [i stringValue];//[[self.productData objectAtIndex:] objectForKey:@"id"];            
+            NSString *myId = [dict objectForKey:kOrderLineItemId] != nil ? [[dict objectForKey:kOrderLineItemId] stringValue] : @"";
+            NSString *ePrice = [[dict objectForKey:kEditablePrice] stringValue];
+            NSDictionary *proDict;
+            if (![myId isEqualToString:@""])
+                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, nil];
+            else
+                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, nil];
+            [arr addObject:(id)proDict];
+        }
+    }
     
     [arr removeObjectIdenticalTo:nil];
     
@@ -1070,9 +1070,15 @@
     NSMutableDictionary* newOrder;
     
     if (!asPending) {
+        NSString *_notes = [self.customer objectForKey:kNotes];
+        if (_notes == nil || [_notes isEqualToString:@""])
+            _notes = @"";
+        NSString *_shipFlag = [self.customer objectForKey:kShipFlag];
+        if (_shipFlag == nil)
+            _shipFlag = @"0";
         newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:@"id"], kOrderCustID,
-             [self.customer objectForKey:kNotes], kNotes, [self.customer objectForKey:kAuthorizedBy], kAuthorizedBy,
-             [self.customer objectForKey:kShipFlag], kShipFlag, orderStatus, kOrderStatus,
+             _notes, kNotes, [self.customer objectForKey:kAuthorizedBy], kAuthorizedBy,
+             _shipFlag, kShipFlag, orderStatus, kOrderStatus,
              arr, kOrderItems, nil];
     } else {
         newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:@"id"], kOrderCustID, orderStatus, kOrderStatus, arr, kOrderItems, nil];

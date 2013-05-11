@@ -78,6 +78,9 @@
 //        contactFirst = [shipFlag.value isEqualToString:@"YES"];
 //        [contactBeforeShipping updateCheckBox:contactFirst];
     }
+    
+    self.Notes.text = @"";
+    self.shippingNotes.text = @"";
 }
 
 -(void)viewDidLoad {
