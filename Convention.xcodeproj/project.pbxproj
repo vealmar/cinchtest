@@ -183,6 +183,8 @@
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
 		C7F30D041676FE5000FA36F8 /* CICartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F30D021676FE5000FA36F8 /* CICartViewCell.m */; };
 		C7F30D051676FE5000FA36F8 /* CICartViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */; };
+		EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427054173FFB6E004A4A91 /* Zerobuttonin.png */; };
+		EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427055173FFB6E004A4A91 /* Zerobuttonout.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -443,6 +445,8 @@
 		C7F30D011676FE5000FA36F8 /* CICartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICartViewCell.h; sourceTree = "<group>"; };
 		C7F30D021676FE5000FA36F8 /* CICartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICartViewCell.m; sourceTree = "<group>"; };
 		C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CICartViewCell.xib; sourceTree = "<group>"; };
+		EC427054173FFB6E004A4A91 /* Zerobuttonin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonin.png; sourceTree = "<group>"; };
+		EC427055173FFB6E004A4A91 /* Zerobuttonout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonout.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -941,6 +945,8 @@
 		C75EF9591730D1A90086EC52 /* Cart */ = {
 			isa = PBXGroup;
 			children = (
+				EC427054173FFB6E004A4A91 /* Zerobuttonin.png */,
+				EC427055173FFB6E004A4A91 /* Zerobuttonout.png */,
 				C75EF95A1730D1A90086EC52 /* cartBG.png */,
 				C75EF95B1730D1A90086EC52 /* finalsubmit.png */,
 				C75EF95C1730D1A90086EC52 /* submitin.png */,
@@ -1177,6 +1183,8 @@
 				C75EF9A11730D1A90086EC52 /* cancel.png in Resources */,
 				C75EF9A21730D1A90086EC52 /* magnify.png in Resources */,
 				C75EF9A31730D1A90086EC52 /* orderBG.png in Resources */,
+				EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */,
+				EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
