@@ -986,6 +986,12 @@
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     NSArray* keys = self.productCart.allKeys;
 
+    if ([self.productCart.allKeys count] == 0) {
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Please add at least one product to the cart before continuing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+        [submit hide:YES];
+        return;
+    }
+
     if (![self orderReadyForSubmission]) {
         [submit hide:YES];
         return;
