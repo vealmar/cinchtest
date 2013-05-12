@@ -1063,9 +1063,10 @@
             NSString* productID = [i stringValue];//[[self.productData objectAtIndex:] objectForKey:@"id"];            
             NSString *myId = [dict objectForKey:kOrderLineItemId] != nil ? [[dict objectForKey:kOrderLineItemId] stringValue] : @"";
             NSString *ePrice = [[dict objectForKey:kEditablePrice] stringValue];
+            NSString *eVoucher = [[dict objectForKey:kEditableVoucher] stringValue];
             NSDictionary *proDict;
             if (![myId isEqualToString:@""])
-                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, nil];
+                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, eVoucher, kOrderItemVoucher, nil];
             else
                 proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, nil];
             [arr addObject:(id)proDict];
