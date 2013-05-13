@@ -52,7 +52,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>http://169.254.85.52:3000</string>
+			<string>http://169.254.85.52:80</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
