@@ -98,7 +98,16 @@
     NSArray *keys = [self.productData allKeys];
     for (NSString *key in keys) {
         [allCartItems addObject:[self.productData objectForKey:key]];
-        int qty = [[[self.productData objectForKey:key] objectForKey:kEditableQty] intValue];
+        int qty = 0;
+        if (multiStore) {
+            NSDictionary *quantitiesByStore = [[[self.productData objectForKey:key] objectForKey:kEditableQty] objectFromJSONString];
+            for (NSString *storeId in [quantitiesByStore allKeys]) {
+                qty += [[quantitiesByStore objectForKey:storeId] intValue];
+            }
+        }
+        else {
+            qty += [[[self.productData objectForKey:key] objectForKey:kEditableQty] intValue];
+        }
         double price = [[[self.productCart objectForKey:key] objectForKey:kEditablePrice] doubleValue];
         grossTotal += qty * price;
     }
