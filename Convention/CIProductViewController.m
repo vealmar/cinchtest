@@ -1066,9 +1066,9 @@
             NSString *eVoucher = [[dict objectForKey:kEditableVoucher] stringValue];
             NSDictionary *proDict;
             if (![myId isEqualToString:@""])
-                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, eVoucher, kOrderItemVoucher, nil];
+                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, (multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE, eVoucher, kOrderItemVoucher, nil];
             else
-                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, nil];
+                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, (multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE, nil];
             [arr addObject:(id)proDict];
         }
     }
