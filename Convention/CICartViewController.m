@@ -243,14 +243,18 @@
             cell.CaseQty.text = @"";
         cell.numShipDates.text = ([[dict objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]]?[NSString stringWithFormat:@"%d", ((NSArray*)[dict objectForKey:kOrderItemShipDates]).count]:@"0");
         cell.quantity.hidden = YES;
+        
         if ([dict objectForKey:kEditableQty] && !multiStore) {
             cell.quantity.text = [[dict objectForKey:kEditableQty] stringValue];
             cell.qtyLbl.text = cell.quantity.text;
-        }
-        else
+        } else {
             cell.quantity.text = @"0";
+        }
+        
         if (multiStore) {
             cell.qtyBtn.hidden = NO;
+        } else {
+            cell.qtyLbl.hidden = NO;
         }
         
         cell.price.hidden = YES;
