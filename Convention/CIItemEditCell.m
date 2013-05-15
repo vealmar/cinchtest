@@ -74,7 +74,7 @@
 - (IBAction)voucherEdit:(id)sender {
 //    [self UpdateTotal];
     if (self.delegate) {
-        [self.delegate setVoucher:self.qty.text atIndex:self.tag];
+        [self.delegate setVoucher:self.voucher.text atIndex:self.tag];
         [self.delegate UpdateTotal];
 //        [self.delegate setViewMovedUpDouble:NO];
 //        [self.delegate setViewMovedUpDouble:NO];
