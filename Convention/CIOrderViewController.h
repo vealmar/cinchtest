@@ -14,12 +14,12 @@
 #import "PrinterSelectionViewController.h"
 
 @interface CIOrderViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate,
-    UISearchBarDelegate, UITextViewDelegate, UIAlertViewDelegate, ItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
+    UITextViewDelegate, UIAlertViewDelegate, ItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
     CIStoreQtyDelegate, PullToRefreshViewDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate>
 {
 	ReachabilityDelegation *reachDelegation;
 }
-@property (nonatomic, strong) IBOutlet UISearchBar *sBar;
+
 @property (nonatomic, strong) NSMutableArray* orders;
 @property (nonatomic, strong) NSMutableArray* orderData;
 @property (nonatomic, strong) NSString* authToken;

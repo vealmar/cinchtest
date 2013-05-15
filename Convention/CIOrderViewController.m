@@ -44,7 +44,6 @@
 bool pingInProgress = false;
 
 @implementation CIOrderViewController
-@synthesize sBar;
 @synthesize orders;
 @synthesize orderData;
 @synthesize authToken;
@@ -128,15 +127,14 @@ bool showHud = true;
     
     self.placeholderContainer.hidden = NO;
     
+    [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
+    
     if (self.allowPrinting) {
         currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
     }
     pull = [[PullToRefreshView alloc] initWithScrollView:(UIScrollView *) self.sideTable];
     [pull setDelegate:self];
     [self.sideTable addSubview:pull];
-	
-	self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
-
 	[self Return];
 }
 
@@ -222,7 +220,6 @@ bool showHud = true;
         if (showHud)
             [hud hide:YES];
         [pull finishedLoading];
-        self.sideTable.contentOffset = CGPointMake(0, self.sBar.frame.size.height);
         showHud = true;
         isLoadingOrders = NO;
     };
@@ -244,10 +241,6 @@ bool showHud = true;
                 
                 [self loadPartialOrders];
                 self.orderData = [self.orders mutableCopy];
-                
-//                [JSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-//                    [self.orderData replaceObjectAtIndex:idx withObject:[obj mutableCopy]];
-//                }];
                 
                 [self.sideTable reloadData];
                 if ([self.orders count] > 0) {
@@ -719,11 +712,6 @@ bool showHud = true;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
-        
-        if ([self.sBar isFirstResponder]) {
-            [self.sBar resignFirstResponder];
-        }
-        
         NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
         NSString *status = [[selectedOrder objectForKey:kOrderStatus] lowercaseString];
         CIOrderCell* cell = (CIOrderCell*)[self.sideTable cellForRowAtIndexPath:indexPath];
@@ -1450,6 +1438,42 @@ bool showHud = true;
 
 #pragma mark - Search orders
 
+- (void)searchTextUpdated:(UITextField *)textField {
+	if (!self.orders || [self.orders isKindOfClass:[NSNull class]]) {
+        return;
+    }
+	
+    NSString *text = textField.text;
+    
+	if ([text isEqualToString:@""]) {
+		self.orders = [self.orderData mutableCopy];
+		DLog(@"string is empty");
+	} else {
+		DLog(@"Search Text %@", text);
+		NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings) {
+			NSMutableDictionary* dict = (NSMutableDictionary*)obj;
+            
+			NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
+			NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
+            NSString *authorized = [dict objectForKey:@"authorized"];
+            
+            if ([authorized isKindOfClass:[NSNull class]])
+                authorized = @"";
+            
+            NSString *orderId = [[dict objectForKey:kOrderId] stringValue];
+			
+			return [[storeName uppercaseString] contains:[text uppercaseString]]
+            || [[custId uppercaseString] hasPrefix:[text uppercaseString]]
+            || [[authorized uppercaseString] hasPrefix:[text uppercaseString]]
+            || [orderId hasPrefix:text];
+		}];
+		
+		self.orders = [[self.orderData filteredArrayUsingPredicate:pred] mutableCopy];
+		DLog(@"results count:%d", self.orders.count);
+	}
+	[self.sideTable reloadData];
+}
+
 - (IBAction)searchOrders:(id)sender {
     [searchText resignFirstResponder];
 	if (self.orders == nil||[self.orders isKindOfClass:[NSNull class]]) {
@@ -1489,64 +1513,6 @@ bool showHud = true;
 	[self.sideTable reloadData];
 }
 
-//#pragma mark - UISearchBarDelegate
-//
-//-(void)searchBar:(UISearchBar *)sBar textDidChange:(NSString *)searchText{
-// 
-//	if (self.orders == nil||[self.orders isKindOfClass:[NSNull class]]) {
-//        return;
-//    }
-//	 
-//	if ([searchText isEqualToString:@""]) {
-//		self.orders = [self.orderData mutableCopy];
-//		DLog(@"string is empty");
-//	}else{
-//		DLog(@"Search Text %@", searchText);
-//		NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings){
-//			NSMutableDictionary* dict = (NSMutableDictionary*)obj;
-//		 
-//			NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
-//			NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
-//            
-//            NSString *authorized = [dict objectForKey:@"authorized"];
-//            if ([authorized isKindOfClass:[NSNull class]])
-//                authorized = @"";
-//            NSString *orderId = [[dict objectForKey:kOrderId] stringValue];
-////			DLog(@"Bill Name: %@", storeName);
-////			DLog(@"Cust Id: %@", custId);
-////            DLog(@"Authorized: %@", authorized);
-//			
-//			return [[storeName uppercaseString] contains:[searchText uppercaseString]]
-//                || [[custId uppercaseString] hasPrefix:[searchText uppercaseString]]
-//                || [[authorized uppercaseString] hasPrefix:[searchText uppercaseString]]
-//                || [orderId hasPrefix:searchText];
-//		}];
-//		
-//		self.orders = [[self.orderData filteredArrayUsingPredicate:pred] mutableCopy];
-//		DLog(@"results count:%d", self.orders.count);
-//	}
-//	[self.sideTable reloadData];
-//}
-//
-//- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
-//    [searchBar setShowsCancelButton:YES animated:YES];
-//}
-//
-//-(void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
-//    [searchBar setShowsCancelButton:NO animated:YES];
-//}
-//
-//- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-//    [searchBar setText:@""];
-//    [searchBar resignFirstResponder];
-//    self.orders = [self.orderData mutableCopy];
-//    [self.sideTable reloadData];
-//}
-//
-//- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
-//    [searchBar resignFirstResponder];
-//}
-
 #pragma mark - UITextFieldDelegate
 
 -(void)textViewDidBeginEditing:(UITextView *)sender
@@ -1573,34 +1539,12 @@ bool showHud = true;
     }
 }
 
-//// Called when the UIKeyboardDidShowNotification is sent.
-//- (void)keyboardWasShown:(NSNotification*)aNotification
-//{
-//    if (activeField) {
-//        NSDictionary* info = [aNotification userInfo];
-//        CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-//
-//        UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height, 0.0);
-//        OrderDetailScroll.contentInset = contentInsets;
-//        OrderDetailScroll.scrollIndicatorInsets = contentInsets;
-//        
-//        // If active text field is hidden by keyboard, scroll it so it's visible
-//        // Your application might not need or want this behavior.
-//        CGRect aRect = self.view.frame;
-//        aRect.size.height += kbSize.height;
-//        if (!CGRectContainsPoint(aRect, activeField.frame.origin) ) {
-//            CGPoint scrollPoint = CGPointMake(0.0, activeField.frame.origin.y - kbSize.height);
-//            [OrderDetailScroll setContentOffset:scrollPoint animated:YES];
-//        }
-//    }
-//}
-//
-//// Called when the UIKeyboardWillHideNotification is sent
-//- (void)keyboardWillBeHidden:(NSNotification*)aNotification
-//{
-//    UIEdgeInsets contentInsets = UIEdgeInsetsZero;
-//    OrderDetailScroll.contentInset = contentInsets;
-//    OrderDetailScroll.scrollIndicatorInsets = contentInsets;
-//}
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if ([textField.restorationIdentifier isEqualToString:@"SearchField"]) {
+        [self.view endEditing:YES];
+    }
+    
+    return NO;
+}
 
 @end
