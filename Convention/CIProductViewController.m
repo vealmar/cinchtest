@@ -132,6 +132,11 @@
 
 #pragma mark - View lifecycle
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
@@ -2126,6 +2131,10 @@ BOOL itemIsVoucher(NSDictionary *dict) {
 
 #pragma mark - Product search
 
+- (void)searchTextUpdated:(UITextField *)textField {
+    [self searchProducts:textField];
+}
+
 -(IBAction)searchProducts:(id)sender {
     //    DLog(@"search did change:%@ - %@",sBar.text,searchText);
     if (self.productData == nil||[self.productData isKindOfClass:[NSNull class]]) {
@@ -2182,6 +2191,16 @@ BOOL itemIsVoucher(NSDictionary *dict) {
             }
         }
     }
+}
+
+#pragma mark - UITextFielDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if ([textField.restorationIdentifier isEqualToString:@"SearchField"]) {
+        [self.view endEditing:YES];
+    }
+    
+    return NO;
 }
 
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {

@@ -1439,43 +1439,13 @@ bool showHud = true;
 #pragma mark - Search orders
 
 - (void)searchTextUpdated:(UITextField *)textField {
-	if (!self.orders || [self.orders isKindOfClass:[NSNull class]]) {
-        return;
-    }
-	
-    NSString *text = textField.text;
-    
-	if ([text isEqualToString:@""]) {
-		self.orders = [self.orderData mutableCopy];
-		DLog(@"string is empty");
-	} else {
-		DLog(@"Search Text %@", text);
-		NSPredicate* pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary* bindings) {
-			NSMutableDictionary* dict = (NSMutableDictionary*)obj;
-            
-			NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
-			NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
-            NSString *authorized = [dict objectForKey:@"authorized"];
-            
-            if ([authorized isKindOfClass:[NSNull class]])
-                authorized = @"";
-            
-            NSString *orderId = [[dict objectForKey:kOrderId] stringValue];
-			
-			return [[storeName uppercaseString] contains:[text uppercaseString]]
-            || [[custId uppercaseString] hasPrefix:[text uppercaseString]]
-            || [[authorized uppercaseString] hasPrefix:[text uppercaseString]]
-            || [orderId hasPrefix:text];
-		}];
-		
-		self.orders = [[self.orderData filteredArrayUsingPredicate:pred] mutableCopy];
-		DLog(@"results count:%d", self.orders.count);
-	}
-	[self.sideTable reloadData];
+	[self searchOrders:textField];
 }
 
 - (IBAction)searchOrders:(id)sender {
-    [searchText resignFirstResponder];
+    if (![sender isKindOfClass:[UITextField class]])
+        [searchText resignFirstResponder];
+    
 	if (self.orders == nil||[self.orders isKindOfClass:[NSNull class]]) {
         return;
     }
