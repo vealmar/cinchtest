@@ -1021,7 +1021,7 @@
             
             DLog(@"orig yo q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
             if (num > 0) {
-                if (kShowCorp == kPigglyWiggly) {
+                if ([kShowCorp isEqualToString:kPigglyWiggly]) {
                     NSMutableArray* strs = [NSMutableArray array];
                     NSArray* dates = [dict objectForKey:kOrderItemShipDates];
                     if ([dates count] > 0) {
@@ -1059,16 +1059,40 @@
         }
     } else {
         for (NSNumber* i in keys) {
+            NSMutableArray *strs = nil;
             NSDictionary* dict = [self.productCart objectForKey:i];
-            NSString* productID = [i stringValue];//[[self.productData objectAtIndex:] objectForKey:@"id"];            
+            if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+                strs = [NSMutableArray array];
+                NSArray* dates = [dict objectForKey:kOrderItemShipDates];
+                if ([dates count] > 0) {
+                    NSDateFormatter* df = [[NSDateFormatter alloc] init];
+                    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
+                    for(int i = 0; i < dates.count; i++){
+                        NSString* str = [df stringFromDate:[dates objectAtIndex:i]];
+                        [strs addObject:str];
+                    }
+                }
+            }
+            NSString* productID = [i stringValue];//[[self.productData objectAtIndex:] objectForKey:@"id"];
             NSString *myId = [dict objectForKey:kOrderLineItemId] != nil ? [[dict objectForKey:kOrderLineItemId] stringValue] : @"";
             NSString *ePrice = [[dict objectForKey:kEditablePrice] stringValue];
             NSString *eVoucher = [[dict objectForKey:kEditableVoucher] stringValue];
             NSDictionary *proDict;
-            if (![myId isEqualToString:@""])
-                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, (multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE, eVoucher, kOrderItemVoucher, nil];
-            else
-                proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, (multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE, nil];
+            if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+                if (![myId isEqualToString:@""])
+                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID,
+                                         (multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE,
+                                         eVoucher, kOrderItemVoucher, strs, kOrderItemShipDates, nil];
+                else
+                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, (multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum,
+                               ePrice, kOrderItemPRICE, strs, kOrderItemShipDates, nil];
+            }
+            else {
+                if (![myId isEqualToString:@""])
+                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, (multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE, eVoucher, kOrderItemVoucher, nil];
+                else
+                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, (multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE, nil];
+            }
             [arr addObject:(id)proDict];
         }
     }
