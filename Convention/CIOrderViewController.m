@@ -1092,13 +1092,16 @@ bool showHud = true;
         return;
     }
     
-//    NSMutableArray* arr = [[NSMutableArray alloc] initWithCapacity:[self.itemsTable numberOfRowsInSection:0]];
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     NSArray* data = [self.itemsDB objectForKey:kItems];
-    for (NSInteger i = 0; i < [self.itemsTable numberOfRowsInSection:0]; i++) {
+    
+    for (NSInteger i = 0; i < [[self.itemsDB objectForKey:kItemCount] intValue]; i++) {
         NSString* productID = [[[data objectAtIndex:i] objectForKey:kOrderItemID] stringValue];
-        CIItemEditCell* cell = (CIItemEditCell*)[self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-        NSString* qty = cell.qty.text;
+        
+        NSString *qty     = [self.itemsQty objectAtIndex:i];
+        NSString *price   = [self.itemsPrice objectAtIndex:i];
+        NSString *voucher = [self.itemsVouchers objectAtIndex:i];
+        
         if (self.itemsQty.count > i) {
             qty = [self.itemsQty objectAtIndex:i];
         }
@@ -1113,7 +1116,16 @@ bool showHud = true;
         }
         
         NSString *myId = [[[data objectAtIndex:i] objectForKey:kOrderId] stringValue];
-        NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,myId,kOrderId,qty,kOrderItemNum,cell.price.text,kOrderItemPRICE,cell.voucher.text,kOrderItemVoucher,strs,kOrderItemShipDates, nil];
+        
+        NSDictionary *proDict = @{
+          kOrderItemID: productID,
+          kOrderId: myId,
+          kOrderItemNum: qty,
+          kOrderItemPRICE: price,
+          kOrderItemVoucher: voucher,
+          kOrderItemShipDates: strs
+        };
+        
         [arr addObject:(id)proDict];
     }
     
