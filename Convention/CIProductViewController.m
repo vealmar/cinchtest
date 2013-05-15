@@ -325,19 +325,6 @@
     [popoverController presentPopoverFromRect:frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
-//-(void)selectBulletin {
-//    if (bulletins && [[bulletins allKeys ] count] > 0) {
-//        isShowingBulletins = YES;
-//        [self.vendorTable reloadData];
-//        [vendorNav setItems:[NSArray arrayWithObject:vendorNavBack] animated:YES];
-//    } else {
-//        isShowingBulletins = NO;
-//        [self dismissVendorTouched:nil];
-//        currentBulletin = 0;
-//        [self loadProducts];
-//    }
-//}
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
@@ -657,12 +644,6 @@
 
 #pragma mark - Other
 
-//-(IBAction)backToVendors:(id)sender {
-//    [vendorNav setItems:[NSArray array] animated:YES];
-//    [self.vendorTable reloadData];
-//    isShowingBulletins = NO;
-//}
-
 -(void)Cancel{
    
 	if (isInitialized && _order.orderId == 0) {
@@ -819,10 +800,6 @@
     [self.products reloadData];
     isInitialized = YES;
 }
-
-//- (IBAction)logout:(id)sender {
-//    [self logout];
-//}
 
 -(void)setCustomerInfo:(NSDictionary*)info
 {
@@ -1403,6 +1380,8 @@ BOOL itemIsVoucher(NSDictionary *dict) {
 }
 
 - (IBAction)shipdatesTouched:(id)sender {
+    [self.view endEditing:YES];
+    
     if (selectedIdx.count <= 0) {
         [[[UIAlertView alloc]initWithTitle:@"Oops" message:@"Please select the item(s) you want to set dates for first"
                                   delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
