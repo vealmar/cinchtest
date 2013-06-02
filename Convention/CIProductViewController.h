@@ -69,7 +69,7 @@
 
 @property (strong, nonatomic) IBOutlet UINavigationBar *navBar;
 @property (strong, nonatomic) IBOutlet UIView *vendorView;
-@property (strong, nonatomic) IBOutlet UITableView *vendorTable;
+@property (strong, nonatomic) IBOutlet UITableView *vendorTable;//SG: This is the Bulletins drop down.
 @property (strong, nonatomic) IBOutlet UIButton *dismissVendor;
 @property (strong, nonatomic) IBOutlet UILabel *customerLabel;
 @property (strong, nonatomic) IBOutlet UILabel *vendorLabel;

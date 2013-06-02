@@ -34,7 +34,7 @@
 
 @interface CIProductViewController (){
     //MBProgressHUD* loading;
-    NSInteger currentVendor;
+    NSInteger currentVendor; //SG: This is the logged in vendor's id.
 //    int currentVendId;
     int currentBulletin;
     NSArray* vendorsData;
@@ -157,15 +157,22 @@
 //        lblShipDate2.hidden = YES;
 //        lblShipDateCount.hidden = YES;
     }
-    
+    //SG: When the view is loaded for the first time (CIOderViewController#loadProductView) backFromCart is NO.
+    //When an order cart button is tapped, the view changes to the submit view.
+    //After the order has been submitted, this view reappears. At that time backFromCart is YES.
+    //If the user, submitted the order, finishOrder will also be YES.
     if (backFromCart && finishOrder) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self finishOrder:nil];
+            [self finishOrder:nil]; //SG: Displays the view that asks the user for Authorized By, Notes etc information in a modal window.
         });
         backFromCart = NO;
     }
-    
-    if (!backFromCart && _showCustomers){
+    //SG: backFromCart is set to YES not only when you return from the submit window, but also when you return from the calendar popup.
+    // I think this is because backFromCart is being used to decide if the view is being laded for the first time.
+    //If backFromCart is YES it means view is being loaded for the first time, so all the initialization stuff like getting the order's customer info,
+    // loading vendor's products etc. needs to be done.
+    // If backFromCart is YES, it means it is NOT being loaded for the first time, so all the initialization stuff has already been done and need not be repeated.
+    if (!backFromCart && _showCustomers){//SG: if view is being loaded for the first time and was asked to present customer selection list. This is usually when a new order is being created.
         
         NSString* url;
         if (self.vendorGroup && ![self.vendorGroup isKindOfClass:[NSNull class]]) {
@@ -176,11 +183,11 @@
             url = [NSString stringWithFormat:@"%@?%@=%@",kDBGETPRODUCTS,kAuthToken,self.authToken];
         }
     
-        [self loadProductsForUrl:url withLoadLabel:@"Loading Products..."];
+        [self loadProductsForUrl:url withLoadLabel:@"Loading Products..."]; //SG: will load the products and then present the customer selection list if _showCustomers is YES.
         
         navBar.topItem.title = self.title;
     } else if (!backFromCart && !_showCustomers) {
-        [self getCustomers]; //SG:gets all customers for this show and then looks for the customer of this order in the returned customers. Sets self.customer to the matching customer. Also updates self.multiStore. If the order has not been fetched, fetches order for the customer from coredata and updates self.order.
+        [self getCustomers]; //SG:gets all customers for this show and then looks for the customer of this order in the returned customers to set self.customer. Also updates self.multiStore. If the order has not been fetched, fetches order for the customer from coredata and updates self.order.
     } else {
         [self.products reloadData];
     }
@@ -303,6 +310,9 @@
     [operation start];
 }
 
+/**
+* SG: This is the Bulletins drop down.
+*/
 -(void)showVendorView {
     VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
     vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
@@ -1265,6 +1275,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     return YES;
 }
 
+//SG: This method loads the view that is displayed after you Submit an order. It prompts the user for information like Authorized By and Notes.
 - (IBAction)finishOrder:(id)sender {
     if ([self orderReadyForSubmission])
     {

@@ -38,8 +38,8 @@
 @property(nonatomic, strong) NSMutableArray *orderData;//SG: Orders filtered by the search field criteria.
 @property(nonatomic, strong) NSString *authToken;
 @property(nonatomic) BOOL showPrice;
-@property(nonatomic, strong) NSDictionary *vendorInfo;
-@property(nonatomic, strong) NSString *vendorGroup;
+@property(nonatomic, strong) NSDictionary *vendorInfo;//SG: NSDictionary containing vendor fields:id, name, auth_token, hideshprice, vendorgroup_id, isle, booth, dept and shows.
+@property(nonatomic, strong) NSString *vendorGroup;//SG: This is actually the logged in vendor's id. It is set by the CIViewController.m before this view is loaded.
 @property BOOL masterVender;
 @property int currentVender;
 @property(nonatomic, strong) NSDictionary *itemsDB; //SG:line items for the currently selected order.

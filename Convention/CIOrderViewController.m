@@ -429,11 +429,11 @@ SG: The argument 'detail' is the selected order.
 -(void) loadProductView:(BOOL)newOrder {
     productView = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
     productView.authToken = self.authToken;
-    productView.vendorGroup = self.vendorGroup;
-    productView.vendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];
+    productView.vendorGroup = self.vendorGroup; //SG: This is the logged in vendor's id and not their vendorgroup_id.
+    productView.vendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];//SG: This is the logged in vendor's vendorgroup_id.
     productView.delegate = self;
     productView.managedObjectContext = self.managedObjectContext;
-    productView.showCustomers = newOrder;
+    productView.showCustomers = newOrder;//SG: If this is a new order, the customer selection popup needs to be displayed.
     productView.allowPrinting = self.allowPrinting;
     productView.showShipDates = self.showShipDates;
     if (self.allowPrinting) {
