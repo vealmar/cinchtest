@@ -11,6 +11,9 @@
 
 @class Order, ShipDate;
 
+/**
+* Represents a line item of an order in core data. Orders present in core data are partial or pending orders.
+*/
 @interface Cart : NSManagedObject
 
 @property (nonatomic) BOOL adv;

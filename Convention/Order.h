@@ -24,7 +24,7 @@
 @property (nonatomic, retain) NSString * vendorGroupId;
 @property (nonatomic, retain) NSString * customer_id;
 @property (nonatomic, retain) NSString * custid;
-@property (nonatomic, retain) NSOrderedSet *carts;
+@property (nonatomic, retain) NSOrderedSet *carts; //SG: these are the line items.
 @end
 
 @interface Order (CoreDataGeneratedAccessors)

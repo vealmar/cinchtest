@@ -33,8 +33,8 @@
     BOOL isLoadingOrders;
     UITextField *activeField;
     PullToRefreshView *pull;
-    Order *orderToDelete;
-    NSIndexPath *rowToDelete;
+    Order *orderToDelete;//SG: when a partial order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the order entity from core data.
+    NSIndexPath *rowToDelete;//SG: When an order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the row to delete.
     CIProductViewController* productView;
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
@@ -228,7 +228,7 @@ bool showHud = true;
     if (masterVender) {
         url = [NSString stringWithFormat:@"%@?%@=%@",kDBMasterORDER,kAuthToken,self.authToken];
     } else {
-        url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
+        url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];//SG: vendor/shows/4/orders.json
     }
     DLog(@"Sending %@",url);
     
@@ -259,12 +259,18 @@ bool showHud = true;
     [operation start];
 }
 
+/*
+SG: Loads partial orders from Core Data.
+Partial orders get created when the app crashes while the user was in the middle of creating a new order. This order is not present on the server.
+This method reads values for each order in core data are and creates an NSDictionary object conforming to the format of the orders in self.orders.
+These partial orders then are put at the beginning of the self.orders array.
+*/
 -(void) loadPartialOrders {
     NSArray *partialOrders = [[CoreDataUtil sharedManager] fetchObjects:@"Order" sortField:@"created_at"];
     for (Order *order in partialOrders) {
         
         int orderId = order.orderId;
-        if (orderId == 0) {
+        if (orderId == 0) {  //SG: makes sure this is a partial order
             NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObject:@"" forKey:kAuthorizedBy];
             [dict setObject:[NSDate dateWithTimeIntervalSinceReferenceDate:order.created_at] forKey:kVendorCreatedAt];
             [dict setObject:kPartialOrder forKey:kOrderStatus];
@@ -291,9 +297,9 @@ bool showHud = true;
                 NSMutableDictionary* dict = [lineItem.editableQty objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
                 
                 double itemQty = 0;
-                if (err) {
+                if (err) { //SG: if the item quantity is not a json/hash like string.
                     itemQty = [lineItem.editableQty doubleValue];
-                }else{
+                }else{ //SG: if item quantity is a json/hash like string i.e. there is more than one quantity for this item. This will happen when the customer has multiple stores.
                     for (NSString* key in dict.allKeys) {
                         itemQty += [[dict objectForKey:key] doubleValue];
                     }
@@ -312,6 +318,9 @@ bool showHud = true;
 
 #pragma mark - Order detail display
 
+/*
+SG: The argument 'detail' is the selected order.
+*/
 -(void) displayOrderDetail:(NSDictionary *)detail {
     self.itemsDB = [NSDictionary dictionaryWithDictionary:detail];
     if (detail)
@@ -382,7 +391,7 @@ bool showHud = true;
             [dates enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
                 NSDate* date = (NSDate*)obj1;
                 if (![SDs containsObject:date]) {
-                    [SDs addObject:date];
+                    [SDs addObject:date];    //SG: All the ship dates for all the items in the selected order are added to SDs?
                 }
             }];
         }];
@@ -398,10 +407,10 @@ bool showHud = true;
             sdtext = [sdtext stringByAppendingString:[df stringFromDate:date]];
         }];
         
-        self.shipdates.text = sdtext;
+        self.shipdates.text = sdtext; //SG: all the ship dates for all the items in the order?
         sdtext = nil;
         
-        if (![[self.itemsDB objectForKey:kNotes] isKindOfClass:[NSNull class]]) {
+        if (![[self.itemsDB objectForKey:kNotes] isKindOfClass:[NSNull class]]) {  //SG: these are order's notes. itemsDB has all the key-value pairs from the order itself.
             self.notes.text = [self.itemsDB objectForKey:kNotes];
         }
         
@@ -712,10 +721,11 @@ bool showHud = true;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
-        NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
+        NSDictionary *selectedOrder = [self.orders objectAtIndex:(NSUInteger)indexPath.row];
         NSString *status = [[selectedOrder objectForKey:kOrderStatus] lowercaseString];
         CIOrderCell* cell = (CIOrderCell*)[self.sideTable cellForRowAtIndexPath:indexPath];
-        
+        //SG: if this is a completed order, display the order details in the editor view
+        //which appears to the right of the sideTable.
         if (![status isEqualToString:kPartialOrder] && ![status isEqualToString:@"pending"])
         {
             self.EditorView.hidden = NO;
@@ -723,7 +733,7 @@ bool showHud = true;
             self.orderContainer.hidden = NO;
             self.OrderDetailScroll.hidden = NO;
             
-            self.itemsAct.hidden = NO;
+            self.itemsAct.hidden = NO;//SG: activity indicator
             [self.itemsAct startAnimating];
             
             self.customer.text = @"";
@@ -749,7 +759,7 @@ bool showHud = true;
                 SCtotal.hidden = YES;
             }
             
-            [self displayOrderDetail:[self.orders objectAtIndex:indexPath.row]];
+            [self displayOrderDetail:[self.orders objectAtIndex:indexPath.row]];//SG: itemsDB is loaded inside of displayOrderDetail.
         } else {
             
             self.EditorView.hidden = YES;
@@ -777,12 +787,16 @@ bool showHud = true;
         return UITableViewCellEditingStyleNone;
 }
 
+/*
+SG: This method gets called when you swipe on an order in the order list and tap the delete button that appears.
+* */
 -(void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
         if (editingStyle == UITableViewCellEditingStyleDelete) {
             NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
             UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"DELETE" message:@"Are you sure you want to delete this order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
-
+            //SG:If it is a partial order, it must be present in core data (and will not be present at the server.) Partial orders don't have an order id.
+            //SG:So the order is fetched using customer id. There is logic that prevents users from creating more than one partial order for the same customer.
             if ([[[selectedOrder objectForKey:kOrderStatus] lowercaseString] isEqualToString:kPartialOrder]) {
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)",
                                           [selectedOrder objectForKey:@"customer_id"], [[selectedOrder objectForKey:@"customer"] objectForKey:@"custid"]];
@@ -790,16 +804,16 @@ bool showHud = true;
                 orderToDelete = (Order *)[[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:predicate];
                 if (orderToDelete)
                 {
-                    rowToDelete = indexPath;
+                    rowToDelete = indexPath;//SG: I think this should be set irrespective of whether the order is found in core data. Although it should never happen that a partial order is not present in core data.
 //                    NSString *msg = [NSString stringWithFormat:@"Are you sure you want to delete the order for customer: %@?", cell.Customer.text];
 //                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Pending Order Deletion" message:msg delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
-                    [alert setTag:kDeletePartialOrder];
+                    [alert setTag:kDeletePartialOrder];//SG: These tags are used by the alert's handler method to determine if the order is partial. If it is partial it only needs to be deleted from core data.
                     [alert show];
-                }
+                }//SG: Should add an else with an appropriate alert even though I don't see how it is possible that the else condition will ever happen.
             } else {
                 self.itemsDB = [NSDictionary dictionaryWithDictionary:[self.orders objectAtIndex:indexPath.row]];
                 rowToDelete = indexPath;
-                [alert setTag:kDeleteCompletedOrder];
+                [alert setTag:kDeleteCompletedOrder];//SG: These tags are used by the alert's handler method to determine if the order is partial. If it is partial it only needs to be deleted from core data. Otherwise it needs to be deleted from the server.
                 [alert show];
             }
         }
@@ -815,6 +829,7 @@ bool showHud = true;
 }
 
 #pragma mark - CIItemEditDelegate
+//SG: CIItemEditDelegate methods are called when the Shipping Date, Quantity, Price or Voucher Price of the line_items in the Editor view are modified by the user.
 
 -(void) UpdateTotal{
     if(self.itemsDB)
@@ -841,7 +856,11 @@ bool showHud = true;
                 for (NSString* key in dict.allKeys)
                     qty += [[dict objectForKey:key] doubleValue];
             }
-            
+
+            // SG: I think one is default for numOfShipDates rather than 0, because if an item does not have a ship date, it is because it is a voucher
+            // (we don't let users specify ship dates for vouchers). Voucher items need to be counted towards the total once.
+            //If we used 0 for numShipDates, sctotal = [[self.itemsVouchers objectAtIndex:i] doubleValue] * qty * numShipDates
+            // and ttotal += price * qty * numShipDates will evaluate to 0 which would not be right.
             double numShipDates = 1;
             if (((NSArray*)[self.itemsShipDates objectAtIndex:i]).count > 0)
                 numShipDates = ((NSArray*)[self.itemsShipDates objectAtIndex:i]).count;
@@ -853,10 +872,10 @@ bool showHud = true;
             sctotal += [[self.itemsVouchers objectAtIndex:i] doubleValue] * qty * numShipDates;
         }
         
-        self.grossTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal] numberStyle:NSNumberFormatterCurrencyStyle];
+        self.grossTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal] numberStyle:NSNumberFormatterCurrencyStyle];  //SG: displayed next to Total label
         self.discountTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:-discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
         self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal - discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
-        self.SCtotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];
+        self.SCtotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];//SG: displayed next to Voucher label. This must be the voucher total.
     }
 }
 

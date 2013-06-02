@@ -180,7 +180,7 @@
         
         navBar.topItem.title = self.title;
     } else if (!backFromCart && !_showCustomers) {
-        [self getCustomers];
+        [self getCustomers]; //SG:gets all customers for this show and then looks for the customer of this order in the returned customers. Sets self.customer to the matching customer. Also updates self.multiStore. If the order has not been fetched, fetches order for the customer from coredata and updates self.order.
     } else {
         [self.products reloadData];
     }

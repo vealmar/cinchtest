@@ -52,7 +52,7 @@
 @property (nonatomic) BOOL finishOrder;
 @property (nonatomic) BOOL multiStore;
 @property (nonatomic) int tOffset;
-@property (nonatomic) NSString* customerId;
+@property (nonatomic) NSString* customerId;//SG:custid property of the order's customer.
 @property (nonatomic) int printStationId;
 @property (nonatomic, strong) NSDictionary *availablePrinters;
 @property (nonatomic) BOOL allowPrinting;

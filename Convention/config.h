@@ -19,12 +19,12 @@
 
 //#define kBASEURL @"http://:3000"
 #define SHOW @"show"
-#define kShowID @"4"
+#define kShowID @"3"
 //#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
 
 #define kPigglyWiggly @"PigglyWiggly"
 #define kFarris @"Farris"
-#define kShowCorp kPigglyWiggly
+#define kShowCorp kFarris
 
 #define kShowShipDates kShowCorp == kPigglyWiggly // set to NO for the Farris show; need to handle this dynamically from backend service
 #define kAllowPrinting kShowCorp == kPigglyWiggly // ditto
