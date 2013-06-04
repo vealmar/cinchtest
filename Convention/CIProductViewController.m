@@ -1291,6 +1291,9 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     }
 }
 
+/**
+* SG: This method is called when user taps the cart button.
+*/
 - (IBAction)reviewCart:(id)sender {
     [self.hiddenTxt becomeFirstResponder];
     [self.hiddenTxt resignFirstResponder];
