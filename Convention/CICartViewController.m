@@ -87,6 +87,7 @@
     } else if ([kShowCorp isEqualToString: kFarris]) {
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = NO;
+        self.zeroVouchers.hidden = YES;
     } else {
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = YES;
