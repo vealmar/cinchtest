@@ -65,7 +65,7 @@
 @property(weak, nonatomic) IBOutlet UITextField *customer; //SG:Text field next to Customer label in the editor view. Displays billname and custid of currently selected order's customer.
 @property(weak, nonatomic) IBOutlet UITextField *authorizer;//SG:Text field next to Authorized label in the editor view. Displays authorized field value of currently selected order.
 @property(weak, nonatomic) IBOutlet UITableView *itemsTable;//SG:Table of currently selected order's line items.
-@property(weak, nonatomic) IBOutlet UITextView *notes; //SG:Displayed next to the Notes label in the editor view for Farris. Hidden for PW>
+@property(weak, nonatomic) IBOutlet UITextView *notes; //SG:Displayed next to the Notes label in the editor view for Farris. Hidden for PW.
 @property(weak, nonatomic) IBOutlet UILabel *SCtotal;//SG:Label next to Voucher in the editor view. Displays voucher total of the selected order.
 @property(weak, nonatomic) IBOutlet UILabel *total;//SG:This label is currently hidden by the Delete button. Screenshots of last Farris show show this label in use.
 @property(weak, nonatomic) IBOutlet UILabel *NoOrders;//SG:NoOrders and NoOrdersLabel reference the same label. One of these references can be removed. Displays static label "You have no orders" when there are no orders.

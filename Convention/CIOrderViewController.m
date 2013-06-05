@@ -186,7 +186,7 @@ bool showHud = true;
 
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];
     self.authorizer.font = [UIFont fontWithName:kFontName size:14.f];
-    self.notes.font = [UIFont fontWithName:kFontName size:14.f];
+//    self.notes.font = [UIFont fontWithName:kFontName size:14.f]; //SG: Commenting this out becasue kFontName points to BEBAS font which has only upper case letters. This prevents users from typing note in mixed case.
 
     self.itemsAct.hidden = YES;
 }
@@ -1140,8 +1140,9 @@ SG: This method gets called when you swipe on an order in the order list and tap
     DLog(@"array:%@", arr);
     NSString *custid = [self.itemsDB objectForKey:kOrderCustID];
     NSString *authorizedBy = [self.itemsDB objectForKey:kAuthorizedBy];
+    NSString *notesText = self.notes.text == nil || [self.notes.text isKindOfClass:[NSNull class]]?@"":self.notes.text;
 
-    NSDictionary *order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustID, authorizedBy, kAuthorizedBy, arr, kOrderItems, nil];
+    NSDictionary *order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
     NSDictionary *final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDEREDITS(currentOrderID), kAuthToken, self.authToken];
 
