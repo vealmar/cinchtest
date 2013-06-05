@@ -17,6 +17,7 @@
 		33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FD164D743E007B872A /* ErrorHandler.m */; };
 		33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FF164D743E007B872A /* SettingsManager.m */; };
 		33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F6164D740A007B872A /* GroupedObject.m */; };
+		35F527C6D5A71434688ABEC2 /* FarrisBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
 		6414A6F11496B9A10088586B /* bluebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6F01496B9A10088586B /* bluebutton.png */; };
 		6E07A38F1461D26E0043C22B /* CICustomerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E07A38D1461D26E0043C22B /* CICustomerInfoViewController.m */; };
@@ -183,6 +184,8 @@
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
 		C7F30D041676FE5000FA36F8 /* CICartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F30D021676FE5000FA36F8 /* CICartViewCell.m */; };
 		C7F30D051676FE5000FA36F8 /* CICartViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */; };
+		EB0C7FE3175FFA170038A3AD /* FarrisOrderDetail.png in Resources */ = {isa = PBXBuildFile; fileRef = EB0C7FE2175FFA170038A3AD /* FarrisOrderDetail.png */; };
+		EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5A0A9B175EF2C200246C24 /* FBLogin.png */; };
 		EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427054173FFB6E004A4A91 /* Zerobuttonin.png */; };
 		EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427055173FFB6E004A4A91 /* Zerobuttonout.png */; };
 /* End PBXBuildFile section */
@@ -204,6 +207,7 @@
 		335A4301164D7455007B872A /* StringManipulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StringManipulation.h; sourceTree = "<group>"; };
 		335A4302164D7455007B872A /* StringManipulation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StringManipulation.m; sourceTree = "<group>"; };
 		335A4306164D7529007B872A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBG.png; sourceTree = "<group>"; };
 		6414A6E91496AE960088586B /* orangebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangebutton.png; sourceTree = "<group>"; };
 		6414A6F01496B9A10088586B /* bluebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluebutton.png; sourceTree = "<group>"; };
 		6E07A38C1461D26E0043C22B /* CICustomerInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICustomerInfoViewController.h; sourceTree = "<group>"; };
@@ -445,6 +449,8 @@
 		C7F30D011676FE5000FA36F8 /* CICartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICartViewCell.h; sourceTree = "<group>"; };
 		C7F30D021676FE5000FA36F8 /* CICartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICartViewCell.m; sourceTree = "<group>"; };
 		C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CICartViewCell.xib; sourceTree = "<group>"; };
+		EB0C7FE2175FFA170038A3AD /* FarrisOrderDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisOrderDetail.png; sourceTree = "<group>"; };
+		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
 		EC427054173FFB6E004A4A91 /* Zerobuttonin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonin.png; sourceTree = "<group>"; };
 		EC427055173FFB6E004A4A91 /* Zerobuttonout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonout.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -495,6 +501,32 @@
 				C76E63FD173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m */,
 			);
 			name = Categories;
+			sourceTree = "<group>";
+		};
+		35F526BE4FE5B569FF950483 /* Farris */ = {
+			isa = PBXGroup;
+			children = (
+				35F52AF399A3ACCF0FB54CFF /* Slices */,
+			);
+			path = Farris;
+			sourceTree = "<group>";
+		};
+		35F529F346D1B44928BDE35D /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				EB0C7FE2175FFA170038A3AD /* FarrisOrderDetail.png */,
+				35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		35F52AF399A3ACCF0FB54CFF /* Slices */ = {
+			isa = PBXGroup;
+			children = (
+				EB5A0A98175EF10100246C24 /* Login */,
+				35F529F346D1B44928BDE35D /* Home */,
+			);
+			path = Slices;
 			sourceTree = "<group>";
 		};
 		6E118556145F2F2100568ED1 = {
@@ -918,6 +950,7 @@
 				C7B8C1D9172DF5D50087DEB5 /* PWHome.png */,
 				C7B8C1DA172DF5D50087DEB5 /* PWLogin.png */,
 				C7B8C1DB172DF5D50087DEB5 /* PWOrder1.png */,
+				35F526BE4FE5B569FF950483 /* Farris */,
 			);
 			name = Redesign_Images;
 			sourceTree = "<group>";
@@ -1029,6 +1062,14 @@
 				C7EB25E71665CA8D00B1CD4F /* Reachability.m */,
 			);
 			name = Reachability;
+			sourceTree = "<group>";
+		};
+		EB5A0A98175EF10100246C24 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				EB5A0A9B175EF2C200246C24 /* FBLogin.png */,
+			);
+			name = Login;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1185,6 +1226,9 @@
 				C75EF9A31730D1A90086EC52 /* orderBG.png in Resources */,
 				EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */,
 				EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */,
+				35F527C6D5A71434688ABEC2 /* FarrisBG.png in Resources */,
+				EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */,
+				EB0C7FE3175FFA170038A3AD /* FarrisOrderDetail.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1370,7 +1414,7 @@
 		6E118583145F2F2200568ED1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Convention/Convention-Prefix.pch";
@@ -1379,6 +1423,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_CFLAGS = "-DDEBUG=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
@@ -1388,7 +1433,7 @@
 		6E118584145F2F2200568ED1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Convention Innovation, LLC";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Convention/Convention-Prefix.pch";

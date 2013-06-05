@@ -124,6 +124,8 @@ bool showHud = true;
         homeBg.image = [UIImage imageNamed:@"FarrisBG.png"];
         orderDetailBg.image = [UIImage imageNamed:@"FarrisOrderDetail.png"];
         self.shipdates.hidden = YES;
+        self.SCtotal.hidden = YES;
+        self.grossTotal.hidden = YES;
     }else{//SG: PW
         homeBg.image = [UIImage imageNamed:@"homeBG.png"];
         orderDetailBg.image = [UIImage imageNamed:@"Detail2.png"];
