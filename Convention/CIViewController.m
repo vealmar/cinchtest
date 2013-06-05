@@ -18,6 +18,7 @@
 
 @implementation CIViewController {
     CGRect originalBounds;
+    __weak IBOutlet UIImageView *loginBg;
 }
 @synthesize email;
 @synthesize password;
@@ -96,6 +97,11 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    if ([kShowCorp isEqualToString:kFarris]) {
+        loginBg.image = [UIImage imageNamed:@"FBLogin.png"];
+    }else{//SG: PW
+        loginBg.image = [UIImage imageNamed:@"loginBG.png"];
+    }
     self.email.font = [UIFont fontWithName:kFontName size:14.f];
     self.password.font = [UIFont fontWithName:kFontName size:14.f];
     self.lblVersion.font = [UIFont fontWithName:kFontName size:14.f];
