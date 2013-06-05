@@ -1107,8 +1107,11 @@
         NSString *_shipFlag = [self.customer objectForKey:kShipFlag];
         if (_shipFlag == nil)
             _shipFlag = @"0";
+        NSString *shipNotes = [self.customer objectForKey:kShipNotes];
+        shipNotes = (shipNotes == nil || [shipNotes isKindOfClass:[NSNull class]])?@"":shipNotes;
+
         newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:@"id"], kOrderCustID,
-             _notes, kNotes, [self.customer objectForKey:kAuthorizedBy], kAuthorizedBy,
+             _notes, kNotes, shipNotes, kShipNotes, [self.customer objectForKey:kAuthorizedBy], kAuthorizedBy,
              _shipFlag, kShipFlag, orderStatus, kOrderStatus,
              arr, kOrderItems, nil];
     } else {
