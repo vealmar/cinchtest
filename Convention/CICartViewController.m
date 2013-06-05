@@ -20,6 +20,7 @@
 
 @interface CICartViewController (){
     NSMutableArray *allCartItems;
+    __weak IBOutlet UILabel *customerInfoLabel;
 }
 //-(void) getCustomers;
 
@@ -92,7 +93,10 @@
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = YES;
     }
-    
+    customerInfoLabel.text = customer != nil &&
+            customer[kBillName] != nil &&
+            ![customer[kBillName]isKindOfClass:[NSNull class]]? customer[kBillName] : @"";
+
     allCartItems = [NSMutableArray arrayWithCapacity:[self.productData count] + [self.discountItems count]];
     
     double grossTotal = 0.0;

@@ -1317,6 +1317,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     cart.showShipDates = self.showShipDates;
     cart.modalPresentationStyle = UIModalPresentationFullScreen;
     //    cart.modalTransitionStyle = UIModalTransitionStylePartialCurl;
+    cart.customer = self.customer;
     [self presentViewController:cart  animated:YES completion:nil];
 }
 
