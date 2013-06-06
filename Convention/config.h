@@ -19,7 +19,7 @@
 
 //#define kBASEURL @"http://:3000"
 #define SHOW @"show"
-#define kShowID @"3"
+#define kShowID @"7"
 //#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
 
 #define kPigglyWiggly @"PigglyWiggly"

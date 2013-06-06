@@ -62,8 +62,8 @@
 @property(weak, nonatomic) IBOutlet UIView *EditorView; //SG:The view displayed to right of the side table.
 @property(weak, nonatomic) IBOutlet UIToolbar *toolWithSave;
 @property(weak, nonatomic) IBOutlet UIToolbar *toolPlain;
-@property(weak, nonatomic) IBOutlet UITextField *customer; //SG:Text field next to Customer label in the editor view. Displays billname and custid of currently selected order's customer.
-@property(weak, nonatomic) IBOutlet UITextField *authorizer;//SG:Text field next to Authorized label in the editor view. Displays authorized field value of currently selected order.
+@property(weak, nonatomic) IBOutlet UITextView *customer; //SG:Text field next to Customer label in the editor view. Displays billname and custid of currently selected order's customer.
+@property(weak, nonatomic) IBOutlet UITextView *authorizer;//SG:Text field next to Authorized label in the editor view. Displays authorized field value of currently selected order.
 @property(weak, nonatomic) IBOutlet UITableView *itemsTable;//SG:Table of currently selected order's line items.
 @property(weak, nonatomic) IBOutlet UITextView *notes; //SG:Displayed next to the Notes label in the editor view for Farris. Hidden for PW.
 @property(weak, nonatomic) IBOutlet UILabel *SCtotal;//SG:Label next to Voucher in the editor view. Displays voucher total of the selected order.
@@ -84,8 +84,8 @@
 @property(weak, nonatomic) IBOutlet UILabel *lblTotalPrice;//SG:Don't see this in ui. Probably was replaced by one of the labels present in the background image after the ui was redone.
 @property(weak, nonatomic) IBOutlet UIButton *printButton;//SG:Print button
 @property(weak, nonatomic) IBOutlet UILabel *headerVoucherLbl;//SG:Don't see this in ui. Probably was replaced by one of the labels present in the background image after the ui was redone.
-@property(weak, nonatomic) IBOutlet UILabel *grossTotal; //SG: label next to Total in the editor view. Displays gross total.
-@property(weak, nonatomic) IBOutlet UILabel *discountTotal;//SG: Label currently being hidden by the Save button. Displays discount total.
+@property(weak, nonatomic) IBOutlet UILabel *grossTotal; //SG: label next to Total in the editor view for PW. Displays gross total.
+@property(weak, nonatomic) IBOutlet UILabel *discountTotal;//SG:Displays discount total.
 
 - (IBAction)AddNewOrder:(id)sender;
 

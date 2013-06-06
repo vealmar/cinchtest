@@ -42,6 +42,11 @@
     NSString *currentPrinter;
     __weak IBOutlet UIImageView *homeBg;
     __weak IBOutlet UIImageView *orderDetailBg;
+    __weak IBOutlet UILabel *sdLabel;
+    __weak IBOutlet UILabel *sqLabel;
+    __weak IBOutlet UILabel *itemTotalLabel;
+    __weak IBOutlet UILabel *voucherLabel;
+    __weak IBOutlet UILabel *quantityLabel;
 }
 @end
 
@@ -122,14 +127,19 @@ bool showHud = true;
     [super viewDidLoad];
     if ([kShowCorp isEqualToString:kFarris]) {
         homeBg.image = [UIImage imageNamed:@"FarrisBG.png"];
-        orderDetailBg.image = [UIImage imageNamed:@"FarrisOrderDetail.png"];
         self.shipdates.hidden = YES;
         self.SCtotal.hidden = YES;
         self.grossTotal.hidden = YES;
+        sdLabel.hidden = YES;
+        sqLabel.hidden = YES;
+        voucherLabel.hidden = YES;
     }else{//SG: PW
         homeBg.image = [UIImage imageNamed:@"homeBG.png"];
         orderDetailBg.image = [UIImage imageNamed:@"Detail2.png"];
         self.notes.hidden = YES;
+        itemTotalLabel.hidden = YES;
+        quantityLabel.hidden = YES;
+        
     }
     // Do any additional setup after loading the view from its nib.
     //self.saveBtn.hidden = YES;
@@ -580,12 +590,13 @@ SG: The argument 'detail' is the selected order.
 
             NSDictionary *data = [[self.itemsDB objectForKey:kItems] objectAtIndex:[indexPath row]];
 
+            BOOL isDiscount = [[data objectForKey:@"category"] isEqualToString:@"discount"];
             if ([data objectForKey:@"product"]) {
-                NSString *invtid = [[data objectForKey:@"product"] objectForKey:@"invtid"];
+                NSString *invtid = isDiscount?@"Discount":[[data objectForKey:@"product"] objectForKey:@"invtid"];
                 cell.invtid.text = invtid;
             }
             if ([data objectForKey:@"desc"]) {
-                cell.desc.text = [NSString stringWithFormat:@"%@", [data objectForKey:@"desc"]];
+                cell.desc.text = [data objectForKey:@"desc"];
             }
 
             if ([kShowCorp isEqualToString:kPigglyWiggly]) {
@@ -626,7 +637,6 @@ SG: The argument 'detail' is the selected order.
                 [cell.qtyBtn setHidden:YES];
             }
 
-            BOOL isDiscount = [[data objectForKey:@"category"] isEqualToString:@"discount"];
             if (isDiscount) {
                 cell.qty.hidden = YES;
                 cell.qtyLbl.hidden = NO;
@@ -874,7 +884,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
             if ([[self.itemsDiscounts objectAtIndex:i] intValue] == 0)
                 ttotal += price * qty * numShipDates;
             else
-                discountTotal += fabs(price);
+                discountTotal += fabs(price * qty);
             sctotal += [[self.itemsVouchers objectAtIndex:i] doubleValue] * qty * numShipDates;
         }
 

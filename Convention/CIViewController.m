@@ -189,8 +189,7 @@
                  
                  NSDictionary *shows = [JSON objectForKey:@"shows"];
                  if (shows != nil) {
-                     NSString *showFeatures = [shows objectForKey:@"features"];
-                     NSDictionary *features = [showFeatures objectFromJSONString];
+                     NSDictionary *features = [shows objectForKey:@"features"];
                      masterViewController.allowPrinting = [[features objectForKey:@"printing"] intValue];
                      masterViewController.showShipDates = [[features objectForKey:@"shipdates"] intValue];
                  }
