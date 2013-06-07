@@ -168,7 +168,7 @@
 								<string key="NSFrame">{{203, 1}, {474, 53}}</string>
 								<reference key="NSSuperview" ref="596173366"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
+								<reference key="NSNextKeyView" ref="536287378"/>
 								<string key="NSReuseIdentifierKey">_NS:640</string>
 								<reference key="IBUIBackgroundColor" ref="645596977"/>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -267,7 +267,7 @@
 							<object class="IBUITableView" id="304997822">
 								<reference key="NSNextResponder" ref="596173366"/>
 								<int key="NSvFlags">274</int>
-								<string key="NSFrame">{{9, 262}, {668, 292}}</string>
+								<string key="NSFrame">{{9, 262}, {668, 322}}</string>
 								<reference key="NSSuperview" ref="596173366"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="421239302"/>
@@ -366,7 +366,7 @@
 								<string key="NSFrame">{{22, 587}, {106, 34}}</string>
 								<reference key="NSSuperview" ref="596173366"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="480468549"/>
+								<reference key="NSNextKeyView" ref="715701490"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -704,7 +704,7 @@
 								<reference key="IBUIFont" ref="506415079"/>
 								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
-							<object class="IBUILabel" id="480468549">
+							<object class="IBUILabel" id="715701490">
 								<reference key="NSNextResponder" ref="596173366"/>
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{22, 613}, {106, 24}}</string>
@@ -824,7 +824,7 @@
 							<object class="IBUIView" id="797388742">
 								<reference key="NSNextResponder" ref="596173366"/>
 								<int key="NSvFlags">292</int>
-								<string key="NSFrame">{{0, 262}, {10, 292}}</string>
+								<string key="NSFrame">{{0, 262}, {10, 322}}</string>
 								<reference key="NSSuperview" ref="596173366"/>
 								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="304997822"/>
@@ -1525,7 +1525,7 @@
 							<reference ref="21318295"/>
 							<reference ref="228775755"/>
 							<reference ref="280450364"/>
-							<reference ref="480468549"/>
+							<reference ref="715701490"/>
 							<reference ref="373244224"/>
 						</array>
 						<reference key="parent" ref="362130751"/>
@@ -1733,7 +1733,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">218</int>
-						<reference key="object" ref="480468549"/>
+						<reference key="object" ref="715701490"/>
 						<reference key="parent" ref="596173366"/>
 					</object>
 				</array>
