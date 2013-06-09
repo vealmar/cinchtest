@@ -11,7 +11,7 @@
 		//self.frame =frame;
 		self.contentHorizontalAlignment  = UIControlContentHorizontalAlignmentLeft;
 		
-		[self setImage:[UIImage imageNamed:@"checkbox_not_ticked.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"checkbox_flat_not_ticked.png"] forState:UIControlStateNormal];
 		[self addTarget:self action:@selector(checkBoxClicked) forControlEvents:UIControlEventTouchUpInside];
 	}
     return self;
@@ -25,7 +25,7 @@
 		//self.frame =frame;
 		self.contentHorizontalAlignment  = UIControlContentHorizontalAlignmentLeft;
 
-		[self setImage:[UIImage imageNamed:@"checkbox_not_ticked.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"checkbox_flat_not_ticked.png"] forState:UIControlStateNormal];
 		[self addTarget:self action:@selector(checkBoxClicked) forControlEvents:UIControlEventTouchUpInside];
 	}
     return self;
@@ -34,11 +34,11 @@
 -(IBAction) checkBoxClicked {
 	if(self.isChecked ==NO){
 		self.isChecked =YES;
-		[self setImage:[UIImage imageNamed:@"checkbox_ticked.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"checkbox_flat_ticked.png"] forState:UIControlStateNormal];
 		
 	}else{
 		self.isChecked =NO;
-		[self setImage:[UIImage imageNamed:@"checkbox_not_ticked.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"checkbox_flat_not_ticked.png"] forState:UIControlStateNormal];
 
 	}
 
@@ -51,9 +51,9 @@
 	self.isChecked = checked;
 	
 	if (checked)  
-		[self setImage:[UIImage imageNamed:@"checkbox_ticked.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"checkbox_flat_ticked.png"] forState:UIControlStateNormal];
 	else
-		[self setImage:[UIImage imageNamed:@"checkbox_not_ticked.png"] forState:UIControlStateNormal];
+		[self setImage:[UIImage imageNamed:@"checkbox_flat_not_ticked.png"] forState:UIControlStateNormal];
 
 		
 	
