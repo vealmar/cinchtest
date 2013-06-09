@@ -76,7 +76,7 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC41AA</bytes>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedImage" id="347650389">
+						<object class="NSCustomResource" key="IBUISelectedImage" id="786978204">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">continuein.png</string>
 						</object>
@@ -139,7 +139,7 @@
 						<string key="NSFrame">{{34, 559}, {46, 38}}</string>
 						<reference key="NSSuperview" ref="191373211"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="59637543"/>
+						<reference key="NSNextKeyView" ref="159706949"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -200,7 +200,7 @@
 							<int key="NSfFlags">16</int>
 						</object>
 					</object>
-					<object class="IBUIButton" id="59637543">
+					<object class="IBUIButton" id="159706949">
 						<reference key="NSNextResponder" ref="191373211"/>
 						<int key="NSvFlags">266</int>
 						<string key="NSFrame">{{104, 551}, {162, 53}}</string>
@@ -218,12 +218,12 @@
 						<reference key="IBUINormalTitleShadowColor" ref="791879471"/>
 						<object class="NSCustomResource" key="IBUIHighlightedImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">cancelin.png</string>
+							<string key="NSResourceName">customer-cancelin.png</string>
 						</object>
-						<reference key="IBUISelectedImage" ref="347650389"/>
+						<reference key="IBUISelectedImage" ref="786978204"/>
 						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">cancelout.png</string>
+							<string key="NSResourceName">customer-cancelout.png</string>
 						</object>
 						<reference key="IBUIFontDescription" ref="325922671"/>
 						<reference key="IBUIFont" ref="14053752"/>
@@ -352,7 +352,7 @@
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchEventConnection" key="connection">
 						<string key="label">back:</string>
-						<reference key="source" ref="59637543"/>
+						<reference key="source" ref="159706949"/>
 						<reference key="destination" ref="372490531"/>
 						<int key="IBEventType">7</int>
 					</object>
@@ -376,7 +376,7 @@
 							<reference ref="93632812"/>
 							<reference ref="470264522"/>
 							<reference ref="650377412"/>
-							<reference ref="59637543"/>
+							<reference ref="159706949"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -432,7 +432,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">100</int>
-						<reference key="object" ref="59637543"/>
+						<reference key="object" ref="159706949"/>
 						<reference key="parent" ref="191373211"/>
 					</object>
 				</array>
@@ -444,7 +444,7 @@
 				<string key="-2.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="1.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="100.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="1" key="100.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="0.0" key="100.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="34.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="2" key="8.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
@@ -467,7 +467,6 @@
 					<string key="superclassName">UIViewController</string>
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="back:">id</string>
-						<string key="cancel">id</string>
 						<string key="handleTap:">UITapGestureRecognizer</string>
 						<string key="refresh:">id</string>
 						<string key="submit:">id</string>
@@ -475,10 +474,6 @@
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
 						<object class="IBActionInfo" key="back:">
 							<string key="name">back:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="cancel">
-							<string key="name">cancel</string>
 							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="handleTap:">
@@ -530,10 +525,10 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="cancelin.png">{162, 53}</string>
-			<string key="cancelout.png">{162, 53}</string>
 			<string key="continuein.png">{298, 48}</string>
 			<string key="continueout.png">{307, 53}</string>
+			<string key="customer-cancelin.png">{298, 48}</string>
+			<string key="customer-cancelout.png">{307, 53}</string>
 			<string key="customerBG.png">{925, 614}</string>
 			<string key="refresh.png">{46, 38}</string>
 		</dictionary>

@@ -140,7 +140,7 @@
 					<object class="IBUIButton" id="454724762">
 						<reference key="NSNextResponder" ref="990872483"/>
 						<int key="NSvFlags">269</int>
-						<string key="NSFrame">{{227, 544}, {255, 56}}</string>
+						<string key="NSFrame">{{225, 544}, {260, 56}}</string>
 						<reference key="NSSuperview" ref="990872483"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView"/>
@@ -158,7 +158,7 @@
 							<int key="NSColorSpace">3</int>
 							<bytes key="NSWhite">MC41AA</bytes>
 						</object>
-						<object class="NSCustomResource" key="IBUISelectedImage" id="564079741">
+						<object class="NSCustomResource" key="IBUISelectedImage">
 							<string key="NSClassName">NSImage</string>
 							<string key="NSResourceName">submitorderin.png</string>
 						</object>
@@ -327,10 +327,13 @@
 							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
 						</object>
 						<reference key="IBUINormalTitleShadowColor" ref="372485388"/>
-						<reference key="IBUISelectedImage" ref="564079741"/>
+						<object class="NSCustomResource" key="IBUIHighlightedImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">cart-cancelin.png</string>
+						</object>
 						<object class="NSCustomResource" key="IBUINormalImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">cancelout.png</string>
+							<string key="NSResourceName">cart-cancelout.png</string>
 						</object>
 						<reference key="IBUIFontDescription" ref="749632951"/>
 						<reference key="IBUIFont" ref="198645349"/>
@@ -564,7 +567,7 @@
 				<string key="47.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="48.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="54.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<real value="0.0" key="54.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
+				<real value="3" key="54.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
@@ -657,7 +660,8 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="cancelout.png">{162, 53}</string>
+			<string key="cart-cancelin.png">{162, 53}</string>
+			<string key="cart-cancelout.png">{162, 53}</string>
 			<string key="finalsubmit.png">{929, 618}</string>
 			<string key="submitorderin.png">{298, 48}</string>
 			<string key="submitorderout.png">{307, 53}</string>
