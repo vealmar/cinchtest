@@ -40,6 +40,7 @@
     CIProductViewController *productView;
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
+    NSIndexPath *selectedItemRowIndexPath;
     __weak IBOutlet UIImageView *homeBg;
     __weak IBOutlet UIImageView *orderDetailBg;
     __weak IBOutlet UILabel *sdLabel;
@@ -791,7 +792,7 @@ SG: The argument 'detail' is the selected order.
         }
     }
     else if (tableView == self.itemsTable) {
-
+        selectedItemRowIndexPath = indexPath;
     }
 }
 
@@ -1014,26 +1015,17 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 - (void)setViewMovedUpDouble:(BOOL)movedUp {
     [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-
-    CGRect rect = self.OrderDetailScroll.frame;
-    if (movedUp) {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
-        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += kOFFSET_FOR_KEYBOARD * 3;//was -
-        // rect.size.height += kOFFSET_FOR_KEYBOARD;
-    }
-    else {
-        // revert back to original position relative to the top of the OrderDetailScroll.
-        rect.origin.y = 0;
-    }
-    self.OrderDetailScroll.contentOffset = CGPointMake(0, rect.origin.y);//rect.origin;
-
+    [UIView setAnimationDuration:0.5];
+    self.itemsTable.contentOffset = movedUp && selectedItemRowIndexPath ?CGPointMake(0, [self.itemsTable rowHeight] * selectedItemRowIndexPath.row):CGPointMake(0,0);
     [UIView commitAnimations];
 }
 
 - (void)setActiveField:(UITextField *)textField {
     activeField = textField;
+}
+
+-(void) setSelectedRow:(NSUInteger)index{
+    selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
 }
 
 #pragma mark - CIProductViewDelegate

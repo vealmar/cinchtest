@@ -47,6 +47,7 @@
     BOOL isShowingBulletins;
     BOOL customerHasBeenSelected;
     NSArray *navItems;
+    NSIndexPath *selectedItemRowIndexPath;
 }
 
 -(void) getCustomers;
@@ -191,7 +192,13 @@
     } else {
         [self.products reloadData];
     }
-    
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow)
+                                                 name:UIKeyboardWillShowNotification object:self.view.window];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
+                                                 name:UIKeyboardDidHideNotification object:self.view.window];
+
 	self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
     [self.vendorTable reloadData];
 }
@@ -2233,4 +2240,24 @@ BOOL itemIsVoucher(NSDictionary *dict) {
 -(void)reload{
     [self.products reloadData];
 }
+
+-(void)setSelectedRow:(NSUInteger)index {
+    selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
+}
+
+- (void)keyboardWillShow{
+
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    self.products.contentOffset = selectedItemRowIndexPath ?CGPointMake(0, [self.products rowHeight] * selectedItemRowIndexPath.row):CGPointMake(0,0);
+    [UIView commitAnimations];
+}
+
+- (void)keyboardDidHide{
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    self.products.contentOffset = CGPointMake(0,0);
+    [UIView commitAnimations];
+}
+
 @end

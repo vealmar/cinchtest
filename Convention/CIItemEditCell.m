@@ -123,9 +123,12 @@
 
 -(void)textFieldDidBeginEditing:(UITextField *)textField
 {
-    if (self.delegate)
+    if (self.delegate) {
         [self.delegate setActiveField:textField];
-    
+        [self.delegate setSelectedRow:self.tag];
+    }
+
+
 //    if (self.delegate)
 //        [self.delegate setViewMovedUpDouble:YES];
 }

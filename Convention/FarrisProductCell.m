@@ -53,7 +53,7 @@
     originalCellValue = [NSString stringWithString:textField.text];
     UITableView * tableView = (UITableView *)self.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
-    [tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    [self.delegate setSelectedRow:indexPath.row];
     return YES;
 }
 

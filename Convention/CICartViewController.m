@@ -20,6 +20,7 @@
 
 @interface CICartViewController (){
     NSMutableArray *allCartItems;
+    NSIndexPath *selectedItemRowIndexPath;
     __weak IBOutlet UILabel *customerInfoLabel;
     __weak IBOutlet UIImageView *logo;
 }
@@ -670,4 +671,25 @@
 -(NSDictionary*)getCustomerInfo{
     return [self.customer copy];
 }
+
+-(void)setSelectedRow:(NSUInteger)index {
+    selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
+}
+
+- (void)keyboardWillShow{
+
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    self.products.contentOffset = selectedItemRowIndexPath ?CGPointMake(0, [self.products rowHeight] * selectedItemRowIndexPath.row):CGPointMake(0,0);
+    [UIView commitAnimations];
+}
+
+- (void)keyboardDidHide{
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:0.5];
+    self.products.contentOffset = CGPointMake(0,0);
+    [UIView commitAnimations];
+}
+
+
 @end

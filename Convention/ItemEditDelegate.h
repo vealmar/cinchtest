@@ -18,5 +18,6 @@
 -(void)QtyTouchForIndex:(int)idx;
 -(void)ShipDatesTouchForIndex:(int) idx;
 -(void)setActiveField:(UITextField *)textField;
+-(void) setSelectedRow:(NSUInteger)index;
 
 @end
