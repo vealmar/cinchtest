@@ -125,7 +125,8 @@
     for (NSString *key in keys) {
         [allCartItems addObject:[self.discountItems objectForKey:key]];
         double price = [[[self.discountItems objectForKey:key] objectForKey:@"price"] doubleValue];
-        discountTotal += price;
+        double qty = [[[self.discountItems objectForKey:key] objectForKey:@"quantity"] doubleValue];
+        discountTotal += price*qty;
     }
     
     NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
@@ -342,10 +343,11 @@
         UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
         
         
-        cell.itemNumber.text = [dict objectForKey:@"invtid"];
+        cell.itemNumber.text = isDiscount?@"Discount":[dict objectForKey:@"invtid"];
         cell.descr1.text = [dict objectForKey:kProductDescr];
         if (isDiscount) {
             cell.descr1.font = discountFont;
+            cell.descr1.text = [dict objectForKey:@"desc"];
         }
         cell.descr2.text = [dict objectForKey:kProductDescr2];
         cell.min.text = [[dict objectForKey:@"min"] stringValue];
