@@ -19,7 +19,8 @@
 
 -(void) setBackFromCart:(BOOL)yes;
 -(void) setFinishOrder:(BOOL)yes;
-
+-(void)QtyChange:(double)qty forIndex:(int)idx;
+-(void)reload;
 - (IBAction)finishOrder:(id)sender;
 
 @end

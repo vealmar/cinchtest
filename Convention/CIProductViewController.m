@@ -1664,6 +1664,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     [self updateCellColorForId:idx];
     
     self.totalCost.textColor = [UIColor redColor];
+
     
     DLog(@"qty change to %@ for index %@",[NSNumber numberWithDouble:qty],[NSNumber numberWithInt:idx]);
 }
@@ -2226,5 +2227,10 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     if ([popoverController isPopoverVisible])
         [popoverController dismissPopoverAnimated:YES];
     [self loadProducts];
+}
+
+#pragma CICartViewControlelr Delegate
+-(void)reload{
+    [self.products reloadData];
 }
 @end

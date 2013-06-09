@@ -576,7 +576,10 @@
         [self.productCart removeObjectForKey:key];
         [self.products reloadData];
     }
-    
+    self.grossTotal.textColor = [UIColor redColor];
+    self.discountTotal.textColor = [UIColor redColor];
+    self.netTotal.textColor = [UIColor redColor];
+    [self.delegate QtyChange:qty forIndex:idx];
     [dict setObject:[NSNumber numberWithDouble:qty] forKey:kEditableQty];
     DLog(@"qty change to %@ for index %@",[NSNumber numberWithDouble:qty],key);
 }
