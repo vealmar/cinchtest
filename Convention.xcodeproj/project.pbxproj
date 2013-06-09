@@ -188,8 +188,8 @@
 		EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5A0A9B175EF2C200246C24 /* FBLogin.png */; };
 		EB652B23176022E400287961 /* Futura Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB652B22176022E400287961 /* Futura Medium.ttf */; };
 		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
-		EBD32A071764D90800FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A051764D90800FD28E4 /* checkbox_flat_not_ticked.png */; };
-		EBD32A0A1764DBC300FD28E4 /* checkbox_flat_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A091764DBC300FD28E4 /* checkbox_flat_ticked.png */; };
+		EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */; };
+		EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */; };
 		EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427054173FFB6E004A4A91 /* Zerobuttonin.png */; };
 		EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427055173FFB6E004A4A91 /* Zerobuttonout.png */; };
 /* End PBXBuildFile section */
@@ -457,8 +457,8 @@
 		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
 		EB652B22176022E400287961 /* Futura Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Futura Medium.ttf"; sourceTree = "<group>"; };
 		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
-		EBD32A051764D90800FD28E4 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
-		EBD32A091764DBC300FD28E4 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
+		EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
+		EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
 		EC427054173FFB6E004A4A91 /* Zerobuttonin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonin.png; sourceTree = "<group>"; };
 		EC427055173FFB6E004A4A91 /* Zerobuttonout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonout.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -597,8 +597,8 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				EBD32A091764DBC300FD28E4 /* checkbox_flat_ticked.png */,
-				EBD32A051764D90800FD28E4 /* checkbox_flat_not_ticked.png */,
+				EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */,
+				EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */,
 				EB652B21176022CF00287961 /* Fonts */,
 				C74098CE171CE4D50047A1DD /* Redesign_Images */,
 				C78B269B16ADC55B005AD6AB /* total_button.png */,
@@ -1259,8 +1259,8 @@
 				EB0C7FE91760194B0038A3AD /* FarrisOrderDetail.png in Resources */,
 				EB652B23176022E400287961 /* Futura Medium.ttf in Resources */,
 				EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */,
-				EBD32A071764D90800FD28E4 /* checkbox_flat_not_ticked.png in Resources */,
-				EBD32A0A1764DBC300FD28E4 /* checkbox_flat_ticked.png in Resources */,
+				EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */,
+				EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
