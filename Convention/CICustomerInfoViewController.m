@@ -311,7 +311,7 @@
 
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     
-    NSString *search = [textField.text stringByAppendingString:string];
+    NSString *search = [[textField.text stringByAppendingString:string] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];//SG: if the character is newline, remove it. there was an issue where tapping return in the empty search box caused the logic below to search for customer with a new line in their id. When none was found, the list would display no customers. This is confusing to the users because they think of return as the submit action and not as a search term.
     if ([string isEqualToString:@""]) {
         search = [search substringToIndex:range.location];
     }
@@ -337,6 +337,10 @@
                 [self.filteredtableData addObject:dict];
             }
         }
+    }
+    if([self.filteredtableData count] == 0){
+        //nothing matched the search, load all customers.
+
     }
     [self.custTable reloadData];
     return YES;

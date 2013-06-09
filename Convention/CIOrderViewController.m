@@ -129,7 +129,6 @@ bool showHud = true;
         homeBg.image = [UIImage imageNamed:@"FarrisBG.png"];
         self.shipdates.hidden = YES;
         self.SCtotal.hidden = YES;
-        self.grossTotal.hidden = YES;
         sdLabel.hidden = YES;
         sqLabel.hidden = YES;
         voucherLabel.hidden = YES;

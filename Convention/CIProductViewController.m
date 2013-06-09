@@ -605,7 +605,7 @@
         }else{
             [selectedIdx addObject:[NSNumber numberWithInteger:[indexPath row]]];
             //            [[tableView cellForRowAtIndexPath:indexPath] setSelected:YES];
-            if (![[dict objectForKey:@"invtid"] isEqualToString:@"0"]) {
+            if (![[dict objectForKey:@"invtid"] isEqualToString:@"0"] && self.showShipDates) {
                 [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
             }
         }
