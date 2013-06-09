@@ -11,7 +11,7 @@
 
 @interface FarrisProductCell() {
     NSString* originalCellValue;
-}
+    }
 @end
 
 @implementation FarrisProductCell
@@ -63,5 +63,19 @@
     }
     if ([textField isFirstResponder])
         [textField resignFirstResponder];
+}
+-(void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {
+    if (description2 == [NSNull null]) {
+        self.descr.hidden = FALSE;
+        self.descr1.hidden = TRUE;
+        self.descr2.hidden = TRUE;
+        self.descr.text = description1;
+    } else {
+        self.descr.hidden = TRUE;
+        self.descr1.hidden = FALSE;
+        self.descr2.hidden = FALSE;
+        self.descr1.text = description1;
+        self.descr2.text = description2;
+    }
 }
 @end

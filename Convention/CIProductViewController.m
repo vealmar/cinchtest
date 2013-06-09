@@ -563,11 +563,7 @@
         }
         
         cell.itemNumber.text = [dict objectForKey:@"invtid"];
-        cell.descr1.text = [dict objectForKey:kProductDescr];
-        
-        if ([kShowCorp isEqualToString: kFarris])
-            cell.descr2.text = [dict objectForKey:kProductDescr2];
-        
+        [cell setDescription:[dict objectForKey:kProductDescr] withSubtext:[dict objectForKey:kProductDescr2]];
         cell.min.text = [[dict objectForKey:@"min"] stringValue];
         if (editableDict != nil && [editableDict objectForKey:kEditableQty] != nil) {
             cell.quantity.text = [[editableDict objectForKey:kEditableQty] stringValue];

@@ -344,12 +344,10 @@
         
         
         cell.itemNumber.text = isDiscount?@"Discount":[dict objectForKey:@"invtid"];
-        cell.descr1.text = [dict objectForKey:kProductDescr];
-        if (isDiscount) {
-            cell.descr1.font = discountFont;
-            cell.descr1.text = [dict objectForKey:@"desc"];
-        }
-        cell.descr2.text = [dict objectForKey:kProductDescr2];
+        [cell setDescription:[dict objectForKey:(isDiscount?@"desc":kProductDescr)] withSubtext:[dict objectForKey:(isDiscount?@"desc2":kProductDescr2)]];
+
+
+
         cell.min.text = [[dict objectForKey:@"min"] stringValue];
         
         if (!isDiscount) {

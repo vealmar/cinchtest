@@ -19,10 +19,11 @@
 @property (weak, nonatomic) IBOutlet UILabel *regPrice;
 @property (weak, nonatomic) IBOutlet UILabel *showPrice;
 @property (weak, nonatomic) IBOutlet UILabel *qtyLbl;
+@property (weak, nonatomic) IBOutlet UILabel *descr;
 
 - (IBAction)quantityChanged:(id)sender;
 - (IBAction)quantyEditDidEnd:(id)sender;
 
 @property (nonatomic, assign) id<ProductCellDelegate> delegate;
-
+-(void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2;
 @end
