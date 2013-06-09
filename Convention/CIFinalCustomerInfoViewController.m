@@ -274,22 +274,4 @@
     }
 }
 
-//- (void)keyboardWillShow:(NSNotification *)notif
-//{
-//    //keyboard will be shown now. depending for which textfield is active, move up or move down the view appropriately
-//    
-//    if ([self.Notes isFirstResponder] && self.view.frame.origin.y >= 0)
-//    {
-//        [self setViewMovedUp:YES];
-//    }
-//    else if([self.shippingNotes isFirstResponder]&&self.view.frame.origin.y >=0)
-//    {
-//        [self setViewMovedUpDouble:YES];
-//    }
-//    else if (![self.shippingNotes isFirstResponder]&&![self.Notes isFirstResponder] && self.view.frame.origin.y < 0)
-//    {
-//        [self setViewMovedUp:NO];
-//    }
-//}
-
 @end
