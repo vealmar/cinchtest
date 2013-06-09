@@ -594,9 +594,7 @@ SG: The argument 'detail' is the selected order.
                 NSString *invtid = isDiscount?@"Discount":[[data objectForKey:@"product"] objectForKey:@"invtid"];
                 cell.invtid.text = invtid;
             }
-            if ([data objectForKey:@"desc"]) {
-                cell.desc.text = [data objectForKey:@"desc"];
-            }
+            [cell setDescription:[data objectForKey:@"desc"] withSubtext:[data objectForKey:@"desc2"]];
 
             if ([kShowCorp isEqualToString:kPigglyWiggly]) {
                 if ([self.itemsVouchers objectAtIndex:indexPath.row]) {

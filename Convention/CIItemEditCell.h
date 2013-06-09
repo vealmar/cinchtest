@@ -12,6 +12,8 @@
 @interface CIItemEditCell : UITableViewCell <UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *invtid;
 @property (weak, nonatomic) IBOutlet UILabel *desc;
+@property (weak, nonatomic) IBOutlet UILabel *desc1;
+@property (weak, nonatomic) IBOutlet UILabel *desc2;
 @property (weak, nonatomic) IBOutlet UIButton *btnShipdates;
 @property (weak, nonatomic) IBOutlet UITextField *voucher;
 @property (weak, nonatomic) IBOutlet UITextField *qty;
@@ -28,5 +30,7 @@
 - (IBAction)priceEdit:(id)sender;
 - (IBAction)qtyTouch:(id)sender;
 - (IBAction)shipdates:(id)sender;
+
+- (void)setDescription:(NSString *)desc1 withSubtext:(NSString *)desc2;
 
 @end

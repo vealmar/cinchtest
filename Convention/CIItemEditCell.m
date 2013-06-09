@@ -12,6 +12,8 @@
 
 @implementation CIItemEditCell
 @synthesize desc;
+@synthesize desc1;
+@synthesize desc2;
 //@synthesize lblQuantity;
 @synthesize voucher;
 //@synthesize lblPrice;
@@ -126,6 +128,22 @@
     
 //    if (self.delegate)
 //        [self.delegate setViewMovedUpDouble:YES];
+}
+
+-(void)setDescription:(NSString *)desc1 withSubtext:(NSString *)desc2 {
+    if (desc2 == [NSNull null]) {
+        self.desc.hidden = FALSE;
+        self.desc1.hidden = TRUE;
+        self.desc2.hidden = TRUE;
+        self.desc.text = desc1;
+    } else {
+        self.desc.hidden = TRUE;
+        self.desc1.hidden = FALSE;
+        self.desc2.hidden = FALSE;
+        self.desc1.text = desc1;
+        self.desc2.text = desc2;
+    }
+
 }
 
 @end
