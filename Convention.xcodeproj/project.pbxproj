@@ -104,6 +104,10 @@
 		74D7E67915F1453C003F6F9E /* shipdatesNEW.png in Resources */ = {isa = PBXBuildFile; fileRef = 74D7E67815F1453C003F6F9E /* shipdatesNEW.png */; };
 		74F79E8715FEFA30004ED26F /* itemcode.png in Resources */ = {isa = PBXBuildFile; fileRef = 74F79E8615FEFA30004ED26F /* itemcode.png */; };
 		831EC61C16644D1200D253CD /* bump_build_on_archive.sh in Resources */ = {isa = PBXBuildFile; fileRef = 831EC61B16644D1200D253CD /* bump_build_on_archive.sh */; };
+		9635B83717653E9500406CBA /* customer-cancelin.png in Resources */ = {isa = PBXBuildFile; fileRef = 9635B83517653E9500406CBA /* customer-cancelin.png */; };
+		9635B83817653E9500406CBA /* customer-cancelout.png in Resources */ = {isa = PBXBuildFile; fileRef = 9635B83617653E9500406CBA /* customer-cancelout.png */; };
+		9635B83B17653EDA00406CBA /* cart-cancelin.png in Resources */ = {isa = PBXBuildFile; fileRef = 9635B83917653EDA00406CBA /* cart-cancelin.png */; };
+		9635B83C17653EDA00406CBA /* cart-cancelout.png in Resources */ = {isa = PBXBuildFile; fileRef = 9635B83A17653EDA00406CBA /* cart-cancelout.png */; };
 		C713AFA61656E18F00E151EA /* arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = C713AFA01656E18F00E151EA /* arrow.png */; };
 		C713AFA71656E18F00E151EA /* arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C713AFA11656E18F00E151EA /* arrow@2x.png */; };
 		C713AFA81656E18F00E151EA /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = C713AFA21656E18F00E151EA /* LICENSE */; };
@@ -336,6 +340,10 @@
 		74D7E67815F1453C003F6F9E /* shipdatesNEW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shipdatesNEW.png; sourceTree = "<group>"; };
 		74F79E8615FEFA30004ED26F /* itemcode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = itemcode.png; sourceTree = "<group>"; };
 		831EC61B16644D1200D253CD /* bump_build_on_archive.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = bump_build_on_archive.sh; sourceTree = "<group>"; };
+		9635B83517653E9500406CBA /* customer-cancelin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "customer-cancelin.png"; sourceTree = "<group>"; };
+		9635B83617653E9500406CBA /* customer-cancelout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "customer-cancelout.png"; sourceTree = "<group>"; };
+		9635B83917653EDA00406CBA /* cart-cancelin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cart-cancelin.png"; sourceTree = "<group>"; };
+		9635B83A17653EDA00406CBA /* cart-cancelout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cart-cancelout.png"; sourceTree = "<group>"; };
 		C713AFA01656E18F00E151EA /* arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = arrow.png; sourceTree = "<group>"; };
 		C713AFA11656E18F00E151EA /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
 		C713AFA21656E18F00E151EA /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -990,6 +998,8 @@
 		C75EF9591730D1A90086EC52 /* Cart */ = {
 			isa = PBXGroup;
 			children = (
+				9635B83917653EDA00406CBA /* cart-cancelin.png */,
+				9635B83A17653EDA00406CBA /* cart-cancelout.png */,
 				EC427054173FFB6E004A4A91 /* Zerobuttonin.png */,
 				EC427055173FFB6E004A4A91 /* Zerobuttonout.png */,
 				C75EF95A1730D1A90086EC52 /* cartBG.png */,
@@ -1005,6 +1015,8 @@
 		C75EF9601730D1A90086EC52 /* CustomerSelect */ = {
 			isa = PBXGroup;
 			children = (
+				9635B83517653E9500406CBA /* customer-cancelin.png */,
+				9635B83617653E9500406CBA /* customer-cancelout.png */,
 				C75EF9611730D1A90086EC52 /* continuein.png */,
 				C75EF9621730D1A90086EC52 /* continueout.png */,
 				C75EF9631730D1A90086EC52 /* customerBG.png */,
@@ -1261,6 +1273,10 @@
 				EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */,
 				EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */,
 				EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */,
+				9635B83717653E9500406CBA /* customer-cancelin.png in Resources */,
+				9635B83817653E9500406CBA /* customer-cancelout.png in Resources */,
+				9635B83B17653EDA00406CBA /* cart-cancelin.png in Resources */,
+				9635B83C17653EDA00406CBA /* cart-cancelout.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

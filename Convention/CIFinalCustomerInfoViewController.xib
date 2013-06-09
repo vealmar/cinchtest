@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1552</int>
-		<string key="IBDocument.SystemVersion">11G63b</string>
+		<string key="IBDocument.SystemVersion">12D78</string>
 		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
-		<string key="IBDocument.AppKitVersion">1138.51</string>
-		<string key="IBDocument.HIToolboxVersion">569.00</string>
+		<string key="IBDocument.AppKitVersion">1187.37</string>
+		<string key="IBDocument.HIToolboxVersion">626.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			<string key="NS.object.0">2083</string>
@@ -123,7 +123,7 @@
 						<string key="NSFrame">{{62, 377}, {419, 154}}</string>
 						<reference key="NSSuperview" ref="990872483"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="454724762"/>
+						<reference key="NSNextKeyView" ref="1511113"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<reference key="IBUIBackgroundColor" ref="495296962"/>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -140,9 +140,10 @@
 					<object class="IBUIButton" id="454724762">
 						<reference key="NSNextResponder" ref="990872483"/>
 						<int key="NSvFlags">269</int>
-						<string key="NSFrame">{{118, 544}, {303, 56}}</string>
+						<string key="NSFrame">{{225, 544}, {260, 56}}</string>
 						<reference key="NSSuperview" ref="990872483"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -181,7 +182,7 @@
 						<string key="NSFrame">{{449, 278}, {33, 30}}</string>
 						<reference key="NSSuperview" ref="990872483"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="152417662"/>
+						<reference key="NSNextKeyView" ref="201929843"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<object class="NSColor" key="IBUIBackgroundColor">
 							<int key="NSColorSpace">3</int>
@@ -289,6 +290,7 @@
 						<string key="NSFrame">{{62, 328}, {253, 38}}</string>
 						<reference key="NSSuperview" ref="990872483"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="152417662"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -306,6 +308,35 @@
 						<reference key="IBUIFontDescription" ref="147238999"/>
 						<reference key="IBUIFont" ref="86954658"/>
 						<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
+					</object>
+					<object class="IBUIButton" id="1511113">
+						<reference key="NSNextResponder" ref="990872483"/>
+						<int key="NSvFlags">269</int>
+						<string key="NSFrame">{{57, 544}, {162, 56}}</string>
+						<reference key="NSSuperview" ref="990872483"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="454724762"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIOpaque">NO</bool>
+						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+						<int key="IBUIContentHorizontalAlignment">0</int>
+						<int key="IBUIContentVerticalAlignment">0</int>
+						<reference key="IBUIHighlightedTitleColor" ref="234205660"/>
+						<object class="NSColor" key="IBUINormalTitleColor">
+							<int key="NSColorSpace">1</int>
+							<bytes key="NSRGB">MC4xOTYwNzg0MzQ2IDAuMzA5ODAzOTMyOSAwLjUyMTU2ODY1NgA</bytes>
+						</object>
+						<reference key="IBUINormalTitleShadowColor" ref="372485388"/>
+						<object class="NSCustomResource" key="IBUIHighlightedImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">cart-cancelin.png</string>
+						</object>
+						<object class="NSCustomResource" key="IBUINormalImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">cart-cancelout.png</string>
+						</object>
+						<reference key="IBUIFontDescription" ref="749632951"/>
+						<reference key="IBUIFont" ref="198645349"/>
 					</object>
 				</array>
 				<string key="NSFrameSize">{540, 620}</string>
@@ -411,6 +442,15 @@
 					</object>
 					<int key="connectionID">22</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchEventConnection" key="connection">
+						<string key="label">back:</string>
+						<reference key="source" ref="1511113"/>
+						<reference key="destination" ref="841351856"/>
+						<int key="IBEventType">7</int>
+					</object>
+					<int key="connectionID">56</int>
+				</object>
 			</array>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<array key="orderedObjects">
@@ -435,7 +475,6 @@
 						<int key="objectID">4</int>
 						<reference key="object" ref="990872483"/>
 						<array class="NSMutableArray" key="children">
-							<reference ref="454724762"/>
 							<reference ref="655029197"/>
 							<reference ref="180180364"/>
 							<reference ref="977703111"/>
@@ -445,6 +484,8 @@
 							<reference ref="242270502"/>
 							<reference ref="510393089"/>
 							<reference ref="201929843"/>
+							<reference ref="1511113"/>
+							<reference ref="454724762"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -501,6 +542,11 @@
 						<reference key="object" ref="201929843"/>
 						<reference key="parent" ref="990872483"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">54</int>
+						<reference key="object" ref="1511113"/>
+						<reference key="parent" ref="990872483"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -520,30 +566,35 @@
 				<string key="46.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="47.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="48.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="54.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<real value="3" key="54.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="8.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
 			<dictionary class="NSMutableDictionary" key="unlocalizedProperties"/>
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">50</int>
+			<int key="maxID">56</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
 					<string key="className">CIFinalCustomerInfoViewController</string>
 					<string key="superclassName">UIViewController</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">submit:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">submit:</string>
-						<object class="IBActionInfo" key="NS.object.0">
+					<dictionary class="NSMutableDictionary" key="actions">
+						<string key="back:">id</string>
+						<string key="submit:">id</string>
+					</dictionary>
+					<dictionary class="NSMutableDictionary" key="actionInfosByName">
+						<object class="IBActionInfo" key="back:">
+							<string key="name">back:</string>
+							<string key="candidateClassName">id</string>
+						</object>
+						<object class="IBActionInfo" key="submit:">
 							<string key="name">submit:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-					</object>
+					</dictionary>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="Authorizer">UITextField</string>
 						<string key="Notes">UITextView</string>
@@ -609,6 +660,8 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
+			<string key="cart-cancelin.png">{162, 53}</string>
+			<string key="cart-cancelout.png">{162, 53}</string>
 			<string key="finalsubmit.png">{929, 618}</string>
 			<string key="submitorderin.png">{298, 48}</string>
 			<string key="submitorderout.png">{307, 53}</string>

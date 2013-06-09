@@ -674,7 +674,14 @@
     }
 }
 
-- (IBAction)Cancel:(id)sender {
+- (void)cancelNewOrder {
+    [self dismissViewControllerAnimated:YES completion:^{
+        NSLog(@"%@ - %@", self, self.delegate);
+        [self.delegate Return];
+    }];
+}
+
+-(IBAction)Cancel:(id)sender {
     [self Cancel];
 }
 
@@ -1214,7 +1221,7 @@
     [operation start];
 }
 
--(void) Return{
+-(void)Return {
     [self dismissViewControllerAnimated:YES completion:^{
         if (self.delegate != nil) {
             [self.delegate Return];

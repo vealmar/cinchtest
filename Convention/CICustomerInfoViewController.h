@@ -10,7 +10,7 @@
 
 @protocol CICustomerDelegate <NSObject>
 
--(void)setCustomerInfo:(NSDictionary*)info;
+- (void)setCustomerInfo:(NSDictionary*)info;
 - (void)Cancel;
 
 @end
