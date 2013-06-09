@@ -669,7 +669,7 @@
 						<string key="NSFrame">{{215, 6}, {156, 37}}</string>
 						<reference key="NSSuperview" ref="535335168"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="1046822895"/>
+						<reference key="NSNextKeyView" ref="446593544"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
@@ -890,6 +890,21 @@
 						</object>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 					</object>
+					<object class="IBUIImageView" id="446593544">
+						<reference key="NSNextResponder" ref="535335168"/>
+						<int key="NSvFlags">292</int>
+						<string key="NSFrame">{{466, 16}, {93, 53}}</string>
+						<reference key="NSSuperview" ref="535335168"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="1046822895"/>
+						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<bool key="IBUIUserInteractionEnabled">NO</bool>
+						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
+						<object class="NSCustomResource" key="IBUIImage">
+							<string key="NSClassName">NSImage</string>
+							<string key="NSResourceName">FarrisBrosWhiteLogo.png</string>
+						</object>
+					</object>
 				</array>
 				<string key="NSFrameSize">{1024, 748}</string>
 				<reference key="NSSuperview"/>
@@ -1018,6 +1033,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
+						<string key="label">logo</string>
+						<reference key="source" ref="372490531"/>
+						<reference key="destination" ref="446593544"/>
+					</object>
+					<int key="connectionID">126</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">dataSource</string>
 						<reference key="source" ref="1067039406"/>
 						<reference key="destination" ref="372490531"/>
@@ -1094,6 +1117,7 @@
 							<reference ref="1024781494"/>
 							<reference ref="1046822895"/>
 							<reference ref="13533933"/>
+							<reference ref="446593544"/>
 						</array>
 						<reference key="parent" ref="0"/>
 					</object>
@@ -1317,6 +1341,11 @@
 						<reference key="object" ref="13533933"/>
 						<reference key="parent" ref="535335168"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">125</int>
+						<reference key="object" ref="446593544"/>
+						<reference key="parent" ref="535335168"/>
+					</object>
 				</array>
 			</object>
 			<dictionary class="NSMutableDictionary" key="flattenedProperties">
@@ -1339,6 +1368,7 @@
 				<string key="117.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="118.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="123.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
+				<string key="125.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="14.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="27.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="63.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1368,7 +1398,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">124</int>
+			<int key="maxID">126</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1402,6 +1432,7 @@
 						<string key="lblShipDate1">UILabel</string>
 						<string key="lblShipDate2">UILabel</string>
 						<string key="lblShipDateCount">UILabel</string>
+						<string key="logo">UIImageView</string>
 						<string key="navBar">UINavigationBar</string>
 						<string key="netTotal">UILabel</string>
 						<string key="products">UITableView</string>
@@ -1437,6 +1468,10 @@
 						<object class="IBToOneOutletInfo" key="lblShipDateCount">
 							<string key="name">lblShipDateCount</string>
 							<string key="candidateClassName">UILabel</string>
+						</object>
+						<object class="IBToOneOutletInfo" key="logo">
+							<string key="name">logo</string>
+							<string key="candidateClassName">UIImageView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="navBar">
 							<string key="name">navBar</string>
@@ -1475,6 +1510,7 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
+			<string key="FarrisBrosWhiteLogo.png">{107, 44}</string>
 			<string key="Zerobuttonout.png">{194, 73}</string>
 			<string key="cartBG.png">{1024, 768}</string>
 			<string key="submitout.png">{194, 73}</string>

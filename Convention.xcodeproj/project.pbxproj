@@ -187,6 +187,7 @@
 		EB0C7FE91760194B0038A3AD /* FarrisOrderDetail.png in Resources */ = {isa = PBXBuildFile; fileRef = EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */; };
 		EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5A0A9B175EF2C200246C24 /* FBLogin.png */; };
 		EB652B23176022E400287961 /* Futura Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB652B22176022E400287961 /* Futura Medium.ttf */; };
+		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
 		EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427054173FFB6E004A4A91 /* Zerobuttonin.png */; };
 		EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427055173FFB6E004A4A91 /* Zerobuttonout.png */; };
 /* End PBXBuildFile section */
@@ -453,6 +454,7 @@
 		EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisOrderDetail.png; sourceTree = "<group>"; };
 		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
 		EB652B22176022E400287961 /* Futura Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Futura Medium.ttf"; sourceTree = "<group>"; };
+		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
 		EC427054173FFB6E004A4A91 /* Zerobuttonin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonin.png; sourceTree = "<group>"; };
 		EC427055173FFB6E004A4A91 /* Zerobuttonout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonout.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -525,6 +527,7 @@
 		35F52AF399A3ACCF0FB54CFF /* Slices */ = {
 			isa = PBXGroup;
 			children = (
+				EBD32A021764A76A00FD28E4 /* Logo */,
 				EB5A0A98175EF10100246C24 /* Login */,
 				35F529F346D1B44928BDE35D /* Home */,
 			);
@@ -1083,6 +1086,14 @@
 			name = Fonts;
 			sourceTree = "<group>";
 		};
+		EBD32A021764A76A00FD28E4 /* Logo */ = {
+			isa = PBXGroup;
+			children = (
+				EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */,
+			);
+			name = Logo;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1241,6 +1252,7 @@
 				EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */,
 				EB0C7FE91760194B0038A3AD /* FarrisOrderDetail.png in Resources */,
 				EB652B23176022E400287961 /* Futura Medium.ttf in Resources */,
+				EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

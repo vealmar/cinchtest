@@ -21,6 +21,7 @@
 @interface CICartViewController (){
     NSMutableArray *allCartItems;
     __weak IBOutlet UILabel *customerInfoLabel;
+    __weak IBOutlet UIImageView *logo;
 }
 //-(void) getCustomers;
 
@@ -85,10 +86,12 @@
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         tableHeaderPigglyWiggly.hidden = NO;
         tableHeaderFarris.hidden = YES;
+        logo.hidden = YES; //SG: Hiding this at present since I don't have the PW logo image.
     } else if ([kShowCorp isEqualToString: kFarris]) {
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = NO;
         self.zeroVouchers.hidden = YES;
+        logo.image = [UIImage imageNamed:@"FarrisBrosWhiteLogo.png"];
     } else {
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = YES;

@@ -88,7 +88,7 @@
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">homeBG.png</string>
+							<string key="NSResourceName">PWHome.png</string>
 						</object>
 					</object>
 					<object class="IBUIScrollView" id="596173366">
@@ -444,6 +444,7 @@
 								<string key="NSFrame">{{512, 647}, {15, 21}}</string>
 								<reference key="NSSuperview" ref="596173366"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -2053,9 +2054,9 @@
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
 			<string key="FarrisOrderDetail.png">{687, 632}</string>
+			<string key="PWHome.png">{1024, 768}</string>
 			<string key="deletein.png">{134, 49}</string>
 			<string key="deleteout.png">{140, 53}</string>
-			<string key="homeBG.png">{1024, 768}</string>
 			<string key="logoutin.png">{188, 68}</string>
 			<string key="logoutout.png">{194, 73}</string>
 			<string key="magnify.png">{31, 33}</string>
