@@ -84,6 +84,14 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Host</string>
+			<key>Key</key>
+			<string>host</string>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
 		<dict>
