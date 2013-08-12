@@ -16,15 +16,15 @@
 //#define kBASEURL @"http://ci-pw1.herokuapp.com"
 #define SERVER @"server"
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
+#define ShowID [[SettingsManager sharedManager] lookupSettingByString:@"show"]
 
 //#define kBASEURL @"http://:3000"
-#define SHOW @"show"
-#define kShowID @"7"
-//#define kShowID [[SettingsManager sharedManager] lookupSettingByString:SHOW]
-
 #define kPigglyWiggly @"PigglyWiggly"
 #define kFarris @"Farris"
-#define kShowCorp kFarris
+#define kShowCorp kPigglyWiggly
+#define kShowID @"7"
+#define ConfigUrl [NSString stringWithFormat:@"%@/shows/%@/configurations.json", kBASEURL, ShowID]
+
 
 #define kShowShipDates kShowCorp == kPigglyWiggly // set to NO for the Farris show; need to handle this dynamically from backend service
 #define kAllowPrinting kShowCorp == kPigglyWiggly // ditto
@@ -169,6 +169,7 @@
 #define kNotificationCustomersLoaded @"NotificationCustomersLoaded"
 #define kCustomerNotificationKey @"customers"
 #define kPrintersLoaded @"PrintersLoaded"
+#define ApplicationBecameActive @"ApplicationBecameActive"
 
 #define NOTIF_PING_FAILURE @"NOTIF_PING_FAILURE"
 #define NOTIF_PING_SUCCESS @"NOTIF_PING_SUCCESS"

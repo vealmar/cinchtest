@@ -18,6 +18,7 @@
 		33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FF164D743E007B872A /* SettingsManager.m */; };
 		33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F6164D740A007B872A /* GroupedObject.m */; };
 		35F527C6D5A71434688ABEC2 /* FarrisBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */; };
+		35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5271B9DC09F494AE33569 /* ShowConfigurations.m */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
 		6414A6F11496B9A10088586B /* bluebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6F01496B9A10088586B /* bluebutton.png */; };
 		6E07A38F1461D26E0043C22B /* CICustomerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E07A38D1461D26E0043C22B /* CICustomerInfoViewController.m */; };
@@ -194,6 +195,9 @@
 		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
 		EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */; };
 		EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */; };
+		EBE8941817B71603005F1895 /* LaunchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBE8941717B71603005F1895 /* LaunchViewController.m */; };
+		EBE8941A17B7161C005F1895 /* LaunchViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBE8941917B7161C005F1895 /* LaunchViewController.storyboard */; };
+		EBE8941C17B71D30005F1895 /* launch_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE8941B17B71D30005F1895 /* launch_bg.png */; };
 		EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427054173FFB6E004A4A91 /* Zerobuttonin.png */; };
 		EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427055173FFB6E004A4A91 /* Zerobuttonout.png */; };
 /* End PBXBuildFile section */
@@ -215,6 +219,8 @@
 		335A4301164D7455007B872A /* StringManipulation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StringManipulation.h; sourceTree = "<group>"; };
 		335A4302164D7455007B872A /* StringManipulation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StringManipulation.m; sourceTree = "<group>"; };
 		335A4306164D7529007B872A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		35F5260573F670DC82AEFEFF /* ShowConfigurations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowConfigurations.h; sourceTree = "<group>"; };
+		35F5271B9DC09F494AE33569 /* ShowConfigurations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowConfigurations.m; sourceTree = "<group>"; };
 		35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBG.png; sourceTree = "<group>"; };
 		6414A6E91496AE960088586B /* orangebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangebutton.png; sourceTree = "<group>"; };
 		6414A6F01496B9A10088586B /* bluebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluebutton.png; sourceTree = "<group>"; };
@@ -467,6 +473,10 @@
 		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
 		EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
 		EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
+		EBE8941617B71603005F1895 /* LaunchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchViewController.h; sourceTree = "<group>"; };
+		EBE8941717B71603005F1895 /* LaunchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchViewController.m; sourceTree = "<group>"; };
+		EBE8941917B7161C005F1895 /* LaunchViewController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchViewController.storyboard; sourceTree = "<group>"; };
+		EBE8941B17B71D30005F1895 /* launch_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_bg.png; sourceTree = "<group>"; };
 		EC427054173FFB6E004A4A91 /* Zerobuttonin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonin.png; sourceTree = "<group>"; };
 		EC427055173FFB6E004A4A91 /* Zerobuttonout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonout.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -598,6 +608,11 @@
 				6E3BEC9114905BEF00BF8E15 /* Order List */,
 				6E3BEC891490568C00BF8E15 /* order form */,
 				6E11856C145F2F2200568ED1 /* Supporting Files */,
+				EBE8941617B71603005F1895 /* LaunchViewController.h */,
+				EBE8941717B71603005F1895 /* LaunchViewController.m */,
+				EBE8941917B7161C005F1895 /* LaunchViewController.storyboard */,
+				35F5271B9DC09F494AE33569 /* ShowConfigurations.m */,
+				35F5260573F670DC82AEFEFF /* ShowConfigurations.h */,
 			);
 			path = Convention;
 			sourceTree = "<group>";
@@ -605,6 +620,7 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EBE8941B17B71D30005F1895 /* launch_bg.png */,
 				EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */,
 				EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */,
 				EB652B21176022CF00287961 /* Fonts */,
@@ -1277,6 +1293,8 @@
 				9635B83817653E9500406CBA /* customer-cancelout.png in Resources */,
 				9635B83B17653EDA00406CBA /* cart-cancelin.png in Resources */,
 				9635B83C17653EDA00406CBA /* cart-cancelout.png in Resources */,
+				EBE8941A17B7161C005F1895 /* LaunchViewController.storyboard in Resources */,
+				EBE8941C17B71D30005F1895 /* launch_bg.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1370,6 +1388,8 @@
 				C76D3E6116AE322400F055F4 /* Order.m in Sources */,
 				C76D3E6416AE322400F055F4 /* ShipDate.m in Sources */,
 				C76E63FE173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m in Sources */,
+				EBE8941817B71603005F1895 /* LaunchViewController.m in Sources */,
+				35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

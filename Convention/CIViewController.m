@@ -15,6 +15,7 @@
 #import "SettingsManager.h"
 #import "AFHTTPClient.h"
 #import "AFJSONRequestOperation.h"
+#import "ShowConfigurations.h"
 
 @implementation CIViewController {
     CGRect originalBounds;
@@ -35,16 +36,10 @@
     if (self) {
         // Custom initialization
         masterVender = NO;
+        loginBg.image = [[ShowConfigurations instance] loginScreen];
     }
     return self;
 }
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Release any cached data, images, etc that aren't in use.
-}
-
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad
@@ -97,6 +92,17 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+
+    //determine settings
+    //[kBASEURL length] == 0 || [ShowID length] == 0 || [Host length]== 0;
+
+
+//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"IncompleteSettings.storyboard" bundle:[NSBundle bundleWithIdentifier:@"Convention"]];
+//    IncompleteSetingsViewController *vc = [storyboard instantiateInitialViewController];
+
+
+
+
     if ([kShowCorp isEqualToString:kFarris]) {
         loginBg.image = [UIImage imageNamed:@"FBLogin.png"];
     }else{//SG: PW
@@ -122,6 +128,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 
     [super viewWillAppear:animated];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated

@@ -60,7 +60,7 @@
 			<key>KeyboardType</key>
 			<string>Alphabet</string>
 			<key>Title</key>
-			<string>Server</string>
+			<string>Server (Required)</string>
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 		</dict>
@@ -68,7 +68,7 @@
 			<key>Type</key>
 			<string>PSTextFieldSpecifier</string>
 			<key>Title</key>
-			<string>Show</string>
+			<string>Show (Required)</string>
 			<key>Key</key>
 			<string>show</string>
 			<key>DefaultValue</key>
@@ -81,14 +81,6 @@
 			<string>None</string>
 			<key>AutocorrectionType</key>
 			<string>No</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-			<key>Title</key>
-			<string>Host</string>
-			<key>Key</key>
-			<string>host</string>
 		</dict>
 		<dict>
 			<key>Type</key>
