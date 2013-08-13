@@ -1354,9 +1354,9 @@ BOOL itemIsVoucher(NSDictionary *dict) {
                  success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
 
                      NSArray *results = [NSArray arrayWithArray:JSON];
-                     if (results == nil || [results objectAtIndex:0] == nil || [[results objectAtIndex:0] objectForKey:@"vendors"] == nil) {
+                     if (results == nil || [results isKindOfClass:[NSNull class]] || results.count == 0 || [results objectAtIndex:0] == nil || [[results objectAtIndex:0] objectForKey:@"vendors"] == nil) {
                          [venderLoading hide:YES];
-                         [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Problem loading vendors! If this problem persists people notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+                         [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Problem loading vendors! If this problem persists please notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
                          return;
                      }
                      

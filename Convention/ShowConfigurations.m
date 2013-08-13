@@ -21,11 +21,11 @@ static ShowConfigurations *showConfigurations = nil;
 + (void) createInstanceFromJson:(NSDictionary *)json{
     showConfigurations = [[[self class] alloc] init];
     if(showConfigurations){
-        showConfigurations.discounts = (BOOL) [json objectForKey:@"discounts"];
-        showConfigurations.shipDates = (BOOL) [json objectForKey:@"shipdates"];
-        showConfigurations.printing = (BOOL) [json objectForKey:@"printing"];
-        showConfigurations.vouchers = (BOOL) [json objectForKey:@"vouchers"];
-        showConfigurations.contracts = (BOOL) [json objectForKey:@"contracts"];
+        showConfigurations.discounts = [[json objectForKey:@"discounts"] boolValue];
+        showConfigurations.shipDates = [[json objectForKey:@"shipdates"] boolValue];
+        showConfigurations.printing = [[json objectForKey:@"printing"] boolValue];
+        showConfigurations.vouchers = [[json objectForKey:@"vouchers"] boolValue];
+        showConfigurations.contracts = [[json objectForKey:@"contracts"] boolValue];
         NSString *loginScreenUrl = ((NSString *) [json objectForKey:@"iosLoginScreen"]);
         showConfigurations.loginScreen = [ShowConfigurations imageFromUrl:loginScreenUrl defaultImage:@"loginBG.png"];
         NSString *logoUrl = ((NSString *) [json objectForKey:@"iosLogo"]);

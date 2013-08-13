@@ -22,7 +22,6 @@
 #define kPigglyWiggly @"PigglyWiggly"
 #define kFarris @"Farris"
 #define kShowCorp kPigglyWiggly
-#define kShowID @"7"
 #define ConfigUrl [NSString stringWithFormat:@"%@/shows/%@/configurations.json", kBASEURL, ShowID]
 
 
@@ -31,25 +30,25 @@
 
 #define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
 #define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]
-#define kDBGETPRODUCTS [NSString stringWithFormat:@"%@/vendor/shows/%@/products.json",kBASEURL,kShowID]
-#define kDBGETVENDORSWithVG(VendorGroupID) [NSString stringWithFormat:@"%@/vendor/shows/%@/vendorgroups.json?%@=%@",kBASEURL,kShowID,kVendorGroupID,VendorGroupID]
-#define kDBGETCUSTOMERS [NSString stringWithFormat:@"%@/vendor/shows/%@/customers.json",kBASEURL,kShowID]
-#define kDBORDER [NSString stringWithFormat:@"%@/vendor/shows/%@/orders.json",kBASEURL,kShowID]
+#define kDBGETPRODUCTS [NSString stringWithFormat:@"%@/vendor/shows/%@/products.json",kBASEURL,ShowID]
+#define kDBGETVENDORSWithVG(VendorGroupID) [NSString stringWithFormat:@"%@/vendor/shows/%@/vendorgroups.json?%@=%@",kBASEURL,ShowID,kVendorGroupID,VendorGroupID]
+#define kDBGETCUSTOMERS [NSString stringWithFormat:@"%@/vendor/shows/%@/customers.json",kBASEURL,ShowID]
+#define kDBORDER [NSString stringWithFormat:@"%@/vendor/shows/%@/orders.json",kBASEURL,ShowID]
 #define kDBORDEREDIT(ID) [NSString stringWithFormat:@"%@/vendor/orders/%d.json",kBASEURL,ID]
-#define kDBORDEREDITS(ID) [NSString stringWithFormat:@"%@/vendor/shows/%@/orders/%d.json",kBASEURL,kShowID,ID]
+#define kDBORDEREDITS(ID) [NSString stringWithFormat:@"%@/vendor/shows/%@/orders/%d.json",kBASEURL,ShowID,ID]
 
 //delete line item from given order
 #define kDBOrderLineItemDelete(ID) [NSString stringWithFormat:@"%@/vendor/line_items/%d.json", kBASEURL, ID]
 
-#define kDBREPORTPRINTS [NSString stringWithFormat:@"%@/vendor/shows/%@/report_prints.json",kBASEURL,kShowID]
-#define kDBGETPRINTERS [NSString stringWithFormat:@"%@/vendor/shows/%@/printers.json", kBASEURL, kShowID]
-#define kDBGETBULLETINS [NSString stringWithFormat:@"%@/vendor/shows/%@/bulletins.json", kBASEURL, kShowID]
+#define kDBREPORTPRINTS [NSString stringWithFormat:@"%@/vendor/shows/%@/report_prints.json",kBASEURL,ShowID]
+#define kDBGETPRINTERS [NSString stringWithFormat:@"%@/vendor/shows/%@/printers.json", kBASEURL, ShowID]
+#define kDBGETBULLETINS [NSString stringWithFormat:@"%@/vendor/shows/%@/bulletins.json", kBASEURL, ShowID]
 
 //temp not needed...
 #define kDBMasterLOGIN [NSString stringWithFormat:@"%@/hosts/sign_in.json",kBASEURL]
 #define kDBMasterLOGOUT [NSString stringWithFormat:@"%@/hosts/sign_out.json",kBASEURL]
 #define kDBGETVENDORS [NSString stringWithFormat:@"%@/host/vendors.json",kBASEURL]
-#define kDBMasterORDER [NSString stringWithFormat:@"%@/host/shows/%@/orders.json",kBASEURL,kShowID]
+#define kDBMasterORDER [NSString stringWithFormat:@"%@/host/shows/%@/orders.json",kBASEURL,ShowID]
 
 //Auth keys
 #define kEmailKey @"vendor[login]"

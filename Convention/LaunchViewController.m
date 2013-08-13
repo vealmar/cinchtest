@@ -81,6 +81,7 @@
     };
     void (^failureBlock)(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) = ^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON){
         [self performSelectorOnMainThread:@selector(updateLabel:)withObject:@"Settings seem to be invalid. Please make sure Server and Show specified in Ci settings are correct." waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(stopActivityIndicator)withObject:nil waitUntilDone:NO];
     };
     NSMutableURLRequest *request = [client requestWithMethod:@"GET" path:nil parameters:nil];
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:successBlock failure:failureBlock];

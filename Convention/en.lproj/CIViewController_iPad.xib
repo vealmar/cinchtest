@@ -49,10 +49,6 @@
 						<string key="NSReuseIdentifierKey">_NS:569</string>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-						<object class="NSCustomResource" key="IBUIImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">loginBG.png</string>
-						</object>
 					</object>
 					<object class="IBUIButton" id="801636960">
 						<reference key="NSNextResponder" ref="766721923"/>
@@ -235,6 +231,7 @@
 						<string key="NSFrame">{{934, 727}, {70, 21}}</string>
 						<reference key="NSSuperview" ref="766721923"/>
 						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
 						<bool key="IBUIOpaque">NO</bool>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -531,7 +528,6 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="loginBG.png">{1024, 768}</string>
 			<string key="loginin.png">{161, 68}</string>
 			<string key="loginout.png">{168, 73}</string>
 		</dictionary>

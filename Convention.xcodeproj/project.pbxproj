@@ -198,6 +198,8 @@
 		EBE8941817B71603005F1895 /* LaunchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBE8941717B71603005F1895 /* LaunchViewController.m */; };
 		EBE8941A17B7161C005F1895 /* LaunchViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBE8941917B7161C005F1895 /* LaunchViewController.storyboard */; };
 		EBE8941C17B71D30005F1895 /* launch_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE8941B17B71D30005F1895 /* launch_bg.png */; };
+		EBE8941E17B972D3005F1895 /* CIOrderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBE8941D17B972D3005F1895 /* CIOrderViewController.storyboard */; };
+		EBE8942017B97733005F1895 /* OrdersBg.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE8941F17B97733005F1895 /* OrdersBg.png */; };
 		EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427054173FFB6E004A4A91 /* Zerobuttonin.png */; };
 		EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427055173FFB6E004A4A91 /* Zerobuttonout.png */; };
 /* End PBXBuildFile section */
@@ -477,6 +479,8 @@
 		EBE8941717B71603005F1895 /* LaunchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchViewController.m; sourceTree = "<group>"; };
 		EBE8941917B7161C005F1895 /* LaunchViewController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchViewController.storyboard; sourceTree = "<group>"; };
 		EBE8941B17B71D30005F1895 /* launch_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_bg.png; sourceTree = "<group>"; };
+		EBE8941D17B972D3005F1895 /* CIOrderViewController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CIOrderViewController.storyboard; sourceTree = "<group>"; };
+		EBE8941F17B97733005F1895 /* OrdersBg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OrdersBg.png; sourceTree = "<group>"; };
 		EC427054173FFB6E004A4A91 /* Zerobuttonin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonin.png; sourceTree = "<group>"; };
 		EC427055173FFB6E004A4A91 /* Zerobuttonout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonout.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -620,6 +624,7 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EBE8941F17B97733005F1895 /* OrdersBg.png */,
 				EBE8941B17B71D30005F1895 /* launch_bg.png */,
 				EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */,
 				EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */,
@@ -748,6 +753,7 @@
 				6E3BECEA149212A800BF8E15 /* CIItemEditCell.m */,
 				6E3BECEC149212CC00BF8E15 /* CIItemEditCell.xib */,
 				C7E87A0D16AD187B005E4CC9 /* ItemEditDelegate.h */,
+				EBE8941D17B972D3005F1895 /* CIOrderViewController.storyboard */,
 			);
 			name = "Order List";
 			sourceTree = "<group>";
@@ -1295,6 +1301,8 @@
 				9635B83C17653EDA00406CBA /* cart-cancelout.png in Resources */,
 				EBE8941A17B7161C005F1895 /* LaunchViewController.storyboard in Resources */,
 				EBE8941C17B71D30005F1895 /* launch_bg.png in Resources */,
+				EBE8941E17B972D3005F1895 /* CIOrderViewController.storyboard in Resources */,
+				EBE8942017B97733005F1895 /* OrdersBg.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

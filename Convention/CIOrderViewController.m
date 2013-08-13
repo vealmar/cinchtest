@@ -27,6 +27,7 @@
 #import "CoreDataUtil.h"
 #import "Order.h"
 #import "Cart.h"
+#import "ShowConfigurations.h"
 
 @interface CIOrderViewController () {
     int currentOrderID;
@@ -71,7 +72,6 @@ bool pingInProgress = false;
 @synthesize notes;
 @synthesize SCtotal;
 @synthesize total;
-@synthesize NoOrders;
 @synthesize NoOrdersLabel;
 @synthesize ordersAct;
 @synthesize itemsAct;
@@ -108,53 +108,78 @@ bool showHud = true;
 
 #pragma mark - initializer
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
+- (void)awakeFromNib {
+    [super awakeFromNib];
         // Custom initialization
-        masterVender = NO;
-        currentVender = 0;
-        currentOrderID = 0;
-        isLoadingOrders = NO;
-        reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
-    }
 
-    return self;
+
+}
+
+- (void) adjustTotals{
+    NSMutableArray *visibleTotalFields = [[NSMutableArray alloc] init];
+    if(!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label": self.grossTotalLabel}];
+    if(!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label": self.discountTotalLabel}];
+    if(!self.voucherTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.voucherTotal, @"label": self.voucherTotalLabel}];
+    if(!self.total.hidden) [visibleTotalFields addObject:@{@"field" : self.total, @"label": self.totalLabel}];
+    int availableWidth = 400;
+    int widthPerField = availableWidth / visibleTotalFields.count;
+    int marginRightPerField = 2;
+    widthPerField = widthPerField - marginRightPerField;
+    int x = 10;
+    for(NSDictionary *totalField in visibleTotalFields){
+        UITextField *textField = ((UITextField *) [totalField objectForKey:@"field"]);
+        textField.text = @"0";
+        textField.frame = CGRectMake(x, 587, widthPerField, 34);
+        ((UILabel *) [totalField objectForKey:@"labek"]).frame = CGRectMake(x, 613, widthPerField, 34);
+        x=x+widthPerField+marginRightPerField;//2 is the right margin
+    }
 }
 
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if ([kShowCorp isEqualToString:kFarris]) {
-        homeBg.image = [UIImage imageNamed:@"FarrisBG.png"];
-        self.shipdates.hidden = YES;
-        self.SCtotal.hidden = YES;
+    masterVender = NO;
+    currentVender = 0;
+    currentOrderID = 0;
+    isLoadingOrders = NO;
+    reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
+
+    ShowConfigurations *showConfig = [ShowConfigurations instance];
+    self.logoImage.image = [showConfig logo];
+    if(showConfig.shipDates){
+        quantityLabel.hidden = YES;
+    }else{
         sdLabel.hidden = YES;
         sqLabel.hidden = YES;
-        voucherLabel.hidden = YES;
-    }else{//SG: PW
-        homeBg.image = [UIImage imageNamed:@"homeBG.png"];
-        orderDetailBg.image = [UIImage imageNamed:@"Detail2.png"];
-        self.notes.hidden = YES;
-        itemTotalLabel.hidden = YES;
-        quantityLabel.hidden = YES;
-        
     }
-    // Do any additional setup after loading the view from its nib.
-    //self.saveBtn.hidden = YES;
+    if(showConfig.vouchers){
+        self.voucherItemTotalLabel.text = @"VOUCHER";
+    }else{
+        self.voucherItemTotalLabel.text = @"ITEM TOTAL";
+        self.voucherTotal.hidden = YES;
+        self.voucherTotalLabel.hidden = YES;
+    }
+    if (showConfig.discounts){
+        self.grossTotalLabel.text = @"Gross Total";
+        self.total.hidden = YES;
+        self.totalLabel.hidden = YES;
+    }else{
+        self.grossTotalLabel.text = @"Total";
+        self.discountTotal.hidden = YES;
+        self.discountTotalLabel.hidden = YES;
+        self.totalLabel.hidden = YES;
+        self.total.hidden = YES;
+    }
+    self.printButton.hidden = !showConfig.printing;
+    [self adjustTotals];
     self.EditorView.hidden = YES;
     self.toolWithSave.hidden = YES;
     self.orderContainer.hidden = YES;
     self.OrderDetailScroll.hidden = YES;
-
     self.placeholderContainer.hidden = NO;
-
     [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
-
-    if (self.allowPrinting) {
-        currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
-    }
+    if ([ShowConfigurations instance].printing) currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
     pull = [[PullToRefreshView alloc] initWithScrollView:(UIScrollView *) self.sideTable];
     [pull setDelegate:self];
     [self.sideTable addSubview:pull];
@@ -162,17 +187,10 @@ bool showHud = true;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    // register for keyboard notifications
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow)
                                                  name:UIKeyboardWillShowNotification object:self.view.window];
-
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
                                                  name:UIKeyboardDidHideNotification object:self.view.window];
-
-    if (!self.allowPrinting) {
-        self.printButton.hidden = YES;
-    }
 
     self.sideContainer.layer.cornerRadius = 5.f;
     self.sideContainer.layer.masksToBounds = YES;
@@ -190,36 +208,20 @@ bool showHud = true;
     self.lblCompany.font = [UIFont fontWithName:kFontName size:15.f];
     self.lblItems.font = [UIFont fontWithName:kFontName size:15.f];
     self.lblNotes.font = [UIFont fontWithName:kFontName size:15.f];
-//    self.lblTotalPrice.font = [UIFont fontWithName:kFontName size:25.f];
-//    self.total.font = [UIFont fontWithName:kFontName size:25.5];
-//    self.lblVoucher.font = [UIFont fontWithName:kFontName size:25.f];
-//    self.SCtotal.font = [UIFont fontWithName:kFontName size:25.f];
     self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
-
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];
     self.authorizer.font = [UIFont fontWithName:kFontName size:14.f];
-//    self.notes.font = [UIFont fontWithName:kFontName size:14.f]; //SG: Commenting this out becasue kFontName points to BEBAS font which has only upper case letters. This prevents users from typing note in mixed case.
-
     self.itemsAct.hidden = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    // unregister for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
-
-    if (self.allowPrinting) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
-    }
-
-//    if ([kShowCorp isEqualToString: kFarris]) {
-//        
-//    }
+    if ([ShowConfigurations instance].printing) [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+    return UIInterfaceOrientationIsLandscape(interfaceOrientation); //we only support landscape orientation.
 }
 
 #pragma mark - Data access methods
@@ -227,9 +229,7 @@ bool showHud = true;
 - (void)loadOrders {
     isLoadingOrders = YES;
     self.OrderDetailScroll.hidden = YES;
-
     MBProgressHUD *hud;
-
     if (showHud) {
         hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
         hud.labelText = @"Getting Orders";
@@ -237,8 +237,7 @@ bool showHud = true;
     }
 
     void (^cleanup)(void) = ^{
-        if (showHud)
-            [hud hide:YES];
+        if (showHud) [hud hide:YES];
         [pull finishedLoading];
         showHud = true;
         isLoadingOrders = NO;
@@ -251,29 +250,19 @@ bool showHud = true;
         url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];//SG: vendor/shows/4/orders.json
     }
     DLog(@"Sending %@", url);
-
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-
                 self.orders = [NSMutableArray arrayWithArray:JSON];
                 DLog(@"order count: %i", self.orders.count);
-
                 [self loadPartialOrders];
                 self.orderData = [self.orders mutableCopy];
-
                 [self.sideTable reloadData];
-                if ([self.orders count] > 0) {
-                    self.NoOrders.hidden = YES;
-                }
-
+                self.NoOrdersLabel.hidden = [self.orders count] > 0;
                 cleanup();
-
             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-
                 [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@", [error localizedDescription]] delegate:nil
                                   cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-
                 cleanup();
             }];
     [operation start];
@@ -453,9 +442,9 @@ SG: The argument 'detail' is the selected order.
     productView.delegate = self;
     productView.managedObjectContext = self.managedObjectContext;
     productView.showCustomers = newOrder;//SG: If this is a new order, the customer selection popup needs to be displayed.
-    productView.allowPrinting = self.allowPrinting;
-    productView.showShipDates = self.showShipDates;
-    if (self.allowPrinting) {
+    productView.allowPrinting = [ShowConfigurations instance].printing;
+    productView.showShipDates = [ShowConfigurations instance].shipDates;
+    if ([ShowConfigurations instance].printing) {
         productView.availablePrinters = [availablePrinters copy];
         if (![currentPrinter isEmpty])
             productView.printStationId = [[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue];
@@ -563,8 +552,8 @@ SG: The argument 'detail' is the selected order.
         else
             cell.orderId.text = @"";
 
-        if ([kShowCorp isEqualToString:kFarris]) {
-            cell.lblSC.hidden = YES;
+        if (![ShowConfigurations instance].vouchers) {
+            cell.vouchersLabel.hidden = YES;
             cell.vouchers.hidden = YES;
         }
 
@@ -585,6 +574,9 @@ SG: The argument 'detail' is the selected order.
         }
 
         cell.delegate = self;
+        if ([ShowConfigurations  instance].vouchers){
+         cell.total.hidden = YES;
+        }
 
         if ([[self.itemsDB objectForKey:kItemCount] intValue] > [indexPath row]) {
 
@@ -684,54 +676,6 @@ SG: The argument 'detail' is the selected order.
         } else {
             return nil;
         }
-
-//        else if (kShowCorp == kFarris) {
-//            static NSString *cellIdentifier = @"FarrisItemEditCell";
-//            FarrisItemEditCell *cell = [self.itemsTable dequeueReusableCellWithIdentifier:cellIdentifier];
-//            if (cell == nil){
-//                NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:cellIdentifier owner:nil options:nil];
-//                cell = [topLevelObjects objectAtIndex:0];
-//            }
-//            
-//            cell.delegate = self;
-//            if ([[self.itemsDB objectForKey:kItemCount] intValue] > [indexPath row]) {
-//                NSDictionary* data = [[self.itemsDB objectForKey:kItems] objectAtIndex:[indexPath row]];
-//                if ([data objectForKey:kProductDescr]) {
-//                    cell.descr1.text = [NSString stringWithFormat:@"%@",[data objectForKey:kProductDescr]];
-//                }
-//                if ([data objectForKey:kProductDescr2]) {
-//                    cell.descr2.text = [NSString stringWithFormat:@"%@",[data objectForKey:kProductDescr2]];
-//                }
-//                double q = 0;
-//                if ([self.itemsQty objectAtIndex:indexPath.row]) {
-//                    cell.qty.text = [self.itemsQty objectAtIndex:indexPath.row];
-//                    q = [cell.qty.text doubleValue];
-//                }
-//                else
-//                    cell.qty.text = @"0";
-//                DLog(@"price:%@", [self.itemsPrice objectAtIndex:indexPath.row]);
-//                if ([self.itemsPrice objectAtIndex:indexPath.row]&&![[self.itemsPrice objectAtIndex:indexPath.row] isKindOfClass:[NSNull class]]) {
-//                    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
-//                    nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-//                    nf.maximumFractionDigits = 2;
-//                    nf.minimumFractionDigits = 2;
-//                    nf.minimumIntegerDigits = 1;
-//                    
-//                    double price = [[self.itemsPrice objectAtIndex:indexPath.row] doubleValue];
-//                    
-//                    cell.price.text = [nf stringFromNumber:[NSNumber numberWithDouble:price]];
-//                    cell.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(price * q)] numberStyle:NSNumberFormatterCurrencyStyle];
-//                }
-//                else {
-//                    cell.price.text = @"0.00";
-//                    cell.total.text = @"$0.00";
-//                }
-//                cell.tag = indexPath.row;
-//                return cell;
-//            }
-//        } else {
-//            return nil;
-//        }
     }
     else
         return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"asdfa"];

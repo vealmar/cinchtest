@@ -15,7 +15,7 @@
 @synthesize numItems;
 @synthesize total;
 @synthesize vouchers;
-@synthesize lblSC;
+@synthesize vouchersLabel;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -27,7 +27,7 @@
         self.numItems.font = [UIFont fontWithName:kFontName size:13.f];
         self.total.font = [UIFont fontWithName:kFontName size:13.f];
         self.vouchers.font = [UIFont fontWithName:kFontName size:13.f];
-        self.lblSC.font = [UIFont fontWithName:kFontName size:14.f];
+        self.vouchersLabel.font = [UIFont fontWithName:kFontName size:14.f];
         self.orderStatus.font = [UIFont fontWithName:kFontName size:13.f];
     }
     return self;

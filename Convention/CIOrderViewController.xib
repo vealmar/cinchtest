@@ -86,27 +86,13 @@
 						<string key="targetRuntimeIdentifier">IBIPadFramework</string>
 						<object class="NSCustomResource" key="IBUIImage">
 							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">PWHome.png</string>
+							<string key="NSResourceName">OrdersBg.png</string>
 						</object>
 					</object>
 					<object class="IBUIScrollView" id="596173366">
 						<reference key="NSNextResponder" ref="362130751"/>
 						<int key="NSvFlags">265</int>
 						<array class="NSMutableArray" key="NSSubviews">
-							<object class="IBUIImageView" id="633959234">
-								<reference key="NSNextResponder" ref="596173366"/>
-								<int key="NSvFlags">-2147483356</int>
-								<string key="NSFrame">{{20, 2}, {684, 623}}</string>
-								<reference key="NSSuperview" ref="596173366"/>
-								<reference key="NSNextKeyView" ref="237241093"/>
-								<string key="NSReuseIdentifierKey">_NS:9</string>
-								<bool key="IBUIUserInteractionEnabled">NO</bool>
-								<string key="targetRuntimeIdentifier">IBIPadFramework</string>
-								<object class="NSCustomResource" key="IBUIImage">
-									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">FarrisOrderDetail.png</string>
-								</object>
-							</object>
 							<object class="IBUITextView" id="521750573">
 								<reference key="NSNextResponder" ref="596173366"/>
 								<int key="NSvFlags">292</int>
@@ -427,6 +413,7 @@
 								<int key="NSvFlags">-2147483356</int>
 								<string key="NSFrame">{{512, 647}, {15, 21}}</string>
 								<reference key="NSSuperview" ref="596173366"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -853,7 +840,7 @@
 						</array>
 						<string key="NSFrame">{{340, 95}, {684, 653}}</string>
 						<reference key="NSSuperview" ref="362130751"/>
-						<reference key="NSNextKeyView" ref="633959234"/>
+						<reference key="NSNextKeyView" ref="237241093"/>
 						<string key="NSReuseIdentifierKey">_NS:206</string>
 						<reference key="IBUIBackgroundColor" ref="1032962277"/>
 						<bool key="IBUIClipsSubviews">YES</bool>
@@ -1087,14 +1074,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">NoOrders</string>
-						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="54173236"/>
-					</object>
-					<int key="connectionID">100</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">NoOrdersLabel</string>
 						<reference key="source" ref="841351856"/>
 						<reference key="destination" ref="54173236"/>
@@ -1188,14 +1167,6 @@
 						<reference key="destination" ref="521750573"/>
 					</object>
 					<int key="connectionID">180</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchOutletConnection" key="connection">
-						<string key="label">orderDetailBg</string>
-						<reference key="source" ref="841351856"/>
-						<reference key="destination" ref="633959234"/>
-					</object>
-					<int key="connectionID">186</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
@@ -1482,7 +1453,6 @@
 							<reference ref="280450364"/>
 							<reference ref="715701490"/>
 							<reference ref="373244224"/>
-							<reference ref="633959234"/>
 						</array>
 						<reference key="parent" ref="362130751"/>
 					</object>
@@ -1571,11 +1541,6 @@
 						<int key="objectID">175</int>
 						<reference key="object" ref="841436803"/>
 						<reference key="parent" ref="362130751"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">178</int>
-						<reference key="object" ref="633959234"/>
-						<reference key="parent" ref="596173366"/>
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">187</int>
@@ -1722,7 +1687,6 @@
 				<string key="175.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<real value="0.0" key="175.IBUIButtonInspectorSelectedEdgeInsetMetadataKey"/>
 				<real value="0.0" key="175.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
-				<string key="178.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="187.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="190.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="191.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -1756,7 +1720,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">219</int>
+			<int key="maxID">276</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes"/>
 		<int key="IBDocument.localizationMode">0</int>
@@ -1764,8 +1728,7 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="FarrisOrderDetail.png">{687, 632}</string>
-			<string key="PWHome.png">{1024, 768}</string>
+			<string key="OrdersBg.png">{1024, 768}</string>
 			<string key="deletein.png">{134, 49}</string>
 			<string key="deleteout.png">{140, 53}</string>
 			<string key="logoutin.png">{188, 68}</string>

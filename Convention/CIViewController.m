@@ -187,8 +187,9 @@
                  if ([JSON objectForKey:kID]) {
                      vendorGroup = [[JSON objectForKey:kID] stringValue];
                  }
-                 
-                 CIOrderViewController *masterViewController = [[CIOrderViewController alloc] initWithNibName:@"CIOrderViewController" bundle:nil];
+
+                 UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CIOrderViewController" bundle:nil];
+                 CIOrderViewController *masterViewController = [storyboard instantiateInitialViewController];
                  masterViewController.authToken = authToken;
                  masterViewController.vendorInfo = [vendorInfo copy];
                  masterViewController.vendorGroup = vendorGroup;
