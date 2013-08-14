@@ -54,19 +54,8 @@
         return;
     }
     [self performSelectorOnMainThread:@selector(updateLabel:)withObject:@"Checking network connectivity" waitUntilDone:NO];
-    if(![self isNetworkReachable]){
-        [self performSelectorOnMainThread:@selector(updateLabel:)withObject:[NSString stringWithFormat:@"%@ is unreachable. Please check your WiFi and Ci settings.", kBASEURL] waitUntilDone:NO];
-        [self performSelectorOnMainThread:@selector(stopActivityIndicator)withObject:nil waitUntilDone:NO];
-        return;
-    }
     [self performSelectorOnMainThread:@selector(updateLabel:)withObject:@"Loading show configurations" waitUntilDone:NO];
     [self obtainShowConfigurationAndPresentLoginView];
-}
-
--(BOOL)isNetworkReachable {
-    Reachability *r = [Reachability reachabilityWithHostname:kBASEURL];
-    NetworkStatus networkStatus = [r currentReachabilityStatus];
-    return (networkStatus == ReachableViaWiFi || networkStatus == ReachableViaWWAN) && !(r.connectionRequired);
 }
 
 - (Boolean) requiredSettingsArePresent{
