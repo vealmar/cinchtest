@@ -60,8 +60,13 @@
 @property (weak, nonatomic) IBOutlet UILabel *grossTotal;
 @property (weak, nonatomic) IBOutlet UILabel *discountTotal;
 @property (weak, nonatomic) IBOutlet UILabel *netTotal;
+@property (weak, nonatomic) IBOutlet UILabel *voucherTotal;
 
 @property (readwrite, copy) void(^finishTheOrder)(void);
+@property (weak, nonatomic) IBOutlet UILabel *grossTotalLabel;
+@property (weak, nonatomic) IBOutlet UILabel *discountTotalLabel;
+@property (weak, nonatomic) IBOutlet UILabel *netTotalLabel;
+@property (weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
 
 -(void)PriceChange:(double)price forIndex:(int)idx;
 -(void)QtyChange:(double)qty forIndex:(int)idx;

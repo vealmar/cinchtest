@@ -30,12 +30,12 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="avh-d0-HMV" firstAttribute="leading" secondItem="Hf9-jG-hLu" secondAttribute="leading" constant="370" id="30y-pn-ha3"/>
+                            <constraint firstItem="eJd-z4-GTX" firstAttribute="centerY" secondItem="Hf9-jG-hLu" secondAttribute="centerY" type="default" id="CrD-5q-VdY"/>
                             <constraint firstItem="o2L-cG-4CT" firstAttribute="leading" secondItem="Hf9-jG-hLu" secondAttribute="leading" type="default" id="EqK-wO-qt9"/>
-                            <constraint firstItem="eJd-z4-GTX" firstAttribute="leading" secondItem="Hf9-jG-hLu" secondAttribute="leading" constant="330" id="HRr-Kp-Lqe"/>
-                            <constraint firstItem="avh-d0-HMV" firstAttribute="leading" secondItem="Hf9-jG-hLu" secondAttribute="leading" constant="266" id="Qca-LZ-qeK"/>
-                            <constraint firstItem="eJd-z4-GTX" firstAttribute="centerY" secondItem="Hf9-jG-hLu" secondAttribute="centerY" type="default" id="RaO-96-tAd"/>
                             <constraint firstItem="o2L-cG-4CT" firstAttribute="top" secondItem="Hf9-jG-hLu" secondAttribute="top" constant="-55" id="SfN-8m-g9P"/>
-                            <constraint firstItem="avh-d0-HMV" firstAttribute="centerY" secondItem="eJd-z4-GTX" secondAttribute="centerY" type="default" id="lzx-Gu-hgh"/>
+                            <constraint firstItem="eJd-z4-GTX" firstAttribute="leading" secondItem="avh-d0-HMV" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="TIH-1d-al3"/>
+                            <constraint firstItem="eJd-z4-GTX" firstAttribute="centerY" secondItem="avh-d0-HMV" secondAttribute="centerY" type="default" id="Va3-Ot-48E"/>
                         </constraints>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>

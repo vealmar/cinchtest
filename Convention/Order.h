@@ -19,6 +19,7 @@
 @property (nonatomic) int32_t orderId;
 @property (nonatomic, retain) NSString * status;
 @property (nonatomic) double totalCost;
+@property (nonatomic) double totalVoucher;
 @property (nonatomic) int32_t vendor_id;
 @property (nonatomic, retain) NSString * vendorGroup;
 @property (nonatomic, retain) NSString * vendorGroupId;

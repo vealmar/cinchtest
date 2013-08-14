@@ -25,7 +25,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [[SettingsManager sharedManager] refresh]; //User might have left the app to update settings and come back, so we need to make sure we are using latest settings. //todo: Will config.h be correct?
+    [[SettingsManager sharedManager] refresh]; //User might have left the app to update settings and come back, so we need to make sure we are using latest settings.
     NSThread*settingsThread = [[NSThread alloc] initWithTarget:self
                                                  selector:@selector(checkSettings)
                                                    object:nil];
@@ -81,6 +81,7 @@
     };
     void (^failureBlock)(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON) = ^(NSURLRequest *request , NSHTTPURLResponse *response , NSError *error , id JSON){
         [self performSelectorOnMainThread:@selector(updateLabel:)withObject:@"Settings seem to be invalid. Please make sure Server and Show specified in Ci settings are correct." waitUntilDone:NO];
+        NSLog([error localizedDescription]);
         [self performSelectorOnMainThread:@selector(stopActivityIndicator)withObject:nil waitUntilDone:NO];
     };
     NSMutableURLRequest *request = [client requestWithMethod:@"GET" path:nil parameters:nil];

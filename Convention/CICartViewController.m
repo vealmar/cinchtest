@@ -17,6 +17,7 @@
 #import "SettingsManager.h"
 #import "FarrisProductCell.h"
 #import "UIAlertViewDelegateWithBlock.h"
+#import "ShowConfigurations.h"
 
 @interface CICartViewController (){
     NSMutableArray *allCartItems;
@@ -78,21 +79,45 @@
 
 #pragma mark - View lifecycle
 
+- (void) adjustTotals{
+    NSMutableArray *visibleTotalFields = [[NSMutableArray alloc] init];
+    if(!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label": self.grossTotalLabel}];
+    if(!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label": self.discountTotalLabel}];
+    if(!self.voucherTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.voucherTotal, @"label": self.voucherTotalLabel}];
+    if(!self.netTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.netTotal, @"label": self.netTotalLabel}];
+    int availableHeight = 84;
+    int heightPerField = availableHeight / visibleTotalFields.count;
+    int marginBottomPerField = 2;
+    heightPerField = heightPerField - marginBottomPerField;
+    int y = 4;
+    for(NSDictionary *totalField in visibleTotalFields){
+        ((UILabel *) [totalField objectForKey:@"label"]).frame = CGRectMake(766, y, 129, heightPerField);
+        UITextField *textField = ((UITextField *) [totalField objectForKey:@"field"]);
+        textField.text = @"0";
+        textField.frame = CGRectMake(875, y, 101, heightPerField);
+        y=y+heightPerField+marginBottomPerField;
+    }
+}
 
 - (void)viewWillAppear:(BOOL)animated
 {
     // register for keyboard notifications
     DLog(@"in view will appear... need CI");
-    
+
+    logo.image = [ShowConfigurations instance].logo;
+    self.discountTotal.hidden = self.discountTotalLabel.hidden = ![ShowConfigurations instance].discounts;
+    self.netTotal.hidden = self.netTotalLabel.hidden = ![ShowConfigurations instance].discounts;
+    self.voucherTotal.hidden = self.voucherTotalLabel.hidden = ![ShowConfigurations instance].vouchers;
+    self.grossTotalLabel.text = [ShowConfigurations instance].discounts?@"Gross Total":@"Total";
+    [self adjustTotals];
+
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         tableHeaderPigglyWiggly.hidden = NO;
         tableHeaderFarris.hidden = YES;
-        logo.hidden = YES; //SG: Hiding this at present since I don't have the PW logo image.
     } else if ([kShowCorp isEqualToString: kFarris]) {
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = NO;
         self.zeroVouchers.hidden = YES;
-        logo.image = [UIImage imageNamed:@"FarrisBrosWhiteLogo.png"];
     } else {
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = YES;
@@ -104,22 +129,32 @@
     allCartItems = [NSMutableArray arrayWithCapacity:[self.productData count] + [self.discountItems count]];
     
     double grossTotal = 0.0;
+    double voucherTotal = 0.0;
     NSArray *keys = [self.productData allKeys];
     for (NSString *key in keys) {
-        [allCartItems addObject:[self.productData objectForKey:key]];
+        NSDictionary *dict = [self.productData objectForKey:key];
+        [allCartItems addObject:dict];
         int qty = 0;
         if (multiStore) {
-            NSDictionary *quantitiesByStore = [[[self.productData objectForKey:key] objectForKey:kEditableQty] objectFromJSONString];
+            NSDictionary *quantitiesByStore = [[dict objectForKey:kEditableQty] objectFromJSONString];
             for (NSString *storeId in [quantitiesByStore allKeys]) {
                 qty += [[quantitiesByStore objectForKey:storeId] intValue];
             }
         }
         else {
-            qty += [[[self.productData objectForKey:key] objectForKey:kEditableQty] intValue];
+            qty += [[dict objectForKey:kEditableQty] intValue];
         }
-        double price = [[[self.productCart objectForKey:key] objectForKey:kEditablePrice] doubleValue];
-        grossTotal += qty * price;
+        int numOfShipDates = [[dict objectForKey:kOrderItemShipDates] count];
+        double price = [[dict objectForKey:kEditablePrice] doubleValue];
+        grossTotal += qty * price * (numOfShipDates == 0? 1:numOfShipDates);
+
+        if ([dict objectForKey:kEditableVoucher] != nil && ![[dict objectForKey:kEditableVoucher] isKindOfClass:[NSNull class]]) {
+            double voucherPrice = [[dict objectForKey:kEditableVoucher] doubleValue];
+            voucherTotal += qty * voucherPrice * (numOfShipDates==0?1:numOfShipDates);
+        }
     }
+
+
     
 //    allCartItems = [NSMutableDictionary dictionaryWithDictionary:self.productData];
 //    [allCartItems addEntriesFromDictionary:self.discountItems];
@@ -144,6 +179,8 @@
     
     double netTotal = grossTotal + discountTotal;
     self.netTotal.text = [nf stringFromNumber:[NSNumber numberWithDouble:netTotal]];
+
+    self.voucherTotal.text = [nf stringFromNumber:[NSNumber numberWithDouble:voucherTotal]];
 
     [self.products reloadData];
     [self.indicator stopAnimating];

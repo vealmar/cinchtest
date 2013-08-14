@@ -31,6 +31,7 @@
 #import "UIAlertViewDelegateWithBlock.h"
 #import "PrinterSelectionViewController.h"
 #import "FarrisProductCell.h"
+#import "ShowConfigurations.h"
 
 @interface CIProductViewController (){
     //MBProgressHUD* loading;
@@ -1023,7 +1024,7 @@
             
             DLog(@"orig yo q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
             if (num > 0) {
-                if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+                if ([ShowConfigurations instance].shipDates) {
                     NSMutableArray* strs = [NSMutableArray array];
                     NSArray* dates = [dict objectForKey:kOrderItemShipDates];
                     if ([dates count] > 0) {
@@ -1167,6 +1168,7 @@
                 nf.minimumIntegerDigits = 1;
                 
                 double grossTotal = 0.0;
+                double voucherTotal = 0.0;
                 int orderId = [[JSON objectForKey:kOrderId] intValue];
                 NSArray *lineItems = [JSON objectForKey:@"line_items"];
                 self.discountItems = [NSMutableDictionary dictionary];
@@ -1184,13 +1186,33 @@
                         NSMutableDictionary *dict = [self.productCart objectForKey:[NSNumber numberWithInt:productId]];
                         [dict setObject:[NSNumber numberWithInt:lineItemId] forKey:kOrderLineItemId];
                         
-                        int qty = [[dict objectForKey:kEditableQty] intValue];
+                        int qty = 0;
+                        if (multiStore) {
+                            NSDictionary *quantitiesByStore = [[dict objectForKey:kEditableQty] objectFromJSONString];
+                            for (NSString *storeId in [quantitiesByStore allKeys]) {
+                                qty += [[quantitiesByStore objectForKey:storeId] intValue];
+                            }
+                        }
+                        else {
+                            qty += [[dict objectForKey:kEditableQty] intValue];
+                        }
+
+
+
                         double price = [[dict objectForKey:kEditablePrice] doubleValue];
-                        grossTotal += qty * price;
+                        int numOfShipDates = [[dict objectForKey:kOrderItemShipDates] count];
+                        grossTotal += qty * price * (numOfShipDates==0?1:numOfShipDates);
+
+                        if ([dict objectForKey:kEditableVoucher] != nil && ![[dict objectForKey:kEditableVoucher] isKindOfClass:[NSNull class]]) {
+                            double voucherPrice = [[dict objectForKey:kEditableVoucher] doubleValue];
+                            voucherTotal += qty * voucherPrice * (numOfShipDates==0?1:numOfShipDates);
+                        }
+
                     } else if ([category isEqualToString:@"discount"]) {
                         [self.discountItems setObject:details forKey:[details objectForKey:@"id"]];
 //                        discountTotal += [details objectForKey:@"]
                     }
+
                 }
                 
 //                self.totalCost.text = [nf stringFromNumber:totalCost];

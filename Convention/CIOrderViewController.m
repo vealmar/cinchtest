@@ -589,7 +589,7 @@ SG: The argument 'detail' is the selected order.
             }
             [cell setDescription:[data objectForKey:@"desc"] withSubtext:[data objectForKey:@"desc2"]];
 
-            if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+            if ([ShowConfigurations  instance].vouchers) {
                 if ([self.itemsVouchers objectAtIndex:indexPath.row]) {
                     cell.voucher.text = [self.itemsVouchers objectAtIndex:indexPath.row];
                 }
@@ -714,7 +714,7 @@ SG: The argument 'detail' is the selected order.
             currentOrderID = cell.tag;
             rowToDelete = indexPath;
 
-            if ([kShowCorp isEqualToString:kFarris]) {
+            if (![ShowConfigurations instance].vouchers) {
                 self.headerVoucherLbl.hidden = YES;
                 lblVoucher.hidden = YES;
                 SCtotal.hidden = YES;
@@ -834,6 +834,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         self.discountTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:-discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
         self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal - discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
         self.SCtotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];//SG: displayed next to Voucher label. This must be the voucher total.
+        self.voucherTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];//SG: displayed next to Voucher label. This must be the voucher total.
     }
 }
 
