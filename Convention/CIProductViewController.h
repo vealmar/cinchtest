@@ -61,7 +61,7 @@
 
 
 @property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
-@property (nonatomic, strong) UIPopoverController *popoverController;
+@property (nonatomic, strong) UIPopoverController *poController;
 @property (nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;

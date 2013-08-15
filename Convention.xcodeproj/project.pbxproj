@@ -1162,7 +1162,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0460;
-				ORGANIZATIONNAME = MotionMobs;
+				ORGANIZATIONNAME = "Convention Innovations";
 			};
 			buildConfigurationList = 6E11855B145F2F2100568ED1 /* Build configuration list for PBXProject "Convention" */;
 			compatibilityVersion = "Xcode 3.2";
