@@ -88,8 +88,6 @@ bool pingInProgress = false;
 @synthesize itemsQty;
 @synthesize itemsPrice;
 @synthesize itemsDiscounts;
-@synthesize masterVender;
-@synthesize currentVender;
 @synthesize shipdates;
 @synthesize vendorGroup;
 @synthesize itemsVouchers;
@@ -139,8 +137,6 @@ bool showHud = true;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    masterVender = NO;
-    currentVender = 0;
     currentOrderID = 0;
     isLoadingOrders = NO;
     reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
@@ -243,12 +239,7 @@ bool showHud = true;
         isLoadingOrders = NO;
     };
 
-    NSString *url;
-    if (masterVender) {
-        url = [NSString stringWithFormat:@"%@?%@=%@", kDBMasterORDER, kAuthToken, self.authToken];
-    } else {
-        url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];//SG: vendor/shows/4/orders.json
-    }
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];//SG: vendor/shows/4/orders.json
     DLog(@"Sending %@", url);
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
@@ -1002,19 +993,13 @@ SG: This method gets called when you swipe on an order in the order list and tap
     };
 
     NSString *logoutPath;
-    if (!masterVender) {
+
         if (authToken) {
             logoutPath = [NSString stringWithFormat:@"%@?%@=%@", kDBLOGOUT, kAuthToken, authToken];
         } else {
             logoutPath = kDBLOGOUT;
         }
-    } else {
-        if (authToken) {
-            logoutPath = [NSString stringWithFormat:@"%@?%@=%@", kDBMasterLOGOUT, kAuthToken, authToken];
-        } else {
-            logoutPath = kDBMasterLOGOUT;
-        }
-    }
+
 
     NSURL *url = [NSURL URLWithString:logoutPath];
     DLog(@"Signout url:%@", url);

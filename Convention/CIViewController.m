@@ -26,56 +26,18 @@
 @synthesize error;
 @synthesize authToken;
 @synthesize vendorInfo;
-@synthesize masterVender;
 @synthesize vendorGroup;
 @synthesize lblVersion;
 @synthesize managedObjectContext;
-
--(id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-        masterVender = NO;
-        loginBg.image = [[ShowConfigurations instance] loginScreen];
-    }
-    return self;
-}
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    loginBg.image = [[ShowConfigurations instance] loginScreen];
     originalBounds = self.view.bounds;
     authToken = nil;
-    
-    //for testing
- 
-//    
-//    self.email.text = @"afc-mer58982";
-//    self.password.text = @"2210";
-    
-//    self.email.text = @"afc-agr00601";
-//    self.password.text = @"9695";
-    
-    //show 1 testing
-//    self.email.text = @"AFC-MER58982";
-//    self.password.text = @"2210";
-    
-    //show 2 testing
-//    self.email.text = @"afc-acm00351";
-//    self.password.text = @"2984";
-
-    //PW local testing
-//    self.email.text = @"pw-500";
-//    self.password.text = @"82879";
-    
-    //email testing
-//    self.email.text = @"v1";
-//    self.password.text = @"testing";
-    
     self.vendorInfo =nil;
-    
-	// Do any additional setup after loading the view, typically from a nib.
 }
 
 - (void)viewDidUnload
@@ -86,28 +48,10 @@
     [self setError:nil];
     [self setLblVersion:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
-
-    //determine settings
-    //[kBASEURL length] == 0 || [ShowID length] == 0 || [Host length]== 0;
-
-
-//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"IncompleteSettings.storyboard" bundle:[NSBundle bundleWithIdentifier:@"Convention"]];
-//    IncompleteSetingsViewController *vc = [storyboard instantiateInitialViewController];
-
-
-
-
-    if ([kShowCorp isEqualToString:kFarris]) {
-        loginBg.image = [UIImage imageNamed:@"FBLogin.png"];
-    }else{//SG: PW
-        loginBg.image = [UIImage imageNamed:@"loginBG.png"];
-    }
     self.email.font = [UIFont fontWithName:kFontName size:14.f];
     self.password.font = [UIFont fontWithName:kFontName size:14.f];
     self.lblVersion.font = [UIFont fontWithName:kFontName size:14.f];
@@ -121,9 +65,7 @@
     DLog(@"%@,%@",version, build);
     
     self.lblVersion.text = [NSString stringWithFormat:@"CI %@.%@", version, build];
-    
-//    DLog(@"fonts:%@ %@ %@",[UIFont fontWithName:kFontName size:14.f],[UIFont fontWithName:@"bebas" size:14.f],[UIFont fontWithName:@"Bebas" size:14.f]);
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 
@@ -177,11 +119,6 @@
              if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
                  authToken = [JSON objectForKey:kAuthToken];
                  vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
-//                 NSInteger vendorGroupId = [[JSON objectForKey:kVendorGroupID] integerValue];
-//                 if (venderGroupId && [venderGroupId objectForKey:kID]) {
-//                     vendorGroup = [[venderGroupId objectForKey:kID] stringValue];
-//                 }
-
                  DLog(@"Login JSON: %@", JSON);
                  
                  if ([JSON objectForKey:kID]) {
@@ -232,15 +169,6 @@
 }
 
 - (void) keyboardWillShow:(NSNotification*)notification {
-//    if (keyboardOffset == 0) {
-//        CGRect keyboardFrame = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-//        
-//        UIWindow *window = [[[UIApplication sharedApplication] windows]objectAtIndex:0];
-//        UIView *mainSubviewOfWindow = window.rootViewController.view;
-//        CGRect keyboardFrameConverted = [mainSubviewOfWindow convertRect:keyboardFrame fromView:window];
-//        keyboardOffset = keyboardFrameConverted.size.height;
-//    }
-    
     if (self.view.bounds.origin.y >= 0)
     {
         [self setViewMovedUp:YES];
