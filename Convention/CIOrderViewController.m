@@ -7,20 +7,12 @@
 //
 
 #import "CIOrderViewController.h"
-#import <QuartzCore/QuartzCore.h>
-#import "CIViewController.h"
 #import "CIOrderCell.h"
 #import "config.h"
-#import "CIProductViewController.h"
 #import "MBProgressHUD.h"
-#import "JSONKit.h"
 
 #import "CICalendarViewController.h"
 #import "SettingsManager.h"
-
-//#import "vender.h"
-//#import "product.h"
-//#import "lineItem.h"
 #import "StringManipulation.h"
 #import "AFHTTPClient.h"
 #import "AFJSONRequestOperation.h"
@@ -34,16 +26,13 @@
     BOOL isLoadingOrders;
     UITextField *activeField;
     PullToRefreshView *pull;
-    Order *orderToDelete;
-    //SG: when a partial order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the order entity from core data.
-    NSIndexPath *rowToDelete;
-    //SG: When an order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the row to delete.
+    Order *orderToDelete;//SG: when a partial order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the order entity from core data.
+    NSIndexPath *rowToDelete;//SG: When an order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the row to delete.
     CIProductViewController *productView;
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
     NSIndexPath *selectedItemRowIndexPath;
     __weak IBOutlet UIImageView *homeBg;
-    __weak IBOutlet UIImageView *orderDetailBg;
     __weak IBOutlet UILabel *sdLabel;
     __weak IBOutlet UILabel *sqLabel;
     __weak IBOutlet UILabel *itemTotalLabel;
@@ -52,87 +41,14 @@
 }
 @end
 
-bool pingInProgress = false;
-
 @implementation CIOrderViewController
-@synthesize orders;
-@synthesize orderData;
-@synthesize authToken;
-@synthesize showPrice;
-@synthesize vendorInfo;
-@synthesize sideTable;
-@synthesize saveBtn;
-@synthesize EditorView;
-@synthesize toolWithSave;
-@synthesize toolPlain;
-@synthesize itemsDB;
-@synthesize customer;
-@synthesize authorizer;
-@synthesize itemsTable;
-@synthesize notes;
-@synthesize SCtotal;
-@synthesize total;
-@synthesize NoOrdersLabel;
-@synthesize ordersAct;
-@synthesize itemsAct;
-@synthesize OrderDetailScroll;
-@synthesize sideContainer;
-@synthesize placeholderContainer;
-@synthesize orderContainer;
-@synthesize lblCompany;
-@synthesize lblAuthBy;
-@synthesize lblNotes;
-@synthesize lblItems;
-@synthesize lblTotalPrice;
-@synthesize lblVoucher;
-@synthesize itemsQty;
-@synthesize itemsPrice;
-@synthesize itemsDiscounts;
-@synthesize shipdates;
-@synthesize vendorGroup;
-@synthesize itemsVouchers;
-@synthesize popoverController;
-@synthesize storeQtysPO;
-@synthesize itemsShipDates;
-@synthesize managedObjectContext;
-@synthesize printButton;
-@synthesize searchText;
+
 
 bool showHud = true;
 
 #define kDeleteCompletedOrder 10
 #define kDeletePartialOrder 11
 #define kEditPartialOrder 12
-
-#pragma mark - initializer
-
-- (void)awakeFromNib {
-    [super awakeFromNib];
-        // Custom initialization
-
-
-}
-
-- (void) adjustTotals{
-    NSMutableArray *visibleTotalFields = [[NSMutableArray alloc] init];
-    if(!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label": self.grossTotalLabel}];
-    if(!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label": self.discountTotalLabel}];
-    if(!self.voucherTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.voucherTotal, @"label": self.voucherTotalLabel}];
-    if(!self.total.hidden) [visibleTotalFields addObject:@{@"field" : self.total, @"label": self.totalLabel}];
-    int availableWidth = 400;
-    int widthPerField = availableWidth / visibleTotalFields.count;
-    int marginRightPerField = 2;
-    widthPerField = widthPerField - marginRightPerField;
-    int x = 10;
-    for(NSDictionary *totalField in visibleTotalFields){
-        UITextField *textField = ((UITextField *) [totalField objectForKey:@"field"]);
-        textField.text = @"0";
-        textField.frame = CGRectMake(x, 587, widthPerField, 34);
-        ((UILabel *) [totalField objectForKey:@"labek"]).frame = CGRectMake(x, 613, widthPerField, 34);
-        x=x+widthPerField+marginRightPerField;//2 is the right margin
-    }
-}
-
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad {
@@ -218,6 +134,26 @@ bool showHud = true;
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return UIInterfaceOrientationIsLandscape(interfaceOrientation); //we only support landscape orientation.
+}
+
+- (void) adjustTotals{
+    NSMutableArray *visibleTotalFields = [[NSMutableArray alloc] init];
+    if(!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label": self.grossTotalLabel}];
+    if(!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label": self.discountTotalLabel}];
+    if(!self.voucherTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.voucherTotal, @"label": self.voucherTotalLabel}];
+    if(!self.total.hidden) [visibleTotalFields addObject:@{@"field" : self.total, @"label": self.totalLabel}];
+    int availableWidth = 400;
+    int widthPerField = availableWidth / visibleTotalFields.count;
+    int marginRightPerField = 2;
+    widthPerField = widthPerField - marginRightPerField;
+    int x = 10;
+    for(NSDictionary *totalField in visibleTotalFields){
+        UITextField *textField = ((UITextField *) [totalField objectForKey:@"field"]);
+        textField.text = @"0";
+        textField.frame = CGRectMake(x, 587, widthPerField, 34);
+        ((UILabel *) [totalField objectForKey:@"labek"]).frame = CGRectMake(x, 613, widthPerField, 34);
+        x=x+widthPerField+marginRightPerField;//2 is the right margin
+    }
 }
 
 #pragma mark - Data access methods
@@ -452,10 +388,10 @@ SG: The argument 'detail' is the selected order.
         }
     }
     [productView setTitle:@"Select Products"];//[vendorInfo objectForKey:kName]];
-    if (vendorInfo && vendorInfo.count > 0) {
+    if (self.vendorInfo && self.vendorInfo.count > 0) {
 
         //NSString *venderHidePrice = [[vendorInfo objectAtIndex:currentVender] objectForKey:kVenderHidePrice];
-        NSString *vendorHidePrice = [vendorInfo objectForKey:kVenderHidePrice];
+        NSString *vendorHidePrice = [self.vendorInfo objectForKey:kVenderHidePrice];
         if (vendorHidePrice != nil) {
             productView.showPrice = ![vendorHidePrice boolValue];
         }
@@ -486,7 +422,7 @@ SG: The argument 'detail' is the selected order.
 
         static NSString *CellIdentifier = @"CIOrderCell";
 
-        CIOrderCell *cell = [sideTable dequeueReusableCellWithIdentifier:CellIdentifier];
+        CIOrderCell *cell = [self.sideTable dequeueReusableCellWithIdentifier:CellIdentifier];
 
         if (cell == nil) {
             NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIOrderCell" owner:nil options:nil];
@@ -707,8 +643,8 @@ SG: The argument 'detail' is the selected order.
 
             if (![ShowConfigurations instance].vouchers) {
                 self.headerVoucherLbl.hidden = YES;
-                lblVoucher.hidden = YES;
-                SCtotal.hidden = YES;
+                self.lblVoucher.hidden = YES;
+                self.SCtotal.hidden = YES;
             }
 
             [self displayOrderDetail:[self.orders objectAtIndex:indexPath.row]];//SG: itemsDB is loaded inside of displayOrderDetail.
@@ -848,30 +784,28 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (void)QtyTouchForIndex:(int)idx {
-    if ([popoverController isPopoverVisible]) {
-        [popoverController dismissPopoverAnimated:YES];
+    if ([self.poController isPopoverVisible]) {
+        [self.poController dismissPopoverAnimated:YES];
     } else {
-        if (!storeQtysPO) {
-            storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
+        if (!self.storeQtysPO) {
+            self.storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
         }
 
         NSMutableDictionary *dict = [[[self.itemsQty objectAtIndex:idx] objectFromJSONString] mutableCopy];
-        storeQtysPO.stores = dict;
-        storeQtysPO.tag = idx;
-        storeQtysPO.delegate = self;
+        self.storeQtysPO.stores = dict;
+        self.storeQtysPO.tag = idx;
+        self.storeQtysPO.delegate = self;
         CGRect frame = [self.itemsTable rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
         frame = CGRectOffset(frame, 0, 0);
         DLog(@"pop from frame:%@", NSStringFromCGRect(frame));
-        popoverController = [[UIPopoverController alloc] initWithContentViewController:storeQtysPO];
-        [popoverController presentPopoverFromRect:frame inView:self.itemsTable permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        self.poController = [[UIPopoverController alloc] initWithContentViewController:self.storeQtysPO];
+        [self.poController presentPopoverFromRect:frame inView:self.itemsTable permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
 }
 
 - (void)ShipDatesTouchForIndex:(int)idx {
     CICalendarViewController *calView = [[CICalendarViewController alloc] initWithNibName:@"CICalendarViewController" bundle:nil];
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    //            DLog(@"date(%@):%@",[[self.productData objectAtIndex:[indexPath row]] objectForKey:kProductShipDate1],date);
-    //    [df setDateFormat:@"yyyy-MM-dd"];
     [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
 
     NSDate *startDate = [[NSDate alloc] init];
@@ -994,8 +928,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
     NSString *logoutPath;
 
-        if (authToken) {
-            logoutPath = [NSString stringWithFormat:@"%@?%@=%@", kDBLOGOUT, kAuthToken, authToken];
+        if (self.authToken) {
+            logoutPath = [NSString stringWithFormat:@"%@?%@=%@", kDBLOGOUT, kAuthToken, self.authToken];
         } else {
             logoutPath = kDBLOGOUT;
         }
@@ -1099,8 +1033,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (void)selectPrintStation {
-    if ([popoverController isPopoverVisible]) {
-        [popoverController dismissPopoverAnimated:YES];
+    if ([self.poController isPopoverVisible]) {
+        [self.poController dismissPopoverAnimated:YES];
     }
     PrinterSelectionViewController *psvc = [[PrinterSelectionViewController alloc] initWithNibName:@"PrinterSelectionViewController" bundle:nil];
     psvc.title = @"Available Printers";
@@ -1108,12 +1042,12 @@ SG: This method gets called when you swipe on an order in the order list and tap
     psvc.availablePrinters = [NSArray arrayWithArray:keys];
     psvc.delegate = self;
 
-    CGRect frame = printButton.frame;
+    CGRect frame = self.printButton.frame;
     frame = CGRectOffset(frame, 0, 0);
 
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:psvc];
-    popoverController = [[UIPopoverController alloc] initWithContentViewController:nav];
-    [popoverController presentPopoverFromRect:frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    self.poController = [[UIPopoverController alloc] initWithContentViewController:nav];
+    [self.poController presentPopoverFromRect:frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 - (void)loadPrinters {
@@ -1386,17 +1320,17 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 - (IBAction)searchOrders:(id)sender {
     if (![sender isKindOfClass:[UITextField class]])
-        [searchText resignFirstResponder];
+        [self.searchText resignFirstResponder];
 
     if (self.orders == nil|| [self.orders isKindOfClass:[NSNull class]]) {
         return;
     }
 
-    if ([searchText.text isEqualToString:@""]) {
+    if ([self.searchText.text isEqualToString:@""]) {
         self.orders = [self.orderData mutableCopy];
         DLog(@"string is empty");
     } else {
-        DLog(@"Search Text %@", searchText.text);
+        DLog(@"Search Text %@", self.searchText.text);
         NSPredicate *pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *bindings) {
             NSMutableDictionary *dict = (NSMutableDictionary *) obj;
 
@@ -1407,11 +1341,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
             if ([authorized isKindOfClass:[NSNull class]])
                 authorized = @"";
             NSString *orderId = [[dict objectForKey:kOrderId] stringValue];
-            //			DLog(@"Bill Name: %@", storeName);
-            //			DLog(@"Cust Id: %@", custId);
-            //            DLog(@"Authorized: %@", authorized);
 
-            NSString *test = [searchText.text uppercaseString];
+            NSString *test = [self.searchText.text uppercaseString];
 
             return [[storeName uppercaseString] contains:test]
                     || [[custId uppercaseString] hasPrefix:test]

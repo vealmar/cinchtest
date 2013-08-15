@@ -46,7 +46,7 @@
 @property(nonatomic, strong) NSMutableArray *itemsVouchers;//SG:voucher totals for line items of the currently selected order.
 @property(nonatomic, strong) NSMutableArray *itemsShipDates;//SG:ship dates for line items of the currently selected order.
 @property(nonatomic, strong) NSMutableArray *itemsDiscounts;//SG:discounts for line items of the currently selected order.
-@property(nonatomic, strong) UIPopoverController *popoverController;
+@property(nonatomic, strong) UIPopoverController *poController;
 @property(nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 @property(nonatomic, weak) NSManagedObjectContext *managedObjectContext;
 @property(weak, nonatomic) IBOutlet UITextField *searchText;
