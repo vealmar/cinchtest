@@ -31,7 +31,6 @@
     CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate,
     UIPrinterSelectedDelegate, VendorViewDelegate>
 {
-	ReachabilityDelegation *reachDelegation;
 }
 
 @property (nonatomic, strong) IBOutlet UITableView *products;
@@ -90,8 +89,6 @@
 
 - (IBAction)Cancel:(id)sender;
 @property (weak, nonatomic) IBOutlet UIButton *cartButton;
-
-//- (IBAction)logout:(id)sender;
 - (IBAction)submit:(id)sender;
 - (IBAction)finishOrder:(id)sender;
 - (IBAction)reviewCart:(id)sender;
@@ -102,10 +99,6 @@
 
 - (IBAction)searchProducts:(id)sender;
 - (IBAction)handleTap:(UITapGestureRecognizer *)recognizer;
-
-//@property (weak, nonatomic) IBOutlet UIToolbar *vendorNav;
-//@property (weak, nonatomic) IBOutlet UIBarButtonItem *vendorNavBack;
-//-(IBAction)backToVendors:(id)sender;
 
 - (IBAction)shipdatesTouched:(id)sender;
 
