@@ -53,7 +53,6 @@
         [self performSelectorOnMainThread:@selector(stopActivityIndicator)withObject:nil waitUntilDone:NO];
         return;
     }
-    [self performSelectorOnMainThread:@selector(updateLabel:)withObject:@"Checking network connectivity" waitUntilDone:NO];
     [self performSelectorOnMainThread:@selector(updateLabel:)withObject:@"Loading show configurations" waitUntilDone:NO];
     [self obtainShowConfigurationAndPresentLoginView];
 }
