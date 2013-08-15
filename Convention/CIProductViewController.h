@@ -31,6 +31,8 @@
     CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate,
     UIPrinterSelectedDelegate, VendorViewDelegate>
 {
+    ReachabilityDelegation *reachDelegation;
+
 }
 
 @property (nonatomic, strong) IBOutlet UITableView *products;
