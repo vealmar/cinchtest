@@ -31,19 +31,11 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-}
-
 - (void)viewDidUnload
 {
     [self setCalendarView:nil];
     [self setPlaceholder:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
 -(void)viewWillAppear:(BOOL)animated{
@@ -61,7 +53,6 @@
     
     NSDateComponents* comps = [calendar components:(NSMonthCalendarUnit|NSYearCalendarUnit) fromDate:startDate];
     [calendarView updateCalendarForMonth:[comps month] forYear:[comps year]];
-//    DLog(@"avalible = %@",calendarView.avalibleDates);
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
