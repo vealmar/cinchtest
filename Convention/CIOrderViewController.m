@@ -310,7 +310,7 @@ SG: The argument 'detail' is the selected order.
                     [dates addObject:date];
                 }
 
-                NSArray *selectedDates = [[NSOrderedSet orderedSetWithArray:dates] allObjects];
+                NSArray *selectedDates = [[[NSOrderedSet orderedSetWithArray:dates] array] copy];
                 [self.itemsShipDates insertObject:selectedDates atIndex:idx];
                 //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
             }

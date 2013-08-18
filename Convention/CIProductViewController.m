@@ -984,7 +984,7 @@
         for (NSNumber* i in keys) {
             NSMutableArray *strs = nil;
             NSDictionary* dict = [self.productCart objectForKey:i];
-            if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+            if ([ShowConfigurations instance].shipDates ) {
                 strs = [NSMutableArray array];
                 NSArray* dates = [dict objectForKey:kOrderItemShipDates];
                 if ([dates count] > 0) {
@@ -1477,7 +1477,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
         }
     }
 
-    NSArray *selectedDates = [[NSOrderedSet orderedSetWithArray:selectedArr] allObjects];
+    NSArray *selectedDates = [[[NSOrderedSet orderedSetWithArray:selectedArr] array] copy];
     
     if (ranges.count>1) {
 //        DLog(@"more then one range");
