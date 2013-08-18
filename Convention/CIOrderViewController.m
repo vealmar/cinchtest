@@ -175,12 +175,17 @@ bool showHud = true;
         isLoadingOrders = NO;
     };
 
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];//SG: vendor/shows/4/orders.json
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];
     DLog(@"Sending %@", url);
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                self.orders = [NSMutableArray arrayWithArray:JSON];
+                self.orders = [[NSMutableArray  alloc] init];
+                for(NSDictionary *order in JSON){
+                    if(![@"deleted" isEqualToString: (NSString *) [order objectForKey:@"status"]]){
+                        [self.orders addObject:order];
+                    }
+                }
                 DLog(@"order count: %i", self.orders.count);
                 [self loadPartialOrders];
                 self.orderData = [self.orders mutableCopy];
