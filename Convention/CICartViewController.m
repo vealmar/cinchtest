@@ -10,7 +10,7 @@
 #import "config.h"
 #import "JSONKit.h"
 #import "CIViewController.h"
-#import "CIProductCell.h"
+#import "PWProductCell.h"
 #import "CICustomerInfoViewController.h"
 #import "MBProgressHUD.h"
 #import "Macros.h"
@@ -227,31 +227,25 @@
 	if (!self.productData) {
         return nil;
     }
-    
-//    NSString* key = [[self.productData allKeys] objectAtIndex:indexPath.row];
-//    NSString *key = [[allCartItems allKeys] objectAtIndex:indexPath.row];
-//    NSMutableDictionary* dict = [self.productData objectForKey:key];
-//    NSMutableDictionary *dict = [allCartItems objectForKey:key];
     NSDictionary *dict = [allCartItems objectAtIndex:indexPath.row];
     if ([kShowCorp isEqualToString: kPigglyWiggly]) {
-        static NSString *CellIdentifier = @"CIProductCell";
+        static NSString *CellIdentifier = @"PWProductCell";
         
-        CIProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
+        PWProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
         if (cell == nil){
-            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIProductCell" owner:nil options:nil];
+            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"PWProductCell" owner:nil options:nil];
             
             for(id currentObject in topLevelObjects)
             {
-                if([currentObject isKindOfClass:[CIProductCell class]])
+                if([currentObject isKindOfClass:[PWProductCell class]])
                 {
-                    cell = (CIProductCell *)currentObject;
+                    cell = (PWProductCell *)currentObject;
                     break;
                 }
             }
         }
         
-        //DLog(@"data:%@",[self.productData objectForKey:key]);
         DLog(@"data:%@",[allCartItems objectAtIndex:indexPath.row]);
         
         cell.InvtID.text = [dict objectForKey:@"invtid"];
@@ -261,25 +255,19 @@
         if([dict objectForKey:kProductShipDate1]&&![[dict objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]){
             NSDateFormatter* df = [[NSDateFormatter alloc] init];
             [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-            NSDate* date = [[NSDate alloc]init];
-            date = [df dateFromString:[dict objectForKey:kProductShipDate1]];
+            NSDate* date = [df dateFromString:[dict objectForKey:kProductShipDate1]];
             [df setDateFormat:@"yyyy-MM-dd"];
-    //        cell.PartNbr.text = [df stringFromDate:date];
             cell.shipDate1.text = [df stringFromDate:date];
         }else {
-    //        cell.PartNbr.text = @"";
             cell.shipDate1.text = @"";
         }
         if([dict objectForKey:kProductShipDate2]&&![[dict objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]){
             NSDateFormatter* df = [[NSDateFormatter alloc] init];
             [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-            NSDate* date = [[NSDate alloc]init];
-            date = [df dateFromString:[dict objectForKey:kProductShipDate2]];
+            NSDate* date = [df dateFromString:[dict objectForKey:kProductShipDate2]];
             [df setDateFormat:@"yyyy-MM-dd"];
-    //        cell.Uom.text = [df stringFromDate:date];
             cell.shipDate2.text = [df stringFromDate:date];
         }else {
-    //        cell.Uom.text = @"";
             cell.shipDate2.text = @"";
         }
         //PW---
@@ -435,7 +423,7 @@
     if (self.delegate) {
         [self.delegate setProductCart:[NSMutableDictionary dictionaryWithDictionary:self.productCart]];
         [self.delegate setBackFromCart:YES];
-        [self.delegate setFinishOrder:NO];
+        [self.delegate setOrderSubmitted:NO];
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -446,105 +434,7 @@
     [self Cancel];
 }
 
-//-(void)setCustomerInfo:(NSDictionary*)info
-//{
-//    self.customer = [info copy];
-//}
 
-//- (IBAction)submit:(id)sender {
-//    NSMutableArray* arr = [[NSMutableArray alloc] initWithCapacity:[self.products numberOfRowsInSection:0]];
-//    
-//    //    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
-//    //    [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
-//    NSArray* keys = self.productCart.allKeys;
-//    for (NSString* i in keys) {
-//        NSString* productID = [[self.productData objectForKey:i] objectForKey:@"id"];
-//        NSMutableDictionary* dict = [self.productCart objectForKey:i];
-//        NSInteger num = [[dict objectForKey:kEditableQty] integerValue];
-//        DLog(@"q:%@=%d with %@ and %@",[dict objectForKey:kEditableQty], num,[dict objectForKey:kEditablePrice],[dict objectForKey:kEditableVoucher]);
-//        if (num>0) {
-//            NSDictionary* proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID,kOrderItemID,[NSString stringWithFormat:@"%d",num],kOrderItemNum,[dict objectForKey:kEditablePrice],kOrderItemPRICE,[dict objectForKey:kEditableVoucher],kOrderItemVoucher, nil];
-//            [arr addObject:(id)proDict];
-//        }
-//    }
-//    
-//    [arr removeObjectIdenticalTo:nil];
-//    
-//    DLog(@"array:%@",arr);
-//    NSDictionary* order;
-//    //if ([info objectForKey:kOrderCustID]) {
-//    if (!self.customer) {
-//        return;
-//    }
-//    order = [NSDictionary dictionaryWithObjectsAndKeys:[self.customer objectForKey:kOrderCustID],kOrderCustID,[self.customer objectForKey:kShipNotes],kShipNotes,[self.customer objectForKey:kNotes],kNotes,[self.customer objectForKey:kAuthorizedBy],kAuthorizedBy,[self.customer objectForKey:kEmail],kEmail,[self.customer objectForKey:kSendEmail],kSendEmail, arr,kOrderItems, nil];
-//    //    }
-//    //    else{
-//    //        order = [NSDictionary dictionaryWithObjectsAndKeys:[info objectForKey:kCustName],kCustName,[info objectForKey:kStoreName],kStoreName,[info objectForKey:kCity],kCity,arr,kOrderItems, nil];
-//    //    }
-//    NSDictionary* final = [NSDictionary dictionaryWithObjectsAndKeys:order,kOrder, nil];
-//    
-//    NSString *url = [NSString stringWithFormat:@"%@?%@=%@",kDBORDER,kAuthToken,self.authToken];
-//    DLog(@"final JSON:%@\nURL:%@",[final JSONString],url);
-//    
-//    AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:url]];
-//    [client setParameterEncoding:AFJSONParameterEncoding];
-//    NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:@"" parameters:final];
-//    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-//        
-//        [self dismissViewControllerAnimated:YES completion:^{
-//            if (self.delegate != nil) {
-//                [self.delegate Return];
-//                [self.delegate setBackFromCart:YES];
-//            }
-//
-//        }];
-//    } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-//        
-//        [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",error.localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-//
-//    }];
-//    
-//    [operation start];
-//    
-////    __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:url]];
-////    [request addRequestHeader:@"Accept" value:@"application/json"];
-////    [request addRequestHeader:@"Content-Type" value:@"application/json"];
-////    //[request appendPostData:[dataContent dataUsingEncoding:NSUTF8StringEncoding]];
-////    [request setRequestMethod:@"POST"];
-////    
-////    //[request addRequestHeader:@"Content-Type" value:@"application/json; charset=utf-8"];
-////    
-////    //[request setPostValue:self.authToken forKey:kAuthToken];
-////    
-////    //[request.postBody appendData:[final JSONData]];
-////    [request appendPostData:[[final JSONString] dataUsingEncoding:NSUTF8StringEncoding]];
-////    
-////    //DLog(@"pure:%@",[request postBody]);
-////    
-////    [request setCompletionBlock:^{
-////        //DLog(@"Order complete:%@",[request responseString]);
-////        dispatch_async(dispatch_get_main_queue(), ^{
-////            if (self.delegate != nil) {
-////                [self.delegate Return];
-////                //[self.delegate performSelector:@selector(Return) withObject:nil afterDelay:0.0f];
-////                [self.delegate setBackFromCart:YES];
-////            }
-////            [self dismissViewControllerAnimated:YES completion:nil];
-////        });
-////    }];
-////    
-////    [request setFailedBlock:^{
-////        //DLog(@"Order Error:%@",[request error]);
-////        [[[UIAlertView alloc] initWithTitle:@"Order Error!" message:[NSString stringWithFormat:@"Error message:%@",request.error] delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
-////    }];
-////    
-////    DLog(@"request content-type:%@",request.requestHeaders);
-////    
-////    [request startAsynchronous];
-//    
-//    
-//    //    [self dismissModalViewControllerAnimated:YES];
-//}
 
 - (IBAction)finishOrder:(id)sender {
     if ([[self.productCart allKeys] count] <= 0) {
@@ -553,11 +443,10 @@
     }
     DLog(@"FO self class:%@",NSStringFromClass([self class]));
     DLog(@"FO delegate class:%@",NSStringFromClass([self.delegate class]));
-    if ([self.delegate respondsToSelector:@selector(setFinishOrder:)]&&[self.delegate respondsToSelector:@selector(setBackFromCart:)]) {
+    if ([self.delegate respondsToSelector:@selector(setOrderSubmitted:)]&&[self.delegate respondsToSelector:@selector(setBackFromCart:)]) {
         [self.delegate setProductCart:self.productCart];
         [self.delegate setBackFromCart:YES];
-        [self.delegate setFinishOrder:YES];
-        //        [self.delegate finishOrder:nil];
+        [self.delegate setOrderSubmitted:YES];
     }
     else{
         DLog(@"no delegate class at all");

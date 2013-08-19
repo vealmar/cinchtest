@@ -375,6 +375,7 @@ SG: The argument 'detail' is the selected order.
     productView.showCustomers = newOrder;//SG: If this is a new order, the customer selection popup needs to be displayed.
     productView.allowPrinting = [ShowConfigurations instance].printing;
     productView.showShipDates = [ShowConfigurations instance].shipDates;
+    productView.newOrder = newOrder;
     if ([ShowConfigurations instance].printing) {
         productView.availablePrinters = [availablePrinters copy];
         if (![currentPrinter isEmpty])

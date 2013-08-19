@@ -98,7 +98,7 @@ static SettingsManager *sharedInstance;
 //This is Necessary if you want Settings to be initialized on First launch of the app
 - (void)initialize
 {
-	 if (![[NSUserDefaults standardUserDefaults] objectForKey:@"username"] || ![[NSUserDefaults standardUserDefaults] objectForKey:SERVER])
+	 if (![[NSUserDefaults standardUserDefaults] objectForKey:@"username"] || ![[NSUserDefaults standardUserDefaults] objectForKey:SERVER] || ![[NSUserDefaults standardUserDefaults] objectForKey:@"show"])
 		[self processDefaults];
 
  

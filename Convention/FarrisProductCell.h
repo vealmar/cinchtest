@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "ProductCellDelegate.h"
+#import "ProductCell.h"
 
-@interface FarrisProductCell : UITableViewCell <UITextFieldDelegate>
+@interface FarrisProductCell : ProductCell
 
 @property (weak, nonatomic) IBOutlet UILabel *itemNumber;
 @property (weak, nonatomic) IBOutlet UILabel *descr1;
@@ -26,4 +27,6 @@
 
 @property (nonatomic, assign) id<ProductCellDelegate> delegate;
 -(void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2;
+- (void) initializeWith:(NSDictionary *)product item:(NSDictionary *)item tag:(NSInteger) tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+
 @end

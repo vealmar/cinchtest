@@ -10,7 +10,7 @@
 #import "CICustomerInfoViewController.h"
 #import "CIFinalCustomerInfoViewController.h"
 #import "CICartViewController.h"
-#import "CIProductCell.h"
+#import "PWProductCell.h"
 #import "CIStoreQtyTableViewController.h"
 #import "ReachabilityDelegation.h"
 #import "PrinterSelectionViewController.h"
@@ -50,7 +50,7 @@
 @property (nonatomic) BOOL showPrice;
 @property (nonatomic) BOOL showCustomers;
 @property (nonatomic) BOOL backFromCart;
-@property (nonatomic) BOOL finishOrder;
+@property (nonatomic) BOOL orderSubmitted;
 @property (nonatomic) BOOL multiStore;
 @property (nonatomic) int tOffset;
 @property (nonatomic) NSString* customerId;//SG:custid property of the order's customer.
@@ -85,6 +85,7 @@
 @property (weak, nonatomic) IBOutlet UIView *tableHeaderFarris;
 
 @property (nonatomic, assign) id<CIProductViewDelegate> delegate;
+@property (nonatomic) BOOL newOrder;
 
 -(void)PriceChange:(double)price forIndex:(int)idx;
 -(void)QtyChange:(double)qty forIndex:(int)idx;

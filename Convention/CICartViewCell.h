@@ -1,5 +1,5 @@
 //
-//  CIProductCell.h
+//  PWProductCell.h
 //  Convention
 //
 //  Created by Matthew Clark on 11/2/11.

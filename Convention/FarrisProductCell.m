@@ -8,6 +8,7 @@
 
 #import "FarrisProductCell.h"
 #import "StringManipulation.h"
+#import "config.h"
 
 @interface FarrisProductCell() {
     NSString* originalCellValue;
@@ -16,14 +17,29 @@
 
 @implementation FarrisProductCell
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        // Initialization code
+
+- (void) initializeWith:(NSDictionary *)product item:(NSDictionary *)item tag:(NSInteger) tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate{
+    self.itemNumber.text = [product objectForKey:@"invtid"];
+    [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
+    self.min.text = [[product objectForKey:@"min"] stringValue];
+    if (item != nil && [item objectForKey:kEditableQty] != nil) {
+        self.quantity.text = [[item objectForKey:kEditableQty] stringValue];
+    } else {
+        self.quantity.text = @"0";
     }
-    return self;
+    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+    nf.formatterBehavior = NSNumberFormatterBehavior10_4;
+    nf.maximumFractionDigits = 2;
+    nf.minimumFractionDigits = 2;
+    nf.minimumIntegerDigits = 1;
+    self.regPrice.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[product objectForKey:kProductRegPrc] doubleValue]]];
+    self.showPrice.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[product objectForKey:kProductShowPrice] doubleValue]]];
+    self.delegate = productCellDelegate;
+    self.tag = tag;
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
+    self.accessoryType = UITableViewCellAccessoryNone;
 }
+
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {

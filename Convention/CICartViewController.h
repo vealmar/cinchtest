@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "CICustomerInfoViewController.h"
-#import "CIProductCell.h"
+#import "PWProductCell.h"
 #import "CIStoreQtyTableViewController.h"
 
 @protocol CICartViewDelegate <NSObject>
@@ -18,7 +18,7 @@
 -(void) setProductCart:(NSMutableDictionary*)cart;
 
 -(void) setBackFromCart:(BOOL)yes;
--(void) setFinishOrder:(BOOL)yes;
+-(void) setOrderSubmitted:(BOOL)yes;
 -(void)QtyChange:(double)qty forIndex:(int)idx;
 -(void)reload;
 - (IBAction)finishOrder:(id)sender;
