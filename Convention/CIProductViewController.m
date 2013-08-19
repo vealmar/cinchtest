@@ -1353,14 +1353,15 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     [self.view endEditing:YES];
     
     if (selectedIdx.count <= 0) {
-        [[[UIAlertView alloc]initWithTitle:@"Oops" message:@"Please select the item(s) you want to set dates for first"
+        [[[UIAlertView alloc]initWithTitle:@"Oops" message:@"Please select the item(s) you want to set dates for."
                                   delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
         return;
     }
-    
+
     MBProgressHUD* thinking = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
     thinking.labelText = @"Calculating dates...";
-    [thinking show:NO];
+    [thinking show:YES];
+//    [thinking show:NO];
     
     NSMutableArray* ranges = [NSMutableArray arrayWithCapacity:selectedIdx.count];
     DLog(@"# selectedIdx(%d):%@",selectedIdx.count,selectedIdx);
