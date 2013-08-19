@@ -43,9 +43,6 @@
 
 @implementation CIOrderViewController
 
-
-bool showHud = true;
-
 #define kDeleteCompletedOrder 10
 #define kDeletePartialOrder 11
 #define kEditPartialOrder 12
@@ -158,46 +155,48 @@ bool showHud = true;
 
 #pragma mark - Data access methods
 
-- (void)loadOrders {
-    isLoadingOrders = YES;
-    self.OrderDetailScroll.hidden = YES;
-    MBProgressHUD *hud;
-    if (showHud) {
-        hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
-        hud.labelText = @"Getting Orders";
-        [hud show:YES];
-    }
+- (void)loadOrders: (BOOL) showLoadingIndicator  {
+    if (!isLoadingOrders) {
+        self.itemsDB = nil;
+        isLoadingOrders = YES;
+        self.OrderDetailScroll.hidden = YES;
+        MBProgressHUD *hud;
+        if (showLoadingIndicator) {  //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
+            hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
+            hud.labelText = @"Getting Orders";
+            [hud show:YES];
+        }
 
-    void (^cleanup)(void) = ^{
-        if (showHud) [hud hide:YES];
-        [pull finishedLoading];
-        showHud = true;
-        isLoadingOrders = NO;
-    };
+        void (^cleanup)(void) = ^{
+            if (![hud isHidden]) [hud hide:YES];
+            [pull finishedLoading];
+            isLoadingOrders = NO;
+        };
 
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];
-    DLog(@"Sending %@", url);
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-            success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                self.orders = [[NSMutableArray  alloc] init];
-                for(NSDictionary *order in JSON){
-                    if(![@"deleted" isEqualToString: (NSString *) [order objectForKey:@"status"]]){
-                        [self.orders addObject:order];
+        NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];
+        DLog(@"Sending %@", url);
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                    self.orders = [[NSMutableArray  alloc] init];
+                    for(NSDictionary *order in JSON){
+                        if(![@"deleted" isEqualToString: (NSString *) [order objectForKey:@"status"]]){
+                            [self.orders addObject:order];
+                        }
                     }
-                }
-                DLog(@"order count: %i", self.orders.count);
-                [self loadPartialOrders];
-                self.orderData = [self.orders mutableCopy];
-                [self.sideTable reloadData];
-                self.NoOrdersLabel.hidden = [self.orders count] > 0;
-                cleanup();
-            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@", [error localizedDescription]] delegate:nil
-                                  cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                cleanup();
-            }];
-    [operation start];
+                    DLog(@"order count: %i", self.orders.count);
+                    [self loadPartialOrders];
+                    self.orderData = [self.orders mutableCopy];
+                    [self.sideTable reloadData];
+                    self.NoOrdersLabel.hidden = [self.orders count] > 0;
+                    cleanup();
+                } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                    [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@", [error localizedDescription]] delegate:nil
+                                      cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                    cleanup();
+                }];
+        [operation start];
+    }
 }
 
 /*
@@ -906,10 +905,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 #pragma mark - CIProductViewDelegate
 
 - (void)Return {
-    if (!isLoadingOrders) {
-        self.itemsDB = nil;
-        [self loadOrders];
-    }
+    [self loadOrders:YES];
 }
 
 #pragma mark - CIStoreQtyDelegate
@@ -1212,9 +1208,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 #pragma mark - PullToRefreshViewDelegate
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
-    //[self performSelectorInBackground:@selector(loadOrders) withObject:nil];
-    showHud = false;
-    [self Return];
+    [self loadOrders:NO];
 }
 
 #pragma mark - ReachabilityDelegate
