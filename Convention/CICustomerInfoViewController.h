@@ -10,28 +10,32 @@
 
 @protocol CICustomerDelegate <NSObject>
 
-- (void)setCustomerInfo:(NSDictionary*)info;
-- (void)Cancel;
+- (void)customerSelected:(NSDictionary *)info;
+
+- (void)customerSelectionCancel;
 
 @end
 
-@interface CICustomerInfoViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate>
-@property (unsafe_unretained, nonatomic) IBOutlet UIView *tablelayer;
-@property (unsafe_unretained, nonatomic) IBOutlet UITableView *custTable;
-@property (strong, nonatomic) IBOutlet UIView *custView;
+@interface CICustomerInfoViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
+@property(unsafe_unretained, nonatomic) IBOutlet UIView *tablelayer;
+@property(unsafe_unretained, nonatomic) IBOutlet UITableView *custTable;
+@property(strong, nonatomic) IBOutlet UIView *custView;
 
-@property (nonatomic, strong) NSArray* tableData;
-@property (nonatomic, strong) NSMutableArray* filteredtableData;
-@property (weak, nonatomic) IBOutlet UITextField *searchText;
+@property(nonatomic, strong) NSArray *tableData;
+@property(nonatomic, strong) NSMutableArray *filteredtableData;
+@property(weak, nonatomic) IBOutlet UITextField *searchText;
 
-@property (nonatomic, strong) NSString* authToken;
+@property(nonatomic, strong) NSString *authToken;
 
--(void) setCustomerData:(NSArray *)customerData;
+- (void)setCustomerData:(NSArray *)customerData;
+
 - (IBAction)back:(id)sender;
+
 - (IBAction)refresh:(id)sender;
+
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 
-@property (nonatomic, assign) id<CICustomerDelegate> delegate;
+@property(nonatomic, assign) id <CICustomerDelegate> delegate;
 
 - (IBAction)submit:(id)sender;
 

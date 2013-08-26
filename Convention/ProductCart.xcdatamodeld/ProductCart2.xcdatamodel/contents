@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="2" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="1811" systemVersion="12C60" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model name="" userDefinedModelVersionIdentifier="2" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="878" systemVersion="11G63b" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Cart" representedClassName="Cart" syncable="YES">
         <attribute name="adv" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="cartId" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="caseqty" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="category" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="company" attributeType="String" syncable="YES"/>
-        <attribute name="created_at" attributeType="String" syncable="YES"/>
+        <attribute name="created_at" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="descr" attributeType="String" syncable="YES"/>
         <attribute name="descr2" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="dirship" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
@@ -37,7 +37,7 @@
     </entity>
     <entity name="Order" representedClassName="Order" syncable="YES">
         <attribute name="billname" attributeType="String" syncable="YES"/>
-        <attribute name="created_at" attributeType="Date" syncable="YES"/>
+        <attribute name="created_at" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="custid" attributeType="String" syncable="YES"/>
         <attribute name="customer_id" attributeType="String" syncable="YES"/>
         <attribute name="multiStore" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
@@ -60,7 +60,7 @@
     <fetchRequest name="getSetupItem" entity="SetupInfo" predicateString="item == $ITEMNAME"/>
     <elements>
         <element name="Cart" positionX="90" positionY="20" width="128" height="540"/>
-        <element name="Order" positionX="-200" positionY="27" width="128" height="195"/>
+        <element name="Order" positionX="-200" positionY="27" width="128" height="225"/>
         <element name="SetupInfo" positionX="-270" positionY="333" width="128" height="73"/>
         <element name="ShipDate" positionX="331" positionY="215" width="128" height="75"/>
     </elements>

@@ -13,7 +13,7 @@
 
 @interface ShipDate : NSManagedObject
 
-@property (nonatomic) NSTimeInterval shipdate;
-@property (nonatomic, retain) Cart *cart;
+@property(nonatomic) NSDate *shipdate;
+@property(nonatomic, retain) Cart *cart;
 
 @end

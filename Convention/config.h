@@ -33,6 +33,7 @@
 #define kDBGETPRODUCTS [NSString stringWithFormat:@"%@/vendor/shows/%@/products.json",kBASEURL,ShowID]
 #define kDBGETVENDORSWithVG(VendorGroupID) [NSString stringWithFormat:@"%@/vendor/shows/%@/vendorgroups.json?%@=%@",kBASEURL,ShowID,kVendorGroupID,VendorGroupID]
 #define kDBGETCUSTOMERS [NSString stringWithFormat:@"%@/vendor/shows/%@/customers.json",kBASEURL,ShowID]
+#define kDBGETCUSTOMER(customerId) [NSString stringWithFormat:@"%@/vendor/shows/%@/customers/%@.json?",kBASEURL,ShowID, customerId]
 #define kDBORDER [NSString stringWithFormat:@"%@/vendor/shows/%@/orders.json",kBASEURL,ShowID]
 #define kDBORDEREDIT(ID) [NSString stringWithFormat:@"%@/vendor/orders/%d.json",kBASEURL,ID]
 #define kDBORDEREDITS(ID) [NSString stringWithFormat:@"%@/vendor/shows/%@/orders/%d.json",kBASEURL,ShowID,ID]
@@ -87,12 +88,14 @@
 #define kID @"id"
 #define kOrderId @"id"
 #define kProductId @"id"
+#define kLineItemId @"id"
+
 
 #define kError @"error"
 
 //Order keys:
 #define kOrder @"order"
-    //Customer Info keys:
+//Customer Info keys:
 #define kCustID @"custid"
 #define kOrderCustID @"customer_id"
 #define kCustName @"customer_name"
@@ -115,7 +118,7 @@
 #define kVoucherTotal @"voucherTotal"
 #define kShipFlag @"ship_flag"
 
-    //purchased Items keys:
+//purchased Items keys:
 #define kOrderItems @"line_items_attributes"
 #define kOrderItemID @"product_id"
 #define kOrderItemNum @"quantity"
@@ -144,10 +147,26 @@
 #define kProductVoucher @"voucher"
 #define kProductDiscount @"discount"
 #define kProductUniqueId @"unique_product_id"
+#define kProductCompany @"company"
+#define kProductImportID @"import_id"
+#define kProductInitialShow @"initial_show"
+#define kProductVendID @"vendid"
+#define kProductVendorID @"vendor_id"
+#define kProductCreatedAt @"created_at"
+#define kProductUpdatedAt @"updated_at"
+
+
+#define kLineItemProductID @"product_id"
+#define kLineItemQuantity @"quantity"
+#define kLineItemPRICE @"price"
+#define kLineItemVoucher @"voucherPrice"
+#define kLineItemShipDates @"shipdates"
+
 
 #define kEditablePrice @"editablePrice"
 #define kEditableVoucher @"editableVoucher"
 #define kEditableQty @"editableQty"
+
 
 //report print keys:
 #define kReportPrintIsle @"report_print[isle]"

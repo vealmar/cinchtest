@@ -18,16 +18,20 @@
 #import "AFJSONRequestOperation.h"
 #import "CoreDataUtil.h"
 #import "Order.h"
-#import "Cart.h"
 #import "ShowConfigurations.h"
+#import "AnOrder.h"
+#import "ALineItem.h"
 
 @interface CIOrderViewController () {
     int currentOrderID;
+    AnOrder *currentOrder;
     BOOL isLoadingOrders;
     UITextField *activeField;
     PullToRefreshView *pull;
-    Order *orderToDelete;//SG: when a partial order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the order entity from core data.
-    NSIndexPath *rowToDelete;//SG: When an order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the row to delete.
+    Order *orderToDelete;
+    //SG: when a partial order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the order entity from core data.
+    NSIndexPath *rowToDelete;
+    //SG: When an order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the row to delete.
     CIProductViewController *productView;
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
@@ -56,24 +60,24 @@
 
     ShowConfigurations *showConfig = [ShowConfigurations instance];
     self.logoImage.image = [showConfig logo];
-    if(showConfig.shipDates){
+    if (showConfig.shipDates) {
         quantityLabel.hidden = YES;
-    }else{
+    } else {
         sdLabel.hidden = YES;
         sqLabel.hidden = YES;
     }
-    if(showConfig.vouchers){
+    if (showConfig.vouchers) {
         self.voucherItemTotalLabel.text = @"VOUCHER";
-    }else{
+    } else {
         self.voucherItemTotalLabel.text = @"ITEM TOTAL";
         self.voucherTotal.hidden = YES;
         self.voucherTotalLabel.hidden = YES;
     }
-    if (showConfig.discounts){
+    if (showConfig.discounts) {
         self.grossTotalLabel.text = @"Gross Total";
         self.total.hidden = YES;
         self.totalLabel.hidden = YES;
-    }else{
+    } else {
         self.grossTotalLabel.text = @"Total";
         self.discountTotal.hidden = YES;
         self.discountTotalLabel.hidden = YES;
@@ -89,6 +93,7 @@
     self.placeholderContainer.hidden = NO;
     [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
     if ([ShowConfigurations instance].printing) currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
+    self.showShipDates = [[ShowConfigurations instance] shipDates];
     pull = [[PullToRefreshView alloc] initWithScrollView:(UIScrollView *) self.sideTable];
     [pull setDelegate:self];
     [self.sideTable addSubview:pull];
@@ -133,29 +138,29 @@
     return UIInterfaceOrientationIsLandscape(interfaceOrientation); //we only support landscape orientation.
 }
 
-- (void) adjustTotals{
+- (void)adjustTotals {
     NSMutableArray *visibleTotalFields = [[NSMutableArray alloc] init];
-    if(!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label": self.grossTotalLabel}];
-    if(!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label": self.discountTotalLabel}];
-    if(!self.voucherTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.voucherTotal, @"label": self.voucherTotalLabel}];
-    if(!self.total.hidden) [visibleTotalFields addObject:@{@"field" : self.total, @"label": self.totalLabel}];
+    if (!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label" : self.grossTotalLabel}];
+    if (!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label" : self.discountTotalLabel}];
+    if (!self.voucherTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.voucherTotal, @"label" : self.voucherTotalLabel}];
+    if (!self.total.hidden) [visibleTotalFields addObject:@{@"field" : self.total, @"label" : self.totalLabel}];
     int availableWidth = 400;
     int widthPerField = availableWidth / visibleTotalFields.count;
     int marginRightPerField = 2;
     widthPerField = widthPerField - marginRightPerField;
     int x = 10;
-    for(NSDictionary *totalField in visibleTotalFields){
+    for (NSDictionary *totalField in visibleTotalFields) {
         UITextField *textField = ((UITextField *) [totalField objectForKey:@"field"]);
         textField.text = @"0";
         textField.frame = CGRectMake(x, 587, widthPerField, 34);
         ((UILabel *) [totalField objectForKey:@"labek"]).frame = CGRectMake(x, 613, widthPerField, 34);
-        x=x+widthPerField+marginRightPerField;//2 is the right margin
+        x = x + widthPerField + marginRightPerField;//2 is the right margin
     }
 }
 
 #pragma mark - Data access methods
 
-- (void)loadOrders: (BOOL) showLoadingIndicator  {
+- (void)loadOrders:(BOOL)showLoadingIndicator {
     if (!isLoadingOrders) {
         self.itemsDB = nil;
         isLoadingOrders = YES;
@@ -178,17 +183,17 @@
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                 success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                    self.orders = [[NSMutableArray  alloc] init];
-                    for(NSDictionary *order in JSON){
-                        if(![@"deleted" isEqualToString: (NSString *) [order objectForKey:@"status"]]){
-                            [self.orders addObject:order];
+                    self.filteredOrders = [[NSMutableArray alloc] init];
+                    for (NSDictionary *order in JSON) {
+                        if (![@"deleted" isEqualToString:(NSString *) [order objectForKey:@"status"]]) {
+                            [self.filteredOrders addObject:[[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) order]];
                         }
                     }
-                    DLog(@"order count: %i", self.orders.count);
+                    DLog(@"order count: %i", self.allorders.count);
                     [self loadPartialOrders];
-                    self.orderData = [self.orders mutableCopy];
+                    self.allorders = [self.filteredOrders mutableCopy];
                     [self.sideTable reloadData];
-                    self.NoOrdersLabel.hidden = [self.orders count] > 0;
+                    self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
                     cleanup();
                 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
                     [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@", [error localizedDescription]] delegate:nil
@@ -208,50 +213,10 @@ These partial orders then are put at the beginning of the self.orders array.
 - (void)loadPartialOrders {
     NSArray *partialOrders = [[CoreDataUtil sharedManager] fetchObjects:@"Order" sortField:@"created_at"];
     for (Order *order in partialOrders) {
-
         int orderId = order.orderId;
-        if (orderId == 0) {  //SG: makes sure this is a partial order
-            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObject:@"" forKey:kAuthorizedBy];
-            [dict setObject:[NSDate dateWithTimeIntervalSinceReferenceDate:order.created_at] forKey:kVendorCreatedAt];
-            [dict setObject:kPartialOrder forKey:kOrderStatus];
-
-            NSMutableDictionary *_customer = [[NSMutableDictionary alloc] init];
-            [_customer setObject:order.billname forKey:kBillName];
-            [_customer setObject:[NSString stringWithFormat:@"%@", order.custid] forKey:kCustID];
-            [_customer setObject:[NSString stringWithFormat:@"%@", order.customer_id] forKey:@"id"];
-
-            [dict setObject:_customer forKey:@"customer"];
-            [dict setObject:[NSString stringWithFormat:@"%@", order.customer_id] forKey:kOrderCustID];
-            [dict setObject:[NSString stringWithFormat:@"%d", [order.carts count]] forKey:kItemCount];
-
-            // TODO: setup line items
-            NSMutableDictionary *lineItems = [[NSMutableDictionary alloc] init];
-            [dict setObject:lineItems forKey:kItems];
-
-            double itemTotal = 0.f;
-            for (int i = 0; i < order.carts.count; i++) {
-
-                Cart *lineItem = (Cart *) [order.carts objectAtIndex:i];
-
-                __autoreleasing NSError *err = nil;
-                NSMutableDictionary *dict = [lineItem.editableQty objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-
-                double itemQty = 0;
-                if (err) { //SG: if the item quantity is not a json/hash like string.
-                    itemQty = [lineItem.editableQty doubleValue];
-                } else { //SG: if item quantity is a json/hash like string i.e. there is more than one quantity for this item. This will happen when the customer has multiple stores.
-                    for (NSString *key in dict.allKeys) {
-                        itemQty += [[dict objectForKey:key] doubleValue];
-                    }
-                }
-
-                itemTotal += itemQty * lineItem.editablePrice;
-            };
-
-            [dict setObject:[NSNumber numberWithDouble:itemTotal] forKey:kTotal];
-            [dict setObject:[NSNumber numberWithInt:0] forKey:kVoucherTotal];
-
-            [self.orders insertObject:dict atIndex:0];
+        if (orderId == 0 && [order.vendorGroup isEqualToString:[[self.vendorInfo objectForKey:kID] stringValue]]) {  //this is a partial order (orderId eq 0). Make sure the order is for logged in vendor. If vendors switch ipads we do not want to show them each other's orders.
+            AnOrder *anOrder = [[AnOrder alloc] initWithCoreData:order];
+            [self.filteredOrders insertObject:anOrder atIndex:0];
         }
     }
 }
@@ -261,10 +226,10 @@ These partial orders then are put at the beginning of the self.orders array.
 /*
 SG: The argument 'detail' is the selected order.
 */
-- (void)displayOrderDetail:(NSDictionary *)detail {
-    self.itemsDB = [NSDictionary dictionaryWithDictionary:detail];
+- (void)displayOrderDetail:(AnOrder *)detail {
+    self.itemsDB = detail; //todo older code used to make a copy of the order dict
     if (detail) {
-        NSArray *arr = [detail objectForKey:kItems];
+        NSArray *arr = detail.lineItems;
         self.itemsPrice = [NSMutableArray array];
         self.itemsDiscounts = [NSMutableArray array];
         self.itemsQty = [NSMutableArray array];
@@ -272,15 +237,15 @@ SG: The argument 'detail' is the selected order.
         self.itemsShipDates = [NSMutableArray array];
 
         [arr enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NSDictionary *dict = (NSDictionary *) obj;
+            ALineItem *dict = (ALineItem *) obj;
 
-            BOOL isDiscount = [[dict objectForKey:@"category"] isEqualToString:@"discount"];
-            if (!isDiscount && [dict objectForKey:@"price"] && ![[dict objectForKey:@"price"] isKindOfClass:[NSNull class]]) {
-                [self.itemsPrice insertObject:[dict objectForKey:@"price"] atIndex:idx];
+            BOOL isDiscount = [dict.category isEqualToString:@"discount"];
+            if (!isDiscount && dict.price && ![dict.price isKindOfClass:[NSNull class]]) {
+                [self.itemsPrice insertObject:dict.price atIndex:idx];
                 [self.itemsDiscounts insertObject:[NSNumber numberWithInt:0] atIndex:idx];
-                DLog(@"p(%i):%@", idx, [dict objectForKey:@"price"]);
+                DLog(@"p(%i):%@", idx, dict.price);
             } else if (isDiscount) {
-                [self.itemsPrice insertObject:[dict objectForKey:@"price"] atIndex:idx];
+                [self.itemsPrice insertObject:dict.price atIndex:idx];
                 [self.itemsDiscounts insertObject:[NSNumber numberWithInt:1] atIndex:idx];
             }
             else {
@@ -288,40 +253,37 @@ SG: The argument 'detail' is the selected order.
                 [self.itemsDiscounts insertObject:[NSNumber numberWithInt:0] atIndex:idx];
             }
 
-            if ([dict objectForKey:@"quantity"] && ![[dict objectForKey:@"quantity"] isKindOfClass:[NSNull class]]) {
-                [self.itemsQty insertObject:[dict objectForKey:@"quantity"] atIndex:idx];
-                DLog(@"q(%i):%@", idx, [dict objectForKey:@"quantity"]);
+            if (dict.quantity && ![dict.quantity isKindOfClass:[NSNull class]]) {
+                [self.itemsQty insertObject:dict.quantity atIndex:idx];
+                DLog(@"q(%i):%@", idx, dict.quantity);
             }
             else
                 [self.itemsQty insertObject:@"0" atIndex:idx];
 
-            if ([dict objectForKey:kOrderItemVoucher] && ![[dict objectForKey:kOrderItemVoucher] isKindOfClass:[NSNull class]]) {
-                [self.itemsVouchers insertObject:[dict objectForKey:kOrderItemVoucher] atIndex:idx];
+            if (dict.voucherPrice && ![dict.voucherPrice isKindOfClass:[NSNull class]]) {
+                [self.itemsVouchers insertObject:dict.voucherPrice atIndex:idx];
                 //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
             }
             else
                 [self.itemsVouchers insertObject:@"0" atIndex:idx];
 
-            if ([dict objectForKey:kOrderItemShipDates] && ![[dict objectForKey:kOrderItemShipDates] isKindOfClass:[NSNull class]]) {
+            if (dict.shipDates && ![dict.shipDates isKindOfClass:[NSNull class]]) {
 
-                NSArray *raw = [dict objectForKey:kOrderItemShipDates];
+                NSArray *raw = dict.shipDates;
                 NSMutableArray *dates = [NSMutableArray array];
                 NSDateFormatter *df = [[NSDateFormatter alloc] init];
                 [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
                 for (NSString *str in raw) {
                     NSDate *date = [df dateFromString:str];
-                    //DLog(@"str:%@ date:%@",str, date);
                     [dates addObject:date];
                 }
 
                 NSArray *selectedDates = [[[NSOrderedSet orderedSetWithArray:dates] array] copy];
                 [self.itemsShipDates insertObject:selectedDates atIndex:idx];
-                //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
             }
             else
                 [self.itemsShipDates insertObject:[NSArray array] atIndex:idx];
         }];
-        //            DLog(@"items Json:%@",itemsDB);
         [self.itemsTable reloadData];
 
         NSMutableArray *SDs = [NSMutableArray array];
@@ -349,8 +311,8 @@ SG: The argument 'detail' is the selected order.
         self.shipdates.text = sdtext; //SG: all the ship dates for all the items in the order? shipDates is the text box displayed next to the Shipping label in the editor view for PW.
         sdtext = nil;
 
-        if (![[self.itemsDB objectForKey:kNotes] isKindOfClass:[NSNull class]]) {  //SG: these are order's notes. itemsDB has all the key-value pairs from the order itself.
-            self.notes.text = [self.itemsDB objectForKey:kNotes];
+        if (![detail.notes isKindOfClass:[NSNull class]]) {  //SG: these are order's notes. itemsDB has all the key-value pairs from the order itself.
+            self.notes.text = detail.notes;
         }
 
         //[self UpdateTotal];
@@ -365,55 +327,46 @@ SG: The argument 'detail' is the selected order.
 
 #pragma mark - Load Product View Conroller
 
-- (void)loadProductView:(BOOL)newOrder {
+- (void)loadProductView:(BOOL)newOrder customer:(NSDictionary *)customer {
     productView = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
     productView.authToken = self.authToken;
-    productView.vendorGroup = self.vendorGroup; //SG: This is the logged in vendor's id and not their vendorgroup_id.
-    productView.vendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];//SG: This is the logged in vendor's vendorgroup_id.
+    productView.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
+    productView.loggedInVendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];
     productView.delegate = self;
     productView.managedObjectContext = self.managedObjectContext;
-    productView.showCustomers = newOrder;//SG: If this is a new order, the customer selection popup needs to be displayed.
-    productView.allowPrinting = [ShowConfigurations instance].printing;
-    productView.showShipDates = [ShowConfigurations instance].shipDates;
     productView.newOrder = newOrder;
+    productView.customer = customer;
+
+    if (!newOrder) {
+        productView.orderId = (NSInteger) currentOrder.orderId;
+        productView.selectedOrder = currentOrder;
+    }
     if ([ShowConfigurations instance].printing) {
         productView.availablePrinters = [availablePrinters copy];
         if (![currentPrinter isEmpty])
             productView.printStationId = [[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue];
     }
 
-    if (!newOrder) {
-        NSUInteger index = [self.orders indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-            int _id = [[obj objectForKey:kOrderId] intValue];
-            *stop = _id == currentOrderID;
-            return *stop;
-        }];
-        if (index != NSNotFound) {
-            productView.customerId = [[[self.orders objectAtIndex:index] objectForKey:@"customer"] objectForKey:kCustID];
-        }
-    }
-    [productView setTitle:@"Select Products"];//[vendorInfo objectForKey:kName]];
-    if (self.vendorInfo && self.vendorInfo.count > 0) {
 
-        //NSString *venderHidePrice = [[vendorInfo objectAtIndex:currentVender] objectForKey:kVenderHidePrice];
+    [productView setTitle:@"Select Products"];
+    if (self.vendorInfo && self.vendorInfo.count > 0) {
         NSString *vendorHidePrice = [self.vendorInfo objectForKey:kVenderHidePrice];
         if (vendorHidePrice != nil) {
             productView.showPrice = ![vendorHidePrice boolValue];
         }
     }
-
     [self presentViewController:productView animated:NO completion:nil];
 }
 
 #pragma mark - UITableView Datasource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView == self.sideTable && self.orders) {
-        return [self.orders count];
+    if (tableView == self.sideTable && self.filteredOrders) {
+        return [self.filteredOrders count];
     }
     else if (tableView == self.itemsTable && self.itemsDB) {
-        if ([self.itemsDB objectForKey:kItemCount]) {
-            return [[self.itemsDB objectForKey:kItemCount] intValue];
+        if (self.itemsDB.lineItems.count) {
+            return self.itemsDB.lineItems.count;
         }
     }
     return 0;
@@ -421,7 +374,7 @@ SG: The argument 'detail' is the selected order.
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
-        if (!self.orders) {
+        if (!self.filteredOrders) {
             return nil;
         }
 
@@ -434,41 +387,37 @@ SG: The argument 'detail' is the selected order.
             cell = [topLevelObjects objectAtIndex:0];
         }
 
-        NSDictionary *data = [self.orders objectAtIndex:[indexPath row]];
+        AnOrder *data = [self.filteredOrders objectAtIndex:[indexPath row]];
         //DLog(@"data:%@",data);
 
-        cell.Customer.text = [NSString stringWithFormat:@"%@ - %@", ([[data objectForKey:@"customer"] objectForKey:kBillName] == nil? @"(Unknown)" : [[data objectForKey:@"customer"] objectForKey:kBillName]), ([[data objectForKey:@"customer"] objectForKey:kCustID] == nil? @"(Unknown)" : [[data objectForKey:@"customer"] objectForKey:kCustID])];
-        if ([data objectForKey:kAuthorizedBy] != nil&& ![[data objectForKey:kAuthorizedBy] isKindOfClass:[NSNull class]]) {
-            cell.auth.text = [data objectForKey:kAuthorizedBy];
+        cell.Customer.text = [NSString stringWithFormat:@"%@ - %@", ([data.customer objectForKey:kBillName] == nil? @"(Unknown)" : [data.customer objectForKey:kBillName]), ([data.customer objectForKey:kCustID] == nil? @"(Unknown)" : [data.customer objectForKey:kCustID])];
+        if (data.authorized != nil) {
+            cell.auth.text = data.authorized;
         }
         else
             cell.auth.text = @"";
-        if ([data objectForKey:kItemCount] != nil) {
-            cell.numItems.text = [NSString stringWithFormat:@"%d Items", [[data objectForKey:kItemCount] intValue]];
-        }
-        else
-            cell.numItems.text = @"? Items";
-        if ([data objectForKey:kTotal] != nil) {
-            cell.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[[data objectForKey:kTotal] doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
-            //DLog(@"Price:%@",[NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[[data objectForKey:kTotal] doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle]);
+
+        cell.numItems.text = [NSString stringWithFormat:@"%d Items", data.lineItems.count];
+
+        if (data.total != nil) {
+            cell.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[data.total doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
         }
         else
             cell.total.text = @"$?";
-        if ([data objectForKey:kVoucherTotal] != nil) {
-            cell.vouchers.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[[data objectForKey:kVoucherTotal] doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
-            //DLog(@"Price:%@",[NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[[data objectForKey:kTotal] doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle]);
+        if (data.voucherTotal != nil) {
+            cell.vouchers.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[data.voucherTotal doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
         }
         else
             cell.vouchers.text = @"$?";
 
-        if ([[data objectForKey:kItems] count] > 0) {
-            cell.tag = [[[[data objectForKey:kItems] objectAtIndex:0] objectForKey:@"order_id"] intValue];
+        if (data.lineItems.count > 0) {
+            cell.tag = [((ALineItem *) [data.lineItems objectAtIndex:0]).orderId intValue];
         }
         else
-            cell.tag = [[data objectForKey:kOrderId] intValue];
+            cell.tag = [data.orderId intValue];
 
-        if ([data objectForKey:kOrderStatus] != nil) {
-            cell.orderStatus.text = [[data objectForKey:kOrderStatus] capitalizedString];
+        if (data.status != nil) {
+            cell.orderStatus.text = [data.status capitalizedString];
             NSString *orderStatus = [cell.orderStatus.text lowercaseString];
             if ([orderStatus isEqualToString:kPartialOrder] || [orderStatus isEqualToString:@"pending"])
                 cell.orderStatus.textColor = [UIColor redColor];
@@ -479,8 +428,8 @@ SG: The argument 'detail' is the selected order.
             cell.orderStatus.textColor = [UIColor orangeColor];
         }
 
-        if ([data objectForKey:kOrderId] != nil)
-            cell.orderId.text = [[data objectForKey:kOrderId] stringValue];
+        if (data.orderId != nil)
+            cell.orderId.text = [data.orderId stringValue];
         else
             cell.orderId.text = @"";
 
@@ -506,22 +455,22 @@ SG: The argument 'detail' is the selected order.
         }
 
         cell.delegate = self;
-        if ([ShowConfigurations  instance].vouchers){
-         cell.total.hidden = YES;
+        if ([ShowConfigurations instance].vouchers) {
+            cell.total.hidden = YES;
         }
 
-        if ([[self.itemsDB objectForKey:kItemCount] intValue] > [indexPath row]) {
+        if (self.itemsDB.lineItems.count > [indexPath row]) {
 
-            NSDictionary *data = [[self.itemsDB objectForKey:kItems] objectAtIndex:[indexPath row]];
+            ALineItem *data = [self.itemsDB.lineItems objectAtIndex:[indexPath row]];
 
-            BOOL isDiscount = [[data objectForKey:@"category"] isEqualToString:@"discount"];
-            if ([data objectForKey:@"product"]) {
-                NSString *invtid = isDiscount?@"Discount":[[data objectForKey:@"product"] objectForKey:@"invtid"];
+            BOOL isDiscount = [data.category isEqualToString:@"discount"];
+            if (data.product) {
+                NSString *invtid = isDiscount ? @"Discount" : [data.product objectForKey:@"invtid"];
                 cell.invtid.text = invtid;
             }
-            [cell setDescription:[data objectForKey:@"desc"] withSubtext:[data objectForKey:@"desc2"]];
+            [cell setDescription:data.desc withSubtext:data.desc2];
 
-            if ([ShowConfigurations  instance].vouchers) {
+            if ([ShowConfigurations instance].vouchers) {
                 if ([self.itemsVouchers objectAtIndex:indexPath.row]) {
                     cell.voucher.text = [self.itemsVouchers objectAtIndex:indexPath.row];
                 }
@@ -615,8 +564,8 @@ SG: The argument 'detail' is the selected order.
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
-        NSDictionary *selectedOrder = [self.orders objectAtIndex:(NSUInteger) indexPath.row];
-        NSString *status = [[selectedOrder objectForKey:kOrderStatus] lowercaseString];
+        currentOrder = [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row];
+        NSString *status = [currentOrder.status lowercaseString];
         CIOrderCell *cell = (CIOrderCell *) [self.sideTable cellForRowAtIndexPath:indexPath];
         //SG: if this is a completed order, display the order details in the editor view
         //which appears to the right of the sideTable.
@@ -652,7 +601,7 @@ SG: The argument 'detail' is the selected order.
                 self.SCtotal.hidden = YES;
             }
 
-            [self displayOrderDetail:[self.orders objectAtIndex:indexPath.row]];//SG: itemsDB is loaded inside of displayOrderDetail.
+            [self displayOrderDetail:[self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]];//SG: itemsDB is loaded inside of displayOrderDetail.
         } else {
 
             self.EditorView.hidden = YES;
@@ -686,13 +635,13 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
         if (editingStyle == UITableViewCellEditingStyleDelete) {
-            NSDictionary *selectedOrder = [self.orders objectAtIndex:indexPath.row];
+            AnOrder *selectedOrder = [self.filteredOrders objectAtIndex:indexPath.row];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"DELETE" message:@"Are you sure you want to delete this order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
             //SG:If it is a partial order, it must be present in core data (and will not be present at the server.) Partial orders don't have an order id.
             //SG:So the order is fetched using customer id. There is logic that prevents users from creating more than one partial order for the same customer.
-            if ([[[selectedOrder objectForKey:kOrderStatus] lowercaseString] isEqualToString:kPartialOrder]) {
+            if ([[selectedOrder.status lowercaseString] isEqualToString:kPartialOrder]) {
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)",
-                                                                          [selectedOrder objectForKey:@"customer_id"], [[selectedOrder objectForKey:@"customer"] objectForKey:@"custid"]];
+                                                                          selectedOrder.customerId, [selectedOrder.customer objectForKey:@"custid"]];
 
                 orderToDelete = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:predicate];
                 if (orderToDelete) {
@@ -703,7 +652,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
                     [alert show];
                 }//SG: Should add an else with an appropriate alert even though I don't see how it is possible that the else condition will ever happen.
             } else {
-                self.itemsDB = [NSDictionary dictionaryWithDictionary:[self.orders objectAtIndex:indexPath.row]];
+                self.itemsDB = [self.filteredOrders objectAtIndex:indexPath.row]; //todo code before my changes used to make a copy of the order dictionary and store that in itemsDB. Is that needed?
                 rowToDelete = indexPath;
                 [alert setTag:kDeleteCompletedOrder];//SG: These tags are used by the alert's handler method to determine if the order is partial. If it is partial it only needs to be deleted from core data. Otherwise it needs to be deleted from the server.
                 [alert show];
@@ -731,7 +680,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
         [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
 
-        NSInteger itemCount = [[self.itemsDB objectForKey:kItemCount] intValue];
+        NSInteger itemCount = self.itemsDB.lineItems.count;
         DLog(@"itemCount:%i, itemQty:%i", itemCount, [self.itemsQty count]);
 
         for (int i = 0; i < itemCount; i++) {
@@ -816,20 +765,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSDate *startDate = [[NSDate alloc] init];
     NSDate *endDate = [[NSDate alloc] init];
 
-    if ([self.itemsDB objectForKey:kItems] == nil) {
+    if (self.itemsDB.lineItems == nil || self.itemsDB.lineItems.count == 0) {
         DLog(@"no items");
         return;
     }
-    if ([[self.itemsDB objectForKey:kItems] objectAtIndex:idx] == nil) {
+    if ([self.itemsDB.lineItems objectAtIndex:idx] == nil) {
         DLog(@"not for idx:%d", idx);
         return;
     }
-    if ([[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] == nil) {
+    if (((ALineItem *) [self.itemsDB.lineItems objectAtIndex:idx]).product == nil) {
         DLog(@"no product");
         return;
     }
-    NSString *start = [[[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] objectForKey:kProductShipDate1];
-    NSString *end = [[[[self.itemsDB objectForKey:kItems] objectAtIndex:idx] objectForKey:@"product"] objectForKey:kProductShipDate2];
+    NSString *start = [((ALineItem *) [self.itemsDB.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate1];
+    NSString *end = [((ALineItem *) [self.itemsDB.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate2];
 
 // FIXME: Setup calendar to show starting at current date
 
@@ -891,7 +840,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)setViewMovedUpDouble:(BOOL)movedUp {
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.5];
-    self.itemsTable.contentOffset = movedUp && selectedItemRowIndexPath ?CGPointMake(0, [self.itemsTable rowHeight] * selectedItemRowIndexPath.row):CGPointMake(0,0);
+    self.itemsTable.contentOffset = movedUp && selectedItemRowIndexPath ? CGPointMake(0, [self.itemsTable rowHeight] * selectedItemRowIndexPath.row) : CGPointMake(0, 0);
     [UIView commitAnimations];
 }
 
@@ -899,7 +848,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     activeField = textField;
 }
 
--(void) setSelectedRow:(NSUInteger)index{
+- (void)setSelectedRow:(NSUInteger)index {
     selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
 }
 
@@ -919,8 +868,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
 #pragma mark - Events
 
 - (IBAction)AddNewOrder:(id)sender {
-    [self loadProductView:YES];
+    CICustomerInfoViewController *ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
+    ci.modalPresentationStyle = UIModalPresentationFormSheet;
+    ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    ci.delegate = self;
+    ci.authToken = self.authToken;
+    [self presentViewController:ci animated:NO completion:nil];
 }
+
+- (void)customerSelected:(NSDictionary *)info {
+    [self loadProductView:YES customer:info];
+}
+
+- (void)customerSelectionCancel {
+}//todo: no need for this method. remove from protocol.
 
 - (void)logout {
     void (^clearSettings)(void) = ^{
@@ -930,11 +891,11 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
     NSString *logoutPath;
 
-        if (self.authToken) {
-            logoutPath = [NSString stringWithFormat:@"%@?%@=%@", kDBLOGOUT, kAuthToken, self.authToken];
-        } else {
-            logoutPath = kDBLOGOUT;
-        }
+    if (self.authToken) {
+        logoutPath = [NSString stringWithFormat:@"%@?%@=%@", kDBLOGOUT, kAuthToken, self.authToken];
+    } else {
+        logoutPath = kDBLOGOUT;
+    }
 
 
     NSURL *url = [NSURL URLWithString:logoutPath];
@@ -967,10 +928,11 @@ SG: This method gets called when you swipe on an order in the order list and tap
     }
 
     NSMutableArray *arr = [[NSMutableArray alloc] init];
-    NSArray *data = [self.itemsDB objectForKey:kItems];
+    NSArray *data = self.itemsDB.lineItems;
 
-    for (NSInteger i = 0; i < [[self.itemsDB objectForKey:kItemCount] intValue]; i++) {
-        NSString *productID = [[[data objectAtIndex:i] objectForKey:kOrderItemID] stringValue];
+    for (NSInteger i = 0; i < data.count; i++) {
+        ALineItem *lineItem = [data objectAtIndex:i];
+        NSString *productID = [lineItem.productId stringValue];
 
         NSString *qty = [self.itemsQty objectAtIndex:i];
         NSString *price = [self.itemsPrice objectAtIndex:i];
@@ -989,15 +951,15 @@ SG: This method gets called when you swipe on an order in the order list and tap
             [strs addObject:str];
         }
 
-        NSString *myId = [[[data objectAtIndex:i] objectForKey:kOrderId] stringValue];
+        NSString *myId = [lineItem.itemId stringValue];
 
         NSDictionary *proDict = @{
-                kOrderItemID : productID,
-                kOrderId : myId,
-                kOrderItemNum : qty,
-                kOrderItemPRICE : price,
-                kOrderItemVoucher : voucher,
-                kOrderItemShipDates : strs
+                kLineItemProductID : productID,
+                kLineItemId : myId,
+                kLineItemQuantity : qty,
+                kLineItemPRICE : price,
+                kLineItemVoucher : voucher,
+                kLineItemShipDates : strs
         };
 
         [arr addObject:(id) proDict];
@@ -1005,9 +967,9 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
     [arr removeObjectIdenticalTo:nil];
     DLog(@"array:%@", arr);
-    NSString *custid = [self.itemsDB objectForKey:kOrderCustID];
-    NSString *authorizedBy = [self.itemsDB objectForKey:kAuthorizedBy];
-    NSString *notesText = self.notes.text == nil || [self.notes.text isKindOfClass:[NSNull class]]?@"":self.notes.text;
+    NSString *custid = [self.itemsDB.customerId stringValue];
+    NSString *authorizedBy = self.itemsDB.authorized;
+    NSString *notesText = self.notes.text == nil || [self.notes.text isKindOfClass:[NSNull class]] ? @"" : self.notes.text;
 
     NSDictionary *order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
     NSDictionary *final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
@@ -1090,7 +1052,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         hud.labelText = @"Printing ...";
         [hud show:YES];
 
-        NSString *orderID = [NSString stringWithFormat:@"%@", [self.itemsDB objectForKey:kOrderId]];
+        NSString *orderID = [NSString stringWithFormat:@"%@", self.itemsDB.orderId];
         NSNumber *printStationId = [NSNumber numberWithInt:[[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue]];
         NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:orderID, kReportPrintOrderId, printStationId, @"printer_id", nil];
 
@@ -1128,7 +1090,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (IBAction)Print:(id)sender {
-    if (self.itemsDB && self.itemsDB.allKeys.count > 0 && [self.itemsDB objectForKey:kOrderId]) {
+    if (self.itemsDB && self.itemsDB.orderId) {
 
         if (!availablePrinters || ![self printerIsOnline:[[SettingsManager sharedManager] lookupSettingByString:@"printer"]]) {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(printOrder) name:kPrintersLoaded object:nil];
@@ -1233,7 +1195,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         deleteHUD.labelText = @"Deleting Order";
         [deleteHUD show:NO];
 
-        NSURL *url = [NSURL URLWithString:kDBORDEREDITS([[self.itemsDB objectForKey:kOrderId] integerValue])];
+        NSURL *url = [NSURL URLWithString:kDBORDEREDITS([self.itemsDB.orderId integerValue])];
         AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
         NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
         AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
@@ -1275,7 +1237,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         }
     } else if (alertView.tag == kEditPartialOrder) {
         if (buttonIndex == 1) {
-            [self loadProductView:NO];
+            [self getCustomerOfCurrentOrderAndLoadProductView];
         } else {
             NSIndexPath *selection = [self.sideTable indexPathForSelectedRow];
             if (selection)
@@ -1284,23 +1246,41 @@ SG: This method gets called when you swipe on an order in the order list and tap
     }
 }
 
+
+- (void)getCustomerOfCurrentOrderAndLoadProductView {
+//    AnOrder *currentOrder = [self getCurrentOrder];
+    NSString *custId = [currentOrder.customerId stringValue];
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMER(custId), kAuthToken, self.authToken];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                            [self loadProductView:NO customer:(NSDictionary *) JSON];
+                                                                                        }
+                                                                                        failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                                                                                            [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
+                                                                                                              cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                                                                                            DLog(@"%@", [error localizedDescription]);
+                                                                                        }];
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [queue addOperation:operation];
+}
+
+
 - (void)deleteRowFromOrderListAtIndex:(NSIndexPath *)index {
-    NSDictionary *anOrder = [self.orders objectAtIndex:index.row];
-    [self.orderData removeObjectIdenticalTo:anOrder];
-    [self.orders removeObjectAtIndex:index.row];
+    AnOrder *anOrder = [self.filteredOrders objectAtIndex:index.row];
+    [self.allorders removeObjectIdenticalTo:anOrder];
+    [self.filteredOrders removeObjectAtIndex:index.row];
 
     NSArray *indices = [NSArray arrayWithObject:index];
     [self.sideTable deleteRowsAtIndexPaths:indices withRowAnimation:UITableViewRowAnimationAutomatic];
 
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)",
-                                                              [anOrder objectForKey:@"customer_id"], [[anOrder objectForKey:@"customer"] objectForKey:@"custid"]];
+                                                              anOrder.customerId, [anOrder.customer objectForKey:@"custid"]];
 
     orderToDelete = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:predicate];
     if (orderToDelete) {
         [[CoreDataUtil sharedManager] deleteObject:orderToDelete];
     }
-
-    //[self.sideTable reloadData];
 }
 
 #pragma mark - UIPrinterSelectedDelegate
@@ -1308,7 +1288,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)setSelectedPrinter:(NSString *)printer {
     currentPrinter = printer;
     [[SettingsManager sharedManager] saveSetting:@"printer" value:printer];
-//    [[NSNotificationCenter defaultCenter] postNotificationName:@"PrintersLoaded" object:nil];
     [self printOrder];
 }
 
@@ -1322,12 +1301,12 @@ SG: This method gets called when you swipe on an order in the order list and tap
     if (![sender isKindOfClass:[UITextField class]])
         [self.searchText resignFirstResponder];
 
-    if (self.orders == nil|| [self.orders isKindOfClass:[NSNull class]]) {
+    if (self.filteredOrders == nil|| [self.filteredOrders isKindOfClass:[NSNull class]]) {
         return;
     }
 
     if ([self.searchText.text isEqualToString:@""]) {
-        self.orders = [self.orderData mutableCopy];
+        self.filteredOrders = [self.allorders mutableCopy];
         DLog(@"string is empty");
     } else {
         DLog(@"Search Text %@", self.searchText.text);
@@ -1350,8 +1329,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
                     || [orderId hasPrefix:test];
         }];
 
-        self.orders = [[self.orderData filteredArrayUsingPredicate:pred] mutableCopy];
-        DLog(@"results count:%d", self.orders.count);
+        self.filteredOrders = [[self.allorders filteredArrayUsingPredicate:pred] mutableCopy];
+        DLog(@"results count:%d", self.filteredOrders.count);
     }
     [self.sideTable reloadData];
 }

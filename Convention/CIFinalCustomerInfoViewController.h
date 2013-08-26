@@ -15,26 +15,24 @@
 
 @protocol CIFinalCustomerDelegate <NSObject>
 
--(NSDictionary*)getCustomerInfo;
-//- (IBAction)Cancel:(id)sender;
+- (NSDictionary *)getCustomerInfo;
+
 - (IBAction)submit:(id)sender;
+
+- (void)setAuthorizedByInfo:(NSDictionary *)info;
 
 @end
 
 @interface CIFinalCustomerInfoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate>
-@property (unsafe_unretained, nonatomic) IBOutlet UITextView *shippingNotes;
-@property (unsafe_unretained, nonatomic) IBOutlet UITextView *Notes;
-@property (unsafe_unretained, nonatomic) IBOutlet UITextField *Authorizer;
-@property (strong, nonatomic) IBOutlet UIScrollView *scroll;
+@property(unsafe_unretained, nonatomic) IBOutlet UITextView *shippingNotes;
+@property(unsafe_unretained, nonatomic) IBOutlet UITextView *Notes;
+@property(unsafe_unretained, nonatomic) IBOutlet UITextField *Authorizer;
+@property(strong, nonatomic) IBOutlet UIScrollView *scroll;
 
-@property (nonatomic, strong) NSArray* tableData;
-@property (nonatomic, strong) NSMutableArray* filteredtableData;
--(void) setCustomerData:(NSArray *)customerData;
-//- (IBAction)back:(id)sender;
-//@property (weak, nonatomic) IBOutlet UISwitch *contact;
-//@property (nonatomic, strong) IBOutlet MICheckBox *contactBeforeShipping;
+@property(nonatomic, strong) NSArray *tableData;
+@property(nonatomic, strong) NSMutableArray *filteredtableData;
 
-@property (nonatomic, assign) id<CICustomerDelegate,CIFinalCustomerDelegate> delegate;
+@property(nonatomic, assign) id <CICustomerDelegate, CIFinalCustomerDelegate> delegate;
 
 - (IBAction)submit:(id)sender;
 

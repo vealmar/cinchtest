@@ -8,15 +8,15 @@
 
 #import "CICustomerInfoViewController.h"
 #import <QuartzCore/QuartzCore.h>
-#import "JSONKit.h"
 #import "MBProgressHUD.h"
 #import "Macros.h"
 #import "config.h"
 #import "SettingsManager.h"
 #import "CustomerDataController.h"
+#import "AFJSONRequestOperation.h"
 
 @implementation CICustomerInfoViewController {
-    MBProgressHUD* refreshing;
+    MBProgressHUD *refreshing;
     NSString *selectedCustomer;
 }
 @synthesize tablelayer;
@@ -28,58 +28,27 @@
 @synthesize filteredtableData;
 @synthesize authToken;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(customersLoaded:) name:kNotificationCustomersLoaded object:nil];
-        
-        // Custom initialization
         self.tableData = [NSArray array];
-        //DLog(@"CI init'd");
     }
     return self;
 }
 
 #pragma mark - View lifecycle
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     [self.custTable reloadData];
-//    if ([self.tableData count] > 0) {
-//        self.search.text = [[self.tableData objectAtIndex:0] objectForKey:kCustID];
-//        [self.custTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
-//    }
-    
     self.tablelayer.layer.masksToBounds = YES;
     self.tablelayer.layer.cornerRadius = 10.f;
-    //for testing
-    //WARNING!!!
-    //self.Authorizer.text = @"testing";
-    // Do any additional setup after loading the view from its nib.
 }
 
--(void) customersLoaded:(NSNotification*)notif {
-    if (notif.userInfo){
-        NSArray* customerData = [notif.userInfo objectForKey:kCustomerNotificationKey];
-        [self setCustomerData:customerData];
-    }
-}
-
--(void) setCustomerData:(NSArray *)customerData
-{
-    DLog(@"Load customer data");
-
-    NSMutableArray* arr = [NSMutableArray array];
-    for (int i=0; i<[customerData count]; i++) {
-//        if (i==0) {
-//            DLog(@"search before:%@",self.search.text);
-//            self.search.text = [[customerData objectAtIndex:0] objectForKey:kCustID];
-//            DLog(@"search after:%@, %@",self.search.text,[[customerData objectAtIndex:0] objectForKey:kCustID]);
-//        }
-        NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:[[customerData objectAtIndex:i] objectForKey:kCustID],kCustID,[[customerData objectAtIndex:i] objectForKey:kBillName],kBillName,[[customerData objectAtIndex:i] objectForKey:kID],kID,[[customerData objectAtIndex:i] objectForKey:kEmail],kEmail,[[customerData objectAtIndex:i] objectForKey:kStores],kStores, nil];
+- (void)setCustomerData:(NSArray *)customerData {
+    NSMutableArray *arr = [NSMutableArray array];
+    for (int i = 0; i < [customerData count]; i++) {
+        NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[[customerData objectAtIndex:i] objectForKey:kCustID], kCustID, [[customerData objectAtIndex:i] objectForKey:kBillName], kBillName, [[customerData objectAtIndex:i] objectForKey:kID], kID, [[customerData objectAtIndex:i] objectForKey:kEmail], kEmail, [[customerData objectAtIndex:i] objectForKey:kStores], kStores, nil];
         [arr addObject:dict];
     }
     if (self.tableData) {
@@ -88,10 +57,6 @@
     self.tableData = [arr copy];
     self.filteredtableData = [arr mutableCopy];
     [self.custTable reloadData];
-    
-//    if ([self.tableData count] > 0)
-//        [self.custTable selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
-    
     if (refreshing) {
         [refreshing hide:YES];
         refreshing = nil;
@@ -101,7 +66,7 @@
 - (IBAction)back:(id)sender {
     [self dismissViewControllerAnimated:YES completion:^{
         if (self.delegate) {
-            [self.delegate Cancel];
+            [self.delegate customerSelectionCancel];
         }
     }];
 }
@@ -118,87 +83,53 @@
         [searchText resignFirstResponder];
 }
 
--(BOOL)disablesAutomaticKeyboardDismissal {
+- (BOOL)disablesAutomaticKeyboardDismissal {
     return NO;
 }
 
-- (void)viewDidUnload
-{
+- (void)viewDidUnload {
     [self setCustTable:nil];
     [self setCustView:nil];
     [self setTablelayer:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    // Return YES for supported orientations
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return YES;
 }
 
 - (IBAction)submit:(id)sender {
-    //if (IS_EMPTY_STRING(self.customerID.text)||[self.customerID.text isEqualToString:@"New Customer"]) {
-        if (!IS_EMPTY_STRING(selectedCustomer)) {
-        //if (self.delegate) {
-            //NSDictionary* arr = [[NSDictionary alloc] initWithObjectsAndKeys:customerName.text,kCustName,storeName.text,kStoreName,city.text,kCity, nil];
-            //[self.delegate setCustomerInfo:arr];
-        //}
-            if (self.delegate) {
-                __block int custid = 0;
-                __block NSDictionary* results= nil;
-                [self.tableData enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop){
-                    if ([obj isKindOfClass:[NSDictionary class]]) {
-                        NSDictionary* dict = (NSDictionary*)obj;
-                        
-//                        if ([[dict objectForKey:kCustID]isEqualToString:self.search.text]){//self.customerID.text]) {
-                        if ([[dict objectForKey:kCustID] isEqualToString:selectedCustomer]) {
-                            custid = [[dict objectForKey:kID] intValue];
-                            results = [dict copy];
-                            *stop = YES;
-                        }
+    if (!IS_EMPTY_STRING(selectedCustomer)) {
+        if (self.delegate) {
+            __block int custid = 0;
+            __block NSDictionary *results = nil;
+            [self.tableData enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                if ([obj isKindOfClass:[NSDictionary class]]) {
+                    NSDictionary *dict = (NSDictionary *) obj;
+
+                    if ([[dict objectForKey:kCustID] isEqualToString:selectedCustomer]) {
+                        custid = [[dict objectForKey:kID] intValue];
+                        results = [dict copy];
+                        *stop = YES;
                     }
+                }
+            }];
+
+            if (custid == 0) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Incorrect CustomerID" message:@"Please select an entry from the table of known customers or select \"New Customer\"." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                [alert show];
+            }
+            else {
+                [self dismissViewControllerAnimated:YES completion:^{
+                    [self.delegate customerSelected:results];
                 }];
-                
-                if (custid == 0) {
-                    UIAlertView* alert =[[UIAlertView alloc] initWithTitle:@"Incorrect CustomerID" message:@"Please select an entry from the table of known customers or select \"New Customer\"." delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-                    [alert show];
-                }
-                else
-                {
-//                    if (self.sendEmail.on) {
-//                        if (IS_EMPTY_STRING(self.email.text)) {
-//                            UIAlertView* alert =[[UIAlertView alloc] initWithTitle:@"Missing Recipt Email!" message:@"You have selected to send an email recipt, but not provided an email." delegate:self cancelButtonTitle:@"OK" otherButtonTitles: nil];
-//                            [alert show];
-//                        }
-//                        else
-//                        {
-//                            NSDictionary* arr = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",custid],kOrderCustID, self.shippingNotes.text,kShipNotes,self.Notes.text,kNotes,self.Authorizer.text,kAuthorizedBy,@"1",kSendEmail,self.email.text,kEmail, nil];
-//                            DLog(@"info to send:%@",arr);
-//                            [self.delegate setCustomerInfo:arr];
-//                            [self dismissModalViewControllerAnimated:YES];
-//                        }
-//                    }
-//                    else
-//                    {
-//                        NSDictionary* arr = [[NSDictionary alloc] initWithObjectsAndKeys:[NSString stringWithFormat:@"%d",custid],kOrderCustID, nil];//, self.shippingNotes.text,kShipNotes,self.Notes.text,kNotes,self.Authorizer.text,kAuthorizedBy,@"0",kSendEmail,@"",kEmail
-                        DLog(@"info to send:%@",results);
-                        [self.delegate setCustomerInfo:results];
-                        [self dismissViewControllerAnimated:YES completion:nil];
-//                    }
-                }
             }
         }
-        else{
-            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Required Fields Missing!" message:@"Please finish filling out all required fields before submitting!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-            [alert show];
-        }
-    //}
-    //else
-    //{
-        
-    //}
+    }
+    else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Required Fields Missing!" message:@"Please finish filling out all required fields before submitting!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+    }
 }
 
 #pragma mark - Table stuff
@@ -207,51 +138,52 @@
 }
 
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
-    
+
     return self.filteredtableData != nil ? [self.filteredtableData count] : 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	if (!self.filteredtableData) {
+    if (!self.filteredtableData) {
         return nil;
     }
-    
+
     static NSString *CellIdentifier = @"CustCell";
     UITableViewCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil){
+    if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    
-    //cell.detailTextLabel.text = [[self.tableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kBillName],[[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID]];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kBillName], [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID]];
     cell.tag = [[[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kID] intValue];
-    //cell.subtitle.text = [[[self.productData objectAtIndex:[indexPath row]] objectForKey:@"id"] stringValue];
-    
-    return (UITableViewCell *)cell;
+    return cell;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    DLog(@"customer details:%@",[self.filteredtableData objectAtIndex:[indexPath row]]);
-    //self.customerID.text = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
-
-//    self.search.text = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    DLog(@"customer details:%@", [self.filteredtableData objectAtIndex:[indexPath row]]);
     selectedCustomer = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
-
-//    [tableView becomeFirstResponder];
-//    [tableView resignFirstResponder];
     [searchText resignFirstResponder];
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    // register for keyboard notifications
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) 
-//                                                 name:UIKeyboardWillShowNotification object:self.view.window]; 
+- (void)viewWillAppear:(BOOL)animated {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Loading customers";
+    [hud show:YES];
+
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                            [self setCustomerData:(NSArray *) JSON];
+                                                                                            [hud hide:YES];
+                                                                                        }
+                                                                                        failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                                                                                            [self setCustomerData:nil];
+                                                                                            [hud hide:YES];
+                                                                                        }];
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+    [queue addOperation:operation];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     // unregister for keyboard notifications while not visible.
 //    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil]; 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationCustomersLoaded object:nil];
@@ -259,36 +191,33 @@
 
 #pragma mark search methods
 
--(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+
     NSString *search = [[textField.text stringByAppendingString:string] stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];//SG: if the character is newline, remove it. there was an issue where tapping return in the empty search box caused the logic below to search for customer with a new line in their id. When none was found, the list would display no customers. This is confusing to the users because they think of return as the submit action and not as a search term.
     if ([string isEqualToString:@""]) {
         search = [search substringToIndex:range.location];
     }
     [self.filteredtableData removeAllObjects];// remove all data that belongs to previous search
-    if([search isEqualToString:@""]){
+    if ([search isEqualToString:@""]) {
         self.filteredtableData = [tableData mutableCopy];
         [self.custTable reloadData];
         return YES;
     }
-    for(NSDictionary *dict in tableData)
-    {
+    for (NSDictionary *dict in tableData) {
         NSRange r = [[dict objectForKey:kCustID] rangeOfString:search options:NSCaseInsensitiveSearch];
-        if(r.location != NSNotFound)
-        {
-            if(r.location== 0)//that is we are checking only the start of the names.
+        if (r.location != NSNotFound) {
+            if (r.location == 0)//that is we are checking only the start of the names.
             {
                 [self.filteredtableData addObject:dict];
             }
-        }else{
+        } else {
             NSRange r = [[dict objectForKey:kBillName] rangeOfString:search options:NSCaseInsensitiveSearch];
-            if(r.location != NSNotFound)
-            {
+            if (r.location != NSNotFound) {
                 [self.filteredtableData addObject:dict];
             }
         }
     }
-    if([self.filteredtableData count] == 0){
+    if ([self.filteredtableData count] == 0) {
         //nothing matched the search, load all customers.
 
     }

@@ -19,32 +19,33 @@
  */
 
 @interface DateUtil : NSObject {
-	
-	
-	
+
+
 }
 
 
 
 
 #pragma mark Singleton
-+ (DateUtil*)sharedManager;
- 
++ (DateUtil *)sharedManager;
+
 
 - (id)init;
- 
 
--(NSString *)userDateFormat;
 
--(NSDateFormatter *) createFormatter;
++ (NSString *)userDateFormat;
 
--(NSDate *) parseDate:(NSString *)dateString;
++ (NSDateFormatter *)createFormatter;
 
--(NSString *) stringFromGMTDate:(NSDate *)date;
++ (NSDate *)parseDate:(NSString *)dateString;
 
--(NSDate *) processJSDate:(NSString *)value;
++ (NSString *)stringFromGMTDate:(NSDate *)date;
 
--(NSString *) stringDate;
++ (NSDate *)processJSDate:(NSString *)value;
+
++ (NSString *)stringDate;
+
++ (NSDate *)convertJsonDateToNSDate:(NSString *)jsonDate;
 
 
 @end
