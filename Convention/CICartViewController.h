@@ -13,8 +13,6 @@
 
 @protocol CICartViewDelegate <NSObject>
 
-- (void)Return;
-
 - (void)setProductCart:(NSMutableDictionary *)cart;
 
 - (void)setOrderSubmitted:(BOOL)yes;

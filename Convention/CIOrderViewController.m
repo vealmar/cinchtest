@@ -21,6 +21,7 @@
 #import "ShowConfigurations.h"
 #import "AnOrder.h"
 #import "ALineItem.h"
+#import "NilUtil.h"
 
 @interface CIOrderViewController () {
     int currentOrderID;
@@ -97,7 +98,7 @@
     pull = [[PullToRefreshView alloc] initWithScrollView:(UIScrollView *) self.sideTable];
     [pull setDelegate:self];
     [self.sideTable addSubview:pull];
-    [self Return];
+    [self loadOrders:YES highlightOrder:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -159,7 +160,7 @@
 
 #pragma mark - Data access methods
 
-- (void)loadOrders:(BOOL)showLoadingIndicator {
+- (void)loadOrders:(BOOL)showLoadingIndicator highlightOrder:(NSNumber *)orderId {
     if (!isLoadingOrders) {
         self.itemsDB = nil;
         isLoadingOrders = YES;
@@ -194,12 +195,31 @@
                     [self.sideTable reloadData];
                     self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
                     cleanup();
+                    [self highlightOrder:orderId];
                 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
                     [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@", [error localizedDescription]] delegate:nil
                                       cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                     cleanup();
                 }];
         [operation start];
+    }
+}
+
+- (void)highlightOrder:(NSNumber *)orderId {
+    if (orderId != nil && [orderId intValue] != 0) {
+        NSIndexPath *currentOrderIndex;
+        int i = 0;
+        for (AnOrder *order in self.filteredOrders) {
+            if ([order.status isEqualToString:@"complete"] && [orderId isEqualToNumber:order.orderId]) {
+                currentOrderIndex = [NSIndexPath indexPathForRow:i inSection:0];
+                break;
+            }
+            i++;
+        }
+        if (currentOrderIndex != nil) {
+            [self.sideTable selectRowAtIndexPath:currentOrderIndex animated:YES scrollPosition:UITableViewScrollPositionBottom];
+            [self didSelectOrderAtIndexPath:currentOrderIndex];
+        }
     }
 }
 
@@ -563,60 +583,64 @@ SG: The argument 'detail' is the selected order.
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
-        currentOrder = [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row];
-        NSString *status = [currentOrder.status lowercaseString];
-        CIOrderCell *cell = (CIOrderCell *) [self.sideTable cellForRowAtIndexPath:indexPath];
-        //SG: if this is a completed order, display the order details in the editor view
-        //which appears to the right of the sideTable.
-        if (![status isEqualToString:kPartialOrder] && ![status isEqualToString:@"pending"]) {
-            self.EditorView.hidden = NO;
-            self.toolWithSave.hidden = NO;
-            self.orderContainer.hidden = NO;
-            self.OrderDetailScroll.hidden = NO;
-
-            self.itemsAct.hidden = NO;//SG: activity indicator
-            [self.itemsAct startAnimating];
-
-            self.customer.text = @"";
-            self.authorizer.text = @"";
-            self.notes.text = @"";
-            self.itemsDB = nil;
-            self.itemsPrice = nil;
-            self.itemsQty = nil;
-            self.itemsVouchers = nil;
-            self.itemsShipDates = nil;
-            [self.itemsTable reloadData];
-
-            self.customer.text = cell.Customer.text;
-            self.authorizer.text = cell.auth.text;
-
-            self.EditorView.tag = cell.tag;
-            currentOrderID = cell.tag;
-            rowToDelete = indexPath;
-
-            if (![ShowConfigurations instance].vouchers) {
-                self.headerVoucherLbl.hidden = YES;
-                self.lblVoucher.hidden = YES;
-                self.SCtotal.hidden = YES;
-            }
-
-            [self displayOrderDetail:[self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]];//SG: itemsDB is loaded inside of displayOrderDetail.
-        } else {
-
-            self.EditorView.hidden = YES;
-            self.toolWithSave.hidden = YES;
-            self.orderContainer.hidden = YES;
-            self.OrderDetailScroll.hidden = YES;
-            currentOrderID = cell.tag;
-
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to edit this pending order?"
-                                                           delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Edit", nil];
-            [alert setTag:kEditPartialOrder];
-            [alert show];
-        }
+        [self didSelectOrderAtIndexPath:indexPath];
     }
     else if (tableView == self.itemsTable) {
         selectedItemRowIndexPath = indexPath;
+    }
+}
+
+- (void)didSelectOrderAtIndexPath:(NSIndexPath *)indexPath {
+    currentOrder = [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row];
+    NSString *status = [currentOrder.status lowercaseString];
+    CIOrderCell *cell = (CIOrderCell *) [self.sideTable cellForRowAtIndexPath:indexPath];
+    //SG: if this is a completed order, display the order details in the editor view
+    //which appears to the right of the sideTable.
+    if (![status isEqualToString:kPartialOrder] && ![status isEqualToString:@"pending"]) {
+        self.EditorView.hidden = NO;
+        self.toolWithSave.hidden = NO;
+        self.orderContainer.hidden = NO;
+        self.OrderDetailScroll.hidden = NO;
+
+        self.itemsAct.hidden = NO;//SG: activity indicator
+        [self.itemsAct startAnimating];
+
+        self.customer.text = @"";
+        self.authorizer.text = @"";
+        self.notes.text = @"";
+        self.itemsDB = nil;
+        self.itemsPrice = nil;
+        self.itemsQty = nil;
+        self.itemsVouchers = nil;
+        self.itemsShipDates = nil;
+        [self.itemsTable reloadData];
+
+        self.customer.text = cell.Customer.text;
+        self.authorizer.text = cell.auth.text;
+
+        self.EditorView.tag = cell.tag;
+        currentOrderID = cell.tag;
+        rowToDelete = indexPath;
+
+        if (![ShowConfigurations instance].vouchers) {
+            self.headerVoucherLbl.hidden = YES;
+            self.lblVoucher.hidden = YES;
+            self.SCtotal.hidden = YES;
+        }
+
+        [self displayOrderDetail:[self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]];//SG: itemsDB is loaded inside of displayOrderDetail.
+    } else {
+
+        self.EditorView.hidden = YES;
+        self.toolWithSave.hidden = YES;
+        self.orderContainer.hidden = YES;
+        self.OrderDetailScroll.hidden = YES;
+        currentOrderID = cell.tag;
+
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to edit this pending order?"
+                                                       delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Edit", nil];
+        [alert setTag:kEditPartialOrder];
+        [alert show];
     }
 }
 
@@ -853,8 +877,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 #pragma mark - CIProductViewDelegate
 
-- (void)Return {
-    [self loadOrders:YES];
+- (void)Return:(NSNumber *)orderId {
+    [self loadOrders:YES highlightOrder:orderId];
 }
 
 #pragma mark - CIStoreQtyDelegate
@@ -979,10 +1003,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSMutableURLRequest *request = [client requestWithMethod:@"PUT" path:nil parameters:final];
 
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-
-        DLog(@"status = %@", [JSON valueForKey:@"status"]);
-        [self Return];
-
+        NSNumber *orderId = JSON != nil? (NSNumber *) [NilUtil nilOrObject:[(NSDictionary *) JSON objectForKey:kID]] : nil;
+        [self loadOrders:YES highlightOrder:orderId];
     }                                                                                   failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
         NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -992,7 +1014,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (IBAction)Refresh:(id)sender {
-    [self Return];
+    NSNumber *orderId = currentOrder == nil? nil : currentOrder.orderId;
+    [self loadOrders:YES highlightOrder:orderId];
 }
 
 - (void)selectPrintStation {
@@ -1170,7 +1193,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
 #pragma mark - PullToRefreshViewDelegate
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
-    [self loadOrders:NO];
+    NSNumber *orderId = currentOrder == nil? nil : currentOrder.orderId;
+    [self loadOrders:NO highlightOrder:orderId];
 }
 
 #pragma mark - ReachabilityDelegate
@@ -1201,7 +1225,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
                 success:^(AFHTTPRequestOperation *operation, id responseObject) {
 
                     DLog(@"DELETE success");
-                    //                    [self Return];
                     [self deleteRowFromOrderListAtIndex:rowToDelete];
                     self.itemsDB = nil;
                     self.EditorView.hidden = YES;

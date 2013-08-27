@@ -23,7 +23,7 @@
 
 @protocol CIProductViewDelegate <NSObject>
 
-- (void)Return;
+- (void)Return:(NSNumber *)orderId;
 
 @end
 

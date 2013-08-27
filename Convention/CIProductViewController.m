@@ -388,16 +388,12 @@
             otherButtonTitles:@"Yes", nil];
         [UIAlertViewDelegateWithBlock showAlertView:alertView withCallBack:^(NSInteger buttonIndex) {
             if ([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"Yes"]) {
-                [[CoreDataUtil sharedManager] deleteObject:self.coreDataOrder];
-                [[CoreDataUtil sharedManager] saveObjects];
                 [self Return];
             }
         }];
 
         [alertView show];
     } else {
-        [[CoreDataUtil sharedManager] deleteObject:self.coreDataOrder]; //always delete the core data entry before exiting this view. core data should contain an entry only if the order crashed in the middle of an order.
-        [[CoreDataUtil sharedManager] saveObjects];
         [self Return];
     }
 }
@@ -405,7 +401,7 @@
 - (void)cancelNewOrder {
     [self dismissViewControllerAnimated:YES completion:^{
         NSLog(@"%@ - %@", self, self.delegate);
-        [self.delegate Return];
+        [self.delegate Return:nil];
     }];
 }
 
@@ -864,8 +860,6 @@
                     if (beforeCart)
                         [[NSNotificationCenter defaultCenter] postNotificationName:kLaunchCart object:nil];
                 } else {
-                    [[CoreDataUtil sharedManager] deleteObject:_coreDataOrder];
-                    _coreDataOrder = nil;
                     [self Return];
                 }
             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
@@ -880,9 +874,15 @@
 }
 
 - (void)Return {
+
     [self dismissViewControllerAnimated:YES completion:^{
         if (self.delegate != nil) {
-            [self.delegate Return];
+            NSNumber *orderId = nil;
+            if (self.coreDataOrder != nil) {
+                orderId = self.coreDataOrder != nil? [NSNumber numberWithInt:self.coreDataOrder.orderId] : nil;
+                [[CoreDataUtil sharedManager] deleteObject:self.coreDataOrder];  //always delete the core data entry before exiting this view. core data should contain an entry only if the order crashed in the middle of an order
+            }
+            [self.delegate Return:orderId];
         }
     }];
 }
@@ -1462,12 +1462,12 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     }
 }
 
-- (void)cancelOrder {
-    if (self.viewInitialized && self.coreDataOrder) {
-        [[CoreDataUtil sharedManager] deleteObject:_coreDataOrder];
-        [[CoreDataUtil sharedManager] saveObjects];
-    }
-}
+//- (void)cancelOrder {
+//    if (self.viewInitialized && self.coreDataOrder) {
+//        [[CoreDataUtil sharedManager] deleteObject:_coreDataOrder];
+//        [[CoreDataUtil sharedManager] saveObjects];
+//    }
+//}
 
 - (void)updateCellColorForId:(NSUInteger)cellId {
     NSMutableDictionary *dict = [self.resultData objectAtIndex:cellId];
@@ -1651,7 +1651,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if ([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"OK"]) {
-        [self cancelOrder];
         [self Return];
     }
 }
