@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "ItemEditDelegate.h"
 
+@class ALineItem;
+
 @interface CIItemEditCell : UITableViewCell <UITextFieldDelegate>
 @property(weak, nonatomic) IBOutlet UILabel *invtid;
 @property(weak, nonatomic) IBOutlet UILabel *desc;
@@ -35,6 +37,7 @@
 
 - (IBAction)shipdates:(id)sender;
 
-- (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2;
+- (void)updateCellAtIndexPath:(NSIndexPath *)indexPath withLineItem:(ALineItem *)data quantities:(NSArray *)itemsQty prices:(NSArray *)itemsPrice vouchers:(NSArray *)itemsVouchers shipDates:(NSArray *)itemsShipDates;
+
 
 @end

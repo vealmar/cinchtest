@@ -64,11 +64,7 @@
 }
 
 - (IBAction)back:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:^{
-        if (self.delegate) {
-            [self.delegate customerSelectionCancel];
-        }
-    }];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (IBAction)refresh:(id)sender {

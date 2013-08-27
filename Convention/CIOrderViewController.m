@@ -22,33 +22,26 @@
 #import "AnOrder.h"
 #import "ALineItem.h"
 #import "NilUtil.h"
+#import "CoreDataManager.h"
+#import "UIAlertViewDelegateWithBlock.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
     BOOL isLoadingOrders;
     UITextField *activeField;
     PullToRefreshView *pull;
-    Order *orderToDelete;
-    //SG: when a partial order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the order entity from core data.
-    NSIndexPath *rowToDelete;
-    //SG: When an order in order list is swiped and the subsequently shown delete button is tapped, the handler method will set this property to the row to delete.
     CIProductViewController *productView;
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
     NSIndexPath *selectedItemRowIndexPath;
-    __weak IBOutlet UIImageView *homeBg;
     __weak IBOutlet UILabel *sdLabel;
     __weak IBOutlet UILabel *sqLabel;
-    __weak IBOutlet UILabel *itemTotalLabel;
-    __weak IBOutlet UILabel *voucherLabel;
     __weak IBOutlet UILabel *quantityLabel;
 }
 @end
 
 @implementation CIOrderViewController
 
-#define kDeleteCompletedOrder 10
-#define kDeletePartialOrder 11
 #define kEditPartialOrder 12
 #pragma mark - View lifecycle
 
@@ -57,6 +50,9 @@
     currentOrder = nil;
     isLoadingOrders = NO;
     reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
+
+    self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
+    self.customer.font = [UIFont fontWithName:kFontName size:14.f];
 
     ShowConfigurations *showConfig = [ShowConfigurations instance];
     self.logoImage.image = [showConfig logo];
@@ -86,14 +82,9 @@
     }
     self.printButton.hidden = !showConfig.printing;
     [self adjustTotals];
-    self.EditorView.hidden = YES;
-    self.toolWithSave.hidden = YES;
-    self.orderContainer.hidden = YES;
     self.OrderDetailScroll.hidden = YES;
-    self.placeholderContainer.hidden = NO;
     [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
     if ([ShowConfigurations instance].printing) currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
-    self.showShipDates = [[ShowConfigurations instance] shipDates];
     pull = [[PullToRefreshView alloc] initWithScrollView:(UIScrollView *) self.sideTable];
     [pull setDelegate:self];
     [self.sideTable addSubview:pull];
@@ -106,25 +97,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
                                                  name:UIKeyboardDidHideNotification object:self.view.window];
 
-    self.sideContainer.layer.cornerRadius = 5.f;
-    self.sideContainer.layer.masksToBounds = YES;
-    self.sideContainer.layer.borderWidth = 1.f;
-
-    self.orderContainer.layer.cornerRadius = 5.f;
-    self.orderContainer.layer.masksToBounds = YES;
-    self.orderContainer.layer.borderWidth = 1.f;
-
-    self.placeholderContainer.layer.cornerRadius = 5.f;
-    self.placeholderContainer.layer.masksToBounds = YES;
-    self.placeholderContainer.layer.borderWidth = 1.f;
-
-    self.lblAuthBy.font = [UIFont fontWithName:kFontName size:15.f];
-    self.lblCompany.font = [UIFont fontWithName:kFontName size:15.f];
-    self.lblItems.font = [UIFont fontWithName:kFontName size:15.f];
-    self.lblNotes.font = [UIFont fontWithName:kFontName size:15.f];
-    self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
-    self.customer.font = [UIFont fontWithName:kFontName size:14.f];
-    self.itemsAct.hidden = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -243,7 +215,7 @@ These partial orders then are put at the beginning of the self.orders array.
 SG: The argument 'detail' is the selected order.
 */
 - (void)displayOrderDetail:(AnOrder *)detail {
-    currentOrder = detail; //todo older code used to make a copy of the order dict
+    currentOrder = detail;
     if (detail) {
         NSArray *arr = detail.lineItems;
         self.itemsPrice = [NSMutableArray array];
@@ -299,42 +271,12 @@ SG: The argument 'detail' is the selected order.
         }];
         [self.itemsTable reloadData];
 
-        NSMutableArray *SDs = [NSMutableArray array];
-        [self.itemsShipDates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            NSMutableArray *dates = (NSMutableArray *) obj;
-            [dates enumerateObjectsUsingBlock:^(id obj1, NSUInteger idx1, BOOL *stop1) {
-                NSDate *date = (NSDate *) obj1;
-                if (![SDs containsObject:date]) {
-                    [SDs addObject:date];    //SG: All the ship dates for all the items in the selected order are added to SDs?
-                }
-            }];
-        }];
-
-        NSString __block *sdtext = @"";
-        [SDs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            if (idx != 0) {
-                sdtext = [sdtext stringByAppendingString:@", "];
-            }
-            NSDate *date = (NSDate *) obj;
-            NSDateFormatter *df = [[NSDateFormatter alloc] init];
-            [df setDateFormat:@"MM-dd-yyyy"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
-            sdtext = [sdtext stringByAppendingString:[df stringFromDate:date]];
-        }];
-
-        self.shipdates.text = sdtext; //SG: all the ship dates for all the items in the order? shipDates is the text box displayed next to the Shipping label in the editor view for PW.
-        sdtext = nil;
-
-        if (![detail.notes isKindOfClass:[NSNull class]]) {  //SG: these are order's notes. itemsDB has all the key-value pairs from the order itself.
+        if (![detail.notes isKindOfClass:[NSNull class]]) {
             self.notes.text = detail.notes;
         }
 
-        //[self UpdateTotal];
-
         [self.itemsTable reloadData];
         [self UpdateTotal];
-
-        self.itemsAct.hidden = YES;
-        [self.itemsAct stopAnimating];
     }
 }
 
@@ -472,94 +414,8 @@ SG: The argument 'detail' is the selected order.
         }
 
         if (currentOrder.lineItems.count > [indexPath row]) {
-
             ALineItem *data = [currentOrder.lineItems objectAtIndex:[indexPath row]];
-
-            BOOL isDiscount = [data.category isEqualToString:@"discount"];
-            if (data.product) {
-                NSString *invtid = isDiscount ? @"Discount" : [data.product objectForKey:@"invtid"];
-                cell.invtid.text = invtid;
-            }
-            [cell setDescription:data.desc withSubtext:data.desc2];
-
-            if ([ShowConfigurations instance].vouchers) {
-                if ([self.itemsVouchers objectAtIndex:indexPath.row]) {
-                    cell.voucher.text = [self.itemsVouchers objectAtIndex:indexPath.row];
-                }
-                else
-                    cell.voucher.text = @"0";
-            } else {
-                cell.voucher.hidden = YES;
-            }
-
-            BOOL isJSON = NO;
-            double q = 0;
-            if ([self.itemsQty objectAtIndex:indexPath.row]) {
-                cell.qty.text = [self.itemsQty objectAtIndex:indexPath.row];
-                cell.qtyLbl.text = [self.itemsQty objectAtIndex:indexPath.row];
-                q = [cell.qty.text doubleValue];
-            }
-            else
-                cell.qty.text = @"0";
-
-            __autoreleasing NSError *err = nil;
-            NSMutableDictionary *dict = [cell.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-
-            if (!err && dict && ![dict isKindOfClass:[NSNull class]] && dict.allKeys.count > 0) {
-                isJSON = YES;
-            }
-
-            if (isJSON) {
-                [cell.qtyBtn setHidden:NO];
-                for (NSString *key in dict.allKeys) {
-                    q += [[dict objectForKey:key] doubleValue];
-                }
-            } else {
-                [cell.qtyBtn setHidden:YES];
-            }
-
-            if (isDiscount) {
-                cell.qty.hidden = YES;
-                cell.qtyLbl.hidden = NO;
-            } else {
-                cell.qty.hidden = NO;
-                cell.qtyLbl.hidden = YES;
-            }
-
-            int nd = 1;
-            if (self.showShipDates) {
-                int lblsd = 0;
-                if (((NSArray *) [self.itemsShipDates objectAtIndex:indexPath.row]).count > 0) {
-                    nd = ((NSArray *) [self.itemsShipDates objectAtIndex:indexPath.row]).count;
-                    lblsd = nd;
-                }
-
-                [cell.btnShipdates setTitle:[NSString stringWithFormat:@"SD:%d", lblsd] forState:UIControlStateNormal];
-            } else {
-                cell.btnShipdates.hidden = YES;
-            }
-
-            if ([self.itemsPrice objectAtIndex:indexPath.row] && ![[self.itemsPrice objectAtIndex:indexPath.row] isKindOfClass:[NSNull class]]) {
-                NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-                nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-                nf.maximumFractionDigits = 2;
-                nf.minimumFractionDigits = 2;
-                nf.minimumIntegerDigits = 1;
-
-                double price = [[self.itemsPrice objectAtIndex:indexPath.row] doubleValue];
-
-                cell.price.text = [nf stringFromNumber:[NSNumber numberWithDouble:price]];
-                cell.priceLbl.text = cell.price.text;
-                [cell.price setHidden:YES];
-                cell.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(price * q * nd)] numberStyle:NSNumberFormatterCurrencyStyle];
-            }
-            else {
-                cell.price.text = @"0.00";
-                cell.priceLbl.text = cell.price.text;
-                [cell.price setHidden:YES];
-                cell.total.text = @"$0.00";
-            }
-            cell.tag = indexPath.row;
+            [cell updateCellAtIndexPath:indexPath withLineItem:data quantities:self.itemsQty prices:self.itemsPrice vouchers:self.itemsVouchers shipDates:self.itemsShipDates];
             return cell;
         } else {
             return nil;
@@ -585,14 +441,7 @@ SG: The argument 'detail' is the selected order.
     //SG: if this is a completed order, display the order details in the editor view
     //which appears to the right of the sideTable.
     if (![status isEqualToString:kPartialOrder] && ![status isEqualToString:@"pending"]) {
-        self.EditorView.hidden = NO;
-        self.toolWithSave.hidden = NO;
-        self.orderContainer.hidden = NO;
         self.OrderDetailScroll.hidden = NO;
-
-        self.itemsAct.hidden = NO;//SG: activity indicator
-        [self.itemsAct startAnimating];
-
         self.customer.text = @"";
         self.authorizer.text = @"";
         self.notes.text = @"";
@@ -602,27 +451,11 @@ SG: The argument 'detail' is the selected order.
         self.itemsVouchers = nil;
         self.itemsShipDates = nil;
         [self.itemsTable reloadData];
-
         self.customer.text = cell.Customer.text;
         self.authorizer.text = cell.auth.text;
-
-        self.EditorView.tag = cell.tag;
-        rowToDelete = indexPath;
-
-        if (![ShowConfigurations instance].vouchers) {
-            self.headerVoucherLbl.hidden = YES;
-            self.lblVoucher.hidden = YES;
-            self.SCtotal.hidden = YES;
-        }
-
         [self displayOrderDetail:[self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]];//SG: itemsDB is loaded inside of displayOrderDetail.
     } else {
-
-        self.EditorView.hidden = YES;
-        self.toolWithSave.hidden = YES;
-        self.orderContainer.hidden = YES;
         self.OrderDetailScroll.hidden = YES;
-
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to edit this pending order?"
                                                        delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Edit", nil];
         [alert setTag:kEditPartialOrder];
@@ -644,35 +477,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
         if (editingStyle == UITableViewCellEditingStyleDelete) {
-            AnOrder *selectedOrder = [self.filteredOrders objectAtIndex:indexPath.row];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"DELETE" message:@"Are you sure you want to delete this order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
-            //SG:If it is a partial order, it must be present in core data (and will not be present at the server.) Partial orders don't have an order id.
-            //SG:So the order is fetched using customer id. There is logic that prevents users from creating more than one partial order for the same customer.
-            if ([[selectedOrder.status lowercaseString] isEqualToString:kPartialOrder]) {
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)",
-                                                                          selectedOrder.customerId, [selectedOrder.customer objectForKey:@"custid"]];
-
-                orderToDelete = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:predicate];
-                if (orderToDelete) {
-                    rowToDelete = indexPath;//SG: I think this should be set irrespective of whether the order is found in core data. Although it should never happen that a partial order is not present in core data.
-//                    NSString *msg = [NSString stringWithFormat:@"Are you sure you want to delete the order for customer: %@?", cell.Customer.text];
-//                    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Pending Order Deletion" message:msg delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
-                    [alert setTag:kDeletePartialOrder];//SG: These tags are used by the alert's handler method to determine if the order is partial. If it is partial it only needs to be deleted from core data.
-                    [alert show];
-                }//SG: Should add an else with an appropriate alert even though I don't see how it is possible that the else condition will ever happen.
-            } else {
-                currentOrder = [self.filteredOrders objectAtIndex:indexPath.row]; //todo code before my changes used to make a copy of the order dictionary and store that in itemsDB. Is that needed?
-                rowToDelete = indexPath;
-                [alert setTag:kDeleteCompletedOrder];//SG: These tags are used by the alert's handler method to determine if the order is partial. If it is partial it only needs to be deleted from core data. Otherwise it needs to be deleted from the server.
-                [alert show];
-            }
+            AnOrder *selectedOrder = [self.filteredOrders objectAtIndex:indexPath.row];
+            [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+                if (buttonIndex == 1) {
+                    [self deleteOrder:selectedOrder row:indexPath];
+                }
+            }];
         }
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable)
-        return 114; // was 101
+        return 114;
     else
         return 44;
 }
@@ -722,25 +540,21 @@ SG: This method gets called when you swipe on an order in the order list and tap
         self.grossTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal] numberStyle:NSNumberFormatterCurrencyStyle];  //SG: displayed next to Total label
         self.discountTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:-discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
         self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal - discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
-        self.SCtotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];//SG: displayed next to Voucher label. This must be the voucher total.
         self.voucherTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];//SG: displayed next to Voucher label. This must be the voucher total.
     }
 }
 
 - (void)setVoucher:(NSString *)voucher atIndex:(int)idx {
-    //DLog(@"%@",self.itemsPrice);
     [self.itemsVouchers removeObjectAtIndex:idx];
     [self.itemsVouchers insertObject:voucher atIndex:idx];
 }
 
 - (void)setPrice:(NSString *)prc atIndex:(int)idx {
-    //DLog(@"%@",self.itemsPrice);
     [self.itemsPrice removeObjectAtIndex:idx];
     [self.itemsPrice insertObject:prc atIndex:idx];
 }
 
 - (void)setQuantity:(NSString *)qty atIndex:(int)idx {
-    //DLog(@"%@",self.itemsQty);
     [self.itemsQty removeObjectAtIndex:idx];
     [self.itemsQty insertObject:qty atIndex:idx];
 }
@@ -874,9 +688,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)customerSelected:(NSDictionary *)info {
     [self loadProductView:YES customer:info];
 }
-
-- (void)customerSelectionCancel {
-}//todo: no need for this method. remove from protocol.
 
 - (void)logout {
     void (^clearSettings)(void) = ^{
@@ -1089,9 +900,21 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (IBAction)Delete:(id)sender {
+    NSIndexPath *__indexPath;
+    int i = 0;
+    for (AnOrder *order in self.filteredOrders) {
+        if (order.orderId != nil && order.orderId == currentOrder.orderId) {
+            __indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+            break;
+        }
+        i++;
+    }
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"DELETE" message:@"Are you sure you want to delete this order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
-    alert.tag = kDeleteCompletedOrder;
-    [alert show];
+    [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+        if (buttonIndex == 1) {
+            [self deleteOrder:currentOrder row:__indexPath];
+        }
+    }];
 }
 
 //method to move the view up/down whenever the keyboard is shown/dismissed
@@ -1116,16 +939,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (void)keyboardWillShow {
-    //keyboard will be shown now. depending for which textfield is active, move up or move down the view appropriately
-
     if (activeField) {
         [self setViewMovedUpDouble:YES];
-
-    } else if ([self.shipdates isFirstResponder] && self.view.frame.origin.y >= 0) {
-        [self setViewMovedUp:YES];
-    }
-    else if (![self.shipdates isFirstResponder] && self.view.frame.origin.y < 0) {
-        [self setViewMovedUp:NO];
     }
 }
 
@@ -1158,60 +973,16 @@ SG: This method gets called when you swipe on an order in the order list and tap
 #pragma mark - ReachabilityDelegate
 
 - (void)networkLost {
-
-    //[ciLogo setImage:[UIImage imageNamed:@"ci_red.png"]];
 }
 
 - (void)networkRestored {
-
-    //[ciLogo setImage:[UIImage imageNamed:@"ci_green.png"]];
 }
 
 
 #pragma mark - UIAlertViewDelegate
 
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == kDeleteCompletedOrder && buttonIndex == 1) {
-        MBProgressHUD *deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
-        deleteHUD.labelText = @"Deleting Order";
-        [deleteHUD show:NO];
-
-        NSURL *url = [NSURL URLWithString:kDBORDEREDITS([currentOrder.orderId integerValue])];
-        AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
-        NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
-        AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
-                success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                    [self deleteRowFromOrderListAtIndex:rowToDelete];
-                    currentOrder = nil;
-                    self.EditorView.hidden = YES;
-                    self.toolWithSave.hidden = YES;
-                    self.orderContainer.hidden = YES;
-                    self.OrderDetailScroll.hidden = YES;
-                    [deleteHUD hide:NO];
-
-                } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                    NSString *errorMsg = [NSString stringWithFormat:@"Error deleting order. %@", error.localizedDescription];
-                    [[[UIAlertView alloc] initWithTitle:@"Error" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-                    [deleteHUD hide:NO];
-                }];
-
-        [operation start];
-    } else if (alertView.tag == kDeletePartialOrder && buttonIndex == 1) {
-        if (orderToDelete) {
-            MBProgressHUD *deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
-            deleteHUD.labelText = @"Deleting Order";
-            [deleteHUD show:NO];
-
-            if ([[CoreDataUtil sharedManager] deleteObject:orderToDelete]) {
-                [self deleteRowFromOrderListAtIndex:rowToDelete];
-            } else {
-                [[[UIAlertView alloc] initWithTitle:@"Error" message:@"Error deleting order from data store." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-            }
-
-            orderToDelete = nil;
-            [deleteHUD hide:NO];
-        }
-    } else if (alertView.tag == kEditPartialOrder) {
+    if (alertView.tag == kEditPartialOrder) {
         if (buttonIndex == 1) {
             [self getCustomerOfCurrentOrderAndLoadProductView];
         } else {
@@ -1241,22 +1012,48 @@ SG: This method gets called when you swipe on an order in the order list and tap
     [queue addOperation:operation];
 }
 
+- (void)deleteOrder:(AnOrder *)orderToDelete row:(NSIndexPath *)rowToDelete {
+    if (orderToDelete) {
+        Order *coreDataOrder = orderToDelete.coreDataOrder;//for partial orders we keep pointer to the core data instance inside the Order. //todo we may want to consider always loading core data instance inside the order instance
+        if (coreDataOrder == nil && orderToDelete.orderId != nil && [orderToDelete.orderId intValue] != 0) {//for pending orders it is possible, there will be an entry in core data even though we did not load a copy of it inside the order.
+            coreDataOrder = [CoreDataManager getOrder:orderToDelete.orderId managedObjectContext:self.managedObjectContext];
+        }
+        if (orderToDelete.orderId != nil && [orderToDelete.orderId intValue] != 0) {
+            MBProgressHUD *deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+            deleteHUD.labelText = @"Deleting Order";
+            [deleteHUD show:NO];
+            NSURL *url = [NSURL URLWithString:kDBORDEREDITS([orderToDelete.orderId integerValue])];
+            AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
+            NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
+            AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
+                    success:^(AFHTTPRequestOperation *op, id responseObject) {
+                        if (coreDataOrder != nil)[[CoreDataUtil sharedManager] deleteObject:coreDataOrder];
+                        [self deleteRowFromOrderListAtIndex:rowToDelete];
+                        if (currentOrder && currentOrder.orderId == orderToDelete.orderId) {
+                            self.OrderDetailScroll.hidden = YES;
+                            currentOrder = nil;
+                        }
+                        [deleteHUD hide:NO];
+                    } failure:^(AFHTTPRequestOperation *op, NSError *error) {
+                        NSString *errorMsg = [NSString stringWithFormat:@"Error deleting order. %@", error.localizedDescription];
+                        [[[UIAlertView alloc] initWithTitle:@"Error" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+                        [deleteHUD hide:NO];
+                    }];
+            [operation start];
+        } else {
+            if (coreDataOrder != nil)[[CoreDataUtil sharedManager] deleteObject:coreDataOrder];
+            [self deleteRowFromOrderListAtIndex:rowToDelete];
+        }
+    }
+}
+
 
 - (void)deleteRowFromOrderListAtIndex:(NSIndexPath *)index {
     AnOrder *anOrder = [self.filteredOrders objectAtIndex:index.row];
     [self.allorders removeObjectIdenticalTo:anOrder];
     [self.filteredOrders removeObjectAtIndex:index.row];
-
     NSArray *indices = [NSArray arrayWithObject:index];
     [self.sideTable deleteRowsAtIndexPaths:indices withRowAnimation:UITableViewRowAnimationAutomatic];
-
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(customer_id = %@) AND (custid = %@)",
-                                                              anOrder.customerId, [anOrder.customer objectForKey:@"custid"]];
-
-    orderToDelete = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:predicate];
-    if (orderToDelete) {
-        [[CoreDataUtil sharedManager] deleteObject:orderToDelete];
-    }
 }
 
 #pragma mark - UIPrinterSelectedDelegate
@@ -1311,21 +1108,9 @@ SG: This method gets called when you swipe on an order in the order list and tap
 #pragma mark - UITextFieldDelegate
 
 - (void)textViewDidBeginEditing:(UITextView *)sender {
-    if ([sender isEqual:self.shipdates]) {
-        //move the main view, so that the keyboard does not hide it.
-        if (self.view.frame.origin.y >= 0) {
-            [self setViewMovedUp:YES];
-        }
-    }
 }
 
 - (void)textViewDidEndEditing:(UITextView *)sender {
-    if ([sender isEqual:self.shipdates]) {
-        //move the main view, so that the keyboard does not hide it.
-        if (self.view.frame.origin.y >= 0) {
-            [self setViewMovedUp:NO];
-        }
-    }
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {

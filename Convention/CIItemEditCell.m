@@ -8,6 +8,8 @@
 
 #import "CIItemEditCell.h"
 #import "JSONKit.h"
+#import "ALineItem.h"
+#import "ShowConfigurations.h"
 
 @implementation CIItemEditCell
 @synthesize desc;
@@ -109,6 +111,94 @@
         self.desc2.text = description2;
     }
 
+}
+
+- (void)updateCellAtIndexPath:(NSIndexPath *)indexPath withLineItem:(ALineItem *)data quantities:(NSArray *)itemsQty prices:(NSArray *)itemsPrice vouchers:(NSArray *)itemsVouchers shipDates:(NSArray *)itemsShipDates {
+    BOOL isDiscount = [data.category isEqualToString:@"discount"];
+    if (data.product) {
+        NSString *invtid = isDiscount ? @"Discount" : [data.product objectForKey:@"invtid"];
+        self.invtid.text = invtid;
+    }
+    [self setDescription:data.desc withSubtext:data.desc2];
+
+    if ([ShowConfigurations instance].vouchers) {
+        if ([itemsVouchers objectAtIndex:indexPath.row]) {
+            self.voucher.text = [itemsVouchers objectAtIndex:indexPath.row];
+        }
+        else
+            self.voucher.text = @"0";
+    } else {
+        self.voucher.hidden = YES;
+    }
+
+    BOOL isJSON = NO;
+    double q = 0;
+    if ([itemsQty objectAtIndex:indexPath.row]) {
+        self.qty.text = [itemsQty objectAtIndex:indexPath.row];
+        self.qtyLbl.text = [itemsQty objectAtIndex:indexPath.row];
+        q = [self.qty.text doubleValue];
+    }
+    else
+        self.qty.text = @"0";
+
+    __autoreleasing NSError *err = nil;
+    NSMutableDictionary *dict = [self.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
+
+    if (!err && dict && ![dict isKindOfClass:[NSNull class]] && dict.allKeys.count > 0) {
+        isJSON = YES;
+    }
+
+    if (isJSON) {
+        [self.qtyBtn setHidden:NO];
+        for (NSString *key in dict.allKeys) {
+            q += [[dict objectForKey:key] doubleValue];
+        }
+    } else {
+        [self.qtyBtn setHidden:YES];
+    }
+
+    if (isDiscount) {
+        self.qty.hidden = YES;
+        self.qtyLbl.hidden = NO;
+    } else {
+        self.qty.hidden = NO;
+        self.qtyLbl.hidden = YES;
+    }
+
+    int nd = 1;
+    if ([[ShowConfigurations instance] shipDates]) {
+        int lblsd = 0;
+        if (((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count > 0) {
+            nd = ((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count;
+            lblsd = nd;
+        }
+
+        [self.btnShipdates setTitle:[NSString stringWithFormat:@"SD:%d", lblsd] forState:UIControlStateNormal];
+    } else {
+        self.btnShipdates.hidden = YES;
+    }
+
+    if ([itemsPrice objectAtIndex:indexPath.row] && ![[itemsPrice objectAtIndex:indexPath.row] isKindOfClass:[NSNull class]]) {
+        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
+        nf.formatterBehavior = NSNumberFormatterBehavior10_4;
+        nf.maximumFractionDigits = 2;
+        nf.minimumFractionDigits = 2;
+        nf.minimumIntegerDigits = 1;
+
+        double price = [[itemsPrice objectAtIndex:indexPath.row] doubleValue];
+
+        self.price.text = [nf stringFromNumber:[NSNumber numberWithDouble:price]];
+        self.priceLbl.text = self.price.text;
+        [self.price setHidden:YES];
+        self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(price * q * nd)] numberStyle:NSNumberFormatterCurrencyStyle];
+    }
+    else {
+        self.price.text = @"0.00";
+        self.priceLbl.text = self.price.text;
+        [self.price setHidden:YES];
+        self.total.text = @"$0.00";
+    }
+    self.tag = indexPath.row;
 }
 
 @end

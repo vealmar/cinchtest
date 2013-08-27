@@ -20,6 +20,7 @@
 		35F52565AD01794E5970974F /* ALineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52C47A71D4C79AE68083C /* ALineItem.m */; };
 		35F527C6D5A71434688ABEC2 /* FarrisBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */; };
 		35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5271B9DC09F494AE33569 /* ShowConfigurations.m */; };
+		35F527ED52FF1F2798544129 /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */; };
 		35F52A19F4EFCD93702E646D /* ProductCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52A62C4F3539476C1736F /* ProductCell.m */; };
 		35F52B7D65E8F84C2681BE43 /* AnOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F520072428E6A11A140BBE /* AnOrder.m */; };
 		35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52CF25ABF1AF16A369494 /* NilUtil.m */; };
@@ -235,6 +236,8 @@
 		35F52C47A71D4C79AE68083C /* ALineItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ALineItem.m; sourceTree = "<group>"; };
 		35F52CE4A77F64FBC2BA5559 /* NilUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NilUtil.h; sourceTree = "<group>"; };
 		35F52CF25ABF1AF16A369494 /* NilUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NilUtil.m; sourceTree = "<group>"; };
+		35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
+		35F52E74AD542ECB69B97735 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		6414A6E91496AE960088586B /* orangebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangebutton.png; sourceTree = "<group>"; };
 		6414A6F01496B9A10088586B /* bluebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluebutton.png; sourceTree = "<group>"; };
 		6E07A38C1461D26E0043C22B /* CICustomerInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICustomerInfoViewController.h; sourceTree = "<group>"; };
@@ -802,6 +805,8 @@
 				C71653A61671173900F65D02 /* SetupInfo.h */,
 				C71653A71671173900F65D02 /* SetupInfo.m */,
 				C73E2FDD165C810B00FE8DE9 /* ProductCart.xcmappingmodel */,
+				35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */,
+				35F52E74AD542ECB69B97735 /* CoreDataManager.h */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -1416,6 +1421,7 @@
 				35F52B7D65E8F84C2681BE43 /* AnOrder.m in Sources */,
 				35F52565AD01794E5970974F /* ALineItem.m in Sources */,
 				35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */,
+				35F527ED52FF1F2798544129 /* CoreDataManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

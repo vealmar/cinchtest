@@ -12,8 +12,6 @@
 
 - (void)customerSelected:(NSDictionary *)info;
 
-- (void)customerSelectionCancel;
-
 @end
 
 @interface CICustomerInfoViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>

@@ -23,6 +23,7 @@
 #import "ShowConfigurations.h"
 #import "AnOrder.h"
 #import "ALineItem.h"
+#import "CoreDataManager.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -114,18 +115,7 @@
 - (void)loadOrder:(int)orderRecoverySelection {
     Order *coreDataOrder = self.selectedOrder.coreDataOrder;//CIOrderViewController supplies the coredata order in the selectedorder when it is a partial order i.e. does not exist on the server.
     if (coreDataOrder == nil && self.selectedOrder.orderId != nil && [self.selectedOrder.orderId intValue] != 0) {//Must be a pending order i.e. exists on server.
-        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-        [fetchRequest setEntity:[NSEntityDescription entityForName:@"Order" inManagedObjectContext:self.managedObjectContext]];
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(orderId ==[c] %@)", [self.selectedOrder.orderId stringValue]];
-        [fetchRequest setPredicate:predicate];
-        NSArray *keys = [NSArray arrayWithObjects:@"carts", @"carts.shipdates", nil];
-        [fetchRequest setRelationshipKeyPathsForPrefetching:keys];
-        [fetchRequest setReturnsObjectsAsFaults:NO];
-        NSError *error = nil;
-        NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
-        if (error == nil && fetchedObjects != nil && [fetchedObjects count] > 0) {
-            coreDataOrder = [fetchedObjects objectAtIndex:0];
-        }
+        coreDataOrder = [CoreDataManager getOrder:self.selectedOrder.orderId managedObjectContext:self.managedObjectContext];
     }
     BOOL orderExistsInCoreData = coreDataOrder != nil;
     BOOL orderExistsOnServer = self.selectedOrder.orderId != nil && [self.selectedOrder.orderId intValue] != 0;
