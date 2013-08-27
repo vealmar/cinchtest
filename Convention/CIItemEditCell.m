@@ -13,9 +13,7 @@
 @synthesize desc;
 @synthesize desc1;
 @synthesize desc2;
-//@synthesize lblQuantity;
 @synthesize voucher;
-//@synthesize lblPrice;
 @synthesize qty;
 @synthesize price;
 @synthesize btnShipdates;
@@ -26,29 +24,14 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        // Initialization code
-//        self.desc.font = [UIFont fontWithName:kFontName size:14.f];
-//        self.lblQuantity.font = [UIFont fontWithName:kFontName size:14.f];
-//        self.lblPrice.font = [UIFont fontWithName:kFontName size:14.f];
-//        self.total.font = [UIFont fontWithName:kFontName size:14.f];
-//        self.qty.font = [UIFont fontWithName:kFontName size:14.f];
-//        self.price.font = [UIFont fontWithName:kFontName size:14.f];
-//        self.priceLbl.font = [UIFont fontWithName:kFontName size:14.f];
-    }
     return self;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
 }
 
 - (void)UpdateTotal {
-//    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
-//    [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
-
     __autoreleasing NSError *err = nil;
     NSMutableDictionary *dict = [self.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
 
@@ -67,12 +50,9 @@
 }
 
 - (IBAction)voucherEdit:(id)sender {
-//    [self UpdateTotal];
     if (self.delegate) {
         [self.delegate setVoucher:self.voucher.text atIndex:self.tag];
         [self.delegate UpdateTotal];
-//        [self.delegate setViewMovedUpDouble:NO];
-//        [self.delegate setViewMovedUpDouble:NO];
     }
 }
 
@@ -81,8 +61,6 @@
     if (self.delegate) {
         [self.delegate setQuantity:self.qty.text atIndex:self.tag];
         [self.delegate UpdateTotal];
-//        [self.delegate setViewMovedUpDouble:NO];
-//        [self.delegate setViewMovedUpDouble:NO];
     }
 }
 
@@ -92,8 +70,6 @@
     if (self.delegate) {
         [self.delegate setPrice:self.price.text atIndex:self.tag];
         [self.delegate UpdateTotal];
-//        [self.delegate setViewMovedUpDouble:NO];
-//        [self.delegate setViewMovedUpDouble:NO];
     }
 }
 
@@ -110,8 +86,6 @@
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
-//    if (self.delegate)
-//        [self.delegate setActiveField:nil];
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
@@ -119,24 +93,20 @@
         [self.delegate setActiveField:textField];
         [self.delegate setSelectedRow:self.tag];
     }
-
-
-//    if (self.delegate)
-//        [self.delegate setViewMovedUpDouble:YES];
 }
 
-- (void)setDescription:(NSString *)desc1 withSubtext:(NSString *)desc2 {
-    if (desc2 == [NSNull null]) {
+- (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {
+    if (description2 == nil) {
         self.desc.hidden = FALSE;
         self.desc1.hidden = TRUE;
         self.desc2.hidden = TRUE;
-        self.desc.text = desc1;
+        self.desc.text = description1;
     } else {
         self.desc.hidden = TRUE;
         self.desc1.hidden = FALSE;
         self.desc2.hidden = FALSE;
-        self.desc1.text = desc1;
-        self.desc2.text = desc2;
+        self.desc1.text = description1;
+        self.desc2.text = description2;
     }
 
 }

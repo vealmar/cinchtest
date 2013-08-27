@@ -10,27 +10,31 @@
 #import "ItemEditDelegate.h"
 
 @interface CIItemEditCell : UITableViewCell <UITextFieldDelegate>
-@property (weak, nonatomic) IBOutlet UILabel *invtid;
-@property (weak, nonatomic) IBOutlet UILabel *desc;
-@property (weak, nonatomic) IBOutlet UILabel *desc1;
-@property (weak, nonatomic) IBOutlet UILabel *desc2;
-@property (weak, nonatomic) IBOutlet UIButton *btnShipdates;
-@property (weak, nonatomic) IBOutlet UITextField *voucher;
-@property (weak, nonatomic) IBOutlet UITextField *qty;
-@property (weak, nonatomic) IBOutlet UILabel *qtyLbl;
-@property (weak, nonatomic) IBOutlet UIButton *qtyBtn;
-@property (weak, nonatomic) IBOutlet UITextField *price;
-@property (weak, nonatomic) IBOutlet UILabel *priceLbl;
-@property (weak, nonatomic) IBOutlet UILabel *total;
+@property(weak, nonatomic) IBOutlet UILabel *invtid;
+@property(weak, nonatomic) IBOutlet UILabel *desc;
+@property(weak, nonatomic) IBOutlet UILabel *desc1;
+@property(weak, nonatomic) IBOutlet UILabel *desc2;
+@property(weak, nonatomic) IBOutlet UIButton *btnShipdates;
+@property(weak, nonatomic) IBOutlet UITextField *voucher;
+@property(weak, nonatomic) IBOutlet UITextField *qty;
+@property(weak, nonatomic) IBOutlet UILabel *qtyLbl;
+@property(weak, nonatomic) IBOutlet UIButton *qtyBtn;
+@property(weak, nonatomic) IBOutlet UITextField *price;
+@property(weak, nonatomic) IBOutlet UILabel *priceLbl;
+@property(weak, nonatomic) IBOutlet UILabel *total;
 
-@property (nonatomic, assign) id<ItemEditDelegate> delegate;
+@property(nonatomic, assign) id <ItemEditDelegate> delegate;
 
 - (IBAction)voucherEdit:(id)sender;
+
 - (IBAction)qtyEdit:(id)sender;
+
 - (IBAction)priceEdit:(id)sender;
+
 - (IBAction)qtyTouch:(id)sender;
+
 - (IBAction)shipdates:(id)sender;
 
-- (void)setDescription:(NSString *)desc1 withSubtext:(NSString *)desc2;
+- (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2;
 
 @end
