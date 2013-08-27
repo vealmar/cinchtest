@@ -67,7 +67,6 @@ static DateUtil *sharedInstance;
 + (NSDate *)parseDate:(NSString *)dateString {
     NSDateFormatter *formatter = [self createFormatter];
     NSDate *date = [formatter dateFromString:dateString];
-    DLog(@"Date: %@", date);
     return date;
 }
 
@@ -89,9 +88,7 @@ static DateUtil *sharedInstance;
 - (NSDate *)processJSDate:(NSString *)value {
     NSString *rawDate = [[value componentsSeparatedByString:@"("] objectAtIndex:1];
     rawDate = [[rawDate componentsSeparatedByString:@"-"] objectAtIndex:0];
-    DLog(@"Raw: %@", rawDate);
     NSDate *date = [NSDate dateWithTimeIntervalSince1970:([rawDate doubleValue] / 1000)];
-    DLog(@"Date: %@", date);
     return date;
 }
 

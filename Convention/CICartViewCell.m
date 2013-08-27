@@ -9,10 +9,10 @@
 #import "CICartViewCell.h"
 #import "StringManipulation.h"
 
-@interface CICartViewCell (){
-    NSString* oldPrice;
-    NSString* oldVoucher;
-    NSString* originalCellValue;
+@interface CICartViewCell () {
+    NSString *oldPrice;
+    NSString *oldVoucher;
+    NSString *originalCellValue;
 }
 
 @end
@@ -39,12 +39,9 @@
 @synthesize qtyBtn;
 @synthesize delegate;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        // Initialization code
-        DLog(@"is called?");
         oldPrice = @"";
         oldVoucher = @"";
     }
@@ -76,15 +73,13 @@
     oldPrice = self.price.text;
     if (self.delegate) {
         [self.delegate PriceChange:dprice forIndex:self.tag];
-//        DLog(@"pframe:%@",NSStringFromCGRect(self.frame));
     }
 }
 
 - (IBAction)voucherDidEnd:(id)sender {
-    DLog(@"trigger end");
     double dprice = [self.voucher.text doubleValue];
-    
-    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+
+    NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
     nf.formatterBehavior = NSNumberFormatterBehavior10_4;
     nf.maximumFractionDigits = 2;
     nf.minimumFractionDigits = 2;
@@ -94,16 +89,14 @@
     oldVoucher = self.voucher.text;
     if (self.delegate) {
         [self.delegate VoucherChange:dprice forIndex:self.tag];
-//        DLog(@"pframe:%@",NSStringFromCGRect(self.frame));
     }
 }
 
 
 - (IBAction)priceDidEnd:(id)sender {
-    DLog(@"trigger end");
     double dprice = [self.price.text doubleValue];
-    
-    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+
+    NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
     nf.formatterBehavior = NSNumberFormatterBehavior10_4;
     nf.maximumFractionDigits = 2;
     nf.minimumFractionDigits = 2;
@@ -144,8 +137,7 @@
     }
 }
 
-- (id)init
-{
+- (id)init {
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     if (self) {
         // Initialization code
@@ -153,28 +145,27 @@
     return self;
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
-    
+
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
     return YES;
 }
 
--(BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     originalCellValue = [NSString stringWithString:textField.text];
-    UITableView * tableView = (UITableView *)self.superview;
+    UITableView *tableView = (UITableView *) self.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
     [tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
     return YES;
 }
 
--(void)textFieldDidEndEditing:(UITextField *)textField{
+- (void)textFieldDidEndEditing:(UITextField *)textField {
 //    DLog(@"textFieldDidEndEditing");
 //    if (self.delegate) {
 ////        DLog(@"end frame:%@",NSStringFromCGRect(self.frame));

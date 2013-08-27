@@ -56,8 +56,6 @@
     self.email.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
     self.password.text = [[SettingsManager sharedManager] lookupSettingByString:@"password"];
 
-    DLog(@"%@,%@", version, build);
-
     self.lblVersion.text = [NSString stringWithFormat:@"CI %@.%@", version, build];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
@@ -99,8 +97,6 @@
     loginHud.labelText = @"Logging in...";
     [loginHud show:YES];
 
-    DLog(@"Login URL:%@", kDBLOGIN);
-
     AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:kDBLOGIN]];
     NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:Email, kEmailKey, Password, kPasswordKey, nil];
     NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:nil parameters:params];
@@ -111,7 +107,6 @@
                 if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
                     authToken = [JSON objectForKey:kAuthToken];
                     vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
-                    DLog(@"Login JSON: %@", JSON);
 
                     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CIOrderViewController" bundle:nil];
                     CIOrderViewController *masterViewController = [storyboard instantiateInitialViewController];

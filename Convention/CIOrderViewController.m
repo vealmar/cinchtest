@@ -178,7 +178,6 @@
         };
 
         NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];
-        DLog(@"Sending %@", url);
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                 success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
@@ -188,7 +187,6 @@
                             [self.filteredOrders addObject:[[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) order]];
                         }
                     }
-                    DLog(@"order count: %i", self.allorders.count);
                     [self loadPartialOrders];
                     self.allorders = [self.filteredOrders mutableCopy];
                     [self.sideTable reloadData];
@@ -261,7 +259,6 @@ SG: The argument 'detail' is the selected order.
             if (!isDiscount && dict.price && ![dict.price isKindOfClass:[NSNull class]]) {
                 [self.itemsPrice insertObject:dict.price atIndex:idx];
                 [self.itemsDiscounts insertObject:[NSNumber numberWithInt:0] atIndex:idx];
-                DLog(@"p(%i):%@", idx, dict.price);
             } else if (isDiscount) {
                 [self.itemsPrice insertObject:dict.price atIndex:idx];
                 [self.itemsDiscounts insertObject:[NSNumber numberWithInt:1] atIndex:idx];
@@ -273,14 +270,12 @@ SG: The argument 'detail' is the selected order.
 
             if (dict.quantity && ![dict.quantity isKindOfClass:[NSNull class]]) {
                 [self.itemsQty insertObject:dict.quantity atIndex:idx];
-                DLog(@"q(%i):%@", idx, dict.quantity);
             }
             else
                 [self.itemsQty insertObject:@"0" atIndex:idx];
 
             if (dict.voucherPrice && ![dict.voucherPrice isKindOfClass:[NSNull class]]) {
                 [self.itemsVouchers insertObject:dict.voucherPrice atIndex:idx];
-                //                    DLog(@"%@",[dict objectForKey:kOrderItemVoucher]);
             }
             else
                 [self.itemsVouchers insertObject:@"0" atIndex:idx];
@@ -406,7 +401,6 @@ SG: The argument 'detail' is the selected order.
         }
 
         AnOrder *data = [self.filteredOrders objectAtIndex:[indexPath row]];
-        //DLog(@"data:%@",data);
 
         cell.Customer.text = [NSString stringWithFormat:@"%@ - %@", ([data.customer objectForKey:kBillName] == nil? @"(Unknown)" : [data.customer objectForKey:kBillName]), ([data.customer objectForKey:kCustID] == nil? @"(Unknown)" : [data.customer objectForKey:kCustID])];
         if (data.authorized != nil) {
@@ -503,7 +497,6 @@ SG: The argument 'detail' is the selected order.
             if ([self.itemsQty objectAtIndex:indexPath.row]) {
                 cell.qty.text = [self.itemsQty objectAtIndex:indexPath.row];
                 cell.qtyLbl.text = [self.itemsQty objectAtIndex:indexPath.row];
-                DLog(@"setting qty:(%@)%@", [self.itemsQty objectAtIndex:indexPath.row], cell.qty.text);
                 q = [cell.qty.text doubleValue];
             }
             else
@@ -513,7 +506,6 @@ SG: The argument 'detail' is the selected order.
             NSMutableDictionary *dict = [cell.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
 
             if (!err && dict && ![dict isKindOfClass:[NSNull class]] && dict.allKeys.count > 0) {
-                DLog(@"Cell JSon got:%@", dict);
                 isJSON = YES;
             }
 
@@ -542,14 +534,11 @@ SG: The argument 'detail' is the selected order.
                     lblsd = nd;
                 }
 
-                DLog(@"Shipdate count:%d nd:%d array:%@", ((NSArray *) [self.itemsShipDates objectAtIndex:indexPath.row]).count, nd, ((NSArray *) [self.itemsShipDates objectAtIndex:indexPath.row]));
-
                 [cell.btnShipdates setTitle:[NSString stringWithFormat:@"SD:%d", lblsd] forState:UIControlStateNormal];
             } else {
                 cell.btnShipdates.hidden = YES;
             }
 
-            DLog(@"price:%@", [self.itemsPrice objectAtIndex:indexPath.row]);
             if ([self.itemsPrice objectAtIndex:indexPath.row] && ![[self.itemsPrice objectAtIndex:indexPath.row] isKindOfClass:[NSNull class]]) {
                 NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
                 nf.formatterBehavior = NSNumberFormatterBehavior10_4;
@@ -701,7 +690,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
         [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
 
         NSInteger itemCount = currentOrder.lineItems.count;
-        DLog(@"itemCount:%i, itemQty:%i", itemCount, [self.itemsQty count]);
 
         for (int i = 0; i < itemCount; i++) {
             double price = [[self.itemsPrice objectAtIndex:i] doubleValue];
@@ -771,7 +759,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
         self.storeQtysPO.delegate = self;
         CGRect frame = [self.itemsTable rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
         frame = CGRectOffset(frame, 0, 0);
-        DLog(@"pop from frame:%@", NSStringFromCGRect(frame));
         self.poController = [[UIPopoverController alloc] initWithContentViewController:self.storeQtysPO];
         [self.poController presentPopoverFromRect:frame inView:self.itemsTable permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
@@ -786,30 +773,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSDate *endDate = [[NSDate alloc] init];
 
     if (currentOrder.lineItems == nil || currentOrder.lineItems.count == 0) {
-        DLog(@"no items");
         return;
     }
     if ([currentOrder.lineItems objectAtIndex:idx] == nil) {
-        DLog(@"not for idx:%d", idx);
         return;
     }
     if (((ALineItem *) [currentOrder.lineItems objectAtIndex:idx]).product == nil) {
-        DLog(@"no product");
         return;
     }
     NSString *start = [((ALineItem *) [currentOrder.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate1];
     NSString *end = [((ALineItem *) [currentOrder.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate2];
 
-// FIXME: Setup calendar to show starting at current date
-
-    //NSDate *now = [NSDate date];
     if (start && end && ![start isKindOfClass:[NSNull class]] && ![end isKindOfClass:[NSNull class]] && start.length > 0 && end.length > 0) {
         startDate = [df dateFromString:start];
-//        if (startDate < now)
-//            startDate = now;
         endDate = [df dateFromString:end];
-//        if (endDate < startDate)
-//            endDate = startDate;
     } else {
         return;
     }
@@ -831,7 +808,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
     calView.startDate = startDate;
     __weak CICalendarViewController *calViewW = calView;
     calView.cancelTouched = ^{
-        DLog(@"calender canceled");
         [calViewW dismissViewControllerAnimated:YES completion:nil];
         [self.itemsTable reloadData];
 
@@ -851,7 +827,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
         NSArray *dates = [self.itemsShipDates objectAtIndex:idx];
         weakCalView.calendarView.selectedDates = [dates mutableCopy];
         weakCalView.calendarView.avalibleDates = dateList;
-        DLog(@"dates:%@ what it got:%@", dates, weakCalView.calendarView.selectedDates);
     };
 
     [self presentViewController:calView animated:YES completion:nil];
@@ -919,8 +894,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 
     NSURL *url = [NSURL URLWithString:logoutPath];
-    DLog(@"Signout url:%@", url);
-
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
     NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:@"" parameters:nil];
     AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -986,7 +959,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
     }
 
     [arr removeObjectIdenticalTo:nil];
-    DLog(@"array:%@", arr);
     NSString *custid = [currentOrder.customerId stringValue];
     NSString *authorizedBy = self.authorizer.text == nil? @"" : self.authorizer.text;
     NSString *notesText = self.notes.text == nil || [self.notes.text isKindOfClass:[NSNull class]] ? @"" : self.notes.text;
@@ -1036,8 +1008,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)loadPrinters {
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETPRINTERS]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-
-        DLog(@"printers: %@", JSON);
         if (JSON && [JSON isKindOfClass:[NSArray class]] && [JSON count] > 0) {
             NSMutableDictionary *printStations = [[NSMutableDictionary alloc] initWithCapacity:[JSON count]];
             for (NSDictionary *printer in JSON) {
@@ -1080,13 +1050,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
         NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:nil parameters:params];
 
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-
-            DLog(@"JSON: %@", JSON);
-            DLog(@"status = %@", [JSON valueForKey:@"created_at"]);
             [hud hide:YES];
-
             NSString *msg = [NSString stringWithFormat:@"Your order has printed successfully to station: %@", printStationId];
-
             [[[UIAlertView alloc] initWithTitle:@"Success" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
         }                                                                                   failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
@@ -1175,12 +1140,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 - (void)QtyTableChange:(NSMutableDictionary *)qty forIndex:(int)idx {
     NSString *JSON = [qty JSONString];
-    DLog(@"setting qtys on index(%d) to %@", idx, JSON);
-
     CIItemEditCell *cell = (CIItemEditCell *) [self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
-
     cell.qty.text = JSON;
-
     [self.itemsQty removeObjectAtIndex:idx];
     [self.itemsQty insertObject:JSON atIndex:idx];
     [self.itemsTable reloadData];
@@ -1220,8 +1181,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
         NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
         AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
                 success:^(AFHTTPRequestOperation *operation, id responseObject) {
-
-                    DLog(@"DELETE success");
                     [self deleteRowFromOrderListAtIndex:rowToDelete];
                     currentOrder = nil;
                     self.EditorView.hidden = YES;
@@ -1231,8 +1190,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
                     [deleteHUD hide:NO];
 
                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-
-                    DLog(@"DELETE failed");
                     NSString *errorMsg = [NSString stringWithFormat:@"Error deleting order. %@", error.localizedDescription];
                     [[[UIAlertView alloc] initWithTitle:@"Error" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
                     [deleteHUD hide:NO];
@@ -1326,9 +1283,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
     if ([self.searchText.text isEqualToString:@""]) {
         self.filteredOrders = [self.allorders mutableCopy];
-        DLog(@"string is empty");
     } else {
-        DLog(@"Search Text %@", self.searchText.text);
         NSPredicate *pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *bindings) {
             NSMutableDictionary *dict = (NSMutableDictionary *) obj;
 
@@ -1349,7 +1304,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
         }];
 
         self.filteredOrders = [[self.allorders filteredArrayUsingPredicate:pred] mutableCopy];
-        DLog(@"results count:%d", self.filteredOrders.count);
     }
     [self.sideTable reloadData];
 }

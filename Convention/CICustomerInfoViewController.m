@@ -158,7 +158,6 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    DLog(@"customer details:%@", [self.filteredtableData objectAtIndex:[indexPath row]]);
     selectedCustomer = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
     [searchText resignFirstResponder];
 }

@@ -49,12 +49,6 @@
         customersReady = NO;
         tOffset = 0;
         productCart = [NSMutableDictionary dictionary];
-        allCartItems = [NSMutableDictionary dictionary];
-
-        DLog(@"self class:%@", NSStringFromClass([self class]));
-        if (self.delegate) {
-            DLog(@"delegate class:%@", NSStringFromClass([self.delegate class]));
-        }
     }
     return self;
 }
@@ -89,9 +83,6 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    // register for keyboard notifications
-    DLog(@"in view will appear... need CI");
-
     logo.image = [ShowConfigurations instance].logo;
     self.discountTotal.hidden = self.discountTotalLabel.hidden = ![ShowConfigurations instance].discounts;
     self.netTotal.hidden = self.netTotalLabel.hidden = ![ShowConfigurations instance].discounts;
@@ -174,10 +165,6 @@
     [self.indicator stopAnimating];
     self.indicator.hidden = YES;
 
-    DLog(@"self class:%@", NSStringFromClass([self class]));
-    if (self.delegate) {
-        DLog(@"delegate class:%@", NSStringFromClass([self.delegate class]));
-    }
 }
 
 - (void)viewDidLoad {
@@ -229,8 +216,6 @@
                 }
             }
         }
-
-        DLog(@"data:%@", [allCartItems objectAtIndex:indexPath.row]);
 
         cell.InvtID.text = [dict objectForKey:@"invtid"];
         cell.descr.text = [dict objectForKey:@"descr"];
@@ -426,9 +411,6 @@
         [self.delegate setProductCart:self.productCart];
         [self.delegate setOrderSubmitted:YES];
     }
-    else {
-        DLog(@"no delegate class at all");
-    }
     [self dismissViewControllerAnimated:NO completion:nil];
 }
 
@@ -456,14 +438,12 @@
         [dict setObject:[NSNumber numberWithDouble:0.0] forKey:kEditableVoucher];
     }
     [self.products reloadData];
-    DLog(@"Set voucher values for all cart items to zero.");
 }
 
 - (void)VoucherChange:(double)price forIndex:(int)idx {
     NSString *key = [[self.productData allKeys] objectAtIndex:idx];
     NSMutableDictionary *dict = [self.productCart objectForKey:key];
     [dict setObject:[NSNumber numberWithDouble:price] forKey:kEditableVoucher];
-    DLog(@"voucher change to %@ for index %@ (idx:%d)", [NSNumber numberWithDouble:price], key, idx);
 }
 
 - (void)PriceChange:(double)price forIndex:(int)idx {
@@ -485,7 +465,6 @@
     self.netTotal.textColor = [UIColor redColor];
     [self.delegate QtyChange:qty forIndex:idx];
     [dict setObject:[NSNumber numberWithDouble:qty] forKey:kEditableQty];
-    DLog(@"qty change to %@ for index %@", [NSNumber numberWithDouble:qty], key);
 }
 
 - (void)QtyTouchForIndex:(int)idx {
@@ -502,7 +481,6 @@
             NSMutableDictionary *stores = [NSMutableDictionary dictionaryWithCapacity:storeNums.count + 1];
 
             [stores setValue:[NSNumber numberWithInt:0] forKey:[customer objectForKey:kCustID]];
-            DLog(@"setting %@ to %@ so stores is now:%@", [customer objectForKey:kCustID], [NSNumber numberWithInt:0], stores);
             for (int i = 0; i < storeNums.count; i++) {
                 [stores setValue:[NSNumber numberWithInt:0] forKey:[[storeNums objectAtIndex:i] stringValue]];
                 //                DLog(@"setting %@ to %@ so stores is now:%@",[storeNums objectAtIndex:i],[NSNumber numberWithInt:0],stores);
@@ -517,7 +495,6 @@
         storeQtysPO.delegate = (id <CIStoreQtyTableDelegate>) self;
         CGRect frame = [self.products rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
         frame = CGRectOffset(frame, 750, 0);
-        DLog(@"pop from frame:%@", NSStringFromCGRect(frame));
         popoverController = [[UIPopoverController alloc] initWithContentViewController:storeQtysPO];
         [popoverController presentPopoverFromRect:frame inView:self.products permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
@@ -552,19 +529,16 @@
 
 - (void)textEditBeginWithFrame:(CGRect)frame {
     int offset = frame.origin.y - self.products.contentOffset.y;
-    DLog(@"cell edit begin, %d", offset);
     if (offset >= 340) {
         [self setViewMovedUp:YES];
     }
     else {
         tOffset = self.products.contentOffset.y;
-        DLog(@"offset to %d", tOffset);
         [self setViewMovedUp:NO];
     }
 }
 
 - (void)textEditEndWithFrame:(CGRect)frame {
-    DLog(@"cell edit end");
     [self setViewMovedUp:NO];
 }
 

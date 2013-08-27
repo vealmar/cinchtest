@@ -7,7 +7,6 @@
 //
 
 #import "CIItemEditCell.h"
-#import "config.h"
 #import "JSONKit.h"
 
 @implementation CIItemEditCell
@@ -25,8 +24,7 @@
 @synthesize qtyBtn;
 @synthesize priceLbl;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // Initialization code
@@ -41,36 +39,31 @@
     return self;
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
 }
 
--(void)UpdateTotal{
+- (void)UpdateTotal {
 //    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
 //    [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
-    
-    __autoreleasing NSError* err = nil;
-    NSMutableDictionary* dict = [self.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-    
+
+    __autoreleasing NSError *err = nil;
+    NSMutableDictionary *dict = [self.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
+
     double q = 0;
     if (err) {
-        DLog(@"UT JSON error:%@",err);
         q = [self.qty.text doubleValue];
-    }else{
-        DLog(@"UT JSon got:%@", dict);
-        for (NSString* key in dict.allKeys) {
+    } else {
+        for (NSString *key in dict.allKeys) {
             q += [[dict objectForKey:key] doubleValue];
         }
     }
-    
+
     double p = [self.priceLbl.text doubleValue];
-    
-    DLog(@"%f*%f should be %f",q,p,(q*p));
-    
-    self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(q*p)] numberStyle:NSNumberFormatterCurrencyStyle];
+
+    self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(q * p)] numberStyle:NSNumberFormatterCurrencyStyle];
 }
 
 - (IBAction)voucherEdit:(id)sender {
@@ -116,13 +109,12 @@
     }
 }
 
--(void)textFieldDidEndEditing:(UITextField *)textField {
+- (void)textFieldDidEndEditing:(UITextField *)textField {
 //    if (self.delegate)
 //        [self.delegate setActiveField:nil];
 }
 
--(void)textFieldDidBeginEditing:(UITextField *)textField
-{
+- (void)textFieldDidBeginEditing:(UITextField *)textField {
     if (self.delegate) {
         [self.delegate setActiveField:textField];
         [self.delegate setSelectedRow:self.tag];
@@ -133,7 +125,7 @@
 //        [self.delegate setViewMovedUpDouble:YES];
 }
 
--(void)setDescription:(NSString *)desc1 withSubtext:(NSString *)desc2 {
+- (void)setDescription:(NSString *)desc1 withSubtext:(NSString *)desc2 {
     if (desc2 == [NSNull null]) {
         self.desc.hidden = FALSE;
         self.desc1.hidden = TRUE;

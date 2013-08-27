@@ -10,10 +10,10 @@
 #import "StringManipulation.h"
 #import "config.h"
 
-@interface PWProductCell (){
-    NSString* oldPrice;
-    NSString* oldVoucher;
-    NSString* originalCellValue;
+@interface PWProductCell () {
+    NSString *oldPrice;
+    NSString *oldVoucher;
+    NSString *originalCellValue;
 }
 
 @end
@@ -33,8 +33,7 @@
 @synthesize delegate;
 @synthesize numShipDates;
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         oldPrice = @"";
@@ -43,32 +42,32 @@
     return self;
 }
 
-- (void) initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product
-                 item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger) tag
-  ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate{
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product
+                  item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag
+   ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     self.InvtID.text = [product objectForKey:@"invtid"];
     self.descr.text = [product objectForKey:@"descr"];
-    if ([product objectForKey:kProductShipDate1] != nil && ![[product objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]){
-        NSDateFormatter* df = [[NSDateFormatter alloc] init];
+    if ([product objectForKey:kProductShipDate1] != nil && ![[product objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]) {
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
         [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-        NSDate* date = [df dateFromString:[product objectForKey:kProductShipDate1]];
+        NSDate *date = [df dateFromString:[product objectForKey:kProductShipDate1]];
         [df setDateFormat:@"yyyy-MM-dd"];
         self.shipDate1.text = [df stringFromDate:date];
-    }else {
+    } else {
         self.shipDate1.text = @"";
     }
-    if ([product objectForKey:kProductShipDate2] != nil && ![[product objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]){
-        NSDateFormatter* df = [[NSDateFormatter alloc] init];
+    if ([product objectForKey:kProductShipDate2] != nil && ![[product objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]) {
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
         [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-        NSDate* date = [df dateFromString:[product objectForKey:kProductShipDate2]];
+        NSDate *date = [df dateFromString:[product objectForKey:kProductShipDate2]];
         [df setDateFormat:@"yyyy-MM-dd"];
         self.shipDate2.text = [df stringFromDate:date];
-    }else {
+    } else {
         self.shipDate2.text = @"";
     }
 
     self.numShipDates.text = ([[item objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]]
-            ? [NSString stringWithFormat:@"%d",((NSArray*)[item objectForKey:kOrderItemShipDates]).count]:@"0");
+            ? [NSString stringWithFormat:@"%d", ((NSArray *) [item objectForKey:kOrderItemShipDates]).count] : @"0");
     if (!multiStore && item != nil && [item objectForKey:kEditableQty] != nil) {
         self.quantity.text = [[item objectForKey:kEditableQty] stringValue];
     }
@@ -79,13 +78,13 @@
         self.CaseQty.text = [product objectForKey:@"caseqty"];
     else
         self.CaseQty.text = @"";
-    if ([[customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray*)[customer objectForKey:kStores]) count] > 0) {
+    if ([[customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [customer objectForKey:kStores]) count] > 0) {
         self.qtyBtn.hidden = NO;
         self.qtyLbl.hidden = YES;
         self.quantity.hidden = YES;
     }
     if (item != nil && [item objectForKey:kEditableVoucher] != nil) {
-        NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
         nf.formatterBehavior = NSNumberFormatterBehavior10_4;
         nf.maximumFractionDigits = 2;
         nf.minimumFractionDigits = 2;
@@ -94,8 +93,8 @@
         self.voucher.text = [nf stringFromNumber:[item objectForKey:kEditableVoucher]];
         self.voucherLbl.text = self.voucher.text;
         self.voucher.hidden = YES;//PW changes!
-    }else if ([product objectForKey:kProductVoucher] != nil){
-        NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+    } else if ([product objectForKey:kProductVoucher] != nil) {
+        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
         nf.formatterBehavior = NSNumberFormatterBehavior10_4;
         nf.maximumFractionDigits = 2;
         nf.minimumFractionDigits = 2;
@@ -104,7 +103,7 @@
         self.voucher.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[product objectForKey:kProductVoucher] doubleValue]]];
         self.voucherLbl.text = self.voucher.text;
         self.voucher.hidden = YES;//PW changes!
-    }else{
+    } else {
         self.voucher.text = @"0.00";
         self.voucherLbl.text = self.voucher.text;
         self.voucher.hidden = YES;//PW changes!
@@ -112,7 +111,7 @@
 
     if (showPrice && item != nil && [item objectForKey:kEditablePrice] != nil) {
         //            self.price.text = [[self.productPrices objectForKey:[product objectForKey:@"id"]] stringValue];
-        NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
         nf.formatterBehavior = NSNumberFormatterBehavior10_4;
         nf.maximumFractionDigits = 2;
         nf.minimumFractionDigits = 2;
@@ -121,8 +120,8 @@
         self.price.text = [nf stringFromNumber:[item objectForKey:kEditablePrice]];
         self.priceLbl.text = self.price.text;
         self.price.hidden = YES;
-}  else if ([product objectForKey:kProductShowPrice] != nil) {
-        NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+    } else if ([product objectForKey:kProductShowPrice] != nil) {
+        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
         nf.formatterBehavior = NSNumberFormatterBehavior10_4;
         nf.maximumFractionDigits = 2;
         nf.minimumFractionDigits = 2;
@@ -131,12 +130,12 @@
         self.price.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[product objectForKey:kProductShowPrice] doubleValue]]];
         self.priceLbl.text = self.price.text;
         self.price.hidden = YES;//PW changes!
-    }else{
+    } else {
         self.price.text = @"0.00";
         self.priceLbl.text = self.price.text;
         self.price.hidden = YES;//PW changes!
     }
-    self.accessoryType = checkmarked? UITableViewCellAccessoryCheckmark:UITableViewCellAccessoryNone;
+    self.accessoryType = checkmarked ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
     self.delegate = productCellDelegate;
     self.tag = tag;
 }
@@ -166,10 +165,9 @@
 }
 
 - (IBAction)voucherDidEnd:(id)sender {
-    DLog(@"trigger end");
     double dprice = [self.voucher.text doubleValue];
-    
-    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+
+    NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
     nf.formatterBehavior = NSNumberFormatterBehavior10_4;
     nf.maximumFractionDigits = 2;
     nf.minimumFractionDigits = 2;
@@ -184,10 +182,9 @@
 
 
 - (IBAction)priceDidEnd:(id)sender {
-    DLog(@"trigger end");
     double dprice = [self.price.text doubleValue];
-    
-    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
+
+    NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
     nf.formatterBehavior = NSNumberFormatterBehavior10_4;
     nf.maximumFractionDigits = 2;
     nf.minimumFractionDigits = 2;
@@ -226,28 +223,27 @@
     }
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
-    
+
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
     return YES;
 }
 
--(BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     originalCellValue = [NSString stringWithString:textField.text];
-    UITableView * tableView = (UITableView *)self.superview;
+    UITableView *tableView = (UITableView *) self.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
     [tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
     return YES;
 }
 
--(void)textFieldDidEndEditing:(UITextField *)textField{
+- (void)textFieldDidEndEditing:(UITextField *)textField {
     if ([textField.text isEmpty]) {
         textField.text = originalCellValue;
     }

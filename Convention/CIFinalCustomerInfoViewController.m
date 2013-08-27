@@ -99,7 +99,6 @@
 }
 
 - (void)setCustomerData:(NSArray *)customerData {
-    DLog(@"Load customer data");
 }
 
 - (IBAction)back:(id)sender {
@@ -141,7 +140,6 @@
 
         if (self.delegate) {
             NSMutableDictionary *dict = [[self.delegate getCustomerInfo] mutableCopy];
-            DLog(@"customer data:%@", dict);
             if (dict == nil) {
                 return;
             }
@@ -153,7 +151,6 @@
             if (kShowCorp == kFarris) {
                 [dict setObject:(contactBeforeShipping.isChecked ? @"true" : @"false") forKey:kShipFlag];
             }
-            DLog(@"info to send:%@", dict);
             [self.delegate setAuthorizedByInfo:[dict copy]];
             [self.delegate submit:nil];
             [self dismissViewControllerAnimated:NO completion:nil];

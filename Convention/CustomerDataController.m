@@ -13,29 +13,28 @@
 
 @implementation CustomerDataController
 
-+(void)loadCustomers:(NSString *)authToken {
-    NSString* url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
-    DLog(@"Sending %@",url);
++ (void)loadCustomers:(NSString *)authToken {
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
 
-    void(^finish)(NSArray *) = ^(NSArray* customers){
-        NSMutableDictionary* userInfo = [[NSMutableDictionary alloc] initWithCapacity:1];
+    void(^finish)(NSArray *) = ^(NSArray *customers) {
+        NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] initWithCapacity:1];
         if (customers) {
             [userInfo setObject:customers forKey:kCustomerNotificationKey];
         }
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCustomersLoaded object:nil userInfo:(NSDictionary*)userInfo];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCustomersLoaded object:nil userInfo:(NSDictionary *) userInfo];
     };
-    
+
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                
+
                 finish(JSON);
-                
+
             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                
+
                 finish(nil);
             }];
-    
+
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [queue addOperation:operation];
 }

@@ -171,7 +171,6 @@
     [self.managedObjectContext insertObject:coreDataOrder];
     NSError *error = nil;
     if (![self.managedObjectContext save:&error]) {
-        DLog(@"Error loading order: %@", [error localizedDescription]);
         NSString *msg = [NSString stringWithFormat:@"Error loading order: %@", [error localizedDescription]];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [alert show];
@@ -180,7 +179,6 @@
 }
 
 - (NSMutableDictionary *)createIfDoesntExist:(NSMutableDictionary *)dict orig:(NSDictionary *)odict {
-    DLog(@"test this:%@", dict);
     if (dict != nil && [dict objectForKey:kEditablePrice] != nil
             && [dict objectForKey:kEditableVoucher] != nil && [dict objectForKey:kEditableQty] != nil) {
         return nil;
@@ -261,14 +259,10 @@
                 }];
 
                 bulletins = [NSDictionary dictionaryWithDictionary:bulls];
-
-                DLog(@"Bulletins: %@", bulletins);
-
                 [self showVendorView];
 
             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
                 bulletins = nil;
-                //[self.vendorTable reloadData];
                 [self showVendorView];
             }];
 
@@ -355,7 +349,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.products) {
         NSDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-        DLog(@"product details:%@", dict);
         if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]) {
             [selectedIdx removeObject:[NSNumber numberWithInteger:[indexPath row]]];
             [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryNone;
@@ -590,7 +583,6 @@
                             NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETPRINTERS]];
                             AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
 
-                                DLog(@"printers: %@", JSON);
                                 if (JSON != nil && [JSON isKindOfClass:[NSArray class]] && [JSON count] > 0) {
                                     NSMutableDictionary *printStations = [[NSMutableDictionary alloc] initWithCapacity:[JSON count]];
                                     for (NSDictionary *printer in JSON) {
@@ -655,7 +647,6 @@
             NSString *myId = [dict objectForKey:kOrderLineItemId] != nil ? [[dict objectForKey:kOrderLineItemId] stringValue] : @"";
             NSInteger num = 0;
             if (!self.multiStore) {
-                DLog(@"!multiStore:%@", [dict objectForKey:kEditableQty]);
                 num = [[dict objectForKey:kEditableQty] integerValue];
             } else {
                 NSMutableDictionary *qty = [[dict objectForKey:kEditableQty] objectFromJSONString];
@@ -670,7 +661,6 @@
                 }
             }
 
-            DLog(@"orig yo q:%@=%d with %@ and %@", [dict objectForKey:kEditableQty], num, [dict objectForKey:kEditablePrice], [dict objectForKey:kEditableVoucher]);
             if (num > 0) {
                 if ([ShowConfigurations instance].shipDates) {
                     NSMutableArray *strs = [NSMutableArray array];
@@ -750,7 +740,6 @@
 
     [arr removeObjectIdenticalTo:nil];
 
-    DLog(@"array:%@", arr);
 
     if (self.customer == nil) {
         return;
@@ -789,7 +778,6 @@
     } else {
         url = [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS(_coreDataOrder.orderId)], kAuthToken, self.authToken];
     }
-    DLog(@"final JSON:%@\nURL:%@", [final JSONString], url);
 
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
     [client setParameterEncoding:AFJSONParameterEncoding];
@@ -802,7 +790,6 @@
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
                 [submit hide:YES];
-                DLog(@"status = %@", [JSON valueForKey:@"status"]);
                 self.unsavedChangesPresent = NO;
                 AnOrder *anOrder = [[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) JSON];
                 if (asPending) {
@@ -1095,7 +1082,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     calView.modalPresentationStyle = UIModalPresentationFormSheet;
     CICalendarViewController __weak *weakCalView = calView;
     calView.cancelTouched = ^{
-        DLog(@"calender canceled");
         CICalendarViewController *strongCalView = weakCalView;
         [strongCalView dismissViewControllerAnimated:NO completion:nil];
     };
@@ -1158,8 +1144,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
                 calView.calendarView.selectedDates = [selectedDates mutableCopy];
             };
             [self presentViewController:calView animated:NO completion:nil];
-        } else {
-            DLog(@"empty date range");
         }
     }
 }
@@ -1171,7 +1155,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     if (edict == nil ) {
         edict = editableDict;
     }
-    DLog(@"after done touch(should never be nil):%@", edict);
     [edict setObject:[NSNumber numberWithDouble:price] forKey:kEditableVoucher];
     [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
     self.unsavedChangesPresent = YES;
@@ -1188,7 +1171,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
         edict = editableDict;
     }
 
-    DLog(@"after done touch(should never be nil):%@", edict);
     [edict setObject:[NSNumber numberWithDouble:price] forKey:kEditablePrice];
     [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
     self.unsavedChangesPresent = YES;
@@ -1201,13 +1183,11 @@ BOOL itemIsVoucher(NSDictionary *dict) {
 
     NSMutableDictionary *edict = [self createIfDoesntExist:editableDict orig:dict];
 
-    DLog(@"is it nil:%@ editableData:%@", edict, editableData);
 
     if (edict == nil ) {
         edict = editableDict;
     }
 
-    DLog(@"after done touch(should never be nil):%@", edict);
     [edict setObject:[NSNumber numberWithDouble:qty] forKey:kEditableQty];
     [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
 
@@ -1228,16 +1208,13 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     self.totalCost.textColor = [UIColor redColor];
     self.unsavedChangesPresent = YES;
 
-    DLog(@"qty change to %@ for index %@", [NSNumber numberWithDouble:qty], [NSNumber numberWithInt:idx]);
 }
 
 - (void)deleteLineItemFromOrder:(NSInteger)lineItemId {
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBOrderLineItemDelete(lineItemId)], kAuthToken, self.authToken];
-    DLog(@"%@", url);
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
 
     [client deletePath:nil parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        DLog(@"DELETE success for line item id: %d", lineItemId);
     }          failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         DLog(@"DELETE failed for line item id: %d", lineItemId);
     }];
@@ -1246,7 +1223,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
 
 - (void)AddToCartForIndex:(int)idx {
     NSNumber *key = [[self.resultData objectAtIndex:idx] objectForKey:@"id"];
-    DLog(@"add item at %d to cart", idx);
     NSMutableDictionary *dict = [[self.resultData objectAtIndex:idx] mutableCopy];
     NSMutableDictionary *editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
 
@@ -1265,13 +1241,11 @@ BOOL itemIsVoucher(NSDictionary *dict) {
             [dict setObject:lineItemId forKey:kOrderLineItemId];
     }
 
-    DLog(@"after done touch(should never be nil):%@ vs %@ dict now:%@", edict, editableDict, dict);
     [self.productCart setObject:dict forKey:key];
 
     // add item to core data store
     [self addLineItemToProductCart:dict];
 
-    DLog(@"cart now:%@", self.productCart);
 }
 
 #pragma mark - Core Data routines
@@ -1559,7 +1533,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
             edict = editableDict;
         }
 
-        DLog(@"after done touch(should never be nil):%@", edict);
         if ([[edict objectForKey:kEditableQty] isKindOfClass:[NSNumber class]]) {
             NSArray *storeNums = [[self.customer objectForKey:kStores] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
                 NSNumber *n1 = (NSNumber *) obj1;
@@ -1571,7 +1544,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
             NSMutableDictionary *stores = [NSMutableDictionary dictionaryWithCapacity:storeNums.count + 1];
 
             [stores setValue:[NSNumber numberWithInt:0] forKey:[self.customer objectForKey:kCustID]];
-            DLog(@"setting %@ to %@ so stores is now:%@", [self.customer objectForKey:kCustID], [NSNumber numberWithInt:0], stores);
             for (int i = 0; i < storeNums.count; i++) {
                 [stores setValue:[NSNumber numberWithInt:0] forKey:[[storeNums objectAtIndex:i] stringValue]];
 //                DLog(@"setting %@ to %@ so stores is now:%@",[storeNums objectAtIndex:i],[NSNumber numberWithInt:0],stores);
@@ -1581,7 +1553,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
             [edict setObject:JSON forKey:kEditableQty];
         }
         self.storeQtysPO.stores = [[[edict objectForKey:kEditableQty] objectFromJSONString] mutableCopy];
-        DLog(@"stores = %@", self.storeQtysPO.stores);
         [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
         self.storeQtysPO.tag = idx;
         self.storeQtysPO.delegate = self;
@@ -1595,7 +1566,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
 
 - (void)QtyTableChange:(NSMutableDictionary *)qty forIndex:(int)idx {
     NSString *JSON = [qty JSONString];
-    DLog(@"setting qtys on index(%d) to %@", idx, JSON);
 
     NSString *key = [[self.resultData objectAtIndex:idx] objectForKey:@"id"];
 
@@ -1608,9 +1578,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
         edict = editableDict;
     }
 
-    DLog(@"after done touch(should never be nil):%@", edict);
     [edict setValue:JSON forKey:kEditableQty];
-    DLog(@"row now set to %@", edict);
     [editableData setObject:edict forKey:key];
 
     int highestQty = -1;
@@ -1625,7 +1593,6 @@ BOOL itemIsVoucher(NSDictionary *dict) {
         }
     }
 
-    DLog(@"in qty %@ the qty picked is %d", qty, highestQty);
 
     if (highestQty > 0) {
         [self AddToCartForIndex:idx];
