@@ -807,7 +807,6 @@
             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
                 [submit hide:YES];
                 DLog(@"status = %@", [JSON valueForKey:@"status"]);
-                DLog(@"JSON = %@", JSON);
                 self.unsavedChangesPresent = NO;
                 AnOrder *anOrder = [[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) JSON];
                 if (asPending) {

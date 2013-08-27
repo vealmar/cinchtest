@@ -124,7 +124,7 @@
     self.lblNotes.font = [UIFont fontWithName:kFontName size:15.f];
     self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];
-    self.authorizer.font = [UIFont fontWithName:kFontName size:14.f];
+//    self.authorizer.font = [UIFont fontWithName:kFontName size:14.f];
     self.itemsAct.hidden = YES;
 }
 
@@ -968,7 +968,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     [arr removeObjectIdenticalTo:nil];
     DLog(@"array:%@", arr);
     NSString *custid = [self.itemsDB.customerId stringValue];
-    NSString *authorizedBy = self.itemsDB.authorized;
+    NSString *authorizedBy = self.authorizer.text == nil? @"" : self.authorizer.text;
     NSString *notesText = self.notes.text == nil || [self.notes.text isKindOfClass:[NSNull class]] ? @"" : self.notes.text;
 
     NSDictionary *order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
