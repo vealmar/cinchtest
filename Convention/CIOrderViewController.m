@@ -124,7 +124,6 @@
     self.lblNotes.font = [UIFont fontWithName:kFontName size:15.f];
     self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];
-//    self.authorizer.font = [UIFont fontWithName:kFontName size:14.f];
     self.itemsAct.hidden = YES;
 }
 
