@@ -26,8 +26,6 @@
 @property(nonatomic, strong) NSString *authToken;
 @property(nonatomic) BOOL showPrice;
 @property(nonatomic, strong) NSDictionary *vendorInfo;
-//SG: NSDictionary containing vendor fields:id, name, auth_token, hideshprice, vendorgroup_id, isle, booth, dept and shows.
-@property(nonatomic, strong) AnOrder *itemsDB;
 @property(nonatomic, strong) NSMutableArray *itemsQty;
 //SG:quantities for line items of the currently selected order.
 @property(nonatomic, strong) NSMutableArray *itemsPrice;

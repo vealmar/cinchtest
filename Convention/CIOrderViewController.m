@@ -161,7 +161,7 @@
 
 - (void)loadOrders:(BOOL)showLoadingIndicator highlightOrder:(NSNumber *)orderId {
     if (!isLoadingOrders) {
-        self.itemsDB = nil;
+        currentOrder = nil;
         isLoadingOrders = YES;
         self.OrderDetailScroll.hidden = YES;
         MBProgressHUD *hud;
@@ -245,7 +245,7 @@ These partial orders then are put at the beginning of the self.orders array.
 SG: The argument 'detail' is the selected order.
 */
 - (void)displayOrderDetail:(AnOrder *)detail {
-    self.itemsDB = detail; //todo older code used to make a copy of the order dict
+    currentOrder = detail; //todo older code used to make a copy of the order dict
     if (detail) {
         NSArray *arr = detail.lineItems;
         self.itemsPrice = [NSMutableArray array];
@@ -382,9 +382,9 @@ SG: The argument 'detail' is the selected order.
     if (tableView == self.sideTable && self.filteredOrders) {
         return [self.filteredOrders count];
     }
-    else if (tableView == self.itemsTable && self.itemsDB) {
-        if (self.itemsDB.lineItems.count) {
-            return self.itemsDB.lineItems.count;
+    else if (tableView == self.itemsTable && currentOrder) {
+        if (currentOrder.lineItems.count) {
+            return currentOrder.lineItems.count;
         }
     }
     return 0;
@@ -459,7 +459,7 @@ SG: The argument 'detail' is the selected order.
         return cell;
     }
     else if (tableView == self.itemsTable) {
-        if (!self.itemsDB) {
+        if (!currentOrder) {
             return nil;
         }
 
@@ -477,9 +477,9 @@ SG: The argument 'detail' is the selected order.
             cell.total.hidden = YES;
         }
 
-        if (self.itemsDB.lineItems.count > [indexPath row]) {
+        if (currentOrder.lineItems.count > [indexPath row]) {
 
-            ALineItem *data = [self.itemsDB.lineItems objectAtIndex:[indexPath row]];
+            ALineItem *data = [currentOrder.lineItems objectAtIndex:[indexPath row]];
 
             BOOL isDiscount = [data.category isEqualToString:@"discount"];
             if (data.product) {
@@ -607,7 +607,7 @@ SG: The argument 'detail' is the selected order.
         self.customer.text = @"";
         self.authorizer.text = @"";
         self.notes.text = @"";
-        self.itemsDB = nil;
+        currentOrder = nil;
         self.itemsPrice = nil;
         self.itemsQty = nil;
         self.itemsVouchers = nil;
@@ -672,7 +672,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
                     [alert show];
                 }//SG: Should add an else with an appropriate alert even though I don't see how it is possible that the else condition will ever happen.
             } else {
-                self.itemsDB = [self.filteredOrders objectAtIndex:indexPath.row]; //todo code before my changes used to make a copy of the order dictionary and store that in itemsDB. Is that needed?
+                currentOrder = [self.filteredOrders objectAtIndex:indexPath.row]; //todo code before my changes used to make a copy of the order dictionary and store that in itemsDB. Is that needed?
                 rowToDelete = indexPath;
                 [alert setTag:kDeleteCompletedOrder];//SG: These tags are used by the alert's handler method to determine if the order is partial. If it is partial it only needs to be deleted from core data. Otherwise it needs to be deleted from the server.
                 [alert show];
@@ -692,7 +692,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 //SG: CIItemEditDelegate methods are called when the Shipping Date, Quantity, Price or Voucher Price of the line_items in the Editor view are modified by the user.
 
 - (void)UpdateTotal {
-    if (self.itemsDB) {
+    if (currentOrder) {
         double ttotal = 0.0;
         double sctotal = 0.0;
         double discountTotal = 0.0;
@@ -700,7 +700,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
         [nf setNumberStyle:NSNumberFormatterCurrencyStyle];
 
-        NSInteger itemCount = self.itemsDB.lineItems.count;
+        NSInteger itemCount = currentOrder.lineItems.count;
         DLog(@"itemCount:%i, itemQty:%i", itemCount, [self.itemsQty count]);
 
         for (int i = 0; i < itemCount; i++) {
@@ -785,20 +785,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSDate *startDate = [[NSDate alloc] init];
     NSDate *endDate = [[NSDate alloc] init];
 
-    if (self.itemsDB.lineItems == nil || self.itemsDB.lineItems.count == 0) {
+    if (currentOrder.lineItems == nil || currentOrder.lineItems.count == 0) {
         DLog(@"no items");
         return;
     }
-    if ([self.itemsDB.lineItems objectAtIndex:idx] == nil) {
+    if ([currentOrder.lineItems objectAtIndex:idx] == nil) {
         DLog(@"not for idx:%d", idx);
         return;
     }
-    if (((ALineItem *) [self.itemsDB.lineItems objectAtIndex:idx]).product == nil) {
+    if (((ALineItem *) [currentOrder.lineItems objectAtIndex:idx]).product == nil) {
         DLog(@"no product");
         return;
     }
-    NSString *start = [((ALineItem *) [self.itemsDB.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate1];
-    NSString *end = [((ALineItem *) [self.itemsDB.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate2];
+    NSString *start = [((ALineItem *) [currentOrder.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate1];
+    NSString *end = [((ALineItem *) [currentOrder.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate2];
 
 // FIXME: Setup calendar to show starting at current date
 
@@ -948,7 +948,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     }
 
     NSMutableArray *arr = [[NSMutableArray alloc] init];
-    NSArray *data = self.itemsDB.lineItems;
+    NSArray *data = currentOrder.lineItems;
 
     for (NSInteger i = 0; i < data.count; i++) {
         ALineItem *lineItem = [data objectAtIndex:i];
@@ -987,7 +987,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
     [arr removeObjectIdenticalTo:nil];
     DLog(@"array:%@", arr);
-    NSString *custid = [self.itemsDB.customerId stringValue];
+    NSString *custid = [currentOrder.customerId stringValue];
     NSString *authorizedBy = self.authorizer.text == nil? @"" : self.authorizer.text;
     NSString *notesText = self.notes.text == nil || [self.notes.text isKindOfClass:[NSNull class]] ? @"" : self.notes.text;
 
@@ -1071,7 +1071,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         hud.labelText = @"Printing ...";
         [hud show:YES];
 
-        NSString *orderID = [NSString stringWithFormat:@"%@", self.itemsDB.orderId];
+        NSString *orderID = [NSString stringWithFormat:@"%@", currentOrder.orderId];
         NSNumber *printStationId = [NSNumber numberWithInt:[[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue]];
         NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:orderID, kReportPrintOrderId, printStationId, @"printer_id", nil];
 
@@ -1109,7 +1109,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (IBAction)Print:(id)sender {
-    if (self.itemsDB && self.itemsDB.orderId) {
+    if (currentOrder && currentOrder.orderId) {
 
         if (!availablePrinters || ![self printerIsOnline:[[SettingsManager sharedManager] lookupSettingByString:@"printer"]]) {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(printOrder) name:kPrintersLoaded object:nil];
@@ -1215,7 +1215,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         deleteHUD.labelText = @"Deleting Order";
         [deleteHUD show:NO];
 
-        NSURL *url = [NSURL URLWithString:kDBORDEREDITS([self.itemsDB.orderId integerValue])];
+        NSURL *url = [NSURL URLWithString:kDBORDEREDITS([currentOrder.orderId integerValue])];
         AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
         NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
         AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
@@ -1223,7 +1223,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
                     DLog(@"DELETE success");
                     [self deleteRowFromOrderListAtIndex:rowToDelete];
-                    self.itemsDB = nil;
+                    currentOrder = nil;
                     self.EditorView.hidden = YES;
                     self.toolWithSave.hidden = YES;
                     self.orderContainer.hidden = YES;
