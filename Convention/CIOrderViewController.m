@@ -24,7 +24,6 @@
 #import "NilUtil.h"
 
 @interface CIOrderViewController () {
-    int currentOrderID;
     AnOrder *currentOrder;
     BOOL isLoadingOrders;
     UITextField *activeField;
@@ -55,7 +54,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    currentOrderID = 0;
+    currentOrder = nil;
     isLoadingOrders = NO;
     reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
 
@@ -619,7 +618,6 @@ SG: The argument 'detail' is the selected order.
         self.authorizer.text = cell.auth.text;
 
         self.EditorView.tag = cell.tag;
-        currentOrderID = cell.tag;
         rowToDelete = indexPath;
 
         if (![ShowConfigurations instance].vouchers) {
@@ -635,7 +633,6 @@ SG: The argument 'detail' is the selected order.
         self.toolWithSave.hidden = YES;
         self.orderContainer.hidden = YES;
         self.OrderDetailScroll.hidden = YES;
-        currentOrderID = cell.tag;
 
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to edit this pending order?"
                                                        delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Edit", nil];
@@ -946,7 +943,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 - (IBAction)Save:(id)sender {
 
-    if (currentOrderID == 0) {
+    if (currentOrder == nil) {
         return;
     }
 
@@ -996,7 +993,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
     NSDictionary *order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
     NSDictionary *final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDEREDITS(currentOrderID), kAuthToken, self.authToken];
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDEREDITS([currentOrder.orderId intValue]), kAuthToken, self.authToken];
 
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
     [client setParameterEncoding:AFJSONParameterEncoding];
