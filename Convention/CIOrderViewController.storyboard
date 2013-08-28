@@ -130,7 +130,7 @@
                                             <outlet property="delegate" destination="L2z-Wh-GlW" id="8cP-Vr-4Ay"/>
                                         </connections>
                                     </textView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F5A-gz-kv7">
+                                    <button opaque="NO" autoresizesSubviews="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F5A-gz-kv7">
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="G92-Si-lsn"/>
                                             <constraint firstAttribute="width" constant="138" id="WNU-Lv-sgx"/>
@@ -148,7 +148,7 @@
                                             <action selector="Save:" destination="L2z-Wh-GlW" eventType="touchUpInside" id="QUk-mf-Vc8"/>
                                         </connections>
                                     </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g7n-Lj-aer">
+                                    <button opaque="NO" autoresizesSubviews="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g7n-Lj-aer">
                                         <constraints>
                                             <constraint firstAttribute="width" constant="135" id="vEV-hu-gao"/>
                                         </constraints>
@@ -381,7 +381,6 @@
                                     <constraint firstItem="Llc-iv-TSB" firstAttribute="leading" secondItem="H3G-mD-5dA" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="e5o-Zd-hw4"/>
                                     <constraint firstItem="XEo-wM-siO" firstAttribute="baseline" secondItem="Yew-rw-23B" secondAttribute="baseline" type="default" id="f99-tX-hi0"/>
                                     <constraint firstItem="pXs-DZ-hxf" firstAttribute="top" secondItem="klg-Lh-kUP" secondAttribute="top" type="default" id="fgP-o6-Olj"/>
-                                    <constraint firstItem="g7n-Lj-aer" firstAttribute="baseline" secondItem="F5A-gz-kv7" secondAttribute="baseline" type="default" id="gez-li-cen"/>
                                     <constraint firstItem="pXs-DZ-hxf" firstAttribute="leading" secondItem="vUw-Un-NnS" secondAttribute="leading" constant="373" id="gzX-hh-fvv"/>
                                     <constraint firstItem="pXs-DZ-hxf" firstAttribute="leading" secondItem="Mtt-0Z-VgD" secondAttribute="leading" type="default" id="h4d-hJ-GbB"/>
                                     <constraint firstItem="qjp-YV-apI" firstAttribute="trailing" secondItem="OAh-14-pqJ" secondAttribute="trailing" type="default" id="hdr-Qs-z06"/>
