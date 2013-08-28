@@ -866,9 +866,7 @@ BOOL itemIsVoucher(NSDictionary *dict);
 
 BOOL itemIsVoucher(NSDictionary *dict) {
     int idx = [[dict objectForKey:kProductIdx] intValue];
-    //int invtid = [[dict objectForKey:kProductInvtid] intValue];
     NSString *invtId = [dict objectForKey:kProductInvtid];
-
     return idx == 0 && ([invtId isEmpty] || [invtId isEqualToString:@"0"]);
 }
 

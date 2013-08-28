@@ -10,6 +10,8 @@
 #import "JSONKit.h"
 #import "ALineItem.h"
 #import "ShowConfigurations.h"
+#import "config.h"
+#import "StringManipulation.h"
 
 @implementation CIItemEditCell
 @synthesize desc;
@@ -158,13 +160,20 @@
 
     int nd = 1;
     if ([[ShowConfigurations instance] shipDates]) {
-        int lblsd = 0;
-        if (((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count > 0) {
-            nd = ((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count;
-            lblsd = nd;
+        int idx = [[data.product objectForKey:kProductIdx] intValue];
+        NSString *invtId = [data.product objectForKey:kProductInvtid];
+        BOOL isVoucher = idx == 0 && ([invtId isEmpty] || [invtId isEqualToString:@"0"]);
+        if (isVoucher) {
+            self.btnShipdates.enabled = NO;
+            [self.btnShipdates setTitle:@"SD:0" forState:UIControlStateDisabled];
+        } else {
+            int lblsd = 0;
+            if (((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count > 0) {
+                nd = ((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count;
+                lblsd = nd;
+            }
+            [self.btnShipdates setTitle:[NSString stringWithFormat:@"SD:%d", lblsd] forState:UIControlStateNormal];
         }
-
-        [self.btnShipdates setTitle:[NSString stringWithFormat:@"SD:%d", lblsd] forState:UIControlStateNormal];
     } else {
         self.btnShipdates.hidden = YES;
     }
