@@ -126,6 +126,9 @@
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="L2z-Wh-GlW" id="8cP-Vr-4Ay"/>
+                                        </connections>
                                     </textView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F5A-gz-kv7">
                                         <constraints>
@@ -558,40 +561,25 @@
                 <relationship kind="action" name="searchOrders:"/>
                 <relationship kind="outlet" name="NoOrdersLabel" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="OrderDetailScroll" candidateClass="UIScrollView"/>
-                <relationship kind="outlet" name="SCtotal" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="authorizer" candidateClass="UITextView"/>
                 <relationship kind="outlet" name="customer" candidateClass="UITextView"/>
                 <relationship kind="outlet" name="discountTotal" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="discountTotalLabel" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="grossTotal" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="grossTotalLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="homeBg" candidateClass="UIImageView"/>
-                <relationship kind="outlet" name="itemTotalLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="itemsAct" candidateClass="UIActivityIndicatorView"/>
                 <relationship kind="outlet" name="itemsTable" candidateClass="UITableView"/>
-                <relationship kind="outlet" name="lblItems" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="lblVoucher" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="logoImage" candidateClass="UIImageView"/>
                 <relationship kind="outlet" name="notes" candidateClass="UITextView"/>
                 <relationship kind="outlet" name="notesLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="orderContainer" candidateClass="UIView"/>
-                <relationship kind="outlet" name="ordersAct" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="placeholderContainer" candidateClass="UIView"/>
                 <relationship kind="outlet" name="printButton" candidateClass="UIButton"/>
                 <relationship kind="outlet" name="quantityLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="saveBtn" candidateClass="UIBarButtonItem"/>
                 <relationship kind="outlet" name="sdLabel" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="searchText" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="shipdates" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="sideContainer" candidateClass="UIView"/>
                 <relationship kind="outlet" name="sideTable" candidateClass="UITableView"/>
                 <relationship kind="outlet" name="sqLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="toolPlain" candidateClass="UIToolbar"/>
-                <relationship kind="outlet" name="toolWithSave" candidateClass="UIToolbar"/>
                 <relationship kind="outlet" name="total" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="totalLabel" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="voucherItemTotalLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="voucherLabel" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="voucherTotal" candidateClass="UILabel"/>
                 <relationship kind="outlet" name="voucherTotalLabel" candidateClass="UILabel"/>
             </relationships>

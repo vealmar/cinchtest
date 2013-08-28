@@ -365,7 +365,7 @@
     } else if (self.unsavedChangesPresent) {
         UIAlertView *alertView = [[UIAlertView alloc]
                 initWithTitle:@"Exit Without Saving?"
-                      message:@"There are some unsaved changes. Do you want to exit without saving?"
+                      message:@"There are some unsaved changes. Are you sure you want to exit without saving?"
                      delegate:self
             cancelButtonTitle:@"No"
             otherButtonTitles:@"Yes", nil];
@@ -374,8 +374,6 @@
                 [self Return];
             }
         }];
-
-        [alertView show];
     } else {
         [self Return];
     }

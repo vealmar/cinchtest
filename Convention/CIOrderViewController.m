@@ -34,6 +34,7 @@
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
     NSIndexPath *selectedItemRowIndexPath;
+    BOOL unsavedChangesPresent;
     __weak IBOutlet UILabel *sdLabel;
     __weak IBOutlet UILabel *sqLabel;
     __weak IBOutlet UILabel *quantityLabel;
@@ -81,6 +82,7 @@
         self.total.hidden = YES;
     }
     self.printButton.hidden = !showConfig.printing;
+    unsavedChangesPresent = NO;
     [self adjustTotals];
     self.OrderDetailScroll.hidden = YES;
     [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
@@ -425,9 +427,30 @@ SG: The argument 'detail' is the selected order.
         return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"asdfa"];
 }
 
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSIndexPath *indexPathToReturn = indexPath;
+    if (tableView == self.sideTable) {
+        if (currentOrder != nil && currentOrder != [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row] && unsavedChangesPresent) {
+            indexPathToReturn = nil;
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Exit Without Saving?" message:@"Do you want to exit without saving your changes?"
+                                                               delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
+            [UIAlertViewDelegateWithBlock showAlertView:alertView withCallBack:^(NSInteger buttonIndex) {
+                if ([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"Yes"]) {
+                    [self.sideTable selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionBottom];
+                    [self didSelectOrderAtIndexPath:indexPath];
+                }
+            }];
+        }
+    }
+    return indexPathToReturn;
+}
+
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
-        [self didSelectOrderAtIndexPath:indexPath];
+        if (currentOrder != [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]) {
+            [self didSelectOrderAtIndexPath:indexPath];
+        }
     }
     else if (tableView == self.itemsTable) {
         selectedItemRowIndexPath = indexPath;
@@ -435,6 +458,7 @@ SG: The argument 'detail' is the selected order.
 }
 
 - (void)didSelectOrderAtIndexPath:(NSIndexPath *)indexPath {
+    unsavedChangesPresent = NO;
     currentOrder = [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row];
     NSString *status = [currentOrder.status lowercaseString];
     CIOrderCell *cell = (CIOrderCell *) [self.sideTable cellForRowAtIndexPath:indexPath];
@@ -547,16 +571,19 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)setVoucher:(NSString *)voucher atIndex:(int)idx {
     [self.itemsVouchers removeObjectAtIndex:idx];
     [self.itemsVouchers insertObject:voucher atIndex:idx];
+    unsavedChangesPresent = YES;
 }
 
 - (void)setPrice:(NSString *)prc atIndex:(int)idx {
     [self.itemsPrice removeObjectAtIndex:idx];
     [self.itemsPrice insertObject:prc atIndex:idx];
+    unsavedChangesPresent = YES;
 }
 
 - (void)setQuantity:(NSString *)qty atIndex:(int)idx {
     [self.itemsQty removeObjectAtIndex:idx];
     [self.itemsQty insertObject:qty atIndex:idx];
+    unsavedChangesPresent = YES;
 }
 
 - (void)QtyTouchForIndex:(int)idx {
@@ -633,6 +660,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         [calViewW dismissViewControllerAnimated:YES completion:nil];
 
         [self.itemsTable reloadData];
+        unsavedChangesPresent = YES;
         [self UpdateTotal];
     };
 
@@ -784,6 +812,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         NSNumber *orderId = JSON != nil? (NSNumber *) [NilUtil nilOrObject:[(NSDictionary *) JSON objectForKey:kID]] : nil;
+        unsavedChangesPresent = NO;
         [self loadOrders:YES highlightOrder:orderId];
     }                                                                                   failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
         NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
@@ -960,6 +989,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     [self.itemsQty removeObjectAtIndex:idx];
     [self.itemsQty insertObject:JSON atIndex:idx];
     [self.itemsTable reloadData];
+    unsavedChangesPresent = YES;
     [self UpdateTotal];
 }
 
@@ -1106,11 +1136,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 #pragma mark - UITextFieldDelegate
-
-- (void)textViewDidBeginEditing:(UITextView *)sender {
-}
-
-- (void)textViewDidEndEditing:(UITextView *)sender {
+- (void)textViewDidChange:(UITextView *)sender {
+    unsavedChangesPresent = YES;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
