@@ -1638,7 +1638,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
             if ([kShowCorp isEqualToString:kFarris])
                 desc2 = [dict objectForKey:kProductDescr2];
             NSString *test = [self.searchText.text uppercaseString];
-            return [invtid hasPrefix:test] || [[descrip uppercaseString] contains:test] || [[desc2 uppercaseString] contains:test];
+            return [[invtid uppercaseString] contains:test] || [[descrip uppercaseString] contains:test] || (desc2 != nil && ![desc2 isEqual:[NSNull null]] && [[desc2 uppercaseString] contains:test]);
         }];
         self.resultData = [[[self.productMap allValues] filteredArrayUsingPredicate:pred] mutableCopy];
         [selectedIdx removeAllObjects];
