@@ -113,7 +113,6 @@
         self.invtid.text = invtid;
     }
     [self setDescription:data.desc withSubtext:data.desc2];
-
     if ([ShowConfigurations instance].vouchers) {
         if ([itemsVouchers objectAtIndex:indexPath.row]) {
             self.voucher.text = [itemsVouchers objectAtIndex:indexPath.row];
@@ -136,16 +135,19 @@
 
     __autoreleasing NSError *err = nil;
     NSMutableDictionary *dict = [self.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-
     if (!err && dict && ![dict isKindOfClass:[NSNull class]] && dict.allKeys.count > 0) {
         isJSON = YES;
     }
-
     if (isJSON) {
         [self.qtyBtn setHidden:NO];
         for (NSString *key in dict.allKeys) {
             q += [[dict objectForKey:key] doubleValue];
         }
+        if (ceil(q) == q) {
+            [self.qtyBtn setTitle:[NSString stringWithFormat:@"%d", (int) q] forState:UIControlStateNormal];
+        } else
+            [self.qtyBtn setTitle:[NSString stringWithFormat:@"%.1f", q] forState:UIControlStateNormal];
+
     } else {
         [self.qtyBtn setHidden:YES];
     }
