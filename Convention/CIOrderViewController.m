@@ -157,9 +157,7 @@
                 success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
                     self.filteredOrders = [[NSMutableArray alloc] init];
                     for (NSDictionary *order in JSON) {
-                        if (![@"deleted" isEqualToString:(NSString *) [order objectForKey:@"status"]]) {
-                            [self.filteredOrders addObject:[[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) order]];
-                        }
+                        [self.filteredOrders addObject:[[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) order]];
                     }
                     [self loadPartialOrders];
                     self.allorders = [self.filteredOrders mutableCopy];
