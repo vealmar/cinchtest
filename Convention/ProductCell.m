@@ -14,28 +14,28 @@
 @implementation ProductCell {
 
 }
-- (void) updateCellBackground: (NSDictionary *)product item:(NSDictionary *)item multiStore:(BOOL)multiStore showShipDates:(BOOL)showShipDates{
+- (void)updateCellBackground:(NSDictionary *)product item:(NSDictionary *)item multiStore:(BOOL)multiStore showShipDates:(BOOL)showShipDates {
     BOOL hasQty = NO;
     if (multiStore && item != nil && [[item objectForKey:kEditableQty] isKindOfClass:[NSString class]]
             && [[[item objectForKey:kEditableQty] objectFromJSONString] isKindOfClass:[NSDictionary class]]
-            && ((NSDictionary*)[[item objectForKey:kEditableQty] objectFromJSONString]).allKeys.count > 0) {
-        for(NSNumber* n in [[[item objectForKey:kEditableQty] objectFromJSONString] allObjects]){
-            if ([n intValue] > 0){
+            && ((NSDictionary *) [[item objectForKey:kEditableQty] objectFromJSONString]).allKeys.count > 0) {
+        for (NSNumber *n in [[[item objectForKey:kEditableQty] objectFromJSONString] allObjects]) {
+            if ([n intValue] > 0) {
                 hasQty = YES;
                 break;
             }
         }
-    }else if (item != nil && [item objectForKey:kEditableQty]&&[[item objectForKey:kEditableQty] isKindOfClass:[NSString class]]
-            && [[item objectForKey:kEditableQty] integerValue] > 0){
+    } else if (item != nil && [item objectForKey:kEditableQty] && [[item objectForKey:kEditableQty] isKindOfClass:[NSString class]]
+            && [[item objectForKey:kEditableQty] integerValue] > 0) {
         hasQty = YES;
-    }else if (item != nil && [item objectForKey:kEditableQty]&&[[item objectForKey:kEditableQty] isKindOfClass:[NSNumber class]]
-            && [[item objectForKey:kEditableQty] intValue] > 0){
+    } else if (item != nil && [item objectForKey:kEditableQty] && [[item objectForKey:kEditableQty] isKindOfClass:[NSNumber class]]
+            && [[item objectForKey:kEditableQty] intValue] > 0) {
         hasQty = YES;
-    }else{
+    } else {
         self.backgroundView = nil;
     }
     BOOL hasShipDates = NO;
-    NSArray *shipDates = [item objectForKey:kOrderItemShipDates];
+    NSArray *shipDates = [item objectForKey:kLineItemShipDates];
     if (shipDates != nil && [shipDates count] > 0) {
         hasShipDates = YES;
     }

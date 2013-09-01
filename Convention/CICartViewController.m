@@ -123,7 +123,7 @@
         else {
             qty += [[dict objectForKey:kEditableQty] intValue];
         }
-        int numOfShipDates = [[dict objectForKey:kOrderItemShipDates] count];
+        int numOfShipDates = [[dict objectForKey:kLineItemShipDates] count];
         double price = [[dict objectForKey:kEditablePrice] doubleValue];
         grossTotal += qty * price * (numOfShipDates == 0 ? 1 : numOfShipDates);
 
@@ -245,7 +245,7 @@
             cell.CaseQty.text = [dict objectForKey:@"caseqty"];
         else
             cell.CaseQty.text = @"";
-        cell.numShipDates.text = ([[dict objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]] ? [NSString stringWithFormat:@"%d", ((NSArray *) [dict objectForKey:kOrderItemShipDates]).count] : @"0");
+        cell.numShipDates.text = ([[dict objectForKey:kLineItemShipDates] isKindOfClass:[NSArray class]] ? [NSString stringWithFormat:@"%d", ((NSArray *) [dict objectForKey:kLineItemShipDates]).count] : @"0");
         cell.quantity.hidden = YES;
 
         if ([dict objectForKey:kEditableQty] && !multiStore) {
@@ -311,7 +311,7 @@
         }
 
         BOOL hasShipDates = NO;
-        NSArray *shipDates = [dict objectForKey:kOrderItemShipDates];
+        NSArray *shipDates = [dict objectForKey:kLineItemShipDates];
         if (shipDates && [shipDates count] > 0) {
             hasShipDates = YES;
         }

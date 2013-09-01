@@ -120,11 +120,11 @@
 
 //purchased Items keys:
 #define kOrderItems @"line_items_attributes"
-#define kOrderItemID @"product_id"
-#define kOrderItemNum @"quantity"
-#define kOrderItemPRICE @"price"
-#define kOrderItemVoucher @"voucherPrice"
-#define kOrderItemShipDates @"shipdates"
+#define kLineItemProductID @"product_id"
+#define kLineItemQuantity @"quantity"
+#define kLineItemPrice @"price"
+#define kLineItemVoucherPrice @"voucherPrice"
+#define kLineItemShipDates @"shipdates"
 #define kOrderStatus @"status"
 #define kPartialOrder @"partial"
 #define kOrderLineItemId @"lineitem_id"

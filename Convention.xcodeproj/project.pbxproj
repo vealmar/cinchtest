@@ -17,6 +17,7 @@
 		33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FD164D743E007B872A /* ErrorHandler.m */; };
 		33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FF164D743E007B872A /* SettingsManager.m */; };
 		33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F6164D740A007B872A /* GroupedObject.m */; };
+		35F521BE40815F698E85FF9E /* CIProductViewControllerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */; };
 		35F52565AD01794E5970974F /* ALineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52C47A71D4C79AE68083C /* ALineItem.m */; };
 		35F527C6D5A71434688ABEC2 /* FarrisBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */; };
 		35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5271B9DC09F494AE33569 /* ShowConfigurations.m */; };
@@ -226,6 +227,8 @@
 		335A4302164D7455007B872A /* StringManipulation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StringManipulation.m; sourceTree = "<group>"; };
 		335A4306164D7529007B872A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		35F520072428E6A11A140BBE /* AnOrder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnOrder.m; sourceTree = "<group>"; };
+		35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductViewControllerHelper.m; sourceTree = "<group>"; };
+		35F5234FFAA50499097031CC /* CIProductViewControllerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIProductViewControllerHelper.h; sourceTree = "<group>"; };
 		35F5260573F670DC82AEFEFF /* ShowConfigurations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowConfigurations.h; sourceTree = "<group>"; };
 		35F5271B9DC09F494AE33569 /* ShowConfigurations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowConfigurations.m; sourceTree = "<group>"; };
 		35F5277AF839A0412C8441F3 /* ALineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALineItem.h; sourceTree = "<group>"; };
@@ -726,6 +729,8 @@
 				C7DCDF0116A26C4B00F66C52 /* VendorViewController.m */,
 				C7DCDF0216A26C4B00F66C52 /* VendorViewController.xib */,
 				C7DCDF0A16A29D4D00F66C52 /* VendorViewDelegate.h */,
+				35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */,
+				35F5234FFAA50499097031CC /* CIProductViewControllerHelper.h */,
 			);
 			name = "order form";
 			sourceTree = "<group>";
@@ -1422,6 +1427,7 @@
 				35F52565AD01794E5970974F /* ALineItem.m in Sources */,
 				35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */,
 				35F527ED52FF1F2798544129 /* CoreDataManager.m in Sources */,
+				35F521BE40815F698E85FF9E /* CIProductViewControllerHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -24,6 +24,7 @@
 #import "AnOrder.h"
 #import "ALineItem.h"
 #import "CoreDataManager.h"
+#import "CIProductViewControllerHelper.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -33,6 +34,7 @@
     NSMutableSet *selectedIdx; //Item rows selected for specifying ship dates. These rows appear with a checkmark.
     NSDictionary *bulletins;
     NSIndexPath *selectedItemRowIndexPath;
+    CIProductViewControllerHelper *helper;
 }
 
 @end
@@ -65,6 +67,7 @@
         self.orderSubmitted = NO;
         _printStationId = 0;
         self.unsavedChangesPresent = NO;
+        helper = [[CIProductViewControllerHelper alloc] init];
     }
     reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
     return self;
@@ -475,7 +478,7 @@
                 [shipdates addObject:sd.shipdate];
             }
 
-            [item setObject:shipdates forKey:kOrderItemShipDates];
+            [item setObject:shipdates forKey:kLineItemShipDates];
         }
         [item setObject:cart.showprc forKey:kProductShowPrice];
         [item setObject:cart.unique_product_id forKey:kProductUniqueId];
@@ -509,7 +512,7 @@
             [edict setValue:[item objectForKey:kEditableQty] forKey:kEditableQty];
             [edict setValue:[item objectForKey:kEditableVoucher] forKey:kEditableVoucher];
             if ([shipdates count] > 0) {
-                [edict setObject:shipdates forKey:kOrderItemShipDates];
+                [edict setObject:shipdates forKey:kLineItemShipDates];
             }
 
             [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
@@ -606,69 +609,24 @@
 }
 
 - (void)sendOrderToServer:(BOOL)printThisOrder asPending:(BOOL)asPending beforeCart:(BOOL)beforeCart {
-    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    if (asPending)
-        submit.labelText = @"Calculating order total...";
-    else
-        submit.labelText = @"Submitting order...";
-    [submit show:YES];
-
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     NSArray *keys = self.productCart.allKeys;
-
-    if ([self.productCart.allKeys count] == 0) {
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Please add at least one product to the cart before continuing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        [submit hide:YES];
-        return;
-    }
-
-    if (![self orderReadyForSubmission]) {
-        [submit hide:YES];
-        return;
-    }
-
+    if (![self orderReadyForSubmission]) {return;}
     if (self.coreDataOrder.orderId == 0) {
         self.coreDataOrder.status = @"pending";
         for (NSNumber *i in keys) {
             NSDictionary *dict = [self.productCart objectForKey:i];
-            NSString *productID = [i stringValue];//[[self.productData objectAtIndex:] objectForKey:@"id"];
-            NSString *myId = [dict objectForKey:kOrderLineItemId] != nil ? [[dict objectForKey:kOrderLineItemId] stringValue] : @"";
-            NSInteger num = 0;
-            if (!self.multiStore) {
-                num = [[dict objectForKey:kEditableQty] integerValue];
-            } else {
-                NSMutableDictionary *qty = [[dict objectForKey:kEditableQty] objectFromJSONString];
-                for (NSString *n in qty.allKeys) {
-                    int j = [[qty objectForKey:n] intValue];
-                    if (j > num) {
-                        num = j;
-                        if (num > 0) {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (num > 0) {
+            NSString *productID = [i stringValue];
+            NSString *lineItemId = [dict objectForKey:kOrderLineItemId] ? [[dict objectForKey:kOrderLineItemId] stringValue] : @"";
+            if ([helper itemHasQuantity:self.multiStore lineItem:dict]) {
                 if ([ShowConfigurations instance].shipDates) {
-                    NSMutableArray *strs = [NSMutableArray array];
-                    NSArray *dates = [dict objectForKey:kOrderItemShipDates];
-                    if ([dates count] > 0) {
-                        NSDateFormatter *df = [[NSDateFormatter alloc] init];
-                        [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-                        for (int i = 0; i < dates.count; i++) {
-                            NSString *str = [df stringFromDate:[dates objectAtIndex:i]];
-                            [strs addObject:str];
-                        }
-                    }
-
-                    if ([strs count] > 0 || itemIsVoucher(dict)) {
-                        NSString *lineItemId = [dict objectForKey:kOrderLineItemId] ? [[dict objectForKey:kOrderLineItemId] stringValue] : @"";
+                    NSArray *strs = [helper getItemShipDatesToSendToServer:dict];
+                    if ([strs count] > 0 || [helper itemIsVoucher:[self.productMap objectForKey:i]]) {
                         NSString *ePrice = [[dict objectForKey:kEditablePrice] stringValue];
                         NSString *eVoucher = [[dict objectForKey:kEditableVoucher] stringValue];
-                        NSDictionary *proDict = [NSDictionary dictionaryWithObjectsAndKeys:lineItemId, kID, productID, kOrderItemID,
-                                                                                           [dict objectForKey:kEditableQty], kOrderItemNum, ePrice, kOrderItemPRICE,
-                                                                                           eVoucher, kOrderItemVoucher, strs, kOrderItemShipDates, nil];
+                        NSDictionary *proDict = [NSDictionary dictionaryWithObjectsAndKeys:lineItemId, kID, productID, kLineItemProductID,
+                                                                                           [dict objectForKey:kEditableQty], kLineItemQuantity, ePrice, kLineItemPrice,
+                                                                                           eVoucher, kLineItemVoucherPrice, strs, kLineItemShipDates, nil];
                         [arr addObject:(id) proDict];
                     }
                 } else {
@@ -676,11 +634,11 @@
                     NSString *eVoucher = [[dict objectForKey:kEditableVoucher] stringValue];
                     NSDictionary *proDict;
 
-                    if ([myId isEqualToString:@""]) {
-                        proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, eVoucher, kOrderItemVoucher, nil];
+                    if ([lineItemId isEqualToString:@""]) {
+                        proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kLineItemProductID, [[dict objectForKey:kEditableQty] stringValue], kLineItemQuantity, ePrice, kLineItemPrice, eVoucher, kLineItemVoucherPrice, nil];
                     }
                     else {
-                        proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, [[dict objectForKey:kEditableQty] stringValue], kOrderItemNum, ePrice, kOrderItemPRICE, eVoucher, kOrderItemVoucher, nil];
+                        proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kLineItemProductID, lineItemId, kID, [[dict objectForKey:kEditableQty] stringValue], kLineItemQuantity, ePrice, kLineItemPrice, eVoucher, kLineItemVoucherPrice, nil];
                     }
                     [arr addObject:(id) proDict];
                 }
@@ -692,7 +650,7 @@
             NSDictionary *dict = [self.productCart objectForKey:i];
             if ([ShowConfigurations instance].shipDates) {
                 strs = [NSMutableArray array];
-                NSArray *dates = [dict objectForKey:kOrderItemShipDates];
+                NSArray *dates = [dict objectForKey:kLineItemShipDates];
                 if ([dates count] > 0) {
                     NSDateFormatter *df = [[NSDateFormatter alloc] init];
                     [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
@@ -709,18 +667,18 @@
             NSDictionary *proDict;
             if ([kShowCorp isEqualToString:kPigglyWiggly]) {
                 if (![myId isEqualToString:@""])
-                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID,
-                                                                         (self.multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE,
-                                                                         eVoucher, kOrderItemVoucher, strs, kOrderItemShipDates, nil];
+                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kLineItemProductID, myId, kID,
+                                                                         (self.multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kLineItemQuantity, ePrice, kLineItemPrice,
+                                                                         eVoucher, kLineItemVoucherPrice, strs, kLineItemShipDates, nil];
                 else
-                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, (self.multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum,
-                                                                         ePrice, kOrderItemPRICE, strs, kOrderItemShipDates, nil];
+                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kLineItemProductID, (self.multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kLineItemQuantity,
+                                                                         ePrice, kLineItemPrice, strs, kLineItemShipDates, nil];
             }
             else {
                 if (![myId isEqualToString:@""])
-                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, myId, kID, (self.multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE, eVoucher, kOrderItemVoucher, nil];
+                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kLineItemProductID, myId, kID, (self.multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kLineItemQuantity, ePrice, kLineItemPrice, eVoucher, kLineItemVoucherPrice, nil];
                 else
-                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kOrderItemID, (self.multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kOrderItemNum, ePrice, kOrderItemPRICE, nil];
+                    proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kLineItemProductID, (self.multiStore ? [dict objectForKey:kEditableQty] : [[dict objectForKey:kEditableQty] stringValue]), kLineItemQuantity, ePrice, kLineItemPrice, nil];
             }
             [arr addObject:(id) proDict];
         }
@@ -774,6 +732,10 @@
     if (_coreDataOrder.orderId > 0)
         method = @"PUT";
 
+    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    submit.labelText = asPending ? @"Calculating order total..." : @"Submitting order...";
+    [submit show:YES];
+
     NSMutableURLRequest *request = [client requestWithMethod:method path:nil parameters:final];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
@@ -817,7 +779,7 @@
                                 qty += [[dict objectForKey:kEditableQty] intValue];
                             }
                             double price = [[dict objectForKey:kEditablePrice] doubleValue];
-                            int numOfShipDates = [[dict objectForKey:kOrderItemShipDates] count];
+                            int numOfShipDates = [[dict objectForKey:kLineItemShipDates] count];
                             grossTotal += qty * price * (numOfShipDates == 0 ? 1 : numOfShipDates);
                             if ([dict objectForKey:kEditableVoucher] != nil && ![[dict objectForKey:kEditableVoucher] isKindOfClass:[NSNull class]]) {
                                 double voucherPrice = [[dict objectForKey:kEditableVoucher] doubleValue];
@@ -862,19 +824,15 @@
     }];
 }
 
-BOOL itemIsVoucher(NSDictionary *dict);
-
-BOOL itemIsVoucher(NSDictionary *dict) {
-    int idx = [[dict objectForKey:kProductIdx] intValue];
-    NSString *invtId = [dict objectForKey:kProductInvtid];
-    return idx == 0 && ([invtId isEmpty] || [invtId isEqualToString:@"0"]);
-}
-
 - (BOOL)orderReadyForSubmission {
+    if ([self.productCart.allKeys count] == 0) {
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Please add at least one product to the cart before continuing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        return NO;
+    }
     NSArray *keys = self.productCart.allKeys;
-    for (NSString *i in keys) {
+    for (NSNumber *i in keys) {
         NSDictionary *dict = [self.productCart objectForKey:i];
-
+        NSDictionary *product = [self.productMap objectForKey:i];
         BOOL hasQty = NO;
         NSInteger num = 0;
         if (!self.multiStore) {
@@ -895,7 +853,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
         BOOL hasShipDates = NO;
         if (num > 0) {
             hasQty = YES;
-            NSArray *dates = [dict objectForKey:kOrderItemShipDates];
+            NSArray *dates = [dict objectForKey:kLineItemShipDates];
             NSMutableArray *strs = [NSMutableArray array];
 
             NSDateFormatter *df = [[NSDateFormatter alloc] init];
@@ -910,7 +868,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
             }
         }
 
-        if (!itemIsVoucher(dict) && (!hasQty || !(hasShipDates || (self.showShipDates == NO)))) {
+        if (![helper itemIsVoucher:product] && (!hasQty || !(hasShipDates || (self.showShipDates == NO)))) {
             [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have a quantity and ship date(s) before the order can be submitted. Check cart items and try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
             return NO;
         }
@@ -1081,11 +1039,11 @@ BOOL itemIsVoucher(NSDictionary *dict) {
             if (edict == nil) {
                 edict = editableDict;
             }
-            [edict setObject:dates forKey:kOrderItemShipDates];
+            [edict setObject:dates forKey:kLineItemShipDates];
             [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
             if ([self.productCart objectForKey:[dict objectForKey:@"id"]] != nil) {
                 NSMutableDictionary *dict2 = [self.productCart objectForKey:[dict objectForKey:@"id"]];
-                [dict2 setObject:dates forKey:kOrderItemShipDates];
+                [dict2 setObject:dates forKey:kLineItemShipDates];
                 [self updateShipDatesInCartWithId:[[dict objectForKey:@"id"] intValue] forDates:dates];
                 self.unsavedChangesPresent = YES;
             }
@@ -1099,9 +1057,9 @@ BOOL itemIsVoucher(NSDictionary *dict) {
     for (NSNumber *idx in selectedIdx) {
         NSMutableDictionary *dict = [self.resultData objectAtIndex:[idx integerValue]];
         NSMutableDictionary *editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
-        if (editableDict && [editableDict objectForKey:kOrderItemShipDates]) {
-            if ([[editableDict objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]] && ((NSArray *) [editableDict objectForKey:kOrderItemShipDates]).count > 0) {
-                [selectedArr addObjectsFromArray:((NSArray *) [editableDict objectForKey:kOrderItemShipDates])];
+        if (editableDict && [editableDict objectForKey:kLineItemShipDates]) {
+            if ([[editableDict objectForKey:kLineItemShipDates] isKindOfClass:[NSArray class]] && ((NSArray *) [editableDict objectForKey:kLineItemShipDates]).count > 0) {
+                [selectedArr addObjectsFromArray:((NSArray *) [editableDict objectForKey:kLineItemShipDates])];
             }
         }
     }
@@ -1247,7 +1205,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
 
 // Adds a Cart object to the data store using the key/value pairs in the dictionary.
 - (void)addLineItemToProductCart:(NSMutableDictionary *)dict {
-    NSArray *dates = [dict objectForKey:kOrderItemShipDates];
+    NSArray *dates = [dict objectForKey:kLineItemShipDates];
 
     NSManagedObjectContext *context = _coreDataOrder.managedObjectContext;
     int cartId = [[dict objectForKey:kID] intValue];
@@ -1456,7 +1414,7 @@ BOOL itemIsVoucher(NSDictionary *dict) {
                 }
 
                 BOOL hasShipDates = NO;
-                NSArray *shipDates = [editableDict objectForKey:kOrderItemShipDates];
+                NSArray *shipDates = [editableDict objectForKey:kLineItemShipDates];
                 if (shipDates && [shipDates count] > 0) {
                     hasShipDates = YES;
                 }

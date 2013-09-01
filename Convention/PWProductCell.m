@@ -66,8 +66,8 @@
         self.shipDate2.text = @"";
     }
 
-    self.numShipDates.text = ([[item objectForKey:kOrderItemShipDates] isKindOfClass:[NSArray class]]
-            ? [NSString stringWithFormat:@"%d", ((NSArray *) [item objectForKey:kOrderItemShipDates]).count] : @"0");
+    self.numShipDates.text = ([[item objectForKey:kLineItemShipDates] isKindOfClass:[NSArray class]]
+            ? [NSString stringWithFormat:@"%d", ((NSArray *) [item objectForKey:kLineItemShipDates]).count] : @"0");
     if (!multiStore && item != nil && [item objectForKey:kEditableQty] != nil) {
         self.quantity.text = [[item objectForKey:kEditableQty] stringValue];
     }
