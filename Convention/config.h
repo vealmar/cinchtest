@@ -10,24 +10,14 @@
 #define Convention_config_h
 
 
-//#define kBASEURL @"http://afc.conventioninnovations.com"
-//#define kBASEURL @"http://conventioninnovations.herokuapp.com"
-//#define kBASEURL @"http://10.0.6.187"
-//#define kBASEURL @"http://ci-pw1.herokuapp.com"
 #define SERVER @"server"
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
 #define ShowID [[SettingsManager sharedManager] lookupSettingByString:@"show"]
 
-//#define kBASEURL @"http://:3000"
 #define kPigglyWiggly @"PigglyWiggly"
 #define kFarris @"Farris"
 #define kShowCorp kPigglyWiggly
 #define ConfigUrl [NSString stringWithFormat:@"%@/shows/%@/configurations.json", kBASEURL, ShowID]
-
-
-#define kShowShipDates kShowCorp == kPigglyWiggly // set to NO for the Farris show; need to handle this dynamically from backend service
-#define kAllowPrinting kShowCorp == kPigglyWiggly // ditto
-
 #define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
 #define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]
 #define kDBGETPRODUCTS [NSString stringWithFormat:@"%@/vendor/shows/%@/products.json",kBASEURL,ShowID]
@@ -35,7 +25,6 @@
 #define kDBGETCUSTOMERS [NSString stringWithFormat:@"%@/vendor/shows/%@/customers.json",kBASEURL,ShowID]
 #define kDBGETCUSTOMER(customerId) [NSString stringWithFormat:@"%@/vendor/shows/%@/customers/%@.json?",kBASEURL,ShowID, customerId]
 #define kDBORDER [NSString stringWithFormat:@"%@/vendor/shows/%@/orders.json",kBASEURL,ShowID]
-#define kDBORDEREDIT(ID) [NSString stringWithFormat:@"%@/vendor/orders/%d.json",kBASEURL,ID]
 #define kDBORDEREDITS(ID) [NSString stringWithFormat:@"%@/vendor/shows/%@/orders/%d.json",kBASEURL,ShowID,ID]
 
 //delete line item from given order
@@ -44,12 +33,6 @@
 #define kDBREPORTPRINTS [NSString stringWithFormat:@"%@/vendor/shows/%@/report_prints.json",kBASEURL,ShowID]
 #define kDBGETPRINTERS [NSString stringWithFormat:@"%@/vendor/shows/%@/printers.json", kBASEURL, ShowID]
 #define kDBGETBULLETINS [NSString stringWithFormat:@"%@/vendor/shows/%@/bulletins.json", kBASEURL, ShowID]
-
-//temp not needed...
-#define kDBMasterLOGIN [NSString stringWithFormat:@"%@/hosts/sign_in.json",kBASEURL]
-#define kDBMasterLOGOUT [NSString stringWithFormat:@"%@/hosts/sign_out.json",kBASEURL]
-#define kDBGETVENDORS [NSString stringWithFormat:@"%@/host/vendors.json",kBASEURL]
-#define kDBMasterORDER [NSString stringWithFormat:@"%@/host/shows/%@/orders.json",kBASEURL,ShowID]
 
 //Auth keys
 #define kEmailKey @"vendor[login]"
@@ -72,16 +55,12 @@
 #define kVendorHideWSPrice @"hidewsprice"
 #define kVendorImportID @"import_id"
 #define kVendorInitialShow @"initial_show"
-#define kVendorLines @"lines"
 #define kVendorName @"name"
 #define kVendorOwner @"owner"
 #define kVendorSeason @"season"
 #define kVendorUpdatedAt @"updated_at"
 #define kVendorUsername @"username"
 #define kVendorVendID @"vendid"
-#define kVendorIsle @"isle"
-#define kVendorBooth @"booth"
-#define kVendorDept @"dept"
 
 #define kVendorGroupID @"vendorgroup_id"
 
@@ -91,31 +70,20 @@
 #define kLineItemId @"id"
 
 
-#define kError @"error"
-
 //Order keys:
 #define kOrder @"order"
 //Customer Info keys:
 #define kCustID @"custid"
 #define kOrderCustID @"customer_id"
-#define kCustName @"customer_name"
-#define kStoreName @"store_name"
-#define kCity @"city"
-#define kSendEmail @"send_email"
 #define kEmail @"email"
 #define kStores @"stores"
 
 #define kShipNotes @"ship_notes"
 #define kNotes @"notes"
-//#define kAuthorizer @"authorizer"
 
 #define kBillName @"billname"
 
 #define kAuthorizedBy @"authorized"
-#define kItemCount @"line_item_count"
-#define kItems @"line_items"
-#define kTotal @"total"
-#define kVoucherTotal @"voucherTotal"
 #define kShipFlag @"ship_flag"
 
 //purchased Items keys:
@@ -127,7 +95,6 @@
 #define kLineItemShipDates @"shipdates"
 #define kOrderStatus @"status"
 #define kPartialOrder @"partial"
-#define kOrderLineItemId @"lineitem_id"
 
 #define kProductShowPrice @"showprc"
 #define kProductIdx @"idx"
@@ -155,12 +122,8 @@
 #define kProductCreatedAt @"created_at"
 #define kProductUpdatedAt @"updated_at"
 
-
-#define kLineItemProductID @"product_id"
-#define kLineItemQuantity @"quantity"
 #define kLineItemPRICE @"price"
 #define kLineItemVoucher @"voucherPrice"
-#define kLineItemShipDates @"shipdates"
 
 
 #define kEditablePrice @"editablePrice"
@@ -168,29 +131,17 @@
 #define kEditableQty @"editableQty"
 
 
-//report print keys:
-#define kReportPrintIsle @"report_print[isle]"
-#define kReportPrintBooth @"report_print[booth]"
-#define kReportPrintNotes @"report_print[notes]"
-//#define kReportPrintOrderId @"report_print[order_id]"
 #define kReportPrintOrderId @"order_id"
 
-//#define kOFFSET_FOR_KEYBOARD 60.0
 #define kOFFSET_FOR_KEYBOARD 80.0
 
 #define kFontName @"BEBAS"
 
-//file names
-#define kCustomerFile @"custFile.plist"
 
 //notifications
 #define kNotificationCustomersLoaded @"NotificationCustomersLoaded"
 #define kCustomerNotificationKey @"customers"
 #define kPrintersLoaded @"PrintersLoaded"
-#define ApplicationBecameActive @"ApplicationBecameActive"
-
-#define NOTIF_PING_FAILURE @"NOTIF_PING_FAILURE"
-#define NOTIF_PING_SUCCESS @"NOTIF_PING_SUCCESS"
 
 
 #endif

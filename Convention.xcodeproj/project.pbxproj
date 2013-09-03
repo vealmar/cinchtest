@@ -17,12 +17,16 @@
 		33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FD164D743E007B872A /* ErrorHandler.m */; };
 		33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FF164D743E007B872A /* SettingsManager.m */; };
 		33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F6164D740A007B872A /* GroupedObject.m */; };
+		35F521774853EA59DB5E6754 /* CartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F522AD3FB35CB710C8F62B /* CartViewCell.m */; };
 		35F521BE40815F698E85FF9E /* CIProductViewControllerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */; };
+		35F5220802E678E6EC146A37 /* PWCartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F529A69976E731F9A16513 /* PWCartViewCell.m */; };
 		35F52565AD01794E5970974F /* ALineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52C47A71D4C79AE68083C /* ALineItem.m */; };
 		35F527C6D5A71434688ABEC2 /* FarrisBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */; };
 		35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5271B9DC09F494AE33569 /* ShowConfigurations.m */; };
 		35F527ED52FF1F2798544129 /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */; };
+		35F5280E4435FDF158A236FC /* FarrisCartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5234C615180F131627137 /* FarrisCartViewCell.m */; };
 		35F52A19F4EFCD93702E646D /* ProductCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52A62C4F3539476C1736F /* ProductCell.m */; };
+		35F52AF2E661528B3EDAABF5 /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52E02103987C5239CB07D /* NumberUtil.m */; };
 		35F52B7D65E8F84C2681BE43 /* AnOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F520072428E6A11A140BBE /* AnOrder.m */; };
 		35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52CF25ABF1AF16A369494 /* NilUtil.m */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
@@ -205,6 +209,8 @@
 		EBE8941C17B71D30005F1895 /* launch_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE8941B17B71D30005F1895 /* launch_bg.png */; };
 		EBE8941E17B972D3005F1895 /* CIOrderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EBE8941D17B972D3005F1895 /* CIOrderViewController.storyboard */; };
 		EBE8942017B97733005F1895 /* OrdersBg.png in Resources */ = {isa = PBXBuildFile; fileRef = EBE8941F17B97733005F1895 /* OrdersBg.png */; };
+		EBFC477917D5745D0009CAD7 /* PWCartViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EBFC477817D5745D0009CAD7 /* PWCartViewCell.xib */; };
+		EBFC477B17D574740009CAD7 /* FarrisCartViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EBFC477A17D574740009CAD7 /* FarrisCartViewCell.xib */; };
 		EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427054173FFB6E004A4A91 /* Zerobuttonin.png */; };
 		EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427055173FFB6E004A4A91 /* Zerobuttonout.png */; };
 /* End PBXBuildFile section */
@@ -228,18 +234,26 @@
 		335A4306164D7529007B872A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		35F520072428E6A11A140BBE /* AnOrder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnOrder.m; sourceTree = "<group>"; };
 		35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductViewControllerHelper.m; sourceTree = "<group>"; };
+		35F5224B1B84CB4E7EC646E7 /* PWCartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWCartViewCell.h; sourceTree = "<group>"; };
+		35F522AD3FB35CB710C8F62B /* CartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CartViewCell.m; sourceTree = "<group>"; };
+		35F5234C615180F131627137 /* FarrisCartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FarrisCartViewCell.m; sourceTree = "<group>"; };
 		35F5234FFAA50499097031CC /* CIProductViewControllerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIProductViewControllerHelper.h; sourceTree = "<group>"; };
 		35F5260573F670DC82AEFEFF /* ShowConfigurations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowConfigurations.h; sourceTree = "<group>"; };
+		35F5267D5CECDEA4EC54146F /* FarrisCartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FarrisCartViewCell.h; sourceTree = "<group>"; };
 		35F5271B9DC09F494AE33569 /* ShowConfigurations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowConfigurations.m; sourceTree = "<group>"; };
 		35F5277AF839A0412C8441F3 /* ALineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALineItem.h; sourceTree = "<group>"; };
+		35F52842A8307AABB72E16F8 /* CartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CartViewCell.h; sourceTree = "<group>"; };
+		35F529A69976E731F9A16513 /* PWCartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWCartViewCell.m; sourceTree = "<group>"; };
 		35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBG.png; sourceTree = "<group>"; };
 		35F52A62C4F3539476C1736F /* ProductCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductCell.m; sourceTree = "<group>"; };
 		35F52B3C8A568456497B76FC /* ProductCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductCell.h; sourceTree = "<group>"; };
 		35F52B621DB88316913EF3A1 /* AnOrder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnOrder.h; sourceTree = "<group>"; };
+		35F52C01A2B5E44CEB8AFE45 /* NumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberUtil.h; sourceTree = "<group>"; };
 		35F52C47A71D4C79AE68083C /* ALineItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ALineItem.m; sourceTree = "<group>"; };
 		35F52CE4A77F64FBC2BA5559 /* NilUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NilUtil.h; sourceTree = "<group>"; };
 		35F52CF25ABF1AF16A369494 /* NilUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NilUtil.m; sourceTree = "<group>"; };
 		35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
+		35F52E02103987C5239CB07D /* NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberUtil.m; sourceTree = "<group>"; };
 		35F52E74AD542ECB69B97735 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		6414A6E91496AE960088586B /* orangebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangebutton.png; sourceTree = "<group>"; };
 		6414A6F01496B9A10088586B /* bluebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluebutton.png; sourceTree = "<group>"; };
@@ -496,6 +510,8 @@
 		EBE8941B17B71D30005F1895 /* launch_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_bg.png; sourceTree = "<group>"; };
 		EBE8941D17B972D3005F1895 /* CIOrderViewController.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CIOrderViewController.storyboard; sourceTree = "<group>"; };
 		EBE8941F17B97733005F1895 /* OrdersBg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OrdersBg.png; sourceTree = "<group>"; };
+		EBFC477817D5745D0009CAD7 /* PWCartViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PWCartViewCell.xib; sourceTree = "<group>"; };
+		EBFC477A17D574740009CAD7 /* FarrisCartViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FarrisCartViewCell.xib; sourceTree = "<group>"; };
 		EC427054173FFB6E004A4A91 /* Zerobuttonin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonin.png; sourceTree = "<group>"; };
 		EC427055173FFB6E004A4A91 /* Zerobuttonout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Zerobuttonout.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -535,6 +551,8 @@
 				C75A1B6716691E770008A466 /* UIAlertViewDelegateWithBlock.m */,
 				35F52CF25ABF1AF16A369494 /* NilUtil.m */,
 				35F52CE4A77F64FBC2BA5559 /* NilUtil.h */,
+				35F52E02103987C5239CB07D /* NumberUtil.m */,
+				35F52C01A2B5E44CEB8AFE45 /* NumberUtil.h */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -896,6 +914,14 @@
 				6EE3992C155D795200EE1194 /* CICartViewController.h */,
 				6EE3992D155D795300EE1194 /* CICartViewController.m */,
 				6EE3992E155D795300EE1194 /* CICartViewController.xib */,
+				35F522AD3FB35CB710C8F62B /* CartViewCell.m */,
+				35F52842A8307AABB72E16F8 /* CartViewCell.h */,
+				35F529A69976E731F9A16513 /* PWCartViewCell.m */,
+				35F5224B1B84CB4E7EC646E7 /* PWCartViewCell.h */,
+				35F5234C615180F131627137 /* FarrisCartViewCell.m */,
+				35F5267D5CECDEA4EC54146F /* FarrisCartViewCell.h */,
+				EBFC477817D5745D0009CAD7 /* PWCartViewCell.xib */,
+				EBFC477A17D574740009CAD7 /* FarrisCartViewCell.xib */,
 			);
 			name = Cart;
 			sourceTree = "<group>";
@@ -1328,6 +1354,8 @@
 				EBE8941C17B71D30005F1895 /* launch_bg.png in Resources */,
 				EBE8941E17B972D3005F1895 /* CIOrderViewController.storyboard in Resources */,
 				EBE8942017B97733005F1895 /* OrdersBg.png in Resources */,
+				EBFC477917D5745D0009CAD7 /* PWCartViewCell.xib in Resources */,
+				EBFC477B17D574740009CAD7 /* FarrisCartViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1428,6 +1456,10 @@
 				35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */,
 				35F527ED52FF1F2798544129 /* CoreDataManager.m in Sources */,
 				35F521BE40815F698E85FF9E /* CIProductViewControllerHelper.m in Sources */,
+				35F52AF2E661528B3EDAABF5 /* NumberUtil.m in Sources */,
+				35F521774853EA59DB5E6754 /* CartViewCell.m in Sources */,
+				35F5220802E678E6EC146A37 /* PWCartViewCell.m in Sources */,
+				35F5280E4435FDF158A236FC /* FarrisCartViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -88,7 +88,7 @@
         if (lineItem.shipDates && lineItem.shipDates.count > 0) {
             NSMutableOrderedSet *coreDataShipDates = [[NSMutableOrderedSet alloc] init];
             for (NSString *jsonDate in lineItem.shipDates) {
-                NSDate *shipDate = [DateUtil convertJsonDateToNSDate:jsonDate];
+                NSDate *shipDate = [DateUtil convertYyyymmddToDate:jsonDate];
                 ShipDate *coreDataShipDate = [[ShipDate alloc] initWithEntity:[NSEntityDescription entityForName:@"ShipDate" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
                 coreDataShipDate.shipdate = shipDate;
                 [coreDataShipDates addObject:coreDataShipDate];

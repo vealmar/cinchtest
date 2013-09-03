@@ -45,7 +45,13 @@
 
 + (NSString *)stringDate;
 
-+ (NSDate *)convertJsonDateToNSDate:(NSString *)jsonDate;
++ (NSString *)convertDateToYyyymmdd:(NSDate *)nsDate;
+
++ (NSDate *)convertYyyymmddToDate:(NSString *)jsonDate;
+
++ (NSArray *)convertDateArrayToYyyymmddArray:(NSArray *)nsdates;
+
++ (NSArray *)convertYyyymmddArrayToDateArray:(NSArray *)jsonDateArray;
 
 
 @end

@@ -9,24 +9,14 @@
 #import "ALineItem.h"
 #import "Cart.h"
 #import "NilUtil.h"
+#import "config.h"
+#import "ShipDate.h"
+#import "DateUtil.h"
 
 
 @implementation ALineItem {
 
 }
-/*
-"voucherPrice" -> "0.5"
-"order_id" -> "12820"
-"desc" -> "PW COCKTAIL SAUCE 35166"
-"id" -> "92489"
-"category" -> "standard"
-"desc2" -> "<null>"
-"quantity" -> "1"
-"shipdates" -> count = 1
-"product" -> count = 3
-"product_id" -> "45079"
-"price" -> "11.61"
-* */
 - (id)initWithJsonFromServer:(NSDictionary *)json {
     self = [super init];
     if (self) {
@@ -45,13 +35,29 @@
     return self;
 }
 
-- (id)initWithCoreData:(Cart *)coreDataLineItem {
+- (id)initWithCoreData:(Cart *)coreDataLineItem product:(NSDictionary *)product {
     self = [super init];
-
     if (self) {
-
-
+        if (coreDataLineItem.orderLineItem_id > 0) self.itemId = [NSNumber numberWithInt:coreDataLineItem.orderLineItem_id];
+        self.productId = (NSNumber *) [product objectForKey:kProductId];
+        self.product = product;
+        self.price = [NSNumber numberWithFloat:coreDataLineItem.editablePrice];
+        self.quantity = coreDataLineItem.editableQty;
+        self.voucherPrice = [NSNumber numberWithFloat:coreDataLineItem.editableVoucher];
+        NSMutableArray *shipDates = [[NSMutableArray alloc] init];
+        if ([coreDataLineItem.shipdates count] > 0) {
+            for (ShipDate *sd in coreDataLineItem.shipdates) {
+                [shipDates addObject:[DateUtil convertDateToYyyymmdd:sd.shipdate]];
+            }
+        }
+        self.shipDates = shipDates;
     }
     return self;
 }
+
+- (NSArray *)shipDates {
+    return _shipDates ? _shipDates : [[NSArray alloc] init];
+}
+
+
 @end

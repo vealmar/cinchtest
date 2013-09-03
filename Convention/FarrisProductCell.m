@@ -9,31 +9,27 @@
 #import "FarrisProductCell.h"
 #import "StringManipulation.h"
 #import "config.h"
+#import "NumberUtil.h"
 
-@interface FarrisProductCell() {
-    NSString* originalCellValue;
-    }
+@interface FarrisProductCell () {
+    NSString *originalCellValue;
+}
 @end
 
 @implementation FarrisProductCell
 
 
-- (void) initializeWith:(NSDictionary *)product item:(NSDictionary *)item tag:(NSInteger) tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate{
-    self.itemNumber.text = [product objectForKey:@"invtid"];
+- (void)initializeWith:(NSDictionary *)product item:(NSDictionary *)item tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    self.InvtID.text = [product objectForKey:@"invtid"];
     [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
     self.min.text = [[product objectForKey:@"min"] stringValue];
     if (item != nil && [item objectForKey:kEditableQty] != nil) {
-        self.quantity.text = [[item objectForKey:kEditableQty] stringValue];
+        self.quantity.text = [item objectForKey:kEditableQty];
     } else {
         self.quantity.text = @"0";
     }
-    NSNumberFormatter* nf = [[NSNumberFormatter alloc] init];
-    nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-    nf.maximumFractionDigits = 2;
-    nf.minimumFractionDigits = 2;
-    nf.minimumIntegerDigits = 1;
-    self.regPrice.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[product objectForKey:kProductRegPrc] doubleValue]]];
-    self.showPrice.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[product objectForKey:kProductShowPrice] doubleValue]]];
+    self.regPrice.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:[[product objectForKey:kProductRegPrc] doubleValue]]];
+    self.showPrice.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:[[product objectForKey:kProductShowPrice] doubleValue]]];
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -41,8 +37,7 @@
 }
 
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
@@ -60,28 +55,29 @@
     }
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField {
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
     return YES;
 }
 
--(BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     originalCellValue = [NSString stringWithString:textField.text];
-    UITableView * tableView = (UITableView *)self.superview;
+    UITableView *tableView = (UITableView *) self.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
     [self.delegate setSelectedRow:indexPath.row];
     return YES;
 }
 
--(void)textFieldDidEndEditing:(UITextField *)textField{
+- (void)textFieldDidEndEditing:(UITextField *)textField {
     if ([textField.text isEmpty]) {
         textField.text = originalCellValue;
     }
     if ([textField isFirstResponder])
         [textField resignFirstResponder];
 }
--(void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {
-    if (description2 == [NSNull null]) {
+
+- (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {
+    if (description2 == nil || [description2 isKindOfClass:[NSNull class]]) {
         self.descr.hidden = FALSE;
         self.descr1.hidden = TRUE;
         self.descr2.hidden = TRUE;

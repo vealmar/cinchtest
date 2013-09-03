@@ -8,12 +8,17 @@
 
 #import "CICartViewController.h"
 #import "config.h"
-#import "FarrisProductCell.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "ShowConfigurations.h"
+#import "ALineItem.h"
+#import "CIProductViewControllerHelper.h"
+#import "DateUtil.h"
+#import "NumberUtil.h"
+#import "PWCartViewCell.h"
+#import "FarrisCartViewCell.h"
 
 @interface CICartViewController () {
-    NSMutableArray *allCartItems;
+    NSMutableArray *allCartItems; //product cart items + discount items
     NSIndexPath *selectedItemRowIndexPath;
     __weak IBOutlet UILabel *customerInfoLabel;
     __weak IBOutlet UIImageView *logo;
@@ -44,7 +49,6 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
         showPrice = YES;
         customersReady = NO;
         tOffset = 0;
@@ -52,14 +56,6 @@
     }
     return self;
 }
-
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-
-    // Release any cached data, images, etc that aren't in use.
-}
-
 #pragma mark - View lifecycle
 
 - (void)adjustTotals {
@@ -89,7 +85,6 @@
     self.voucherTotal.hidden = self.voucherTotalLabel.hidden = ![ShowConfigurations instance].vouchers;
     self.grossTotalLabel.text = [ShowConfigurations instance].discounts ? @"Gross Total" : @"Total";
     [self adjustTotals];
-
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         tableHeaderPigglyWiggly.hidden = NO;
         tableHeaderFarris.hidden = YES;
@@ -106,65 +101,48 @@
             ![customer[kBillName] isKindOfClass:[NSNull class]] ? customer[kBillName] : @"";
 
     allCartItems = [NSMutableArray arrayWithCapacity:[self.productData count] + [self.discountItems count]];
-
     double grossTotal = 0.0;
     double voucherTotal = 0.0;
     NSArray *keys = [self.productData allKeys];
     for (NSString *key in keys) {
-        NSDictionary *dict = [self.productData objectForKey:key];
-        [allCartItems addObject:dict];
+        ALineItem *lineItem = [self.productData objectForKey:key];
+        [allCartItems addObject:lineItem];
         int qty = 0;
         if (multiStore) {
-            NSDictionary *quantitiesByStore = [[dict objectForKey:kEditableQty] objectFromJSONString];
+            NSDictionary *quantitiesByStore = [lineItem.quantity objectFromJSONString];
             for (NSString *storeId in [quantitiesByStore allKeys]) {
                 qty += [[quantitiesByStore objectForKey:storeId] intValue];
             }
         }
         else {
-            qty += [[dict objectForKey:kEditableQty] intValue];
+            qty += [lineItem.quantity intValue];
         }
-        int numOfShipDates = [[dict objectForKey:kLineItemShipDates] count];
-        double price = [[dict objectForKey:kEditablePrice] doubleValue];
+        int numOfShipDates = [lineItem.shipDates count];
+        double price = [lineItem.price doubleValue];
         grossTotal += qty * price * (numOfShipDates == 0 ? 1 : numOfShipDates);
 
-        if ([dict objectForKey:kEditableVoucher] != nil && ![[dict objectForKey:kEditableVoucher] isKindOfClass:[NSNull class]]) {
-            double voucherPrice = [[dict objectForKey:kEditableVoucher] doubleValue];
+        if (lineItem.voucherPrice != nil && ![lineItem.voucherPrice isKindOfClass:[NSNull class]]) {
+            double voucherPrice = [lineItem.voucherPrice doubleValue];
             voucherTotal += qty * voucherPrice * (numOfShipDates == 0 ? 1 : numOfShipDates);
         }
     }
-
-
-
-//    allCartItems = [NSMutableDictionary dictionaryWithDictionary:self.productData];
-//    [allCartItems addEntriesFromDictionary:self.discountItems];
-
     double discountTotal = 0.0;
     keys = [self.discountItems allKeys];
     for (NSString *key in keys) {
-        [allCartItems addObject:[self.discountItems objectForKey:key]];
-        double price = [[[self.discountItems objectForKey:key] objectForKey:@"price"] doubleValue];
-        double qty = [[[self.discountItems objectForKey:key] objectForKey:@"quantity"] doubleValue];
+        ALineItem *discountLineItem = [self.discountItems objectForKey:key];
+        [allCartItems addObject:discountLineItem];
+        double price = [discountLineItem.price doubleValue];
+        double qty = [discountLineItem.quantity doubleValue];
         discountTotal += price * qty;
     }
-
-    NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-    nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-    nf.maximumFractionDigits = 2;
-    nf.minimumFractionDigits = 2;
-    nf.minimumIntegerDigits = 1;
-
-    self.grossTotal.text = [nf stringFromNumber:[NSNumber numberWithDouble:grossTotal]];
-    self.discountTotal.text = [nf stringFromNumber:[NSNumber numberWithDouble:discountTotal]];
-
+    self.grossTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:grossTotal]];
+    self.discountTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:discountTotal]];
     double netTotal = grossTotal + discountTotal;
-    self.netTotal.text = [nf stringFromNumber:[NSNumber numberWithDouble:netTotal]];
-
-    self.voucherTotal.text = [nf stringFromNumber:[NSNumber numberWithDouble:voucherTotal]];
-
+    self.netTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:netTotal]];
+    self.voucherTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:voucherTotal]];
     [self.products reloadData];
     [self.indicator stopAnimating];
     self.indicator.hidden = YES;
-
 }
 
 - (void)viewDidLoad {
@@ -187,9 +165,6 @@
 }
 
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
-//    if (self.productData) {
-//        return [self.productData count];
-//    }
     if (allCartItems) {
         return [allCartItems count];
     }
@@ -197,188 +172,24 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (!self.productData) {
-        return nil;
-    }
-    NSDictionary *dict = [allCartItems objectAtIndex:indexPath.row];
+    if (!self.productData) {return nil;}
+    CIProductViewControllerHelper *helper = [[CIProductViewControllerHelper alloc] init];
+    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:indexPath.row];
+    NSDictionary *editableDict = @{kEditablePrice : lineItem.price,
+            kEditableVoucher : lineItem.voucherPrice ? lineItem.voucherPrice : [NSNumber numberWithInt:0],
+            kEditableQty : lineItem.quantity,
+            kLineItemShipDates : [DateUtil convertYyyymmddArrayToDateArray:lineItem.shipDates]};
+    NSDictionary *product = [self.delegate getProduct:lineItem.productId];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
-        static NSString *CellIdentifier = @"PWProductCell";
-
-        PWProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
-
-        if (cell == nil) {
-            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"PWProductCell" owner:nil options:nil];
-
-            for (id currentObject in topLevelObjects) {
-                if ([currentObject isKindOfClass:[PWProductCell class]]) {
-                    cell = (PWProductCell *) currentObject;
-                    break;
-                }
-            }
-        }
-
-        cell.InvtID.text = [dict objectForKey:@"invtid"];
-        cell.descr.text = [dict objectForKey:@"descr"];
-
-        //PW -- swapping out partnbr and UOM for Ship date range
-        if ([dict objectForKey:kProductShipDate1] && ![[dict objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]) {
-            NSDateFormatter *df = [[NSDateFormatter alloc] init];
-            [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-            NSDate *date = [df dateFromString:[dict objectForKey:kProductShipDate1]];
-            [df setDateFormat:@"yyyy-MM-dd"];
-            cell.shipDate1.text = [df stringFromDate:date];
-        } else {
-            cell.shipDate1.text = @"";
-        }
-        if ([dict objectForKey:kProductShipDate2] && ![[dict objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]) {
-            NSDateFormatter *df = [[NSDateFormatter alloc] init];
-            [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-            NSDate *date = [df dateFromString:[dict objectForKey:kProductShipDate2]];
-            [df setDateFormat:@"yyyy-MM-dd"];
-            cell.shipDate2.text = [df stringFromDate:date];
-        } else {
-            cell.shipDate2.text = @"";
-        }
-        //PW---
-
-        if ([dict objectForKey:@"caseqty"] && ![[dict objectForKey:@"caseqty"] isKindOfClass:[NSNull class]])
-            cell.CaseQty.text = [dict objectForKey:@"caseqty"];
-        else
-            cell.CaseQty.text = @"";
-        cell.numShipDates.text = ([[dict objectForKey:kLineItemShipDates] isKindOfClass:[NSArray class]] ? [NSString stringWithFormat:@"%d", ((NSArray *) [dict objectForKey:kLineItemShipDates]).count] : @"0");
-        cell.quantity.hidden = YES;
-
-        if ([dict objectForKey:kEditableQty] && !multiStore) {
-            cell.quantity.text = [[dict objectForKey:kEditableQty] stringValue];
-            cell.qtyLbl.text = cell.quantity.text;
-        } else {
-            cell.quantity.text = @"0";
-        }
-
-        if (multiStore) {
-            cell.qtyBtn.hidden = NO;
-        } else {
-            cell.qtyLbl.hidden = NO;
-        }
-
-        cell.price.hidden = YES;
-
-        if ([dict objectForKey:kEditableVoucher]) {
-            NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-            nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-            nf.maximumFractionDigits = 2;
-            nf.minimumFractionDigits = 2;
-            nf.minimumIntegerDigits = 1;
-
-            cell.voucher.text = [nf stringFromNumber:[dict objectForKey:kEditableVoucher]];
-        } else {
-            cell.voucher.text = @"0.00";
-        }
-
-        if (showPrice) {
-            NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-            nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-            nf.maximumFractionDigits = 2;
-            nf.minimumFractionDigits = 2;
-            nf.minimumIntegerDigits = 1;
-            NSString *price = [nf stringFromNumber:[dict objectForKey:kEditablePrice]];
-
-            cell.price.text = price;
-            cell.priceLbl.text = price;
-        }
-        else
-            cell.price.text = @"0.00";
-        cell.tag = [indexPath row];
-
-        BOOL hasQty = NO;
-
-        //if you want it to highlight based on qty uncomment this:
-        if (multiStore && dict && [[dict objectForKey:kEditableQty] isKindOfClass:[NSString class]]
-                && [[[dict objectForKey:kEditableQty] objectFromJSONString] isKindOfClass:[NSDictionary class]]
-                && ((NSDictionary *) [[dict objectForKey:kEditableQty] objectFromJSONString]).allKeys.count > 0) {
-            for (NSNumber *n in [[[dict objectForKey:kEditableQty] objectFromJSONString] allObjects]) {
-                if (n > 0)
-                    hasQty = YES;
-            }
-        } else if (dict && [dict objectForKey:kEditableQty] && [[dict objectForKey:kEditableQty] isKindOfClass:[NSString class]]
-                && [[dict objectForKey:kEditableQty] integerValue] > 0) {
-            hasQty = YES;
-        } else if (dict && [dict objectForKey:kEditableQty] && [[dict objectForKey:kEditableQty] isKindOfClass:[NSNumber class]]
-                && [[dict objectForKey:kEditableQty] intValue] > 0) {
-            hasQty = YES;
-        } else {
-            cell.backgroundView = nil;
-        }
-
-        BOOL hasShipDates = NO;
-        NSArray *shipDates = [dict objectForKey:kLineItemShipDates];
-        if (shipDates && [shipDates count] > 0) {
-            hasShipDates = YES;
-        }
-
-        NSNumber *zero = [NSNumber numberWithInt:0];
-        BOOL isVoucher = [[dict objectForKey:kProductIdx] isEqualToNumber:zero]
-                && [[dict objectForKey:kProductInvtid] isEqualToString:[zero stringValue]];
-        if (!isVoucher) {
-            if (hasQty ^ hasShipDates) {
-                UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-                view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
-                cell.backgroundView = view;
-            }
-        }
-
-        cell.delegate = (id <ProductCellDelegate>) self;
-        return (UITableViewCell *) cell;
+        PWCartViewCell *cell = (PWCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
+        [cell initializeWith:multiStore showPrice:self.showPrice product:product item:lineItem tag:[indexPath row] productCellDelegate:self];
+        [helper updateCellBackground:cell product:product editableItemDetails:editableDict multiStore:multiStore];
+        return cell;
     } else if ([kShowCorp isEqualToString:kFarris]) {
-        static NSString *CellIdentifier = @"FarrisProductCell";
-        FarrisProductCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
-        if (cell == nil) {
-            NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:CellIdentifier owner:nil options:nil];
-            cell = [topLevelObjects objectAtIndex:0];
-        }
-
-        BOOL isDiscount = [[dict objectForKey:@"category"] isEqualToString:@"discount"];
-        UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
-
-
-        cell.itemNumber.text = isDiscount ? @"Discount" : [dict objectForKey:@"invtid"];
-        [cell setDescription:[dict objectForKey:(isDiscount ? @"desc" : kProductDescr)] withSubtext:[dict objectForKey:(isDiscount ? @"desc2" : kProductDescr2)]];
-
-
-        cell.min.text = [[dict objectForKey:@"min"] stringValue];
-
-        if (!isDiscount) {
-            cell.quantity.text = [[dict objectForKey:kEditableQty] stringValue];
-            cell.quantity.hidden = NO;
-            cell.qtyLbl.hidden = YES;
-        }
-        else {
-            NSString *qty = [dict objectForKey:@"quantity"];
-            cell.qtyLbl.text = qty;
-            cell.quantity.hidden = YES;
-            cell.qtyLbl.font = discountFont;
-            cell.qtyLbl.hidden = NO;
-        }
-
-        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-        nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-        nf.maximumFractionDigits = 2;
-        nf.minimumFractionDigits = 2;
-        nf.minimumIntegerDigits = 1;
-
-        if (!isDiscount) {
-            cell.regPrice.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[dict objectForKey:kProductRegPrc] doubleValue]]];
-            cell.showPrice.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[dict objectForKey:kProductShowPrice] doubleValue]]];
-        } else {
-            cell.regPrice.text = @"";
-            cell.showPrice.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[dict objectForKey:@"price"] doubleValue]]];
-            cell.showPrice.font = discountFont;
-        }
-        cell.delegate = (id <ProductCellDelegate>) self;
-        cell.tag = [indexPath row];
-        return (UITableViewCell *) cell;
+        FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
+        [cell initializeWith:product item:lineItem tag:[indexPath row] ProductCellDelegate:self];
+        return cell;
     }
-
     return nil;
 }
 
@@ -387,14 +198,11 @@
 - (void)Cancel {
     self.indicator.hidden = NO;
     [self.indicator startAnimating];
-
     if (self.delegate) {
         [self.delegate setProductCart:[NSMutableDictionary dictionaryWithDictionary:self.productCart]];
         [self.delegate setOrderSubmitted:NO];
     }
-
     [self dismissViewControllerAnimated:YES completion:nil];
-
 }
 
 - (IBAction)Cancel:(id)sender {
@@ -423,7 +231,6 @@
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Zero out all vouchers?"
                                                    delegate:nil cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
     [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
-
         if (buttonIndex == 1) {
             [self zeroAllVouchers];
         }
@@ -434,27 +241,27 @@
 
 - (void)zeroAllVouchers {
     for (NSString *key in [self.productData allKeys]) {
-        NSMutableDictionary *dict = [self.productData objectForKey:key];
-        [dict setObject:[NSNumber numberWithDouble:0.0] forKey:kEditableVoucher];
+        ALineItem *lineItem = [self.productData objectForKey:key];
+        lineItem.voucherPrice = [NSNumber numberWithDouble:0.0];
     }
     [self.products reloadData];
 }
 
-- (void)VoucherChange:(double)price forIndex:(int)idx {
+- (void)VoucherChange:(double)voucherPrice forIndex:(int)idx {
     NSString *key = [[self.productData allKeys] objectAtIndex:idx];
-    NSMutableDictionary *dict = [self.productCart objectForKey:key];
-    [dict setObject:[NSNumber numberWithDouble:price] forKey:kEditableVoucher];
+    ALineItem *lineItem = [self.productCart objectForKey:key];
+    lineItem.voucherPrice = [NSNumber numberWithDouble:voucherPrice];
 }
 
 - (void)PriceChange:(double)price forIndex:(int)idx {
     NSString *key = [[self.productData allKeys] objectAtIndex:idx];
-    NSMutableDictionary *dict = [self.productCart objectForKey:key];
-    [dict setObject:[NSNumber numberWithDouble:price] forKey:kEditablePrice];
+    ALineItem *lineItem = [self.productCart objectForKey:key];
+    lineItem.price = [NSNumber numberWithDouble:price];
 }
 
 - (void)QtyChange:(double)qty forIndex:(int)idx {
     NSString *key = [[self.productData allKeys] objectAtIndex:idx];
-    NSMutableDictionary *dict = [self.productCart objectForKey:key];
+    ALineItem *lineItem = [self.productCart objectForKey:key];
     if (qty <= 0) {
         [self.productData removeObjectForKey:key];
         [self.productCart removeObjectForKey:key];
@@ -464,7 +271,7 @@
     self.discountTotal.textColor = [UIColor redColor];
     self.netTotal.textColor = [UIColor redColor];
     [self.delegate QtyChange:qty forIndex:idx];
-    [dict setObject:[NSNumber numberWithDouble:qty] forKey:kEditableQty];
+    lineItem.quantity = [[NSNumber numberWithDouble:qty] stringValue];
 }
 
 - (void)QtyTouchForIndex:(int)idx {
@@ -475,21 +282,8 @@
             storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
         }
         NSString *key = [[self.productData allKeys] objectAtIndex:idx];
-        NSMutableDictionary *dict = [self.productCart objectForKey:key];
-        if ([[dict objectForKey:kEditableQty] isKindOfClass:[NSNumber class]]) {
-            NSArray *storeNums = [customer objectForKey:kStores];
-            NSMutableDictionary *stores = [NSMutableDictionary dictionaryWithCapacity:storeNums.count + 1];
-
-            [stores setValue:[NSNumber numberWithInt:0] forKey:[customer objectForKey:kCustID]];
-            for (int i = 0; i < storeNums.count; i++) {
-                [stores setValue:[NSNumber numberWithInt:0] forKey:[[storeNums objectAtIndex:i] stringValue]];
-                //                DLog(@"setting %@ to %@ so stores is now:%@",[storeNums objectAtIndex:i],[NSNumber numberWithInt:0],stores);
-            }
-
-            NSString *JSON = [stores JSONString];
-            [dict setObject:JSON forKey:kEditableQty];
-        }
-        storeQtysPO.stores = [[[dict objectForKey:kEditableQty] objectFromJSONString] mutableCopy];
+        ALineItem *lineItem = [self.productCart objectForKey:key];
+        storeQtysPO.stores = [[lineItem.quantity objectFromJSONString] mutableCopy];
         storeQtysPO.tag = idx;
         storeQtysPO.editable = NO;
         storeQtysPO.delegate = (id <CIStoreQtyTableDelegate>) self;

@@ -19,12 +19,12 @@
 @property(strong, nonatomic) NSNumber *itemId;
 @property(strong, nonatomic) NSString *category;
 @property(strong, nonatomic) NSString *quantity; //could be a json string with quantity by store or could be a number as a string.
-@property(strong, nonatomic) NSArray *shipDates;
+@property(strong, nonatomic) NSArray *shipDates; //array of "yyyy-MM-dd" strings.
 @property(strong, nonatomic) NSDictionary *product;
 @property(strong, nonatomic) NSNumber *productId;
 @property(strong, nonatomic) NSNumber *price;
 
 - (id)initWithJsonFromServer:(NSDictionary *)json;
 
-- (id)initWithCoreData:(Cart *)coreDataLineItem;
+- (id)initWithCoreData:(Cart *)coreDataLineItem product:(NSDictionary *)product;
 @end

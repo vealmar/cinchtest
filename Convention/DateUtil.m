@@ -92,11 +92,37 @@ static DateUtil *sharedInstance;
     return date;
 }
 
-+ (NSDate *)convertJsonDateToNSDate:(NSString *)jsonDate {
++ (NSDate *)convertYyyymmddToDate:(NSString *)jsonDate {
     NSMutableOrderedSet *dates = [[NSMutableOrderedSet alloc] init];
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"yyyy-MM-dd"];
     return [df dateFromString:jsonDate];
+}
+
++ (NSString *)convertDateToYyyymmdd:(NSDate *)nsDate {
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"yyyy-MM-dd"];
+    return [df stringFromDate:nsDate];
+}
+
++ (NSArray *)convertDateArrayToYyyymmddArray:(NSArray *)nsdates {
+    NSMutableArray *jsonDates = [[NSMutableArray alloc] init];
+    if ([nsdates count] > 0) {
+        for (NSDate *nsdate in nsdates) {
+            [jsonDates addObject:[DateUtil convertDateToYyyymmdd:nsdate]];
+        }
+    }
+    return jsonDates;
+}
+
++ (NSArray *)convertYyyymmddArrayToDateArray:(NSArray *)jsonDateArray {
+    NSMutableArray *nsDates = [[NSMutableArray alloc] init];
+    if ([jsonDateArray count] > 0) {
+        for (NSString *jsonDate in jsonDateArray) {
+            [nsDates addObject:[DateUtil convertYyyymmddToDate:jsonDate]];
+        }
+    }
+    return nsDates;
 }
 
 

@@ -10,18 +10,20 @@
 #import "config.h"
 #import "JSONKit.h"
 #import "StringManipulation.h"
+#import "ProductCell.h"
+#import "ShowConfigurations.h"
 
 
 @implementation CIProductViewControllerHelper {
 
 }
 
-- (BOOL)itemHasQuantity:(BOOL)multiStore lineItem:(NSDictionary *)linetItem {
+- (BOOL)itemHasQuantity:(BOOL)multiStore quantity:(NSString *)quantity {
     NSInteger num = 0;
     if (!multiStore) {
-        num = [[linetItem objectForKey:kEditableQty] integerValue];
+        num = [quantity integerValue];
     } else {
-        NSMutableDictionary *qty = [[linetItem objectForKey:kEditableQty] objectFromJSONString];
+        NSMutableDictionary *qty = [quantity objectFromJSONString];
         for (NSString *n in qty.allKeys) {
             int j = [[qty objectForKey:n] intValue];
             if (j > num) {
@@ -35,23 +37,66 @@
     return num > 0;
 }
 
-- (NSArray *)getItemShipDatesToSendToServer:(NSDictionary *)lineItem {
-    NSMutableArray *strs = [NSMutableArray array];
-    NSArray *dates = [lineItem objectForKey:kLineItemShipDates];
-    if ([dates count] > 0) {
-        NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-        for (int i = 0; i < dates.count; i++) {
-            NSString *str = [df stringFromDate:[dates objectAtIndex:i]];
-            [strs addObject:str];
-        }
-    }
-    return strs;
-}
-
 - (BOOL)itemIsVoucher:(NSDictionary *)product {
     int idx = [[product objectForKey:kProductIdx] intValue];
     NSString *invtId = [product objectForKey:kProductInvtid];
     return idx == 0 && ([invtId isEmpty] || [invtId isEqualToString:@"0"]);
+}
+
+- (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product
+         editableItemDetails:(NSDictionary *)editableItemDetails multiStore:(BOOL)multiStore {
+    if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+        BOOL hasQty = [self itemHasQuantity:multiStore quantity:(NSString *) [editableItemDetails objectForKey:kEditableQty]];
+        if (!hasQty) {cell.backgroundView = nil;}
+        NSArray *shipDates = [editableItemDetails objectForKey:kLineItemShipDates];
+        BOOL hasShipDates = shipDates && [shipDates count] > 0;
+        BOOL isVoucher = [self itemIsVoucher:product];
+        if (!isVoucher) {
+            if (hasQty && (hasShipDates || ([[ShowConfigurations instance] shipDates] == NO))) {
+                UIView *view = [[UIView alloc] initWithFrame:cell.frame];
+                view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
+                cell.backgroundView = view;
+            } else if (hasQty ^ hasShipDates) {
+                UIView *view = [[UIView alloc] initWithFrame:cell.frame];
+                view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
+                cell.backgroundView = view;
+            }
+        } else {
+            if (hasQty) {
+                UIView *view = [[UIView alloc] initWithFrame:cell.frame];
+                view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
+                cell.backgroundView = view;
+            }
+        }
+    } else if ([kShowCorp isEqualToString:kFarris]) {
+        BOOL hasQty = [self itemHasQuantity:multiStore quantity:[editableItemDetails objectForKey:kEditableQty]];
+        if (hasQty) {
+            UIView *view = [[UIView alloc] initWithFrame:cell.frame];
+            view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
+            cell.backgroundView = view;
+        } else {
+            cell.backgroundView = nil;
+        }
+    }
+}
+
+- (UITableViewCell *)dequeueReusableProductCell:(UITableView *)table {
+    NSString *CellIdentifier = [kShowCorp isEqualToString:kPigglyWiggly] ? @"PWProductCell" : @"FarrisProductCell";
+    UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:CellIdentifier owner:nil options:nil];
+        cell = [topLevelObjects objectAtIndex:0];
+    }
+    return cell;
+}
+
+- (UITableViewCell *)dequeueReusableCartViewCell:(UITableView *)table {
+    NSString *CellIdentifier = [kShowCorp isEqualToString:kPigglyWiggly] ? @"PWCartViewCell" : @"FarrisCartViewCell";
+    UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:CellIdentifier owner:nil options:nil];
+        cell = [topLevelObjects objectAtIndex:0];
+    }
+    return cell;
 }
 @end

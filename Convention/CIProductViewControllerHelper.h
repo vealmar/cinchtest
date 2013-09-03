@@ -8,11 +8,20 @@
 
 #import <Foundation/Foundation.h>
 
+@class ProductCell;
+
 
 @interface CIProductViewControllerHelper : NSObject
-- (BOOL)itemHasQuantity:(BOOL)multiStore lineItem:(NSDictionary *)linetItem;
+- (BOOL)itemHasQuantity:(BOOL)multiStore quantity:(NSString *)quantity;
 
 - (NSArray *)getItemShipDatesToSendToServer:(NSDictionary *)lineItem;
 
 - (BOOL)itemIsVoucher:(NSDictionary *)product;
+
+- (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product
+         editableItemDetails:(NSDictionary *)editableItemDetails multiStore:(BOOL)multiStore;
+
+- (UITableViewCell *)dequeueReusableProductCell:(UITableView *)table;
+
+- (UITableViewCell *)dequeueReusableCartViewCell:(UITableView *)table;
 @end

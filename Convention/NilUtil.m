@@ -19,5 +19,4 @@
         return object;
     }
 }
-
 @end

@@ -42,9 +42,7 @@
     return self;
 }
 
-- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product
-                  item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag
-   ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate cartView:(BOOL)cartView {
     self.InvtID.text = [product objectForKey:@"invtid"];
     self.descr.text = [product objectForKey:@"descr"];
     if ([product objectForKey:kProductShipDate1] != nil && ![[product objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]) {
@@ -69,7 +67,7 @@
     self.numShipDates.text = ([[item objectForKey:kLineItemShipDates] isKindOfClass:[NSArray class]]
             ? [NSString stringWithFormat:@"%d", ((NSArray *) [item objectForKey:kLineItemShipDates]).count] : @"0");
     if (!multiStore && item != nil && [item objectForKey:kEditableQty] != nil) {
-        self.quantity.text = [[item objectForKey:kEditableQty] stringValue];
+        self.quantity.text = [item objectForKey:kEditableQty];
     }
     else
         self.quantity.text = @"0";
@@ -82,6 +80,11 @@
         self.qtyBtn.hidden = NO;
         self.qtyLbl.hidden = YES;
         self.quantity.hidden = YES;
+    }
+    if (cartView) {
+        self.quantity.hidden = YES;
+        self.qtyLbl.text = self.quantity.text;
+        self.qtyLbl.hidden = !multiStore && item != nil && [item objectForKey:kEditableQty] != nil;
     }
     if (item != nil && [item objectForKey:kEditableVoucher] != nil) {
         NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];

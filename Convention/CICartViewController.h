@@ -18,6 +18,8 @@
 - (void)setOrderSubmitted:(BOOL)yes;
 
 - (void)QtyChange:(double)qty forIndex:(int)idx;
+
+- (NSDictionary *)getProduct:(NSNumber *)productId;
 @end
 
 @interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
@@ -66,7 +68,7 @@
 
 - (void)QtyChange:(double)qty forIndex:(int)idx;
 
-- (void)VoucherChange:(double)price forIndex:(int)idx;
+- (void)VoucherChange:(double)voucherPrice forIndex:(int)idx;
 
 - (IBAction)Cancel:(id)sender;
 

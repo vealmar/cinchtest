@@ -1,15 +1,15 @@
 //
-// Created by septerr on 8/19/13.
+// Created by septerr on 9/2/13.
 // Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 // To change the template use AppCode | Preferences | File Templates.
 //
 
 
-#import "ProductCell.h"
+#import "CartViewCell.h"
 
 
-@implementation ProductCell {
-
+@implementation CartViewCell {
 }
+@synthesize InvtID;
 @end
