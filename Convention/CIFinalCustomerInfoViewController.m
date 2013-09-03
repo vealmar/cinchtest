@@ -12,6 +12,7 @@
 #import "CoreDataUtil.h"
 #import "CIAppDelegate.h"
 #import "SetupInfo.h"
+#import "SettingsManager.h"
 
 @interface CIFinalCustomerInfoViewController () {
     SetupInfo *authorizedBy;

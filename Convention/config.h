@@ -13,11 +13,8 @@
 #define SERVER @"server"
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
 #define ShowID [[SettingsManager sharedManager] lookupSettingByString:@"show"]
-
 #define kPigglyWiggly @"PigglyWiggly"
-#define kFarris @"Farris"
-#define kOther @"Other"
-#define kShowCorp kOther
+#define kShowCorp [[SettingsManager sharedManager] lookupSettingByString:@"host"]
 #define ConfigUrl [NSString stringWithFormat:@"%@/shows/%@/configurations.json", kBASEURL, ShowID]
 #define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
 #define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]

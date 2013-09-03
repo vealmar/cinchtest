@@ -16,6 +16,7 @@
 #import "NumberUtil.h"
 #import "PWCartViewCell.h"
 #import "FarrisCartViewCell.h"
+#import "SettingsManager.h"
 
 @interface CICartViewController () {
     NSMutableArray *allCartItems; //product cart items + discount items

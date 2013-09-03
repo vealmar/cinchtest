@@ -11,6 +11,7 @@
 #import "JSONKit.h"
 #import "StringManipulation.h"
 #import "ShowConfigurations.h"
+#import "SettingsManager.h"
 
 
 @implementation CIProductViewControllerHelper {
