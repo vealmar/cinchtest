@@ -1093,7 +1093,7 @@
     aLineItem.category = @"standard";
     aLineItem.desc = [product objectForKey:kProductDescr];
     if ([NilUtil nilOrObject:[product objectForKey:kProductDescr2]])
-        aLineItem.desc = [product objectForKey:kProductDescr2];
+        aLineItem.desc2 = [product objectForKey:kProductDescr2];
     ALineItem *oldLineItem = [self.productCart objectForKey:key];
     if (oldLineItem != nil) {aLineItem.itemId = oldLineItem.itemId;}
     [self.productCart setObject:aLineItem forKey:key];
