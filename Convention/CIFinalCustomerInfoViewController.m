@@ -78,8 +78,7 @@
     if (kShowCorp == kPigglyWiggly) {
         contactBeforeShippingLabel.hidden = YES;
         contactBeforeShipping.hidden = YES;
-    }
-    else if (kShowCorp == kFarris) {
+    } else {
         subs = [NSDictionary dictionaryWithObject:@"ship_flag" forKey:@"ITEMNAME"];
         req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs];
         results = [context executeFetchRequest:req error:&error];
@@ -121,10 +120,7 @@
             [context save:&error];
         }
 
-
-        /// *** Farris?
-
-        if (kShowCorp == kFarris) {
+        if (kShowCorp != kPigglyWiggly) {//Farris
             NSError *error;
             if (shipFlag == nil) {   //SG: If the value specified for Contact Before Shipping last time is not same as the value specified this time, update the value in setupinfo.
                 SetupInfo *setup = (SetupInfo *) [[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
@@ -148,7 +144,7 @@
             [dict setObject:self.Notes.text forKey:kNotes ];
             [dict setObject:self.Authorizer.text forKey:kAuthorizedBy];
 
-            if (kShowCorp == kFarris) {
+            if (kShowCorp != kPigglyWiggly) {
                 [dict setObject:(contactBeforeShipping.isChecked ? @"true" : @"false") forKey:kShipFlag];
             }
             [self.delegate setAuthorizedByInfo:[dict copy]];

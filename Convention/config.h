@@ -16,7 +16,8 @@
 
 #define kPigglyWiggly @"PigglyWiggly"
 #define kFarris @"Farris"
-#define kShowCorp kPigglyWiggly
+#define kOther @"Other"
+#define kShowCorp kOther
 #define ConfigUrl [NSString stringWithFormat:@"%@/shows/%@/configurations.json", kBASEURL, ShowID]
 #define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
 #define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]

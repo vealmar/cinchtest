@@ -87,12 +87,9 @@
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         self.tableHeaderPigglyWiggly.hidden = NO;
         self.tableHeaderFarris.hidden = YES;
-    } else if ([kShowCorp isEqualToString:kFarris]) {
-        self.tableHeaderPigglyWiggly.hidden = YES;
-        self.tableHeaderFarris.hidden = NO;
     } else {
         self.tableHeaderPigglyWiggly.hidden = YES;
-        self.tableHeaderFarris.hidden = YES;
+        self.tableHeaderFarris.hidden = NO;
     }
     if (!self.showShipDates) self.btnSelectShipDates.hidden = YES;
 
@@ -156,10 +153,12 @@
     Order *coreDataOrder = [[Order alloc] initWithOrder:self.selectedOrder forCustomer:self.customer vendorId:[[NSNumber alloc] initWithInt:[self.loggedInVendorId intValue]] vendorGroup:self.loggedInVendorId andVendorGroupId:self.loggedInVendorGroupId context:self.managedObjectContext];
     NSMutableOrderedSet *carts = [[NSMutableOrderedSet alloc] init];
     for (ALineItem *lineItem in self.selectedOrder.lineItems) {
-        NSNumber *product_id = lineItem.productId;
-        NSDictionary *product = [self.productMap objectForKey:product_id];
-        Cart *cart = [[Cart alloc] initWithLineItem:lineItem forProduct:product andCustomer:self.customer context:self.managedObjectContext];
-        [carts addObject:cart];
+        if ([lineItem.category isEqualToString:@"standard"]) {//if it is a discount item, core data throws error when saving the cart item becasue of nil value in required fields - company, regprc, showprc, invtid.
+            NSNumber *product_id = lineItem.productId;
+            NSDictionary *product = [self.productMap objectForKey:product_id];
+            Cart *cart = [[Cart alloc] initWithLineItem:lineItem forProduct:product andCustomer:self.customer context:self.managedObjectContext];
+            [carts addObject:cart];
+        }
     }
     coreDataOrder.carts = carts;
     [self.managedObjectContext insertObject:coreDataOrder];
@@ -336,7 +335,7 @@
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         BOOL rowIsSelected = [selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]] && ![[dict objectForKey:@"invtid"] isEqualToString:@"0"];
         [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore showPrice:self.showPrice product:dict item:editableDict checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self cartView:NO ];
-    } else if ([kShowCorp isEqualToString:kFarris]) {
+    } else {
         [(FarrisProductCell *) cell initializeWith:dict item:editableDict tag:[indexPath row] ProductCellDelegate:self];
     }
     return cell;
@@ -478,7 +477,7 @@
     [customerCopy setObject:[info objectForKey:kShipNotes] forKey:kShipNotes];
     [customerCopy setObject:[info objectForKey:kNotes] forKey:kNotes];
     [customerCopy setObject:[info objectForKey:kAuthorizedBy] forKey:kAuthorizedBy];
-    if ([kShowCorp isEqualToString:kFarris]) {
+    if (!([kShowCorp isEqualToString:kPigglyWiggly])) {
         [customerCopy setObject:[info objectForKey:kShipFlag] forKey:kShipFlag];
     }
     self.customer = customerCopy;
@@ -605,7 +604,7 @@
             NSString *ePrice = [lineItem.price stringValue];
             NSString *eVoucher = [lineItem.voucherPrice stringValue];
             NSDictionary *proDict;
-            if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+            if ([ShowConfigurations instance].shipDates) {
                 if (![myId isEqualToString:@""])
                     proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kLineItemProductID, myId, kID,
                                                                          lineItem.quantity, kLineItemQuantity, ePrice, kLineItemPrice,
@@ -1321,9 +1320,7 @@
                 invtid = @"";
             }
             NSString *descrip = [dict objectForKey:kProductDescr];
-            NSString *desc2 = @"";
-            if ([kShowCorp isEqualToString:kFarris])
-                desc2 = [dict objectForKey:kProductDescr2];
+            NSString *desc2 = [dict objectForKey:kProductDescr2] ? [dict objectForKey:kProductDescr2] : @"";
             NSString *test = [self.searchText.text uppercaseString];
             return [[invtid uppercaseString] contains:test] || [[descrip uppercaseString] contains:test] || (desc2 != nil && ![desc2 isEqual:[NSNull null]] && [[desc2 uppercaseString] contains:test]);
         }];

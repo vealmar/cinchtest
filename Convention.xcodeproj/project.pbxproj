@@ -196,8 +196,6 @@
 		C7DCDF0816A297FE00F66C52 /* BulletinViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7DCDF0616A297FD00F66C52 /* BulletinViewController.m */; };
 		C7DCDF0916A297FE00F66C52 /* BulletinViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DCDF0716A297FD00F66C52 /* BulletinViewController.xib */; };
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
-		C7F30D041676FE5000FA36F8 /* CICartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F30D021676FE5000FA36F8 /* CICartViewCell.m */; };
-		C7F30D051676FE5000FA36F8 /* CICartViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */; };
 		EB0C7FE91760194B0038A3AD /* FarrisOrderDetail.png in Resources */ = {isa = PBXBuildFile; fileRef = EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */; };
 		EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5A0A9B175EF2C200246C24 /* FBLogin.png */; };
 		EB652B23176022E400287961 /* Futura Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB652B22176022E400287961 /* Futura Medium.ttf */; };
@@ -495,9 +493,6 @@
 		C7E87A0D16AD187B005E4CC9 /* ItemEditDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ItemEditDelegate.h; sourceTree = "<group>"; };
 		C7EB25E61665CA8D00B1CD4F /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = Reachability/Reachability.h; sourceTree = SOURCE_ROOT; };
 		C7EB25E71665CA8D00B1CD4F /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
-		C7F30D011676FE5000FA36F8 /* CICartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICartViewCell.h; sourceTree = "<group>"; };
-		C7F30D021676FE5000FA36F8 /* CICartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICartViewCell.m; sourceTree = "<group>"; };
-		C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CICartViewCell.xib; sourceTree = "<group>"; };
 		EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisOrderDetail.png; sourceTree = "<group>"; };
 		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
 		EB652B22176022E400287961 /* Futura Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Futura Medium.ttf"; sourceTree = "<group>"; };
@@ -908,9 +903,6 @@
 		6EE39931155D795D00EE1194 /* Cart */ = {
 			isa = PBXGroup;
 			children = (
-				C7F30D011676FE5000FA36F8 /* CICartViewCell.h */,
-				C7F30D021676FE5000FA36F8 /* CICartViewCell.m */,
-				C7F30D031676FE5000FA36F8 /* CICartViewCell.xib */,
 				6EE3992C155D795200EE1194 /* CICartViewController.h */,
 				6EE3992D155D795300EE1194 /* CICartViewController.m */,
 				6EE3992E155D795300EE1194 /* CICartViewController.xib */,
@@ -1295,7 +1287,6 @@
 				C71653A41670F43600F65D02 /* popupadjustitemNEWNoEmail.png in Resources */,
 				C779A6FA167509B0001C2032 /* PrinterSelectionViewController.xib in Resources */,
 				C779A6FC16751EBE001C2032 /* AccDisclosure.png in Resources */,
-				C7F30D051676FE5000FA36F8 /* CICartViewCell.xib in Resources */,
 				C7DCDEF816A1E76700F66C52 /* zero_vouchers_button.png in Resources */,
 				C7DCDF0416A26C4B00F66C52 /* VendorViewController.xib in Resources */,
 				C7DCDF0916A297FE00F66C52 /* BulletinViewController.xib in Resources */,
@@ -1439,7 +1430,6 @@
 				C71653A81671173900F65D02 /* SetupInfo.m in Sources */,
 				C727F6901671A2AC00F2847D /* CoreDataUtil.m in Sources */,
 				C779A6F9167509B0001C2032 /* PrinterSelectionViewController.m in Sources */,
-				C7F30D041676FE5000FA36F8 /* CICartViewCell.m in Sources */,
 				C7DCDF0316A26C4B00F66C52 /* VendorViewController.m in Sources */,
 				C7DCDF0816A297FE00F66C52 /* BulletinViewController.m in Sources */,
 				C7CF070C16AC55D8001DADED /* MICheckBox.m in Sources */,

@@ -72,8 +72,8 @@
     }
     if (showConfig.discounts) {
         self.grossTotalLabel.text = @"Gross Total";
-        self.total.hidden = YES;
-        self.totalLabel.hidden = YES;
+//        self.total.hidden = YES;
+//        self.totalLabel.hidden = YES;
     } else {
         self.grossTotalLabel.text = @"Total";
         self.discountTotal.hidden = YES;
@@ -1110,18 +1110,14 @@ SG: This method gets called when you swipe on an order in the order list and tap
         self.filteredOrders = [self.allorders mutableCopy];
     } else {
         NSPredicate *pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *bindings) {
-            NSMutableDictionary *dict = (NSMutableDictionary *) obj;
-
-            NSString *storeName = [[dict objectForKey:@"customer"] objectForKey:kBillName];
-            NSString *custId = [[dict objectForKey:@"customer"] objectForKey:kCustID];
-
-            NSString *authorized = [dict objectForKey:@"authorized"];
+            AnOrder *anOrder = (AnOrder *) obj;
+            NSString *storeName = [anOrder.customer objectForKey:kBillName];
+            NSString *custId = [anOrder.customer objectForKey:kCustID];
+            NSString *authorized = anOrder.authorized;
             if ([authorized isKindOfClass:[NSNull class]])
                 authorized = @"";
-            NSString *orderId = [[dict objectForKey:kOrderId] stringValue];
-
+            NSString *orderId = [anOrder.orderId stringValue];
             NSString *test = [self.searchText.text uppercaseString];
-
             return [[storeName uppercaseString] contains:test]
                     || [[custId uppercaseString] hasPrefix:test]
                     || [[authorized uppercaseString] hasPrefix:test]

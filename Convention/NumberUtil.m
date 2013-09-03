@@ -19,7 +19,7 @@
         nf.maximumFractionDigits = 2;
         nf.minimumFractionDigits = 2;
         nf.minimumIntegerDigits = 1;
-        return [nf stringFromNumber:dollarAmount];
+        return [nf stringFromNumber:[NSNumber numberWithDouble:[dollarAmount doubleValue]]];
     } else
         return @"";
 }

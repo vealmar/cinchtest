@@ -88,13 +88,10 @@
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         tableHeaderPigglyWiggly.hidden = NO;
         tableHeaderFarris.hidden = YES;
-    } else if ([kShowCorp isEqualToString:kFarris]) {
+    } else {
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = NO;
         self.zeroVouchers.hidden = YES;
-    } else {
-        tableHeaderPigglyWiggly.hidden = YES;
-        tableHeaderFarris.hidden = YES;
     }
     customerInfoLabel.text = customer != nil &&
             customer[kBillName] != nil &&
@@ -185,7 +182,7 @@
         [cell initializeWith:multiStore showPrice:self.showPrice product:product item:lineItem tag:[indexPath row] productCellDelegate:self];
         [helper updateCellBackground:cell product:product editableItemDetails:editableDict multiStore:multiStore];
         return cell;
-    } else if ([kShowCorp isEqualToString:kFarris]) {
+    } else {
         FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
         [cell initializeWith:product item:lineItem tag:[indexPath row] ProductCellDelegate:self];
         return cell;

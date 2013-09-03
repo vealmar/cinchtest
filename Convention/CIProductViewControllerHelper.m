@@ -10,7 +10,6 @@
 #import "config.h"
 #import "JSONKit.h"
 #import "StringManipulation.h"
-#import "ProductCell.h"
 #import "ShowConfigurations.h"
 
 
@@ -45,7 +44,7 @@
 
 - (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product
          editableItemDetails:(NSDictionary *)editableItemDetails multiStore:(BOOL)multiStore {
-    if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+    if ([ShowConfigurations instance].shipDates) {
         BOOL hasQty = [self itemHasQuantity:multiStore quantity:(NSString *) [editableItemDetails objectForKey:kEditableQty]];
         if (!hasQty) {cell.backgroundView = nil;}
         NSArray *shipDates = [editableItemDetails objectForKey:kLineItemShipDates];
@@ -68,7 +67,7 @@
                 cell.backgroundView = view;
             }
         }
-    } else if ([kShowCorp isEqualToString:kFarris]) {
+    } else {
         BOOL hasQty = [self itemHasQuantity:multiStore quantity:[editableItemDetails objectForKey:kEditableQty]];
         if (hasQty) {
             UIView *view = [[UIView alloc] initWithFrame:cell.frame];
