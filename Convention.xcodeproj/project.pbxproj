@@ -199,6 +199,7 @@
 		EB0C7FE91760194B0038A3AD /* FarrisOrderDetail.png in Resources */ = {isa = PBXBuildFile; fileRef = EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */; };
 		EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5A0A9B175EF2C200246C24 /* FBLogin.png */; };
 		EB652B23176022E400287961 /* Futura Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB652B22176022E400287961 /* Futura Medium.ttf */; };
+		EB7D8FD617D620FA00F2FB8C /* blue-textbox.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */; };
 		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
 		EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */; };
 		EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */; };
@@ -496,6 +497,7 @@
 		EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisOrderDetail.png; sourceTree = "<group>"; };
 		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
 		EB652B22176022E400287961 /* Futura Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Futura Medium.ttf"; sourceTree = "<group>"; };
+		EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-textbox.png"; sourceTree = "<group>"; };
 		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
 		EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
 		EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
@@ -654,6 +656,7 @@
 		6E11856C145F2F2200568ED1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */,
 				EBE8941F17B97733005F1895 /* OrdersBg.png */,
 				EBE8941B17B71D30005F1895 /* launch_bg.png */,
 				EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */,
@@ -1347,6 +1350,7 @@
 				EBE8942017B97733005F1895 /* OrdersBg.png in Resources */,
 				EBFC477917D5745D0009CAD7 /* PWCartViewCell.xib in Resources */,
 				EBFC477B17D574740009CAD7 /* FarrisCartViewCell.xib in Resources */,
+				EB7D8FD617D620FA00F2FB8C /* blue-textbox.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

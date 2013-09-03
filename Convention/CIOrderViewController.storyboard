@@ -436,10 +436,10 @@
                                     <outlet property="delegate" destination="L2z-Wh-GlW" id="R4G-W5-aoc"/>
                                 </connections>
                             </tableView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="CI-Logo.png" translatesAutoresizingMaskIntoConstraints="NO" id="PhE-85-yWW">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" image="CI-Logo.png" translatesAutoresizingMaskIntoConstraints="NO" id="PhE-85-yWW">
                                 <constraints>
+                                    <constraint firstAttribute="width" constant="200" id="qgY-qZ-EK2"/>
                                     <constraint firstAttribute="height" constant="84" id="rB2-bs-tNR"/>
-                                    <constraint firstAttribute="width" constant="84" id="zb8-3r-Dew"/>
                                 </constraints>
                             </imageView>
                             <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="You have no orders." textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="u65-FR-JzO">
@@ -471,28 +471,28 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="PhE-85-yWW" firstAttribute="centerX" secondItem="Ur7-TV-sWQ" secondAttribute="centerX" type="default" id="4Z0-UC-J83"/>
                             <constraint firstAttribute="trailing" secondItem="Heu-jx-8fG" secondAttribute="trailing" constant="15" id="4mb-8T-6Ox"/>
                             <constraint firstItem="u65-FR-JzO" firstAttribute="centerY" secondItem="Ur7-TV-sWQ" secondAttribute="centerY" type="default" id="7gM-wF-7ZE"/>
                             <constraint firstItem="vER-xu-a6o" firstAttribute="leading" secondItem="cTt-uf-95a" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="9Wc-vG-ZeY"/>
                             <constraint firstItem="Ur7-TV-sWQ" firstAttribute="top" secondItem="9hw-LD-eed" secondAttribute="top" type="default" id="DGY-ia-MIS"/>
-                            <constraint firstItem="uI5-wu-fN0" firstAttribute="top" secondItem="9hw-LD-eed" secondAttribute="top" constant="13" id="Ftr-RK-wrq"/>
+                            <constraint firstItem="vUw-Un-NnS" firstAttribute="top" secondItem="PhE-85-yWW" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="EsI-QT-bsd"/>
                             <constraint firstItem="Ebr-hY-rgv" firstAttribute="top" secondItem="ceu-CP-TsE" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="Hfd-PV-6PS"/>
                             <constraint firstItem="Ur7-TV-sWQ" firstAttribute="bottom" secondItem="9hw-LD-eed" secondAttribute="bottom" type="default" id="KFO-Wm-uL9"/>
                             <constraint firstItem="cTt-uf-95a" firstAttribute="leading" secondItem="9hw-LD-eed" secondAttribute="leading" constant="7" id="LJe-pI-WjB"/>
                             <constraint firstAttribute="trailing" secondItem="uI5-wu-fN0" secondAttribute="trailing" constant="219" id="LxV-Qs-6rk"/>
                             <constraint firstItem="uI5-wu-fN0" firstAttribute="top" secondItem="Heu-jx-8fG" secondAttribute="top" type="default" id="ML9-11-g0C"/>
                             <constraint firstItem="vUw-Un-NnS" firstAttribute="bottom" secondItem="9hw-LD-eed" secondAttribute="bottom" type="default" id="Mkw-hv-7BF"/>
-                            <constraint firstItem="PhE-85-yWW" firstAttribute="top" secondItem="9hw-LD-eed" secondAttribute="top" type="default" id="O2Y-r9-3Sk"/>
                             <constraint firstItem="ceu-CP-TsE" firstAttribute="top" secondItem="cTt-uf-95a" secondAttribute="bottom" constant="8" symbolic="YES" type="default" id="RVg-xG-ChA"/>
                             <constraint firstItem="vER-xu-a6o" firstAttribute="top" secondItem="9hw-LD-eed" secondAttribute="top" constant="105" id="UcL-aq-dvE"/>
                             <constraint firstItem="0gA-x1-hgd" firstAttribute="leading" secondItem="9hw-LD-eed" secondAttribute="leading" constant="247" id="W49-fi-P5G"/>
                             <constraint firstItem="cTt-uf-95a" firstAttribute="centerY" secondItem="vER-xu-a6o" secondAttribute="centerY" type="default" id="XQG-sx-lNb"/>
+                            <constraint firstItem="PhE-85-yWW" firstAttribute="top" secondItem="9hw-LD-eed" secondAttribute="top" constant="3" id="bLl-MC-gQj"/>
                             <constraint firstItem="vUw-Un-NnS" firstAttribute="leading" secondItem="9hw-LD-eed" secondAttribute="leading" constant="340" id="cEu-KI-UGN"/>
                             <constraint firstItem="vUw-Un-NnS" firstAttribute="trailing" secondItem="9hw-LD-eed" secondAttribute="trailing" type="default" id="cMN-J8-zjW"/>
                             <constraint firstItem="Ur7-TV-sWQ" firstAttribute="leading" secondItem="9hw-LD-eed" secondAttribute="leading" type="default" id="euz-wv-Ywp"/>
-                            <constraint firstItem="vUw-Un-NnS" firstAttribute="top" secondItem="9hw-LD-eed" secondAttribute="top" constant="95" id="f7P-80-IXG"/>
                             <constraint firstItem="u65-FR-JzO" firstAttribute="leading" secondItem="9hw-LD-eed" secondAttribute="leading" constant="330" id="g1v-9N-zCg"/>
-                            <constraint firstItem="PhE-85-yWW" firstAttribute="centerX" secondItem="Ur7-TV-sWQ" secondAttribute="centerX" type="default" id="j02-dQ-PvG"/>
+                            <constraint firstItem="PhE-85-yWW" firstAttribute="centerY" secondItem="uI5-wu-fN0" secondAttribute="centerY" type="default" id="gM2-qh-ppo"/>
                             <constraint firstItem="ceu-CP-TsE" firstAttribute="leading" secondItem="9hw-LD-eed" secondAttribute="leading" type="default" id="jzo-Cz-PIg"/>
                             <constraint firstItem="0gA-x1-hgd" firstAttribute="top" secondItem="9hw-LD-eed" secondAttribute="top" constant="8" id="uND-ed-S0g"/>
                             <constraint firstItem="vER-xu-a6o" firstAttribute="trailing" secondItem="ceu-CP-TsE" secondAttribute="trailing" type="default" id="vdx-0M-1PC"/>
@@ -547,6 +547,46 @@
         <image name="savein.png" width="134" height="49"/>
         <image name="saveout.png" width="140" height="53"/>
     </resources>
+    <classes>
+        <class className="CIOrderViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/CIOrderViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="AddNewOrder:"/>
+                <relationship kind="action" name="Delete:"/>
+                <relationship kind="action" name="Print:"/>
+                <relationship kind="action" name="Refresh:"/>
+                <relationship kind="action" name="Save:"/>
+                <relationship kind="action" name="logout:"/>
+                <relationship kind="action" name="searchOrders:"/>
+                <relationship kind="outlet" name="NoOrdersLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="OrderDetailScroll" candidateClass="UIScrollView"/>
+                <relationship kind="outlet" name="authorizer" candidateClass="UITextView"/>
+                <relationship kind="outlet" name="customer" candidateClass="UITextView"/>
+                <relationship kind="outlet" name="discountTotal" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="discountTotalLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="grossTotal" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="grossTotalLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="itemsTable" candidateClass="UITableView"/>
+                <relationship kind="outlet" name="logoImage" candidateClass="UIImageView"/>
+                <relationship kind="outlet" name="notes" candidateClass="UITextView"/>
+                <relationship kind="outlet" name="notesLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="printButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="quantityLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="sdLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="searchText" candidateClass="UITextField"/>
+                <relationship kind="outlet" name="sideTable" candidateClass="UITableView"/>
+                <relationship kind="outlet" name="sqLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="total" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="totalLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="voucherItemTotalLabel" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="voucherTotal" candidateClass="UILabel"/>
+                <relationship kind="outlet" name="voucherTotalLabel" candidateClass="UILabel"/>
+            </relationships>
+        </class>
+        <class className="NSLayoutConstraint" superclassName="NSObject">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>
