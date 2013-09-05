@@ -34,4 +34,6 @@
 
 - (double)getVoucherTotal;
 
+- (NSNumber *)getInvtId;
+
 @end

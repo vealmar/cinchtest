@@ -101,9 +101,8 @@
     allCartItems = [NSMutableArray arrayWithCapacity:[self.productData count] + [self.discountItems count]];
     double grossTotal = 0.0;
     double voucherTotal = 0.0;
-    NSArray *keys = [self.productData allKeys];
-    for (NSString *key in keys) {
-        ALineItem *lineItem = [self.productData objectForKey:key];
+    NSArray *lineItems = [self sortLineItemsByinvtId:[self.productData allValues]];
+    for (ALineItem *lineItem in lineItems) {
         [allCartItems addObject:lineItem];
         int qty = 0;
         if (multiStore) {
@@ -125,7 +124,7 @@
         }
     }
     double discountTotal = 0.0;
-    keys = [self.discountItems allKeys];
+    NSArray *keys = [self.discountItems allKeys];
     for (NSString *key in keys) {
         ALineItem *discountLineItem = [self.discountItems objectForKey:key];
         [allCartItems addObject:discountLineItem];
@@ -141,6 +140,16 @@
     [self.products reloadData];
     [self.indicator stopAnimating];
     self.indicator.hidden = YES;
+}
+
+- (NSArray *)sortLineItemsByinvtId:(NSArray *)lineItems {
+    NSArray *sortedArray;
+    sortedArray = [lineItems sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        NSNumber *first = [(ALineItem *) a getInvtId];
+        NSNumber *second = [(ALineItem *) b getInvtId];;
+        return [first compare:second];
+    }];
+    return sortedArray;
 }
 
 - (void)viewDidLoad {
@@ -170,7 +179,7 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (!self.productData) {return nil;}
+    if ([productCart count] == 0) {return nil;}
     CIProductViewControllerHelper *helper = [[CIProductViewControllerHelper alloc] init];
     ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:indexPath.row];
     NSDictionary *editableDict = @{kEditablePrice : lineItem.price,
@@ -238,31 +247,27 @@
 }
 
 - (void)zeroAllVouchers {
-    for (NSString *key in [self.productData allKeys]) {
-        ALineItem *lineItem = [self.productData objectForKey:key];
+    for (NSString *key in [self.productCart allKeys]) {
+        ALineItem *lineItem = [self.productCart objectForKey:key];
         lineItem.voucherPrice = [NSNumber numberWithDouble:0.0];
     }
     [self.products reloadData];
 }
 
 - (void)VoucherChange:(double)voucherPrice forIndex:(int)idx {
-    NSString *key = [[self.productData allKeys] objectAtIndex:idx];
-    ALineItem *lineItem = [self.productCart objectForKey:key];
+    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) idx];
     lineItem.voucherPrice = [NSNumber numberWithDouble:voucherPrice];
 }
 
 - (void)PriceChange:(double)price forIndex:(int)idx {
-    NSString *key = [[self.productData allKeys] objectAtIndex:idx];
-    ALineItem *lineItem = [self.productCart objectForKey:key];
+    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) idx];
     lineItem.price = [NSNumber numberWithDouble:price];
 }
 
 - (void)QtyChange:(double)qty forIndex:(int)idx {
-    NSString *key = [[self.productData allKeys] objectAtIndex:idx];
-    ALineItem *lineItem = [self.productCart objectForKey:key];
+    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) idx];
     if (qty <= 0) {
-        [self.productData removeObjectForKey:key];
-        [self.productCart removeObjectForKey:key];
+        [self.productCart removeObjectForKey:lineItem.productId];
         [self.products reloadData];
     }
     self.grossTotal.textColor = [UIColor redColor];
@@ -279,8 +284,7 @@
         if (!storeQtysPO) {
             storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
         }
-        NSString *key = [[self.productData allKeys] objectAtIndex:idx];
-        ALineItem *lineItem = [self.productCart objectForKey:key];
+        ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) idx];
         storeQtysPO.stores = [[lineItem.quantity objectFromJSONString] mutableCopy];
         storeQtysPO.tag = idx;
         storeQtysPO.editable = NO;

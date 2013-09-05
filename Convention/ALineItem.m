@@ -72,5 +72,8 @@
     return self.voucherPrice ? [self getQuantity] * [self.voucherPrice doubleValue] * [self.shipDates count] : 0;
 }
 
+- (NSNumber *)getInvtId {
+    return (NSNumber *) [NilUtil nilOrObject:[self.product objectForKey:kProductInvtid]];
+}
 
 @end
