@@ -436,11 +436,6 @@
 }
 
 - (void)deserializeOrder {
-    NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-    nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-    nf.maximumFractionDigits = 2;
-    nf.minimumFractionDigits = 2;
-    nf.minimumIntegerDigits = 1;
     self.totalCost.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:self.coreDataOrder.totalCost]];
     for (Cart *cart in self.coreDataOrder.carts) {
         NSNumber *productId = [NSNumber numberWithInt:cart.cartId];
@@ -453,7 +448,7 @@
             [ed setObject:lineItem.price forKey:kEditablePrice];
             [ed setObject:lineItem.quantity forKey:kEditableQty];
             [ed setObject:lineItem.voucherPrice forKey:kEditableVoucher];
-            [ed setObject:lineItem.shipDates forKey:kLineItemShipDates];
+            [ed setObject:[DateUtil convertYyyymmddArrayToDateArray:lineItem.shipDates] forKey:kLineItemShipDates];
             [editableData setObject:ed forKey:productId];
         }
     }
@@ -594,7 +589,6 @@
         }
     } else {
         for (NSNumber *i in keys) {
-            NSMutableArray *strs = nil;
             ALineItem *lineItem = [self.productCart objectForKey:i];
             if ([ShowConfigurations instance].shipDates) {
                 NSArray *dates = lineItem.shipDates;;
@@ -608,10 +602,10 @@
                 if (![myId isEqualToString:@""])
                     proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kLineItemProductID, myId, kID,
                                                                          lineItem.quantity, kLineItemQuantity, ePrice, kLineItemPrice,
-                                                                         eVoucher, kLineItemVoucherPrice, strs, kLineItemShipDates, nil];
+                                                                         eVoucher, kLineItemVoucherPrice, lineItem.shipDates, kLineItemShipDates, nil];
                 else
                     proDict = [NSDictionary dictionaryWithObjectsAndKeys:productID, kLineItemProductID, lineItem.quantity, kLineItemQuantity,
-                                                                         ePrice, kLineItemPrice, strs, kLineItemShipDates, nil];
+                                                                         ePrice, kLineItemPrice, lineItem.shipDates, kLineItemShipDates, nil];
             }
             else {
                 if (![myId isEqualToString:@""])
@@ -706,40 +700,21 @@
                             }
                             ALineItem *cartLineItem = [self.productCart objectForKey:[NSNumber numberWithInt:productId]];
                             cartLineItem.itemId = [NSNumber numberWithInt:lineItemId];
-
-                            int qty = 0;
-                            if (self.multiStore) {
-                                NSDictionary *quantitiesByStore = [cartLineItem.quantity objectFromJSONString];
-                                for (NSString *storeId in [quantitiesByStore allKeys]) {
-                                    qty += [[quantitiesByStore objectForKey:storeId] intValue];
-                                }
-                            }
-                            else {
-                                qty += [cartLineItem.quantity intValue];
-                            }
-                            double price = [cartLineItem.price doubleValue];
-                            int numOfShipDates = [cartLineItem.shipDates count];
-                            grossTotal += qty * price * (numOfShipDates == 0 ? 1 : numOfShipDates);
-                            if (cartLineItem.voucherPrice != nil && ![cartLineItem.voucherPrice isKindOfClass:[NSNull class]]) {
-                                double voucherPrice = [cartLineItem.voucherPrice doubleValue];
-                                voucherTotal += qty * voucherPrice * (numOfShipDates == 0 ? 1 : numOfShipDates);
-                            }
+                            grossTotal += [lineItemFromServer getItemTotal];
+                            voucherTotal += [lineItemFromServer getVoucherTotal];
                         } else if ([category isEqualToString:@"discount"]) {
                             [self.discountItems setObject:lineItemFromServer forKey:lineItemFromServer.itemId];
                         }
                     }
-                    self.totalCost.text = [nf stringFromNumber:[NSNumber numberWithDouble:grossTotal]];
-                    self.totalCost.textColor = [UIColor blackColor];
                     [_coreDataOrder setOrderId:orderId];
                     [_coreDataOrder setTotalCost:[totalCost doubleValue]];
                     [[CoreDataUtil sharedManager] saveObjects];
-                    if (beforeCart)
-                        [[NSNotificationCenter defaultCenter] postNotificationName:kLaunchCart object:nil];
+                    if (beforeCart)[[NSNotificationCenter defaultCenter] postNotificationName:kLaunchCart object:nil];
+                    self.totalCost.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:grossTotal]];
                 } else {
                     [self Return];
                 }
             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-
                 [submit hide:YES];
                 NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
                 [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -747,6 +722,23 @@
             }];
 
     [operation start];
+}
+
+- (void)updateTotals {
+    double grossTotal = 0.0;
+    double voucherTotal = 0.0;//todo not used
+    for (NSNumber *productId in [editableData keyEnumerator]) {
+        NSDictionary *data = [editableData objectForKey:productId];
+        NSDictionary *product = [self.productMap objectForKey:productId];
+        double quantity = [helper getQuantity:[data objectForKey:kEditableQty]];
+        int shipDates = [data objectForKey:kLineItemShipDates] ? [(NSArray *) [data objectForKey:kLineItemShipDates] count] : 0;
+        double price = [data objectForKey:kEditablePrice] ? [[data objectForKey:kEditablePrice] doubleValue]
+                : [[product objectForKey:kProductShowPrice] doubleValue]; //todo if price never changes remove price change logic
+        double voucherPrice = [NilUtil nilOrObject:[product objectForKey:kProductVoucher]] ? [[product objectForKey:kProductVoucher] doubleValue] : 0;
+        grossTotal += quantity * shipDates * price;
+        voucherTotal += quantity * shipDates * voucherPrice;
+    }
+    self.totalCost.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:grossTotal]];
 }
 
 - (void)Return {
@@ -975,6 +967,7 @@
                 ALineItem *lineItem = [self.productCart objectForKey:[dict objectForKey:@"id"]];
                 lineItem.shipDates = [DateUtil convertDateArrayToYyyymmddArray:dates];
                 [self updateShipDatesInCartWithId:[[dict objectForKey:@"id"] intValue] forDates:dates];
+                [self updateTotals];
                 self.unsavedChangesPresent = YES;
             }
             [self updateCellColorForId:[idx integerValue]];
@@ -1044,6 +1037,7 @@
     }
     [edict setObject:[NSNumber numberWithDouble:price] forKey:kEditablePrice];
     [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
+    [self updateTotals];
     self.unsavedChangesPresent = YES;
 }
 
@@ -1063,7 +1057,7 @@
         [self removeLineItemFromProductCart:key];
     }
     [self updateCellColorForId:idx];
-    self.totalCost.textColor = [UIColor redColor];
+    [self updateTotals];
     self.unsavedChangesPresent = YES;
 }
 
@@ -1275,6 +1269,7 @@
         [self.productCart removeObjectForKey:key];
     }
     [self updateCellColorForId:idx];
+    [self updateTotals];
     self.unsavedChangesPresent = YES;
 }
 

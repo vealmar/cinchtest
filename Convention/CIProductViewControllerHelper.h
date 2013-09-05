@@ -24,4 +24,6 @@
 - (UITableViewCell *)dequeueReusableProductCell:(UITableView *)table;
 
 - (UITableViewCell *)dequeueReusableCartViewCell:(UITableView *)table;
+
+- (double)getQuantity:(NSString *)quantity;
 @end

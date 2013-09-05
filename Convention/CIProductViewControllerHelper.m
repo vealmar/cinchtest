@@ -18,6 +18,20 @@
 
 }
 
+- (double)getQuantity:(NSString *)quantity {
+    if ([[quantity stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] startsWith:@"{"]) {
+        double qty = 0;
+        NSDictionary *quantitiesByStore = [quantity objectFromJSONString];
+        for (NSString *storeId in [quantitiesByStore allKeys]) {
+            qty += [[quantitiesByStore objectForKey:storeId] intValue];
+        }
+        return qty;
+    }
+    else {
+        return [quantity doubleValue];
+    }
+}
+
 - (BOOL)itemHasQuantity:(BOOL)multiStore quantity:(NSString *)quantity {
     NSInteger num = 0;
     if (!multiStore) {
@@ -52,7 +66,7 @@
         BOOL hasShipDates = shipDates && [shipDates count] > 0;
         BOOL isVoucher = [self itemIsVoucher:product];
         if (!isVoucher) {
-            if (hasQty && (hasShipDates || ([[ShowConfigurations instance] shipDates] == NO))) {
+            if (hasQty && hasShipDates) {
                 UIView *view = [[UIView alloc] initWithFrame:cell.frame];
                 view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
                 cell.backgroundView = view;

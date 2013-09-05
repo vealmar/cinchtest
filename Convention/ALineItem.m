@@ -12,6 +12,7 @@
 #import "config.h"
 #import "ShipDate.h"
 #import "DateUtil.h"
+#import "CIProductViewControllerHelper.h"
 
 
 @implementation ALineItem {
@@ -57,6 +58,18 @@
 
 - (NSArray *)shipDates {
     return _shipDates ? _shipDates : [[NSArray alloc] init];
+}
+
+- (double)getQuantity {
+    return [[[CIProductViewControllerHelper alloc] init] getQuantity:self.quantity];
+}
+
+- (double)getItemTotal {
+    return [self getQuantity] * [self.price doubleValue] * [self.shipDates count];
+}
+
+- (double)getVoucherTotal {
+    return self.voucherPrice ? [self getQuantity] * [self.voucherPrice doubleValue] * [self.shipDates count] : 0;
 }
 
 
