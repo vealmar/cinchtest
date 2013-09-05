@@ -80,4 +80,9 @@
     return self;
 }
 
+
+- (NSString *)getCustomerDisplayName {
+    return [NSString stringWithFormat:@"%@ - %@", ([self.customer objectForKey:kBillName] == nil? @"(Unknown)" : [self.customer objectForKey:kBillName]), ([self.customer objectForKey:kCustID] == nil? @"(Unknown)" : [self.customer objectForKey:kCustID])];
+}
+
 @end

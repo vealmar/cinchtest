@@ -27,4 +27,6 @@
 
 - (id)initWithCoreData:(Order *)order;
 
+- (NSString *)getCustomerDisplayName;
+
 @end

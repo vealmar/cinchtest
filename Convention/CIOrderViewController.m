@@ -35,6 +35,7 @@
     NSString *currentPrinter;
     NSIndexPath *selectedItemRowIndexPath;
     BOOL unsavedChangesPresent;
+
     __weak IBOutlet UILabel *sdLabel;
     __weak IBOutlet UILabel *sqLabel;
     __weak IBOutlet UILabel *quantityLabel;
@@ -43,7 +44,6 @@
 
 @implementation CIOrderViewController
 
-#define kEditPartialOrder 12
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad {
@@ -215,6 +215,18 @@ These partial orders then are put at the beginning of the self.orders array.
 SG: The argument 'detail' is the selected order.
 */
 - (void)displayOrderDetail:(AnOrder *)detail {
+    self.OrderDetailScroll.hidden = NO;
+    self.customer.text = @"";
+    self.authorizer.text = @"";
+    self.notes.text = @"";
+    currentOrder = nil;
+    self.itemsPrice = nil;
+    self.itemsQty = nil;
+    self.itemsVouchers = nil;
+    self.itemsShipDates = nil;
+    [self.itemsTable reloadData];
+    self.customer.text = [detail getCustomerDisplayName];
+    self.authorizer.text = detail.authorized != nil? detail.authorized : @"";
     currentOrder = detail;
     if (detail) {
         NSArray *arr = detail.lineItems;
@@ -344,7 +356,7 @@ SG: The argument 'detail' is the selected order.
 
         AnOrder *data = [self.filteredOrders objectAtIndex:[indexPath row]];
 
-        cell.Customer.text = [NSString stringWithFormat:@"%@ - %@", ([data.customer objectForKey:kBillName] == nil? @"(Unknown)" : [data.customer objectForKey:kBillName]), ([data.customer objectForKey:kCustID] == nil? @"(Unknown)" : [data.customer objectForKey:kCustID])];
+        cell.Customer.text = [data getCustomerDisplayName];
         if (data.authorized != nil) {
             cell.auth.text = data.authorized;
         }
@@ -463,25 +475,20 @@ SG: The argument 'detail' is the selected order.
     //SG: if this is a completed order, display the order details in the editor view
     //which appears to the right of the sideTable.
     if (![status isEqualToString:kPartialOrder] && ![status isEqualToString:@"pending"]) {
-        self.OrderDetailScroll.hidden = NO;
-        self.customer.text = @"";
-        self.authorizer.text = @"";
-        self.notes.text = @"";
-        currentOrder = nil;
-        self.itemsPrice = nil;
-        self.itemsQty = nil;
-        self.itemsVouchers = nil;
-        self.itemsShipDates = nil;
-        [self.itemsTable reloadData];
-        self.customer.text = cell.Customer.text;
-        self.authorizer.text = cell.auth.text;
         [self displayOrderDetail:[self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]];//SG: itemsDB is loaded inside of displayOrderDetail.
     } else {
         self.OrderDetailScroll.hidden = YES;
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to edit this pending order?"
                                                        delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Edit", nil];
-        [alert setTag:kEditPartialOrder];
-        [alert show];
+        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+            if (buttonIndex == 1) {
+                [self getCustomerOfCurrentOrderAndLoadProductView];
+            } else {
+                NSIndexPath *selection = [self.sideTable indexPathForSelectedRow];
+                if (selection)
+                    [self.sideTable deselectRowAtIndexPath:selection animated:YES];
+            }
+        }];
     }
 }
 
@@ -1008,19 +1015,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 
 #pragma mark - UIAlertViewDelegate
-
-- (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex {
-    if (alertView.tag == kEditPartialOrder) {
-        if (buttonIndex == 1) {
-            [self getCustomerOfCurrentOrderAndLoadProductView];
-        } else {
-            NSIndexPath *selection = [self.sideTable indexPathForSelectedRow];
-            if (selection)
-                [self.sideTable deselectRowAtIndexPath:selection animated:YES];
-        }
-    }
-}
-
 
 - (void)getCustomerOfCurrentOrderAndLoadProductView {
 //    AnOrder *currentOrder = [self getCurrentOrder];
