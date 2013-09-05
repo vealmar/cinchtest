@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <archive type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="8.00">
 	<data>
-		<int key="IBDocument.SystemTarget">1280</int>
+		<int key="IBDocument.SystemTarget">1552</int>
 		<string key="IBDocument.SystemVersion">11G63b</string>
-		<string key="IBDocument.InterfaceBuilderVersion">1938</string>
+		<string key="IBDocument.InterfaceBuilderVersion">3084</string>
 		<string key="IBDocument.AppKitVersion">1138.51</string>
 		<string key="IBDocument.HIToolboxVersion">569.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-			<string key="NS.object.0">933</string>
+			<string key="NS.object.0">2083</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
-			<string>IBUITableViewCell</string>
-			<string>IBUILabel</string>
-			<string>IBUITextField</string>
 			<string>IBProxyObject</string>
+			<string>IBUILabel</string>
+			<string>IBUITableViewCell</string>
+			<string>IBUITextField</string>
 		</array>
 		<array key="IBDocument.PluginDependencies">
 			<string>com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
@@ -57,6 +57,7 @@
 								<object class="NSColor" key="IBUITextColor" id="177526310">
 									<int key="NSColorSpace">1</int>
 									<bytes key="NSRGB">MCAwIDAAA</bytes>
+									<string key="IBUIColorCocoaTouchKeyPath">darkTextColor</string>
 								</object>
 								<object class="NSColor" key="IBUIHighlightedColor" id="14279779">
 									<int key="NSColorSpace">3</int>
@@ -91,9 +92,9 @@
 								<reference key="IBUITextColor" ref="177526310"/>
 								<reference key="IBUIHighlightedColor" ref="14279779"/>
 								<int key="IBUIBaselineAdjustment">0</int>
-								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 								<reference key="IBUIFontDescription" ref="1058172627"/>
 								<reference key="IBUIFont" ref="490627491"/>
+								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 							<object class="IBUILabel" id="688881696">
 								<reference key="NSNextResponder" ref="42038898"/>
@@ -112,9 +113,9 @@
 								<reference key="IBUITextColor" ref="177526310"/>
 								<reference key="IBUIHighlightedColor" ref="14279779"/>
 								<int key="IBUIBaselineAdjustment">0</int>
-								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 								<reference key="IBUIFontDescription" ref="1058172627"/>
 								<reference key="IBUIFont" ref="490627491"/>
+								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 							<object class="IBUILabel" id="1034743609">
 								<reference key="NSNextResponder" ref="42038898"/>
@@ -133,9 +134,9 @@
 								<reference key="IBUITextColor" ref="177526310"/>
 								<reference key="IBUIHighlightedColor" ref="14279779"/>
 								<int key="IBUIBaselineAdjustment">0</int>
-								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 								<reference key="IBUIFontDescription" ref="1058172627"/>
 								<reference key="IBUIFont" ref="490627491"/>
+								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 							<object class="IBUILabel" id="184204234">
 								<reference key="NSNextResponder" ref="42038898"/>
@@ -154,10 +155,10 @@
 								<reference key="IBUITextColor" ref="177526310"/>
 								<reference key="IBUIHighlightedColor" ref="14279779"/>
 								<int key="IBUIBaselineAdjustment">0</int>
-								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 								<int key="IBUITextAlignment">1</int>
 								<reference key="IBUIFontDescription" ref="1058172627"/>
 								<reference key="IBUIFont" ref="490627491"/>
+								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 							<object class="IBUITextField" id="51196952">
 								<reference key="NSNextResponder" ref="42038898"/>
@@ -181,7 +182,6 @@
 									</object>
 								</object>
 								<int key="IBUITextAlignment">2</int>
-								<bool key="IBUIClearsOnBeginEditing">YES</bool>
 								<bool key="IBUIAdjustsFontSizeToFit">YES</bool>
 								<float key="IBUIMinimumFontSize">14</float>
 								<object class="IBUITextInputTraits" key="IBUITextInputTraits">
@@ -208,10 +208,10 @@
 								<reference key="IBUITextColor" ref="177526310"/>
 								<reference key="IBUIHighlightedColor" ref="14279779"/>
 								<int key="IBUIBaselineAdjustment">0</int>
-								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 								<int key="IBUITextAlignment">2</int>
 								<reference key="IBUIFontDescription" ref="1058172627"/>
 								<reference key="IBUIFont" ref="490627491"/>
+								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 							<object class="IBUILabel" id="909440791">
 								<reference key="NSNextResponder" ref="42038898"/>
@@ -230,10 +230,10 @@
 								<reference key="IBUITextColor" ref="177526310"/>
 								<reference key="IBUIHighlightedColor" ref="14279779"/>
 								<int key="IBUIBaselineAdjustment">0</int>
-								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 								<int key="IBUITextAlignment">2</int>
 								<reference key="IBUIFontDescription" ref="1058172627"/>
 								<reference key="IBUIFont" ref="490627491"/>
+								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 							<object class="IBUILabel" id="477829757">
 								<reference key="NSNextResponder" ref="42038898"/>
@@ -241,7 +241,6 @@
 								<string key="NSFrame">{{944, 11}, {60, 21}}</string>
 								<reference key="NSSuperview" ref="42038898"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -252,10 +251,10 @@
 								<reference key="IBUITextColor" ref="177526310"/>
 								<reference key="IBUIHighlightedColor" ref="14279779"/>
 								<int key="IBUIBaselineAdjustment">0</int>
-								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 								<int key="IBUITextAlignment">2</int>
 								<reference key="IBUIFontDescription" ref="1058172627"/>
 								<reference key="IBUIFont" ref="490627491"/>
+								<bool key="IBUIAdjustsFontSizeToFit">NO</bool>
 							</object>
 						</array>
 						<string key="NSFrameSize">{1024, 43}</string>
@@ -571,6 +570,6 @@
 		<string key="IBDocument.TargetRuntimeIdentifier">IBIPadFramework</string>
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
-		<string key="IBCocoaTouchPluginVersion">933</string>
+		<string key="IBCocoaTouchPluginVersion">2083</string>
 	</data>
 </archive>
