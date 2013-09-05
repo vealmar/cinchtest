@@ -61,25 +61,30 @@
          editableItemDetails:(NSDictionary *)editableItemDetails multiStore:(BOOL)multiStore {
     if ([ShowConfigurations instance].shipDates) {
         BOOL hasQty = [self itemHasQuantity:multiStore quantity:(NSString *) [editableItemDetails objectForKey:kEditableQty]];
-        if (!hasQty) {cell.backgroundView = nil;}
         NSArray *shipDates = [editableItemDetails objectForKey:kLineItemShipDates];
         BOOL hasShipDates = shipDates && [shipDates count] > 0;
         BOOL isVoucher = [self itemIsVoucher:product];
         if (!isVoucher) {
-            if (hasQty && hasShipDates) {
-                UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-                view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
-                cell.backgroundView = view;
-            } else if (hasQty ^ hasShipDates) {
-                UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-                view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
-                cell.backgroundView = view;
+            if (hasQty) {
+                if (hasShipDates) {
+                    UIView *view = [[UIView alloc] initWithFrame:cell.frame];
+                    view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
+                    cell.backgroundView = view;
+                } else {
+                    UIView *view = [[UIView alloc] initWithFrame:cell.frame];
+                    view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
+                    cell.backgroundView = view;
+                }
+            } else {
+                cell.backgroundView = nil;
             }
         } else {
             if (hasQty) {
                 UIView *view = [[UIView alloc] initWithFrame:cell.frame];
                 view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
                 cell.backgroundView = view;
+            } else {
+                cell.backgroundView = nil;
             }
         }
     } else {

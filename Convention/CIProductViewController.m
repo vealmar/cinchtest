@@ -436,23 +436,20 @@
 }
 
 - (void)deserializeOrder {
-    self.totalCost.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:self.coreDataOrder.totalCost]];
     for (Cart *cart in self.coreDataOrder.carts) {
         NSNumber *productId = [NSNumber numberWithInt:cart.cartId];
         NSDictionary *product = [self.productMap objectForKey:productId];
         ALineItem *lineItem = [[ALineItem alloc] initWithCoreData:cart product:product];
         [self.productCart setObject:lineItem forKey:productId];
-        //match product based on invtid instead of product_id. todo is this necessary? can we not just rely on product_id? is it so that item is added to editable dictionary only if it is one of the filtered products?
-        if ([self productIsInCurrentlyDisplayedList:productId]) {
-            NSMutableDictionary *ed = [[NSMutableDictionary alloc] init];
-            [ed setObject:lineItem.price forKey:kEditablePrice];
-            [ed setObject:lineItem.quantity forKey:kEditableQty];
-            [ed setObject:lineItem.voucherPrice forKey:kEditableVoucher];
-            [ed setObject:[DateUtil convertYyyymmddArrayToDateArray:lineItem.shipDates] forKey:kLineItemShipDates];
-            [editableData setObject:ed forKey:productId];
-        }
+        NSMutableDictionary *ed = [[NSMutableDictionary alloc] init];
+        [ed setObject:lineItem.price forKey:kEditablePrice];
+        [ed setObject:lineItem.quantity forKey:kEditableQty];
+        [ed setObject:lineItem.voucherPrice forKey:kEditableVoucher];
+        [ed setObject:[DateUtil convertYyyymmddArrayToDateArray:lineItem.shipDates] forKey:kLineItemShipDates];
+        [editableData setObject:ed forKey:productId];
     }
     [self.products reloadData];
+    [self updateTotals];
     self.viewInitialized = YES;
 }
 

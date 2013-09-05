@@ -80,4 +80,6 @@
 
 - (void)UpdateTotal;
 
+- (IBAction)editOrder:(UIButton *)sender;
+
 @end

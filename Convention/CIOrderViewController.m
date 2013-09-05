@@ -573,6 +573,10 @@ SG: This method gets called when you swipe on an order in the order list and tap
     }
 }
 
+- (IBAction)editOrder:(UIButton *)sender {
+    [self getCustomerOfCurrentOrderAndLoadProductView];
+}
+
 - (void)setVoucher:(NSString *)voucher atIndex:(int)idx {
     [self.itemsVouchers removeObjectAtIndex:idx];
     [self.itemsVouchers insertObject:voucher atIndex:idx];
