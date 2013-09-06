@@ -200,6 +200,7 @@
 		EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5A0A9B175EF2C200246C24 /* FBLogin.png */; };
 		EB652B23176022E400287961 /* Futura Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB652B22176022E400287961 /* Futura Medium.ttf */; };
 		EB7D8FD617D620FA00F2FB8C /* blue-textbox.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */; };
+		EB7D8FD917DA5D1000F2FB8C /* Customer.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FD817DA5D1000F2FB8C /* Customer.m */; };
 		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
 		EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */; };
 		EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */; };
@@ -331,7 +332,6 @@
 		6EAFFB46145FB0FB00491B42 /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		6EAFFB47145FB0FB00491B42 /* Macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 		6EB78B38153F64A4005291EE /* loginscreenback.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = loginscreenback.jpg; sourceTree = "<group>"; };
-		6EB78B3B153F7C0B005291EE /* customer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = customer.h; sourceTree = "<group>"; };
 		6EB78B3C153F7C0B005291EE /* customer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = customer.m; sourceTree = "<group>"; };
 		6EB78B3E153F7C17005291EE /* vender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vender.h; sourceTree = "<group>"; };
 		6EB78B3F153F7C17005291EE /* vender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = vender.m; sourceTree = "<group>"; };
@@ -498,6 +498,8 @@
 		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
 		EB652B22176022E400287961 /* Futura Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Futura Medium.ttf"; sourceTree = "<group>"; };
 		EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-textbox.png"; sourceTree = "<group>"; };
+		EB7D8FD717DA5D1000F2FB8C /* Customer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Customer.h; sourceTree = "<group>"; };
+		EB7D8FD817DA5D1000F2FB8C /* Customer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Customer.m; sourceTree = "<group>"; };
 		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
 		EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
 		EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
@@ -808,7 +810,6 @@
 				335A42F6164D740A007B872A /* GroupedObject.m */,
 				6E7698A8153E8BF2003CF4AC /* product.h */,
 				6E7698A9153E8BF2003CF4AC /* product.m */,
-				6EB78B3B153F7C0B005291EE /* customer.h */,
 				6EB78B3C153F7C0B005291EE /* customer.m */,
 				6EB78B3E153F7C17005291EE /* vender.h */,
 				6EB78B3F153F7C17005291EE /* vender.m */,
@@ -817,6 +818,8 @@
 				C7BA94F71653462B00E6705B /* Order+Extensions.h */,
 				C7BA94F81653462C00E6705B /* Order+Extensions.m */,
 				C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */,
+				EB7D8FD717DA5D1000F2FB8C /* Customer.h */,
+				EB7D8FD817DA5D1000F2FB8C /* Customer.m */,
 				C76D3E6216AE322400F055F4 /* ShipDate.h */,
 				C76D3E6316AE322400F055F4 /* ShipDate.m */,
 				C76D3E5F16AE322400F055F4 /* Order.h */,
@@ -1454,6 +1457,7 @@
 				35F521774853EA59DB5E6754 /* CartViewCell.m in Sources */,
 				35F5220802E678E6EC146A37 /* PWCartViewCell.m in Sources */,
 				35F5280E4435FDF158A236FC /* FarrisCartViewCell.m in Sources */,
+				EB7D8FD917DA5D1000F2FB8C /* Customer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

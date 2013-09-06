@@ -1,15 +1,21 @@
 //
-//  customer.m
+//  Customer.m
 //  Convention
 //
-//  Created by Matthew Clark on 4/18/12.
-//  Copyright (c) 2012 MotionMobs. All rights reserved.
+//  Created by septerr on 9/6/13.
+//  Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 
-#import "customer.h"
+#import "Customer.h"
 
-@implementation customer
-@synthesize custid;
-@synthesize billname;
+
+@implementation Customer
+
+@dynamic customer_id;
+@dynamic billname;
+@dynamic import_id;
+@dynamic email;
+@dynamic initial_show;
+@dynamic stores;
 
 @end

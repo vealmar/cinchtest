@@ -457,7 +457,7 @@
                                     <constraint firstAttribute="height" constant="84" id="rB2-bs-tNR"/>
                                 </constraints>
                             </imageView>
-                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="No Orders Found." textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="u65-FR-JzO">
+                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="No Orders." textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="u65-FR-JzO">
                                 <constraints>
                                     <constraint firstAttribute="width" constant="689" id="GE0-WG-UVA"/>
                                     <constraint firstAttribute="height" constant="186" id="phH-rR-BAB"/>
@@ -562,47 +562,6 @@
         <image name="savein.png" width="134" height="49"/>
         <image name="saveout.png" width="140" height="53"/>
     </resources>
-    <classes>
-        <class className="CIOrderViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/CIOrderViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="AddNewOrder:"/>
-                <relationship kind="action" name="Delete:"/>
-                <relationship kind="action" name="Print:"/>
-                <relationship kind="action" name="Refresh:"/>
-                <relationship kind="action" name="Save:"/>
-                <relationship kind="action" name="editOrder:" candidateClass="UIButton"/>
-                <relationship kind="action" name="logout:"/>
-                <relationship kind="action" name="searchOrders:"/>
-                <relationship kind="outlet" name="NoOrdersLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="OrderDetailScroll" candidateClass="UIScrollView"/>
-                <relationship kind="outlet" name="authorizer" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="customer" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="discountTotal" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="discountTotalLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="grossTotal" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="grossTotalLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="itemsTable" candidateClass="UITableView"/>
-                <relationship kind="outlet" name="logoImage" candidateClass="UIImageView"/>
-                <relationship kind="outlet" name="notes" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="notesLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="printButton" candidateClass="UIButton"/>
-                <relationship kind="outlet" name="quantityLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="sdLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="searchText" candidateClass="UITextField"/>
-                <relationship kind="outlet" name="sideTable" candidateClass="UITableView"/>
-                <relationship kind="outlet" name="sqLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="total" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="totalLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="voucherItemTotalLabel" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="voucherTotal" candidateClass="UILabel"/>
-                <relationship kind="outlet" name="voucherTotalLabel" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-        <class className="NSLayoutConstraint" superclassName="NSObject">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>
