@@ -80,8 +80,9 @@
 @property(nonatomic, assign) id <CIProductViewDelegate> delegate;
 @property(nonatomic, strong) UIPopoverController *poController;
 @property(nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
-@property(nonatomic, strong) NSMutableArray *resultData; //list of all products displayed (filtered by search criteria, selected vendor, bulletin etc.)
-@property(nonatomic, strong) NSMutableDictionary *productMap; //key is product_id.
+@property(nonatomic, strong) NSArray *resultData; //list of all products displayed (filtered by search criteria, selected vendor, bulletin etc.)
+@property(nonatomic, strong) NSMutableDictionary *vendorProductMap; //key is product_id.
+@property(nonatomic, strong) NSMutableDictionary *allproductsMap; //key is product_id.
 @property(nonatomic, strong) NSDictionary *customer;
 @property(nonatomic, strong) NSString *authToken;
 @property(nonatomic, strong) NSString *loggedInVendorId; //vendor#id of logged in vendor
@@ -93,7 +94,6 @@
 @property(nonatomic) BOOL viewInitialized;
 @property(nonatomic) BOOL orderSubmitted;
 @property(nonatomic) BOOL multiStore;
-@property(nonatomic) int tOffset;
 @property(nonatomic) NSInteger orderId;
 @property(nonatomic) int printStationId;
 @property(nonatomic, strong) NSDictionary *availablePrinters;
@@ -106,8 +106,6 @@
 //Working copy of selected or new order
 @property(nonatomic) BOOL newOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
-
-- (void)PriceChange:(double)price forIndex:(int)idx;
 
 - (void)QtyChange:(double)qty forIndex:(int)idx;
 

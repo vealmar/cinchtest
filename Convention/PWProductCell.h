@@ -17,9 +17,7 @@
 @property(unsafe_unretained, nonatomic) IBOutlet UILabel *numShipDates;
 @property(unsafe_unretained, nonatomic) IBOutlet UITextField *quantity;
 @property(unsafe_unretained, nonatomic) IBOutlet UILabel *qtyLbl;
-@property(unsafe_unretained, nonatomic) IBOutlet UITextField *price;
 @property(unsafe_unretained, nonatomic) IBOutlet UILabel *voucherLbl;
-@property(unsafe_unretained, nonatomic) IBOutlet UITextField *voucher;
 @property(unsafe_unretained, nonatomic) IBOutlet UILabel *priceLbl;
 @property(unsafe_unretained, nonatomic) IBOutlet UILabel *descr;
 @property(unsafe_unretained, nonatomic) IBOutlet UILabel *shipDate1;
@@ -29,22 +27,10 @@
 
 @property(nonatomic, assign) id <ProductCellDelegate> delegate;
 
-- (IBAction)priceDidEnd:(id)sender;
-
-- (IBAction)priceDidChange:(id)sender;
-
-- (IBAction)voucherDidEnd:(id)sender;
-
-- (IBAction)voucherDidChange:(id)sender;
-
-- (IBAction)qtyDidEnd:(id)sender;
-
-- (IBAction)addToCart:(id)sender;
-
 - (IBAction)qtyTouch:(id)sender;
 
 - (IBAction)qtyChanged:(id)sender;
 
-- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate cartView:(BOOL)cartView;
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 
 @end

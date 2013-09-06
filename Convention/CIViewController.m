@@ -94,7 +94,7 @@
     NSString *Password = (password.text) ? password.text : @"";
 
     MBProgressHUD *__weak loginHud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    loginHud.labelText = @"Logging in...";
+    loginHud.labelText = @"Logging in";
     [loginHud show:YES];
 
     AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:kDBLOGIN]];

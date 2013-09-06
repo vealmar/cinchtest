@@ -20,7 +20,6 @@
 
 @interface CICartViewController () {
     NSMutableArray *allCartItems; //product cart items + discount items
-    NSIndexPath *selectedItemRowIndexPath;
     __weak IBOutlet UILabel *customerInfoLabel;
     __weak IBOutlet UIImageView *logo;
 }
@@ -37,7 +36,6 @@
 @synthesize indicator;
 @synthesize customer;
 @synthesize delegate;
-@synthesize customersReady;
 @synthesize tOffset;
 @synthesize productCart;
 @synthesize finishTheOrder;
@@ -51,7 +49,6 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         showPrice = YES;
-        customersReady = NO;
         tOffset = 0;
         productCart = [NSMutableDictionary dictionary];
     }
@@ -259,11 +256,6 @@
     lineItem.voucherPrice = [NSNumber numberWithDouble:voucherPrice];
 }
 
-- (void)PriceChange:(double)price forIndex:(int)idx {
-    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) idx];
-    lineItem.price = [NSNumber numberWithDouble:price];
-}
-
 - (void)QtyChange:(double)qty forIndex:(int)idx {
     ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) idx];
     if (qty <= 0) {
@@ -295,71 +287,4 @@
         [popoverController presentPopoverFromRect:frame inView:self.products permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
 }
-
-#pragma mark - keyboard functionality
-- (void)setViewMovedUp:(BOOL)movedUp {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:0.5]; // if you want to slide up the view
-
-        CGPoint rect = self.products.contentOffset;
-        if (movedUp) {
-            // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
-            // 2. increase the size of the view so that the area behind the keyboard is covered up.
-            tOffset = rect.y;
-            rect.y += (kOFFSET_FOR_KEYBOARD* 6);//was -
-            //rect.size.height += kOFFSET_FOR_KEYBOARD;
-        }
-        else {
-            // revert back to the normal state.
-            rect.y = tOffset;//-(kOFFSET_FOR_KEYBOARD-16);//was +
-            //tOffset =0;
-            //rect.size.height -= kOFFSET_FOR_KEYBOARD;
-        }
-        self.products.contentOffset = rect;
-
-        [UIView commitAnimations];
-    });
-}
-
-
-- (void)textEditBeginWithFrame:(CGRect)frame {
-    int offset = frame.origin.y - self.products.contentOffset.y;
-    if (offset >= 340) {
-        [self setViewMovedUp:YES];
-    }
-    else {
-        tOffset = self.products.contentOffset.y;
-        [self setViewMovedUp:NO];
-    }
-}
-
-- (void)textEditEndWithFrame:(CGRect)frame {
-    [self setViewMovedUp:NO];
-}
-
-- (NSDictionary *)getCustomerInfo {
-    return [self.customer copy];
-}
-
-- (void)setSelectedRow:(NSUInteger)index {
-    selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
-}
-
-- (void)keyboardWillShow {
-
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5];
-    self.products.contentOffset = selectedItemRowIndexPath ? CGPointMake(0, [self.products rowHeight] * selectedItemRowIndexPath.row) : CGPointMake(0, 0);
-    [UIView commitAnimations];
-}
-
-- (void)keyboardDidHide {
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.5];
-    self.products.contentOffset = CGPointMake(0, 0);
-    [UIView commitAnimations];
-}
-
-
 @end

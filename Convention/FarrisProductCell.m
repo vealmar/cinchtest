@@ -36,20 +36,7 @@
     self.accessoryType = UITableViewCellAccessoryNone;
 }
 
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-}
-
 - (IBAction)quantityChanged:(id)sender {
-    if (self.delegate) {
-        [self.delegate QtyChange:[self.quantity.text doubleValue] forIndex:self.tag];
-    }
-}
-
-- (IBAction)quantyEditDidEnd:(id)sender {
     if (self.delegate) {
         [self.delegate QtyChange:[self.quantity.text doubleValue] forIndex:self.tag];
     }

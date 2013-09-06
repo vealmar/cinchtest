@@ -10,11 +10,14 @@
 
 @protocol ProductCellDelegate <NSObject>
 @required
--(void)VoucherChange:(double)price forIndex:(int)idx;
--(void)PriceChange:(double)price forIndex:(int)idx;
--(void)QtyChange:(double)qty forIndex:(int)idx;
--(void)AddToCartForIndex:(int)idx;
--(void)QtyTouchForIndex:(int)idx;
--(void)setSelectedRow:(NSUInteger)index;
+- (void)VoucherChange:(double)price forIndex:(int)idx;
+
+- (void)QtyChange:(double)qty forIndex:(int)idx;
+
+- (void)AddToCartForIndex:(int)idx;
+
+- (void)QtyTouchForIndex:(int)idx;
+
+- (void)setSelectedRow:(NSUInteger)index;
 
 @end

@@ -22,7 +22,7 @@
 - (NSDictionary *)getProduct:(NSNumber *)productId;
 @end
 
-@interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
+@interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate>
 
 @property(nonatomic, strong) IBOutlet UITableView *products;
 @property(nonatomic, strong) NSMutableDictionary *productData;
@@ -32,7 +32,6 @@
 @property(nonatomic, strong) NSMutableDictionary *discountItems;
 @property(nonatomic) BOOL showPrice;
 @property(nonatomic) BOOL multiStore;
-@property(nonatomic) BOOL customersReady;
 @property(nonatomic) int tOffset;
 @property(unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property(nonatomic, strong) UIPopoverController *popoverController;
@@ -63,8 +62,6 @@
 @property(weak, nonatomic) IBOutlet UILabel *discountTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *netTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
-
-- (void)PriceChange:(double)price forIndex:(int)idx;
 
 - (void)QtyChange:(double)qty forIndex:(int)idx;
 

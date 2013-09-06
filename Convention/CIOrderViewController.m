@@ -126,7 +126,7 @@
         UITextField *textField = ((UITextField *) [totalField objectForKey:@"field"]);
         textField.text = @"0";
         textField.frame = CGRectMake(x, 587, widthPerField, 34);
-        ((UILabel *) [totalField objectForKey:@"labek"]).frame = CGRectMake(x, 613, widthPerField, 34);
+        ((UILabel *) [totalField objectForKey:@"label"]).frame = CGRectMake(x, 613, widthPerField, 34);
         x = x + widthPerField + marginRightPerField;//2 is the right margin
     }
 }
@@ -141,7 +141,7 @@
         MBProgressHUD *hud;
         if (showLoadingIndicator) {  //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
             hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
-            hud.labelText = @"Getting Orders";
+            hud.labelText = @"Getting orders";
             [hud show:YES];
         }
 
@@ -887,7 +887,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     if (availablePrinters && [availablePrinters count] > 0 && ![currentPrinter isEmpty]) {
 
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        hud.labelText = @"Printing ...";
+        hud.labelText = @"Printing";
         [hud show:YES];
 
         NSString *orderID = [NSString stringWithFormat:@"%@", currentOrder.orderId];
@@ -1046,7 +1046,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         }
         if (orderToDelete.orderId != nil && [orderToDelete.orderId intValue] != 0) {
             MBProgressHUD *deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
-            deleteHUD.labelText = @"Deleting Order";
+            deleteHUD.labelText = @"Deleting order";
             [deleteHUD show:NO];
             NSURL *url = [NSURL URLWithString:kDBORDEREDITS([orderToDelete.orderId integerValue])];
             AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
