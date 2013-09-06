@@ -457,7 +457,7 @@
                                     <constraint firstAttribute="height" constant="84" id="rB2-bs-tNR"/>
                                 </constraints>
                             </imageView>
-                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="You have no orders." textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="u65-FR-JzO">
+                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="No Orders Found." textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="u65-FR-JzO">
                                 <constraints>
                                     <constraint firstAttribute="width" constant="689" id="GE0-WG-UVA"/>
                                     <constraint firstAttribute="height" constant="186" id="phH-rR-BAB"/>

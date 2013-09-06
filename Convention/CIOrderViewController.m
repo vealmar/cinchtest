@@ -749,6 +749,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     self.searchText.text = @"";
     self.filteredOrders = [self.allorders mutableCopy];
     [self.sideTable reloadData];
+    self.notesLabel.hidden = [self.filteredOrders count] > 0;
 }
 #pragma mark - CIStoreQtyDelegate
 
@@ -1125,8 +1126,11 @@ SG: This method gets called when you swipe on an order in the order list and tap
     AnOrder *anOrder = [self.filteredOrders objectAtIndex:(NSUInteger) index.row];
     [self.allorders removeObjectIdenticalTo:anOrder];
     [self.filteredOrders removeObjectAtIndex:(NSUInteger) index.row];
+    [partialOrders removeObjectIdenticalTo:anOrder];
+    [persistentOrders removeObjectIdenticalTo:anOrder];
     NSArray *indices = [NSArray arrayWithObject:index];
     [self.sideTable deleteRowsAtIndexPaths:indices withRowAnimation:UITableViewRowAnimationAutomatic];
+    self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
 }
 
 #pragma mark - UIPrinterSelectedDelegate
