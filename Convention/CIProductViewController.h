@@ -20,10 +20,18 @@
 @class CIViewController;
 @class Order;
 @class AnOrder;
+typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
+    PartialOrderSaved,
+    PartialOrderCancelled,
+    PersistentOrderUpdated,
+    PersistentOrderUnchanged,
+    NewOrderCreated,
+    NewOrderCancelled
+};
 
 @protocol CIProductViewDelegate <NSObject>
 
-- (void)Return:(NSNumber *)orderId;
+- (void)Return:(NSNumber *)orderId order:(AnOrder *)savedOrder updateStatus:(OrderUpdateStatus)updateStatus;
 
 @end
 
@@ -34,6 +42,7 @@
     ReachabilityDelegation *reachDelegation;
 
 }
+
 @property(nonatomic, strong) IBOutlet UITableView *products;
 @property(nonatomic, strong) IBOutlet UIImageView *ciLogo;
 @property(nonatomic, strong) IBOutlet UITextField *hiddenTxt;

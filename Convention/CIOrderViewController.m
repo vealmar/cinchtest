@@ -34,6 +34,8 @@
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
     NSIndexPath *selectedItemRowIndexPath;
+    NSMutableArray *partialOrders;
+    NSMutableArray *persistentOrders;
     BOOL unsavedChangesPresent;
 
     __weak IBOutlet UILabel *sdLabel;
@@ -72,8 +74,6 @@
     }
     if (showConfig.discounts) {
         self.grossTotalLabel.text = @"Gross Total";
-//        self.total.hidden = YES;
-//        self.totalLabel.hidden = YES;
     } else {
         self.grossTotalLabel.text = @"Total";
         self.discountTotal.hidden = YES;
@@ -137,6 +137,7 @@
     if (!isLoadingOrders) {
         currentOrder = nil;
         isLoadingOrders = YES;
+        self.searchText.text = @"";
         self.OrderDetailScroll.hidden = YES;
         MBProgressHUD *hud;
         if (showLoadingIndicator) {  //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
@@ -144,23 +145,23 @@
             hud.labelText = @"Getting orders";
             [hud show:YES];
         }
-
         void (^cleanup)(void) = ^{
             if (![hud isHidden]) [hud hide:YES];
             [pull finishedLoading];
             isLoadingOrders = NO;
         };
-
         NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                 success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                    self.filteredOrders = [[NSMutableArray alloc] init];
+                    persistentOrders = [[NSMutableArray alloc] init];
                     for (NSDictionary *order in JSON) {
-                        [self.filteredOrders addObject:[[AnOrder alloc] initWithJSONFromServer:order]];
+                        [persistentOrders addObject:[[AnOrder alloc] initWithJSONFromServer:order]];
                     }
-                    [self loadPartialOrders];
-                    self.allorders = [self.filteredOrders mutableCopy];
+                    partialOrders = [self loadPartialOrders];
+                    self.allorders = [partialOrders mutableCopy];
+                    [self.allorders addObjectsFromArray:persistentOrders];
+                    self.filteredOrders = [self.allorders mutableCopy];
                     [self.sideTable reloadData];
                     self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
                     cleanup();
@@ -177,17 +178,27 @@
 - (void)highlightOrder:(NSNumber *)orderId {
     if (orderId != nil && [orderId intValue] != 0) {
         NSIndexPath *currentOrderIndex;
+        AnOrder *orderAtCurrentOrderIndex;
         int i = 0;
         for (AnOrder *order in self.filteredOrders) {
-            if ([order.status isEqualToString:@"complete"] && [orderId isEqualToNumber:order.orderId]) {
+            if ([orderId isEqualToNumber:order.orderId]) {
                 currentOrderIndex = [NSIndexPath indexPathForRow:i inSection:0];
+                orderAtCurrentOrderIndex = order;
                 break;
             }
             i++;
         }
         if (currentOrderIndex != nil) {
-            [self.sideTable selectRowAtIndexPath:currentOrderIndex animated:YES scrollPosition:UITableViewScrollPositionBottom];
-            [self didSelectOrderAtIndexPath:currentOrderIndex];
+            if ([orderAtCurrentOrderIndex.status isEqualToString:@"complete"]) {
+                [self.sideTable selectRowAtIndexPath:currentOrderIndex animated:YES scrollPosition:UITableViewScrollPositionBottom];
+                [self didSelectOrderAtIndexPath:currentOrderIndex];
+            } else {
+                currentOrder = orderAtCurrentOrderIndex;
+                self.OrderDetailScroll.hidden = YES;
+            }
+        } else {
+            currentOrder = nil;
+            self.OrderDetailScroll.hidden = YES;
         }
     }
 }
@@ -198,15 +209,17 @@ Partial orders get created when the app crashes while the user was in the middle
 This method reads values for each order in core data are and creates an NSDictionary object conforming to the format of the orders in self.orders.
 These partial orders then are put at the beginning of the self.orders array.
 */
-- (void)loadPartialOrders {
-    NSArray *partialOrders = [[CoreDataUtil sharedManager] fetchObjects:@"Order" sortField:@"created_at"];
-    for (Order *order in partialOrders) {
+- (NSMutableArray *)loadPartialOrders {
+    NSArray *partialCoreDataOrders = [[CoreDataUtil sharedManager] fetchObjects:@"Order" sortField:@"created_at"];
+    NSMutableArray *orders = [[NSMutableArray alloc] init];
+    for (Order *order in partialCoreDataOrders) {
         int orderId = order.orderId;
         if (orderId == 0 && [order.vendorGroup isEqualToString:[[self.vendorInfo objectForKey:kID] stringValue]]) {  //this is a partial order (orderId eq 0). Make sure the order is for logged in vendor. If vendors switch ipads we do not want to show them each other's orders.
             AnOrder *anOrder = [[AnOrder alloc] initWithCoreData:order];
-            [self.filteredOrders insertObject:anOrder atIndex:0];
+            [orders addObject:anOrder];
         }
     }
+    return orders;
 }
 
 #pragma mark - Order detail display
@@ -450,9 +463,9 @@ SG: The argument 'detail' is the selected order.
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
-        if (currentOrder != [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]) {
-            [self didSelectOrderAtIndexPath:indexPath];
-        }
+//        if (currentOrder != [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]) {
+        [self didSelectOrderAtIndexPath:indexPath];
+//        }
     }
     else if (tableView == self.itemsTable) {
         selectedItemRowIndexPath = indexPath;
@@ -691,10 +704,52 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 #pragma mark - CIProductViewDelegate
 
-- (void)Return:(NSNumber *)orderId {
-    [self loadOrders:YES highlightOrder:orderId];
+- (void)Return:(NSNumber *)orderId order:(AnOrder *)savedOrder updateStatus:(OrderUpdateStatus)updateStatus {
+    if (updateStatus == NewOrderCreated) {//new order created
+        [persistentOrders insertObject:savedOrder atIndex:0];
+        [self reloadSideTable];
+        if ([savedOrder.status isEqualToString:@"complete"])
+            [self highlightOrder:savedOrder.orderId];
+    } else if (updateStatus == PartialOrderCancelled) {//partial order cancelled
+        partialOrders = [self loadPartialOrders];
+        [self reloadSideTable];
+    } else if (updateStatus == PartialOrderSaved) {//partial order saved
+        partialOrders = [self loadPartialOrders];
+        [persistentOrders insertObject:savedOrder atIndex:0];
+        [self reloadSideTable];
+        if ([savedOrder.status isEqualToString:@"complete"])
+            [self highlightOrder:savedOrder.orderId];
+    } else if (updateStatus == PersistentOrderUpdated) {//persistent order updated
+        [self persistentOrderUpdated:savedOrder];
+    }
+
 }
 
+- (void)persistentOrderUpdated:(AnOrder *)updatedOrder {
+    int index = -1;
+    for (unsigned int i = 0; i < persistentOrders.count; i++) {
+        AnOrder *order = persistentOrders[i];
+        if ([order.orderId isEqualToNumber:updatedOrder.orderId]) {
+            index = i;
+            break;
+        }
+    }
+    if (index != -1) {
+        [persistentOrders removeObjectAtIndex:(NSUInteger) index];
+        [persistentOrders insertObject:updatedOrder atIndex:(NSUInteger) index];
+    }
+    [self reloadSideTable];
+    if ([updatedOrder.status isEqualToString:@"complete"])
+        [self highlightOrder:updatedOrder.orderId];
+}
+
+- (void)reloadSideTable {
+    self.allorders = [partialOrders mutableCopy];
+    [self.allorders addObjectsFromArray:persistentOrders];
+    self.searchText.text = @"";
+    self.filteredOrders = [self.allorders mutableCopy];
+    [self.sideTable reloadData];
+}
 #pragma mark - CIStoreQtyDelegate
 
 - (void)QtyChange:(double)qty forIndex:(int)idx {
@@ -813,7 +868,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
         NSNumber *orderId = JSON != nil? (NSNumber *) [NilUtil nilOrObject:[(NSDictionary *) JSON objectForKey:kID]] : nil;
         unsavedChangesPresent = NO;
-        [self loadOrders:YES highlightOrder:orderId];
+        AnOrder *savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
+        [self persistentOrderUpdated:savedOrder];
     }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
         NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];

@@ -38,7 +38,7 @@
     NSDictionary *bulletins;
     NSIndexPath *selectedItemRowIndexPath;
     CIProductViewControllerHelper *helper;
-
+    AnOrder *savedOrder;
 }
 
 @end
@@ -669,9 +669,9 @@
             success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
                 [submit hide:YES];
                 self.unsavedChangesPresent = NO;
-                AnOrder *anOrder = [[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) JSON];
+                savedOrder = [[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) JSON];
                 if (asPending) {
-                    NSNumber *totalCost = anOrder.total;
+                    NSNumber *totalCost = savedOrder.total;
                     NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
                     nf.formatterBehavior = NSNumberFormatterBehavior10_4;
                     nf.maximumFractionDigits = 2;
@@ -680,8 +680,8 @@
 
                     double grossTotal = 0.0;
                     double voucherTotal = 0.0;
-                    int orderId = [anOrder.orderId intValue];
-                    NSArray *lineItems = anOrder.lineItems;
+                    int orderId = [savedOrder.orderId intValue];
+                    NSArray *lineItems = savedOrder.lineItems;
                     self.discountItems = [NSMutableDictionary dictionary];
                     for (int i = 0; i < [lineItems count]; i++) {
                         ALineItem *lineItemFromServer = [lineItems objectAtIndex:(NSUInteger) i];
@@ -737,6 +737,12 @@
 }
 
 - (void)Return {
+    enum OrderUpdateStatus status = [self.selectedOrder.status isEqualToString:@"partial"] && savedOrder == nil? PartialOrderCancelled
+            : [self.selectedOrder.status isEqualToString:@"partial"] && savedOrder != nil? PartialOrderSaved
+                    : [self.selectedOrder.orderId intValue] != 0 && savedOrder == nil? PersistentOrderUnchanged
+                            : [self.selectedOrder.orderId intValue] != 0 && savedOrder != nil? PersistentOrderUpdated
+                                    : self.newOrder && savedOrder == nil? NewOrderCancelled
+                                            : NewOrderCreated;
 
     [self dismissViewControllerAnimated:YES completion:^{
         if (self.delegate != nil) {
@@ -745,7 +751,7 @@
                 orderId = self.coreDataOrder != nil? [NSNumber numberWithInt:self.coreDataOrder.orderId] : nil;
                 [[CoreDataUtil sharedManager] deleteObject:self.coreDataOrder];  //always delete the core data entry before exiting this view. core data should contain an entry only if the order crashed in the middle of an order
             }
-            [self.delegate Return:orderId];
+            [self.delegate Return:orderId order:savedOrder updateStatus:status];
         }
     }];
 }
@@ -1034,7 +1040,7 @@
     if (qty > 0) {
         [self AddToCartForIndex:idx];
     } else {
-        [self removeLineItemFromProductCart:key];
+        [self removeLineItemFromProductCart:[NSNumber numberWithInteger:[key integerValue]]];
     }
     [self updateCellColorForId:(NSUInteger) idx];
     [self updateTotals];
@@ -1068,11 +1074,13 @@
     aLineItem.desc = [product objectForKey:kProductDescr];
     if ([NilUtil nilOrObject:[product objectForKey:kProductDescr2]])
         aLineItem.desc2 = [product objectForKey:kProductDescr2];
+    NSArray *dates = [edict objectForKey:kLineItemShipDates];
+    if (dates && dates.count > 0)
+        aLineItem.shipDates = [DateUtil convertDateArrayToYyyymmddArray:dates];
     ALineItem *oldLineItem = [self.productCart objectForKey:key];
     if (oldLineItem != nil) {aLineItem.itemId = oldLineItem.itemId;}
     [self.productCart setObject:aLineItem forKey:key];
     // add item to core data store
-    NSArray *dates = [edict objectForKey:kLineItemShipDates];
     NSManagedObjectContext *context = _coreDataOrder.managedObjectContext;
     int productid = [aLineItem.productId intValue];  //product_id
     Cart *oldCart = [self findCartForId:productid];
