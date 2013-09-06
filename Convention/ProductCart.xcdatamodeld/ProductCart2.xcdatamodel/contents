@@ -35,6 +35,14 @@
         <relationship name="order" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Order" inverseName="carts" inverseEntity="Order" syncable="YES"/>
         <relationship name="shipdates" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ShipDate" inverseName="cart" inverseEntity="ShipDate" syncable="YES"/>
     </entity>
+    <entity name="Customer" representedClassName="Customer" syncable="YES">
+        <attribute name="billname" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="customer_id" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="import_id" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="initial_show" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
+        <attribute name="stores" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="Order" representedClassName="Order" syncable="YES">
         <attribute name="billname" attributeType="String" syncable="YES"/>
         <attribute name="created_at" optional="YES" attributeType="Date" syncable="YES"/>
@@ -63,5 +71,6 @@
         <element name="Order" positionX="-200" positionY="27" width="128" height="225"/>
         <element name="SetupInfo" positionX="-270" positionY="333" width="128" height="73"/>
         <element name="ShipDate" positionX="331" positionY="215" width="128" height="75"/>
+        <element name="Customer" positionX="160" positionY="192" width="128" height="135"/>
     </elements>
 </model>
