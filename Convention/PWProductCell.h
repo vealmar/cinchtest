@@ -31,6 +31,6 @@
 
 - (IBAction)qtyChanged:(id)sender;
 
-- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(NSDictionary *)product item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 
 @end

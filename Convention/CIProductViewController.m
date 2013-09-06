@@ -55,7 +55,6 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self != nil) {
-        self.showPrice = YES;
         self.viewInitialized = NO;
         currentVendor = 0;
         currentBulletin = 0;
@@ -350,7 +349,7 @@
     UITableViewCell *cell = [self dequeueReusableProductCell];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         BOOL rowIsSelected = [selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]] && ![[dict objectForKey:@"invtid"] isEqualToString:@"0"];
-        [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore showPrice:self.showPrice product:dict item:editableDict checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
+        [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore product:dict item:editableDict checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
     } else {
         [(FarrisProductCell *) cell initializeWith:dict item:editableDict tag:[indexPath row] ProductCellDelegate:self];
     }

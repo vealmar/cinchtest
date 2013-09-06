@@ -313,15 +313,7 @@ SG: The argument 'detail' is the selected order.
         if (![currentPrinter isEmpty])
             productView.printStationId = [[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue];
     }
-
-
     [productView setTitle:@"Select Products"];
-    if (self.vendorInfo && self.vendorInfo.count > 0) {
-        NSString *vendorHidePrice = [self.vendorInfo objectForKey:kVenderHidePrice];
-        if (vendorHidePrice != nil) {
-            productView.showPrice = ![vendorHidePrice boolValue];
-        }
-    }
     [self presentViewController:productView animated:NO completion:nil];
 }
 

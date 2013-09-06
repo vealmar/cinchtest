@@ -29,7 +29,7 @@
 @synthesize delegate;
 @synthesize numShipDates;
 
-- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(NSDictionary *)product item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     self.InvtID.text = [product objectForKey:@"invtid"];
     self.descr.text = [product objectForKey:@"descr"];
     if ([product objectForKey:kProductShipDate1] != nil && ![[product objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]) {
@@ -88,8 +88,7 @@
         self.voucherLbl.text = @"0.00";
     }
 
-    if (showPrice && item != nil && [item objectForKey:kEditablePrice] != nil) {
-        //            self.price.text = [[self.productPrices objectForKey:[product objectForKey:@"id"]] stringValue];
+    if (item != nil && [item objectForKey:kEditablePrice] != nil) {
         NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
         nf.formatterBehavior = NSNumberFormatterBehavior10_4;
         nf.maximumFractionDigits = 2;

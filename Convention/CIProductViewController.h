@@ -90,7 +90,6 @@
 //vendor#vendorgroup_id of logged in vendor
 @property(nonatomic, strong) NSMutableDictionary *productCart; //key is product_id. Contains order's items.
 @property(nonatomic, strong) NSMutableDictionary *discountItems;
-@property(nonatomic) BOOL showPrice;
 @property(nonatomic) BOOL viewInitialized;
 @property(nonatomic) BOOL orderSubmitted;
 @property(nonatomic) BOOL multiStore;
