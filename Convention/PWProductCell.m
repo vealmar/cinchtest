@@ -9,6 +9,7 @@
 #import "PWProductCell.h"
 #import "StringManipulation.h"
 #import "config.h"
+#import "NumberUtil.h"
 
 @interface PWProductCell () {
     NSString *originalCellValue;
@@ -68,40 +69,19 @@
         self.qtyLbl.hidden = YES;
         self.quantity.hidden = YES;
     }
-    if (item != nil && [item objectForKey:kEditableVoucher] != nil) {
-        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-        nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-        nf.maximumFractionDigits = 2;
-        nf.minimumFractionDigits = 2;
-        nf.minimumIntegerDigits = 1;
-
-        self.voucherLbl.text = [nf stringFromNumber:[item objectForKey:kEditableVoucher]];
-    } else if ([product objectForKey:kProductVoucher] != nil) {
-        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-        nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-        nf.maximumFractionDigits = 2;
-        nf.minimumFractionDigits = 2;
-        nf.minimumIntegerDigits = 1;
-
-        self.voucherLbl.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[product objectForKey:kProductVoucher] doubleValue]]];
+//    if (item != nil && [item objectForKey:kEditableVoucher] != nil) {
+//        self.voucherLbl.text = [NumberUtil formatDollarAmount:[item objectForKey:kEditableVoucher]];
+//    } else
+    if ([product objectForKey:kProductVoucher] != nil) {
+        self.voucherLbl.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductVoucher]];
     } else {
         self.voucherLbl.text = @"0.00";
     }
 
     if (item != nil && [item objectForKey:kEditablePrice] != nil) {
-        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-        nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-        nf.maximumFractionDigits = 2;
-        nf.minimumFractionDigits = 2;
-        nf.minimumIntegerDigits = 1;
-        self.priceLbl.text = [nf stringFromNumber:[item objectForKey:kEditablePrice]];
+        self.priceLbl.text = [NumberUtil formatDollarAmount:[item objectForKey:kEditablePrice]];
     } else if ([product objectForKey:kProductShowPrice] != nil) {
-        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-        nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-        nf.maximumFractionDigits = 2;
-        nf.minimumFractionDigits = 2;
-        nf.minimumIntegerDigits = 1;
-        self.priceLbl.text = [nf stringFromNumber:[NSNumber numberWithDouble:[[product objectForKey:kProductShowPrice] doubleValue]]];
+        self.priceLbl.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductShowPrice]];
     } else {
         self.priceLbl.text = @"0.00";
     }
