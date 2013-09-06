@@ -91,5 +91,4 @@
         [self.delegate VoucherChange:dprice forIndex:self.tag];
     }
 }
-
 @end

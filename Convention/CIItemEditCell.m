@@ -169,6 +169,7 @@
             self.btnShipdates.enabled = NO;
             [self.btnShipdates setTitle:@"SD:0" forState:UIControlStateDisabled];
         } else {
+            self.btnShipdates.enabled = YES;//since cells are reused, it may have been set to NO.
             int lblsd = 0;
             if (((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count > 0) {
                 nd = ((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count;

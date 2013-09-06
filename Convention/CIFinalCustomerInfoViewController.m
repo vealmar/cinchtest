@@ -76,7 +76,7 @@
         Authorizer.text = authorizedBy.value;
     }
 
-    if (kShowCorp == kPigglyWiggly) {
+    if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         contactBeforeShippingLabel.hidden = YES;
         contactBeforeShipping.hidden = YES;
     } else {
@@ -98,8 +98,6 @@
     originalBounds = self.view.bounds;
 }
 
-- (void)setCustomerData:(NSArray *)customerData {
-}
 
 - (IBAction)back:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -121,7 +119,7 @@
             [context save:&error];
         }
 
-        if (kShowCorp != kPigglyWiggly) {//Farris
+        if (![kShowCorp isEqualToString:kPigglyWiggly]) {//Farris
             NSError *error;
             if (shipFlag == nil) {   //SG: If the value specified for Contact Before Shipping last time is not same as the value specified this time, update the value in setupinfo.
                 SetupInfo *setup = (SetupInfo *) [[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
@@ -145,7 +143,7 @@
             [dict setObject:self.Notes.text forKey:kNotes ];
             [dict setObject:self.Authorizer.text forKey:kAuthorizedBy];
 
-            if (kShowCorp != kPigglyWiggly) {
+            if (![kShowCorp isEqualToString:kPigglyWiggly]) {
                 [dict setObject:(contactBeforeShipping.isChecked ? @"true" : @"false") forKey:kShipFlag];
             }
             [self.delegate setAuthorizedByInfo:[dict copy]];

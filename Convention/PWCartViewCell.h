@@ -23,7 +23,6 @@
 @property(weak, nonatomic) IBOutlet UILabel *shipDate2;
 @property(weak, nonatomic) IBOutlet UILabel *CaseQty;
 @property(weak, nonatomic) IBOutlet UIButton *qtyBtn;
-@property(nonatomic, assign) id <ProductCellDelegate> delegate;
 
 - (IBAction)qtyTouch:(id)sender;
 

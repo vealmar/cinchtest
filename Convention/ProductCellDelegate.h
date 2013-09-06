@@ -14,8 +14,6 @@
 
 - (void)QtyChange:(double)qty forIndex:(int)idx;
 
-- (void)AddToCartForIndex:(int)idx;
-
 - (void)QtyTouchForIndex:(int)idx;
 
 - (void)setSelectedRow:(NSUInteger)index;

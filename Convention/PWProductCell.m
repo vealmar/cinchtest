@@ -124,6 +124,8 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    // Resigning from being first responder when user taps the enter key.
+    // Since a text field is not the first responder anymore, it causes the keyboard to hide.
     [textField resignFirstResponder];
     return YES;
 }
@@ -132,7 +134,7 @@
     originalCellValue = [NSString stringWithString:textField.text];
     UITableView *tableView = (UITableView *) self.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
-    [tableView scrollToRowAtIndexPath:indexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    [self.delegate setSelectedRow:(NSUInteger) [indexPath row]];
     return YES;
 }
 

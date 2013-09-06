@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+@protocol ProductCellDelegate;
 
-@interface CartViewCell : UITableViewCell
+
+@interface CartViewCell : UITableViewCell <UITextFieldDelegate>
 @property(weak, nonatomic) IBOutlet UILabel *InvtID;
+@property(nonatomic, assign) id <ProductCellDelegate> delegate;
 @end

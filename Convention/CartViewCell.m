@@ -7,9 +7,18 @@
 
 
 #import "CartViewCell.h"
+#import "ProductCellDelegate.h"
 
 
 @implementation CartViewCell {
 }
 @synthesize InvtID;
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    UITableView *tableView = (UITableView *) self.superview;
+    NSIndexPath *indexPath = [tableView indexPathForCell:self];
+    [self.delegate setSelectedRow:(NSUInteger) [indexPath row]];
+    return YES;
+}
+
 @end

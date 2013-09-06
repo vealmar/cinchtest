@@ -28,7 +28,7 @@
 @end
 
 @interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,
-        UIAlertViewDelegate, CICustomerDelegate, ProductCellDelegate,
+        UIAlertViewDelegate, ProductCellDelegate,
         CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate,
         UIPrinterSelectedDelegate, VendorViewDelegate> {
     ReachabilityDelegation *reachDelegation;

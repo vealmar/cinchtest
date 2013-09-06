@@ -22,6 +22,7 @@
     NSMutableArray *allCartItems; //product cart items + discount items
     __weak IBOutlet UILabel *customerInfoLabel;
     __weak IBOutlet UIImageView *logo;
+    NSIndexPath *selectedItemRowIndexPath;
 }
 
 @end
@@ -137,16 +138,14 @@
     [self.products reloadData];
     [self.indicator stopAnimating];
     self.indicator.hidden = YES;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:)
+                                                 name:UIKeyboardDidHideNotification object:nil];
 }
 
-- (NSArray *)sortLineItemsByinvtId:(NSArray *)lineItems {
-    NSArray *sortedArray;
-    sortedArray = [lineItems sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        NSNumber *first = [(ALineItem *) a getInvtId];
-        NSNumber *second = [(ALineItem *) b getInvtId];;
-        return [first compare:second];
-    }];
-    return sortedArray;
+- (void)viewWillDisappear:(BOOL)animated {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -178,7 +177,7 @@
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if ([productCart count] == 0) {return nil;}
     CIProductViewControllerHelper *helper = [[CIProductViewControllerHelper alloc] init];
-    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:indexPath.row];
+    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) indexPath.row];
     NSDictionary *editableDict = @{kEditablePrice : lineItem.price,
             kEditableVoucher : lineItem.voucherPrice ? lineItem.voucherPrice : [NSNumber numberWithInt:0],
             kEditableQty : lineItem.quantity,
@@ -194,8 +193,18 @@
         [cell initializeWith:product item:lineItem tag:[indexPath row] ProductCellDelegate:self];
         return cell;
     }
-    return nil;
 }
+
+- (NSArray *)sortLineItemsByinvtId:(NSArray *)lineItems {
+    NSArray *sortedArray;
+    sortedArray = [lineItems sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        NSNumber *first = [(ALineItem *) a getInvtId];
+        NSNumber *second = [(ALineItem *) b getInvtId];;
+        return [first compare:second];
+    }];
+    return sortedArray;
+}
+
 
 #pragma mark - Other
 
@@ -286,5 +295,33 @@
         popoverController = [[UIPopoverController alloc] initWithContentViewController:storeQtysPO];
         [popoverController presentPopoverFromRect:frame inView:self.products permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
+}
+#pragma Keyboard
+
+- (void)setSelectedRow:(NSUInteger)index {
+    selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
+}
+
+- (void)keyboardWillShow:(NSNotification *)note {
+    // Reducing the frame height by 300 causes it to end above the keyboard, so the keyboard cannot overlap any content. 300 is the height occupied by the keyboard.
+    // In addition scroll the selected row into view.
+    CGRect frame = self.products.frame;
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    [UIView setAnimationDuration:0.3f];
+    frame.size.height -= 300;
+    self.products.frame = frame;
+    [self.products scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    [UIView commitAnimations];
+}
+
+- (void)keyboardDidHide:(NSNotification *)note {
+    CGRect frame = self.products.frame;
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    [UIView setAnimationDuration:0.3f];
+    frame.size.height += 300;
+    self.products.frame = frame;
+    [UIView commitAnimations];
 }
 @end

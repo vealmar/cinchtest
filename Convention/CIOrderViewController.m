@@ -87,7 +87,7 @@
     self.OrderDetailScroll.hidden = YES;
     [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
     if ([ShowConfigurations instance].printing) currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
-    pull = [[PullToRefreshView alloc] initWithScrollView:(UIScrollView *) self.sideTable];
+    pull = [[PullToRefreshView alloc] initWithScrollView:self.sideTable];
     [pull setDelegate:self];
     [self.sideTable addSubview:pull];
     [self loadOrders:YES highlightOrder:nil];
@@ -154,10 +154,10 @@
         NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
                     self.filteredOrders = [[NSMutableArray alloc] init];
                     for (NSDictionary *order in JSON) {
-                        [self.filteredOrders addObject:[[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) order]];
+                        [self.filteredOrders addObject:[[AnOrder alloc] initWithJSONFromServer:order]];
                     }
                     [self loadPartialOrders];
                     self.allorders = [self.filteredOrders mutableCopy];
@@ -165,7 +165,7 @@
                     self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
                     cleanup();
                     [self highlightOrder:orderId];
-                } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
                     [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@", [error localizedDescription]] delegate:nil
                                       cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                     cleanup();
@@ -346,7 +346,7 @@ SG: The argument 'detail' is the selected order.
             cell = [topLevelObjects objectAtIndex:0];
         }
 
-        AnOrder *data = [self.filteredOrders objectAtIndex:[indexPath row]];
+        AnOrder *data = [self.filteredOrders objectAtIndex:(NSUInteger) [indexPath row]];
 
         cell.Customer.text = [data getCustomerDisplayName];
         if (data.authorized != nil) {
@@ -418,7 +418,7 @@ SG: The argument 'detail' is the selected order.
         }
 
         if (currentOrder.lineItems.count > [indexPath row]) {
-            ALineItem *data = [currentOrder.lineItems objectAtIndex:[indexPath row]];
+            ALineItem *data = [currentOrder.lineItems objectAtIndex:(NSUInteger) [indexPath row]];
             [cell updateCellAtIndexPath:indexPath withLineItem:data quantities:self.itemsQty prices:self.itemsPrice vouchers:self.itemsVouchers shipDates:self.itemsShipDates];
             return cell;
         } else {
@@ -463,7 +463,6 @@ SG: The argument 'detail' is the selected order.
     unsavedChangesPresent = NO;
     currentOrder = [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row];
     NSString *status = [currentOrder.status lowercaseString];
-    CIOrderCell *cell = (CIOrderCell *) [self.sideTable cellForRowAtIndexPath:indexPath];
     //SG: if this is a completed order, display the order details in the editor view
     //which appears to the right of the sideTable.
     if (![status isEqualToString:kPartialOrder] && ![status isEqualToString:@"pending"]) {
@@ -499,7 +498,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     if (tableView == self.sideTable) {
         if (editingStyle == UITableViewCellEditingStyleDelete) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"DELETE" message:@"Are you sure you want to delete this order?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
-            AnOrder *selectedOrder = [self.filteredOrders objectAtIndex:indexPath.row];
+            AnOrder *selectedOrder = [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row];
             [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
                 if (buttonIndex == 1) {
                     [self deleteOrder:selectedOrder row:indexPath];
@@ -531,13 +530,13 @@ SG: This method gets called when you swipe on an order in the order list and tap
         NSInteger itemCount = currentOrder.lineItems.count;
 
         for (int i = 0; i < itemCount; i++) {
-            double price = [[self.itemsPrice objectAtIndex:i] doubleValue];
+            double price = [[self.itemsPrice objectAtIndex:(NSUInteger) i] doubleValue];
             double qty = 0;
 
             __autoreleasing NSError *err = nil;
-            NSMutableDictionary *dict = [[self.itemsQty objectAtIndex:i] objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
+            NSMutableDictionary *dict = [[self.itemsQty objectAtIndex:(NSUInteger) i] objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
             if (err)
-                qty = [[self.itemsQty objectAtIndex:i] doubleValue];
+                qty = [[self.itemsQty objectAtIndex:(NSUInteger) i] doubleValue];
             else if (dict && ![dict isKindOfClass:[NSNull class]]) {
                 for (NSString *key in dict.allKeys)
                     qty += [[dict objectForKey:key] doubleValue];
@@ -548,14 +547,14 @@ SG: This method gets called when you swipe on an order in the order list and tap
             //If we used 0 for numShipDates, sctotal = [[self.itemsVouchers objectAtIndex:i] doubleValue] * qty * numShipDates
             // and ttotal += price * qty * numShipDates will evaluate to 0 which would not be right.
             double numShipDates = 1;
-            if (((NSArray *) [self.itemsShipDates objectAtIndex:i]).count > 0)
-                numShipDates = ((NSArray *) [self.itemsShipDates objectAtIndex:i]).count;
+            if (((NSArray *) [self.itemsShipDates objectAtIndex:(NSUInteger) i]).count > 0)
+                numShipDates = ((NSArray *) [self.itemsShipDates objectAtIndex:(NSUInteger) i]).count;
 
-            if ([[self.itemsDiscounts objectAtIndex:i] intValue] == 0)
+            if ([[self.itemsDiscounts objectAtIndex:(NSUInteger) i] intValue] == 0)
                 ttotal += price * qty * numShipDates;
             else
                 discountTotal += fabs(price * qty);
-            sctotal += [[self.itemsVouchers objectAtIndex:i] doubleValue] * qty * numShipDates;
+            sctotal += [[self.itemsVouchers objectAtIndex:(NSUInteger) i] doubleValue] * qty * numShipDates;
         }
 
         self.grossTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal] numberStyle:NSNumberFormatterCurrencyStyle];  //SG: displayed next to Total label
@@ -570,20 +569,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (void)setVoucher:(NSString *)voucher atIndex:(int)idx {
-    [self.itemsVouchers removeObjectAtIndex:idx];
-    [self.itemsVouchers insertObject:voucher atIndex:idx];
+    [self.itemsVouchers removeObjectAtIndex:(NSUInteger) idx];
+    [self.itemsVouchers insertObject:voucher atIndex:(NSUInteger) idx];
     unsavedChangesPresent = YES;
 }
 
 - (void)setPrice:(NSString *)prc atIndex:(int)idx {
-    [self.itemsPrice removeObjectAtIndex:idx];
-    [self.itemsPrice insertObject:prc atIndex:idx];
+    [self.itemsPrice removeObjectAtIndex:(NSUInteger) idx];
+    [self.itemsPrice insertObject:prc atIndex:(NSUInteger) idx];
     unsavedChangesPresent = YES;
 }
 
 - (void)setQuantity:(NSString *)qty atIndex:(int)idx {
-    [self.itemsQty removeObjectAtIndex:idx];
-    [self.itemsQty insertObject:qty atIndex:idx];
+    [self.itemsQty removeObjectAtIndex:(NSUInteger) idx];
+    [self.itemsQty insertObject:qty atIndex:(NSUInteger) idx];
     unsavedChangesPresent = YES;
 }
 
@@ -595,7 +594,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
             self.storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
         }
 
-        NSMutableDictionary *dict = [[[self.itemsQty objectAtIndex:idx] objectFromJSONString] mutableCopy];
+        NSMutableDictionary *dict = [[[self.itemsQty objectAtIndex:(NSUInteger) idx] objectFromJSONString] mutableCopy];
         self.storeQtysPO.stores = dict;
         self.storeQtysPO.tag = idx;
         self.storeQtysPO.delegate = self;
@@ -611,20 +610,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
 
-    NSDate *startDate = [[NSDate alloc] init];
-    NSDate *endDate = [[NSDate alloc] init];
+    NSDate *startDate;
+    NSDate *endDate;
 
     if (currentOrder.lineItems == nil || currentOrder.lineItems.count == 0) {
         return;
     }
-    if ([currentOrder.lineItems objectAtIndex:idx] == nil) {
+    if ([currentOrder.lineItems objectAtIndex:(NSUInteger) idx] == nil) {
         return;
     }
-    if (((ALineItem *) [currentOrder.lineItems objectAtIndex:idx]).product == nil) {
+    if (((ALineItem *) [currentOrder.lineItems objectAtIndex:(NSUInteger) idx]).product == nil) {
         return;
     }
-    NSString *start = [((ALineItem *) [currentOrder.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate1];
-    NSString *end = [((ALineItem *) [currentOrder.lineItems objectAtIndex:idx]).product objectForKey:kProductShipDate2];
+    NSString *start = [((ALineItem *) [currentOrder.lineItems objectAtIndex:(NSUInteger) idx]).product objectForKey:kProductShipDate1];
+    NSString *end = [((ALineItem *) [currentOrder.lineItems objectAtIndex:(NSUInteger) idx]).product objectForKey:kProductShipDate2];
 
     if (start && end && ![start isKindOfClass:[NSNull class]] && ![end isKindOfClass:[NSNull class]] && start.length > 0 && end.length > 0) {
         startDate = [df dateFromString:start];
@@ -656,8 +655,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
     };
 
     calView.doneTouched = ^(NSArray *dates) {
-        [self.itemsShipDates removeObjectAtIndex:idx];
-        [self.itemsShipDates insertObject:[dates copy] atIndex:idx];
+        [self.itemsShipDates removeObjectAtIndex:(NSUInteger) idx];
+        [self.itemsShipDates insertObject:[dates copy] atIndex:(NSUInteger) idx];
         [calViewW dismissViewControllerAnimated:YES completion:nil];
 
         [self.itemsTable reloadData];
@@ -667,7 +666,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
     CICalendarViewController __weak *weakCalView = calView;
     calView.afterLoad = ^{
-        NSArray *dates = [self.itemsShipDates objectAtIndex:idx];
+        NSArray *dates = [self.itemsShipDates objectAtIndex:(NSUInteger) idx];
         weakCalView.calendarView.selectedDates = [dates mutableCopy];
         weakCalView.calendarView.avalibleDates = dateList;
     };
@@ -736,12 +735,12 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSURL *url = [NSURL URLWithString:logoutPath];
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
     NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:@"" parameters:nil];
-    AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *op, id responseObject) {
 
         clearSettings();
         [self dismissViewControllerAnimated:YES completion:nil];
 
-    }                                                                   failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+    }                                                                   failure:^(AFHTTPRequestOperation *op, NSError *error) {
 
         [[[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"There was an error logging out please try again! Error:%@",
                                                                                         [error localizedDescription]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -764,18 +763,18 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSArray *data = currentOrder.lineItems;
 
     for (NSInteger i = 0; i < data.count; i++) {
-        ALineItem *lineItem = [data objectAtIndex:i];
+        ALineItem *lineItem = [data objectAtIndex:(NSUInteger) i];
         NSString *productID = [lineItem.productId stringValue];
 
-        NSString *qty = [self.itemsQty objectAtIndex:i];
-        NSString *price = [self.itemsPrice objectAtIndex:i];
-        NSString *voucher = [self.itemsVouchers objectAtIndex:i];
+        NSString *qty = [self.itemsQty objectAtIndex:(NSUInteger) i];
+        NSString *price = [self.itemsPrice objectAtIndex:(NSUInteger) i];
+        NSString *voucher = [self.itemsVouchers objectAtIndex:(NSUInteger) i];
 
         if (self.itemsQty.count > i) {
-            qty = [self.itemsQty objectAtIndex:i];
+            qty = [self.itemsQty objectAtIndex:(NSUInteger) i];
         }
 
-        NSArray *dates = [self.itemsShipDates objectAtIndex:i];
+        NSArray *dates = [self.itemsShipDates objectAtIndex:(NSUInteger) i];
         NSMutableArray *strs = [NSMutableArray array];
         NSDateFormatter *df = [[NSDateFormatter alloc] init];
         [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
@@ -811,11 +810,11 @@ SG: This method gets called when you swipe on an order in the order list and tap
     [client setParameterEncoding:AFJSONParameterEncoding];
     NSMutableURLRequest *request = [client requestWithMethod:@"PUT" path:nil parameters:final];
 
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
         NSNumber *orderId = JSON != nil? (NSNumber *) [NilUtil nilOrObject:[(NSDictionary *) JSON objectForKey:kID]] : nil;
         unsavedChangesPresent = NO;
         [self loadOrders:YES highlightOrder:orderId];
-    }                                                                                   failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+    }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
         NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }];
@@ -848,7 +847,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 - (void)loadPrinters {
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETPRINTERS]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
         if (JSON && [JSON isKindOfClass:[NSArray class]] && [JSON count] > 0) {
             NSMutableDictionary *printStations = [[NSMutableDictionary alloc] initWithCapacity:[JSON count]];
             for (NSDictionary *printer in JSON) {
@@ -864,7 +863,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
             }
         }
 
-    }                                                                                   failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+    }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
 
         [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
         NSString *msg = [NSString stringWithFormat:@"Unable to load available printers. %@", [error localizedDescription]];
@@ -890,12 +889,12 @@ SG: This method gets called when you swipe on an order in the order list and tap
         [client setParameterEncoding:AFJSONParameterEncoding];
         NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:nil parameters:params];
 
-        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
             [hud hide:YES];
             NSString *msg = [NSString stringWithFormat:@"Your order has printed successfully to station: %@", printStationId];
             [[[UIAlertView alloc] initWithTitle:@"Success" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
-        }                                                                                   failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
             [hud hide:YES];
             NSString *errorMsg = [NSString stringWithFormat:@"There was an error printing the order. %@", error.localizedDescription];
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -987,8 +986,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSString *JSON = [qty JSONString];
     CIItemEditCell *cell = (CIItemEditCell *) [self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
     cell.qty.text = JSON;
-    [self.itemsQty removeObjectAtIndex:idx];
-    [self.itemsQty insertObject:JSON atIndex:idx];
+    [self.itemsQty removeObjectAtIndex:(NSUInteger) idx];
+    [self.itemsQty insertObject:JSON atIndex:(NSUInteger) idx];
     [self.itemsTable reloadData];
     unsavedChangesPresent = YES;
     [self UpdateTotal];
@@ -1067,9 +1066,9 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 
 - (void)deleteRowFromOrderListAtIndex:(NSIndexPath *)index {
-    AnOrder *anOrder = [self.filteredOrders objectAtIndex:index.row];
+    AnOrder *anOrder = [self.filteredOrders objectAtIndex:(NSUInteger) index.row];
     [self.allorders removeObjectIdenticalTo:anOrder];
-    [self.filteredOrders removeObjectAtIndex:index.row];
+    [self.filteredOrders removeObjectAtIndex:(NSUInteger) index.row];
     NSArray *indices = [NSArray arrayWithObject:index];
     [self.sideTable deleteRowsAtIndexPaths:indices withRowAnimation:UITableViewRowAnimationAutomatic];
 }

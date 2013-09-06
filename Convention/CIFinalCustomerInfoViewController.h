@@ -32,7 +32,7 @@
 @property(nonatomic, strong) NSArray *tableData;
 @property(nonatomic, strong) NSMutableArray *filteredtableData;
 
-@property(nonatomic, assign) id <CICustomerDelegate, CIFinalCustomerDelegate> delegate;
+@property(nonatomic, assign) id <CIFinalCustomerDelegate> delegate;
 
 - (IBAction)submit:(id)sender;
 
