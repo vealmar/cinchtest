@@ -43,7 +43,6 @@
     [super viewDidLoad];
     [self.custTable reloadData];
     self.tablelayer.layer.masksToBounds = YES;
-    self.tablelayer.layer.cornerRadius = 10.f;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.custTable];
     [pull setDelegate:self];
     [self.custTable addSubview:pull];
