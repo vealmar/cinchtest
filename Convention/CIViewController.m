@@ -16,6 +16,7 @@
 #import "ShowConfigurations.h"
 #import "Customer.h"
 #import "CoreDataUtil.h"
+#import "Product.h"
 
 @implementation CIViewController {
     CGRect originalBounds;
@@ -97,7 +98,7 @@
 
     MBProgressHUD *__weak loginHud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     loginHud.labelText = @"Logging in";
-    [loginHud show:YES];
+    [loginHud show:NO];
 
     AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:kDBLOGIN]];
     NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:Email, kEmailKey, Password, kPasswordKey, nil];
@@ -106,7 +107,7 @@
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
 
-                [loginHud hide:YES];
+                [loginHud hide:NO];
                 if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
                     authToken = [JSON objectForKey:kAuthToken];
                     vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
@@ -118,14 +119,14 @@
                 if (JSON) {
 
                     self.error.text = [JSON objectForKey:@"error"];
-                    [loginHud hide:YES];
+                    [loginHud hide:NO];
 
                 } else if (requestError) {
-                    [loginHud hide:YES];
+                    [loginHud hide:NO];
                     [[[UIAlertView alloc] initWithTitle:@"Error" message:[requestError localizedDescription]
                                                delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                 } else {
-                    [loginHud hide:YES];
+                    [loginHud hide:NO];
                     [[[UIAlertView alloc] initWithTitle:@"Error" message:@"An unknown error occurred. Please try login again."
                                                delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                 }
@@ -137,7 +138,7 @@
 - (void)loadCustomers {
     MBProgressHUD *__weak hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Loading customers";
-    [hud show:YES];
+    [hud show:NO];
     [[CoreDataUtil sharedManager] deleteAllObjects:@"Customer"];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
@@ -149,15 +150,41 @@
                                                                                                     [self.managedObjectContext insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:self.managedObjectContext]];
                                                                                                 }
                                                                                                 [[CoreDataUtil sharedManager] saveObjects];
-                                                                                                [hud hide:YES];
-                                                                                                [self presentOrderViewController];
+                                                                                                [hud hide:NO];
+                                                                                                [self loadProducts];
                                                                                             }
-
                                                                                         }
                                                                                         failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
-                                                                                            [hud hide:YES];
+                                                                                            [hud hide:NO];
                                                                                             [[[UIAlertView alloc] initWithTitle:@"Error" message:[err localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                                                                                             NSLog(@"%@ Error loading customers: %@", [self class], [err localizedDescription]);
+                                                                                        }];
+    [operation start];
+}
+
+- (void)loadProducts {
+    MBProgressHUD *__weak hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Loading products";
+    [hud show:NO];
+    [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, self.authToken, kVendorGroupID, [[self.vendorInfo objectForKey:kVendorGroupID] stringValue]];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                            if (JSON && ([(NSArray *) JSON count] > 0)) {
+                                                                                                NSArray *products = (NSArray *) JSON;
+                                                                                                for (NSDictionary *product in products) {
+                                                                                                    [self.managedObjectContext insertObject:[[Product alloc] initWithProductFromServer:product context:self.managedObjectContext]];
+                                                                                                }
+                                                                                                [[CoreDataUtil sharedManager] saveObjects];
+                                                                                                [hud hide:NO];
+                                                                                                [self presentOrderViewController];
+                                                                                            }
+                                                                                        }
+                                                                                        failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
+                                                                                            [hud hide:NO];
+                                                                                            [[[UIAlertView alloc] initWithTitle:@"Error" message:[err localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                                                                                            NSLog(@"%@ Error loading products: %@", [self class], [err localizedDescription]);
                                                                                         }];
     [operation start];
 }

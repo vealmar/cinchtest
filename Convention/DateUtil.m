@@ -99,9 +99,22 @@ static DateUtil *sharedInstance;
     return [df dateFromString:jsonDate];
 }
 
++ (NSDate *)convertYyyymmddthhmmsszToDate:(NSString *)jsonDate {
+    NSMutableOrderedSet *dates = [[NSMutableOrderedSet alloc] init];
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
+    return [df dateFromString:jsonDate];
+}
+
 + (NSString *)convertDateToYyyymmdd:(NSDate *)nsDate {
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"yyyy-MM-dd"];
+    return [df stringFromDate:nsDate];
+}
+
++ (NSString *)convertDateToYyyymmddthhmmssz:(NSDate *)nsDate {
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
     return [df stringFromDate:nsDate];
 }
 

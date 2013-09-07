@@ -58,4 +58,18 @@
     } else
         return fetchedObjects;
 }
+
++ (NSArray *)getProducts:(NSManagedObjectContext *)managedObjectContext {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:managedObjectContext]];
+    NSArray *sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]];
+    [fetchRequest setSortDescriptors:sortDescriptors];
+    NSError *error = nil;
+    NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if (error) {
+        NSLog(@"%@ Error fetching products. %@", [self class], [error localizedDescription]);
+        return [[NSArray alloc] init];
+    } else
+        return fetchedObjects;
+}
 @end

@@ -177,7 +177,7 @@
     if (!triggeredByPullToRefresh) {
         hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         hud.labelText = @"Loading customers";
-        [hud show:YES];
+        [hud show:NO];
     }
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
@@ -194,14 +194,14 @@
                                                                                             if (triggeredByPullToRefresh)
                                                                                                 [pull finishedLoading];
                                                                                             else
-                                                                                                [hud hide:YES];
+                                                                                                [hud hide:NO];
                                                                                         }
                                                                                         failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
                                                                                             [self setCustomerData:nil];
                                                                                             if (triggeredByPullToRefresh)
                                                                                                 [pull finishedLoading];
                                                                                             else
-                                                                                                [hud hide:YES];
+                                                                                                [hud hide:NO];
                                                                                         }];
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [queue addOperation:operation];

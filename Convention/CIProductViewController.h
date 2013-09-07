@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,
         UIAlertViewDelegate, ProductCellDelegate,
         CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate, ReachabilityDelegate,
-        UIPrinterSelectedDelegate, VendorViewDelegate> {
+        UIPrinterSelectedDelegate, VendorViewDelegate, PullToRefreshViewDelegate> {
     ReachabilityDelegation *reachDelegation;
 
 }

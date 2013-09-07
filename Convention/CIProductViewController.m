@@ -28,6 +28,7 @@
 #import "NilUtil.h"
 #import "NumberUtil.h"
 #import "DateUtil.h"
+#import "Product.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -39,6 +40,7 @@
     NSIndexPath *selectedItemRowIndexPath;
     CIProductViewControllerHelper *helper;
     AnOrder *savedOrder;
+    PullToRefreshView *pull;
 }
 
 @end
@@ -81,6 +83,9 @@
     [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
     self.showShipDates = [[ShowConfigurations instance] shipDates];
     self.allowPrinting = [ShowConfigurations instance].printing;
+    pull = [[PullToRefreshView alloc] initWithScrollView:self.products];
+    [pull setDelegate:self];
+    [self.products addSubview:pull];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -101,7 +106,7 @@
         if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
         self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
         currentVendor = self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
-        [self loadAllProductsForVendorGroup];
+        [self loadAllProducts];
     } else
         [self.products reloadData];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
@@ -203,10 +208,27 @@
     return dict;
 }
 
-- (void)loadAllProductsForVendorGroup {
-    MBProgressHUD *__weak loadProductsHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
-    loadProductsHUD.labelText = @"Loading Products...";
-    [loadProductsHUD show:NO];
+- (void)loadAllProducts {//i.e. all products for the logged in vendor's vendor group.
+    NSArray *products = [CoreDataManager getProducts:self.managedObjectContext];
+    if (products && products.count > 0) {//todo use AProduct objects
+        NSMutableDictionary *allProducts = [[NSMutableDictionary alloc] init];
+        for (Product *product in products) {
+            [allProducts setObject:[product asDictionary] forKey:product.productId];
+        }
+        self.allproductsMap = allProducts;
+        [self loadProductsForCurrentVendorAndBulletin];
+    } else {
+        [self reloadProducts:NO];
+    }
+}
+
+- (void)reloadProducts:(BOOL)triggeredByPull {
+    MBProgressHUD *__weak loadProductsHUD;
+    if (!triggeredByPull) {
+        loadProductsHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+        loadProductsHUD.labelText = @"Loading products";
+        [loadProductsHUD show:NO];
+    }
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, self.authToken, kVendorGroupID, self.loggedInVendorGroupId];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *jsonOp = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
@@ -221,10 +243,18 @@
                     }
                 }
                 [self loadProductsForCurrentVendorAndBulletin];
-                [loadProductsHUD hide:NO];
+                if (triggeredByPull) {
+                    [pull finishedLoading];
+                } else {
+                    [loadProductsHUD hide:NO];
+                }
             } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
                 [[[UIAlertView alloc] initWithTitle:@"Error!" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                [loadProductsHUD hide:NO];
+                if (triggeredByPull) {
+                    [pull finishedLoading];
+                } else {
+                    [loadProductsHUD hide:NO];
+                }
             }];
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [queue addOperations:@[jsonOp] waitUntilFinished:YES];
@@ -232,6 +262,7 @@
 
 - (void)loadProductsForCurrentVendorAndBulletin {
     NSMutableArray *resultData = [[NSMutableArray alloc] init];
+    self.vendorProductMap = [[NSMutableDictionary alloc] init];
     [[self.allproductsMap allValues] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         NSDictionary *product = (NSDictionary *) obj;
         NSNumber *vendorId = (NSNumber *) [NilUtil nilOrObject:[product objectForKey:kProductVendorID]];
@@ -662,12 +693,12 @@
 
     MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     submit.labelText = asPending ? @"Calculating order total" : @"Submitting order";
-    [submit show:YES];
+    [submit show:NO];
 
     NSMutableURLRequest *request = [client requestWithMethod:method path:nil parameters:final];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
             success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                [submit hide:YES];
+                [submit hide:NO];
                 self.unsavedChangesPresent = NO;
                 savedOrder = [[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) JSON];
                 if (asPending) {
@@ -710,7 +741,7 @@
                     [self Return];
                 }
             } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                [submit hide:YES];
+                [submit hide:NO];
                 NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
                 [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
@@ -848,7 +879,7 @@
     if (vendorsData == nil) {
         MBProgressHUD *venderLoading = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         venderLoading.labelText = @"Loading vendors from your vendor group";
-        [venderLoading show:YES];
+        [venderLoading show:NO];
 
         if (self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]]) {
 
@@ -859,7 +890,7 @@
 
                         NSArray *results = [NSArray arrayWithArray:JSON];
                         if (results == nil || [results isKindOfClass:[NSNull class]] || results.count == 0 || [results objectAtIndex:0] == nil || [[results objectAtIndex:0] objectForKey:@"vendors"] == nil) {
-                            [venderLoading hide:YES];
+                            [venderLoading hide:NO];
                             [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Problem loading vendors! If this problem persists please notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                             return;
                         }
@@ -873,7 +904,7 @@
                         }];
 
                         vendorsData = [vs mutableCopy];
-                        [venderLoading hide:YES];
+                        [venderLoading hide:NO];
                         [self loadBulletins];
 
                     } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
@@ -883,14 +914,14 @@
                                                    delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
                         vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil], nil];
-                        [venderLoading hide:YES];
+                        [venderLoading hide:NO];
                         [self showVendorView];
                     }];
 
             [jsonOp start];
 
         } else {
-            [venderLoading hide:YES];
+            [venderLoading hide:NO];
             vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil], nil];
             [self showVendorView];
         }
@@ -1197,16 +1228,10 @@
     }
 }
 
-- (void)updateCellColorForId:(NSUInteger)cellId {
-    NSMutableDictionary *product = [self.resultData objectAtIndex:cellId];
+- (void)updateCellColorForId:(NSUInteger)index {
+    NSMutableDictionary *product = [self.resultData objectAtIndex:index];
     NSMutableDictionary *editableDict = [editableData objectForKey:[product objectForKey:@"id"]];
-    NSString *invtid = [product objectForKey:@"invtid"];
-    NSArray *cells = [self.products visibleCells];
-    for (ProductCell *cell in cells) {
-        if ([invtid isEqualToString:cell.InvtID.text]) {
-            [helper updateCellBackground:cell product:product editableItemDetails:editableDict multiStore:self.multiStore];
-        }
-    }
+    ProductCell *cell = (ProductCell *) [self.products cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
 }
 
 #pragma mark - line item entry
@@ -1318,7 +1343,11 @@
     }
 }
 
-#pragma mark - UITextFielDelegate
+#pragma mark - PullRefresh
+
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
+    [self reloadProducts:YES];
+}
 
 #pragma mark - Reachability delegate methods
 

@@ -145,10 +145,10 @@ CIOrderViewController
         if (showLoadingIndicator) {  //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
             hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
             hud.labelText = @"Getting orders";
-            [hud show:YES];
+            [hud show:NO];
         }
         void (^cleanup)(void) = ^{
-            if (![hud isHidden]) [hud hide:YES];
+            if (![hud isHidden]) [hud hide:NO];
             [pull finishedLoading];
             isLoadingOrders = NO;
         };
@@ -939,7 +939,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
         hud.labelText = @"Printing";
-        [hud show:YES];
+        [hud show:NO];
 
         NSString *orderID = [NSString stringWithFormat:@"%@", currentOrder.orderId];
         NSNumber *printStationId = [NSNumber numberWithInt:[[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue]];
@@ -950,12 +950,12 @@ SG: This method gets called when you swipe on an order in the order list and tap
         NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:nil parameters:params];
 
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-            [hud hide:YES];
+            [hud hide:NO];
             NSString *msg = [NSString stringWithFormat:@"Your order has printed successfully to station: %@", printStationId];
             [[[UIAlertView alloc] initWithTitle:@"Success" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 
         }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-            [hud hide:YES];
+            [hud hide:NO];
             NSString *errorMsg = [NSString stringWithFormat:@"There was an error printing the order. %@", error.localizedDescription];
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         }];

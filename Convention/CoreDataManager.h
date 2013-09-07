@@ -18,4 +18,6 @@
 + (Customer *)getCustomer:(NSNumber *)customerId managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 + (NSArray *)getCustomers:(NSManagedObjectContext *)managedObjectContext;
+
++ (NSArray *)getProducts:(NSManagedObjectContext *)managedObjectContext;
 @end

@@ -65,7 +65,6 @@
 		6E3BECF514927EDD00BF8E15 /* CI-Logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6E3BECF314927EDD00BF8E15 /* CI-Logo.png */; };
 		6E3E512D15919FFB00FC4638 /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 6E3E512C15919FFB00FC4638 /* refresh.png */; };
 		6E511DF0159035E900ED595B /* addtocartbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6ED971D0158FA31100591695 /* addtocartbutton.png */; };
-		6E7698AA153E8BF2003CF4AC /* product.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7698A9153E8BF2003CF4AC /* product.m */; };
 		6E7698AD153E8C57003CF4AC /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E7698AC153E8C57003CF4AC /* MBProgressHUD.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		6EAFF9EC145FABA400491B42 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EAFF9EB145FABA400491B42 /* JSONKit.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		6EAFF9F1145FB04800491B42 /* CIProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6EAFF9EF145FB04800491B42 /* CIProductViewController.m */; };
@@ -301,8 +300,6 @@
 		6E3BECF214927EDC00BF8E15 /* afc-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "afc-logo.png"; sourceTree = "<group>"; };
 		6E3BECF314927EDD00BF8E15 /* CI-Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CI-Logo.png"; sourceTree = "<group>"; };
 		6E3E512C15919FFB00FC4638 /* refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh.png; sourceTree = "<group>"; };
-		6E7698A8153E8BF2003CF4AC /* product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = product.h; sourceTree = "<group>"; };
-		6E7698A9153E8BF2003CF4AC /* product.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = product.m; sourceTree = "<group>"; };
 		6E7698AB153E8C57003CF4AC /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		6E7698AC153E8C57003CF4AC /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		6EAFF9EA145FABA400491B42 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
@@ -811,8 +808,6 @@
 				C727F68F1671A2AC00F2847D /* CoreDataUtil.m */,
 				335A42F5164D740A007B872A /* GroupedObject.h */,
 				335A42F6164D740A007B872A /* GroupedObject.m */,
-				6E7698A8153E8BF2003CF4AC /* product.h */,
-				6E7698A9153E8BF2003CF4AC /* product.m */,
 				6EB78B3E153F7C17005291EE /* vender.h */,
 				6EB78B3F153F7C17005291EE /* vender.m */,
 				C730D9CD16705F330013B87B /* Cart+Extensions.h */,
@@ -1407,7 +1402,6 @@
 				6E3BEC9E1491905D00BF8E15 /* CIOrderViewController.m in Sources */,
 				6E3BECE11491EFD700BF8E15 /* CIOrderCell.m in Sources */,
 				6E3BECEB149212A900BF8E15 /* CIItemEditCell.m in Sources */,
-				6E7698AA153E8BF2003CF4AC /* product.m in Sources */,
 				6E7698AD153E8C57003CF4AC /* MBProgressHUD.m in Sources */,
 				6EB78B40153F7C17005291EE /* vender.m in Sources */,
 				6E21EF2515487B30002CF4B7 /* CIFinalCustomerInfoViewController.m in Sources */,
