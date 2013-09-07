@@ -12,7 +12,6 @@
 
 
 @implementation Customer
-NSArray *storesArray;
 @dynamic customer_id;
 @dynamic billname;
 @dynamic import_id;
@@ -30,9 +29,8 @@ NSArray *storesArray;
         self.import_id = (NSNumber *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerImportId]];
         self.email = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerEmail]];
         self.initial_show = (NSNumber *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerInitialShow]];
-        storesArray = (NSArray *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerStores]];
-        if (storesArray == nil)storesArray = [[NSArray alloc] init];
-        self.stores = storesArray ? [storesArray componentsJoinedByString:@","] : nil;
+        NSArray *storesArray = (NSArray *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerStores]];
+        self.stores = storesArray && storesArray.count > 0 ? [storesArray componentsJoinedByString:@","] : nil;
     }
     return self;
 }
@@ -51,8 +49,14 @@ NSArray *storesArray;
         [dictionary setObject:self.email forKey:kCustomerEmail];
     if (self.initial_show)
         [dictionary setObject:self.initial_show forKey:kCustomerInitialShow];
-    if (storesArray)
-        [dictionary setObject:storesArray forKey:kCustomerStores];
+    if (self.stores) {
+        NSArray *storesStrArray = [self.stores componentsSeparatedByString:@","];
+        NSMutableArray *storesNumArray = [[NSMutableArray alloc] init];
+        for (NSString *storeStr in storesStrArray) {
+            [storesNumArray addObject:[NSNumber numberWithInt:[storeStr intValue]]];
+        }
+        [dictionary setObject:storesNumArray forKey:kCustomerStores];
+    }
     return dictionary;
 }
 

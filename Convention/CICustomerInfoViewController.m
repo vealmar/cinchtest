@@ -52,11 +52,7 @@
 - (void)setCustomerData:(NSArray *)customerData {
     NSMutableArray *arr = [NSMutableArray array];
     for (int i = 0; i < [customerData count]; i++) {//todo: is this second conversion necessary?
-        NSDictionary *customer = [customerData objectAtIndex:(NSUInteger) i];
-        NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[customer objectForKey:kCustID], kCustID, [customer objectForKey:kBillName],
-                                                                        kBillName, [customer objectForKey:kID], kID, [customer objectForKey:kEmail],
-                                                                        kEmail, [customer objectForKey:kStores], kStores, nil];
-        [arr addObject:dict];
+        [arr addObject:[customerData objectAtIndex:(NSUInteger) i]];
     }
     if (self.tableData) {
         self.tableData = nil;
