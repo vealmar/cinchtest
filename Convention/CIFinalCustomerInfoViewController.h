@@ -13,6 +13,8 @@
 #import "CICustomerInfoViewController.h"
 #import "MICheckBox.h"
 
+@class Order;
+
 @protocol CIFinalCustomerDelegate <NSObject>
 
 - (NSDictionary *)getCustomerInfo;
@@ -33,6 +35,7 @@
 @property(nonatomic, strong) NSMutableArray *filteredtableData;
 
 @property(nonatomic, assign) id <CIFinalCustomerDelegate> delegate;
+@property Order *order;
 
 - (IBAction)submit:(id)sender;
 

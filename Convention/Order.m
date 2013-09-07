@@ -25,6 +25,10 @@
 @dynamic customer_id;
 @dynamic custid;
 @dynamic carts;
+@dynamic authorized;
+@dynamic notes;
+@dynamic ship_notes;
+@dynamic ship_flag;
 
 - (id)initWithOrder:(AnOrder *)orderFromServer forCustomer:(NSDictionary *)customer vendorId:(NSNumber *)vendorId vendorGroup:(NSString *)vendorGroup andVendorGroupId:(NSString *)vendorGroupId context:(NSManagedObjectContext *)context {
     self = [super initWithEntity:[NSEntityDescription entityForName:@"Order" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
@@ -40,6 +44,10 @@
         self.vendor_id = [vendorId intValue];
         self.orderId = [orderFromServer.orderId intValue];
         self.totalCost = [orderFromServer.total doubleValue];
+        self.authorized = orderFromServer.authorized;
+        self.notes = orderFromServer.notes;
+        self.ship_notes = orderFromServer.shipNotes;
+        self.ship_flag = (BOOL) orderFromServer.shipFlag;
     }
     return self;
 }

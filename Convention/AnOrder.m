@@ -30,6 +30,8 @@
         self.total = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"total"]];
         self.status = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"status"]];
         self.authorized = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"authorized"]];
+        NSNumber *shipFlagInt = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"ship_flag"]];
+        self.shipFlag = (BOOL *) (shipFlagInt && [shipFlagInt intValue] == 1);//boolean
         self.customer = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
         NSMutableArray *lineItems = [[NSMutableArray alloc] init];
         NSArray *jsonLIneItems = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"line_items"]];

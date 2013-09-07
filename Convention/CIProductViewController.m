@@ -838,6 +838,7 @@
             return;
         }
         CIFinalCustomerInfoViewController *ci = [[CIFinalCustomerInfoViewController alloc] initWithNibName:@"CIFinalCustomerInfoViewController" bundle:nil];
+        ci.order = self.coreDataOrder;
         ci.modalPresentationStyle = UIModalPresentationFormSheet;
         ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         ci.delegate = self;

@@ -13,6 +13,7 @@
 #import "CIAppDelegate.h"
 #import "SetupInfo.h"
 #import "SettingsManager.h"
+#import "Order.h"
 
 @interface CIFinalCustomerInfoViewController () {
     SetupInfo *authorizedBy;
@@ -56,42 +57,47 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    context = ((CIAppDelegate *) [[UIApplication sharedApplication] delegate]).managedObjectContext;
+    [self defaultAuthorizedbyText];
+    [self defaultShippingFields];
+    self.Notes.text = self.order && self.order.notes ? self.order.notes : @"";
+    self.shippingNotes.text = self.order && self.order.ship_notes ? self.order.ship_notes : @"";
+}
+
+- (void)defaultAuthorizedbyText {
     NSDictionary *subs = [NSDictionary dictionaryWithObject:@"authorizedBy" forKey:@"ITEMNAME"];
-
-
-    //SG: I think SetupInfo in core data is being used to remember the
-    //value user specified for certain fields like Authorized By and Contact Before Shipping?
-    //the last time they placed an order.
-    //If the values are found, these fields are defaulted with those values.
-
     CIAppDelegate *appDelegate = (CIAppDelegate *) [[UIApplication sharedApplication] delegate];
     NSManagedObjectModel *model = appDelegate.managedObjectModel;
     NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs];
     NSError *error = nil;
-
-    context = appDelegate.managedObjectContext;
     NSArray *results = [context executeFetchRequest:req error:&error];
     if (!error && results != nil && [results count] > 0) {
         authorizedBy = [results objectAtIndex:0];
-        Authorizer.text = authorizedBy.value;
     }
+    Authorizer.text = self.order && self.order.authorized ? self.order.authorized
+            : authorizedBy ? authorizedBy.value : @"";
+}
 
+- (void)defaultShippingFields {
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         contactBeforeShippingLabel.hidden = YES;
         contactBeforeShipping.hidden = YES;
     } else {
-        subs = [NSDictionary dictionaryWithObject:@"ship_flag" forKey:@"ITEMNAME"];
-        req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs];
-        results = [context executeFetchRequest:req error:&error];
+        NSDictionary *subs = [NSDictionary dictionaryWithObject:@"ship_flag" forKey:@"ITEMNAME"];
+        CIAppDelegate *appDelegate = (CIAppDelegate *) [[UIApplication sharedApplication] delegate];
+        NSManagedObjectModel *model = appDelegate.managedObjectModel;
+        NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs];
+        NSError *error = nil;
+        NSArray *results = [context executeFetchRequest:req error:&error];
         if (!error && results != nil && [results count] > 0) {
             shipFlag = [results objectAtIndex:0];
-            [contactBeforeShipping updateCheckBox:[shipFlag.value isEqualToString:@"YES"]];
         }
-    }
+        [contactBeforeShipping updateCheckBox:self.order && self.order.ship_flag ? self.order.ship_flag
+                : shipFlag ? [shipFlag.value isEqualToString:@"YES"] : NO];
 
-    self.Notes.text = @"";
-    self.shippingNotes.text = @"";
+    }
 }
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];

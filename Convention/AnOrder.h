@@ -22,6 +22,7 @@
 @property(strong, nonatomic) NSString *authorized;
 @property(strong, nonatomic) NSDictionary *customer;
 @property(strong, nonatomic) Order *coreDataOrder;
+@property(nonatomic) BOOL *shipFlag;
 
 - (id)initWithJSONFromServer:(NSDictionary *)JSON;
 

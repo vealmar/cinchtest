@@ -27,6 +27,11 @@
 @property(nonatomic, retain) NSString *customer_id;
 @property(nonatomic, retain) NSString *custid;
 @property(nonatomic, retain) NSOrderedSet *carts; //SG: these are the line items.
+@property(nonatomic, retain) NSString *authorized;
+@property(nonatomic, retain) NSString *notes;
+@property(nonatomic, retain) NSString *ship_notes;
+@property(nonatomic) BOOL ship_flag;
+
 @end
 
 @interface Order (CoreDataGeneratedAccessors)

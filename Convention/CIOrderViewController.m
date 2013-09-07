@@ -751,7 +751,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     self.searchText.text = @"";
     self.filteredOrders = [self.allorders mutableCopy];
     [self.sideTable reloadData];
-    self.notesLabel.hidden = [self.filteredOrders count] > 0;
+    self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
 }
 #pragma mark - CIStoreQtyDelegate
 
