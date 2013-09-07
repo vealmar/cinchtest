@@ -119,7 +119,11 @@
 #define kProductVendorID @"vendor_id"
 #define kProductCreatedAt @"created_at"
 #define kProductUpdatedAt @"updated_at"
+#define kProductBulletin @"bulletin"
 #define kProductBulletinId @"bulletin_id"
+#define kProductMin @"min"
+#define kProductStatus @"status"
+#define kProductCategory @"category"
 
 #define kLineItemPRICE @"price"
 #define kLineItemVoucher @"voucherPrice"

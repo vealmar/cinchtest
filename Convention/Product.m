@@ -67,6 +67,12 @@
         self.vendor_id = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductVendorID]];
         self.import_id = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductImportID]];
         self.initial_show = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductInitialShow]];
+        self.bulletin = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductBulletin]];
+        self.bulletin_id = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductBulletinId]];
+        self.voucher = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductVoucher]];
+        self.min = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductMin]];
+        self.status = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductStatus]];
+        self.category = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductCategory]];
         NSString *shipdate1Str = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShipDate1]];
         if (shipdate1Str)
             self.shipdate1 = [DateUtil convertYyyymmddthhmmsszToDate:shipdate1Str];
@@ -94,16 +100,18 @@
         [dictionary setObject:self.invtid forKey:kProductInvtid];
     if (self.descr)
         [dictionary setObject:self.descr forKey:kProductDescr];
+    if (self.descr2)
+        [dictionary setObject:self.descr2 forKey:kProductDescr2];
     if (self.partnbr)
         [dictionary setObject:self.partnbr forKey:kProductPartNbr];
     if (self.uom)
         [dictionary setObject:self.uom forKey:kProductUom];
     if (self.regprc)
         [dictionary setObject:self.regprc forKey:kProductRegPrc];
-    if (self.regprc)
-        [dictionary setObject:self.regprc forKey:kProductRegPrc];
     if (self.showprc)
         [dictionary setObject:self.showprc forKey:kProductShowPrice];
+    if (self.caseqty)
+        [dictionary setObject:self.caseqty forKey:kProductCaseQty];
     if (self.dirship)
         [dictionary setObject:self.dirship forKey:kProductDirShip];
     if (self.linenbr)
@@ -120,10 +128,23 @@
         [dictionary setObject:self.import_id forKey:kProductImportID];
     if (self.initial_show)
         [dictionary setObject:self.initial_show forKey:kProductInitialShow];
+    if (self.bulletin)
+        [dictionary setObject:self.bulletin forKey:kProductBulletin];
+    if (self.bulletin_id)
+        [dictionary setObject:self.bulletin_id forKey:kProductBulletinId];
+    if (self.voucher)
+        [dictionary setObject:self.voucher forKey:kProductVoucher];
+    if (self.min)
+        [dictionary setObject:self.min forKey:kProductMin];
+    if (self.status)
+        [dictionary setObject:self.status forKey:kProductStatus];
+    if (self.category)
+        [dictionary setObject:self.category forKey:kProductCategory];
     if (self.shipdate1)
         [dictionary setObject:[DateUtil convertDateToYyyymmddthhmmssz:self.shipdate1] forKey:kProductShipDate1];
     if (self.shipdate2)
         [dictionary setObject:[DateUtil convertDateToYyyymmddthhmmssz:self.shipdate2] forKey:kProductShipDate2];
+
     return dictionary;
 }
 @end
