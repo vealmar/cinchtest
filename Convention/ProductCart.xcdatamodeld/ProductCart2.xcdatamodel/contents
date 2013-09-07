@@ -45,12 +45,16 @@
         <attribute name="stores" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="Order" representedClassName="Order" syncable="YES">
+        <attribute name="authorized" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="billname" attributeType="String" syncable="YES"/>
         <attribute name="created_at" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="custid" attributeType="String" syncable="YES"/>
         <attribute name="customer_id" attributeType="String" syncable="YES"/>
         <attribute name="multiStore" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="orderId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="ship_flag" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="ship_notes" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="status" attributeType="String" defaultValueString="pending" syncable="YES"/>
         <attribute name="totalCost" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="vendor_id" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -101,7 +105,7 @@
     <elements>
         <element name="Cart" positionX="90" positionY="20" width="128" height="540"/>
         <element name="Customer" positionX="160" positionY="192" width="128" height="150"/>
-        <element name="Order" positionX="-200" positionY="27" width="128" height="225"/>
+        <element name="Order" positionX="-200" positionY="27" width="128" height="285"/>
         <element name="SetupInfo" positionX="-270" positionY="333" width="128" height="73"/>
         <element name="ShipDate" positionX="331" positionY="215" width="128" height="75"/>
         <element name="Product" positionX="160" positionY="192" width="128" height="480"/>
