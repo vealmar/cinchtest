@@ -200,6 +200,7 @@
 		EB652B23176022E400287961 /* Futura Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB652B22176022E400287961 /* Futura Medium.ttf */; };
 		EB7D8FD617D620FA00F2FB8C /* blue-textbox.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */; };
 		EB7D8FDC17DA61E100F2FB8C /* Customer.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FDB17DA61E100F2FB8C /* Customer.m */; };
+		EB7D8FDF17DAF02800F2FB8C /* Product.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FDE17DAF02800F2FB8C /* Product.m */; };
 		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
 		EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */; };
 		EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */; };
@@ -498,6 +499,8 @@
 		EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-textbox.png"; sourceTree = "<group>"; };
 		EB7D8FDA17DA61E100F2FB8C /* Customer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Customer.h; sourceTree = "<group>"; };
 		EB7D8FDB17DA61E100F2FB8C /* Customer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Customer.m; sourceTree = "<group>"; };
+		EB7D8FDD17DAF02800F2FB8C /* Product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
+		EB7D8FDE17DAF02800F2FB8C /* Product.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Product.m; sourceTree = "<group>"; };
 		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
 		EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
 		EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
@@ -817,6 +820,8 @@
 				C7BA94F71653462B00E6705B /* Order+Extensions.h */,
 				C7BA94F81653462C00E6705B /* Order+Extensions.m */,
 				C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */,
+				EB7D8FDD17DAF02800F2FB8C /* Product.h */,
+				EB7D8FDE17DAF02800F2FB8C /* Product.m */,
 				C76D3E6216AE322400F055F4 /* ShipDate.h */,
 				C76D3E6316AE322400F055F4 /* ShipDate.m */,
 				C76D3E5F16AE322400F055F4 /* Order.h */,
@@ -1454,6 +1459,7 @@
 				35F5220802E678E6EC146A37 /* PWCartViewCell.m in Sources */,
 				35F5280E4435FDF158A236FC /* FarrisCartViewCell.m in Sources */,
 				EB7D8FDC17DA61E100F2FB8C /* Customer.m in Sources */,
+				EB7D8FDF17DAF02800F2FB8C /* Product.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
