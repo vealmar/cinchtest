@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="2" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2061" systemVersion="11G63b" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model name="" userDefinedModelVersionIdentifier="2" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0"
+       lastSavedToolsVersion="2061" systemVersion="11G63b" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic"
+       iOSVersion="Automatic">
     <entity name="Cart" representedClassName="Cart" syncable="YES">
         <attribute name="adv" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="cartId" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -20,7 +22,8 @@
         <attribute name="invtid" attributeType="String" syncable="YES"/>
         <attribute name="linenbr" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="new" optional="YES" attributeType="Boolean" defaultValueString="YES" syncable="YES"/>
-        <attribute name="orderLineItem_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="orderLineItem_id" optional="YES" attributeType="Integer 32" defaultValueString="0"
+                   syncable="YES"/>
         <attribute name="partnbr" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="regprc" attributeType="String" syncable="YES"/>
         <attribute name="shipdate1" optional="YES" attributeType="String" syncable="YES"/>
@@ -32,11 +35,14 @@
         <attribute name="vendid" attributeType="String" syncable="YES"/>
         <attribute name="vendor_id" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="voucher" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="order" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Order" inverseName="carts" inverseEntity="Order" syncable="YES"/>
-        <relationship name="shipdates" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ShipDate" inverseName="cart" inverseEntity="ShipDate" syncable="YES"/>
+        <relationship name="order" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Order"
+                      inverseName="carts" inverseEntity="Order" syncable="YES"/>
+        <relationship name="shipdates" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES"
+                      destinationEntity="ShipDate" inverseName="cart" inverseEntity="ShipDate" syncable="YES"/>
     </entity>
     <entity name="Customer" representedClassName="Customer" syncable="YES">
         <attribute name="billname" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="custid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="customer_id" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="import_id" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
@@ -55,7 +61,8 @@
         <attribute name="vendor_id" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="vendorGroup" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendorGroupId" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Cart" inverseName="order" inverseEntity="Cart" syncable="YES"/>
+        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES"
+                      destinationEntity="Cart" inverseName="order" inverseEntity="Cart" syncable="YES"/>
     </entity>
     <entity name="SetupInfo" representedClassName="SetupInfo" syncable="YES">
         <attribute name="item" attributeType="String" syncable="YES"/>
@@ -63,7 +70,8 @@
     </entity>
     <entity name="ShipDate" representedClassName="ShipDate" syncable="YES">
         <attribute name="shipdate" attributeType="Date" syncable="YES"/>
-        <relationship name="cart" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Cart" inverseName="shipdates" inverseEntity="Cart" syncable="YES"/>
+        <relationship name="cart" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Cart"
+                      inverseName="shipdates" inverseEntity="Cart" syncable="YES"/>
     </entity>
     <fetchRequest name="getSetupItem" entity="SetupInfo" predicateString="item == $ITEMNAME"/>
     <elements>
@@ -71,6 +79,6 @@
         <element name="Order" positionX="-200" positionY="27" width="128" height="225"/>
         <element name="SetupInfo" positionX="-270" positionY="333" width="128" height="73"/>
         <element name="ShipDate" positionX="331" positionY="215" width="128" height="75"/>
-        <element name="Customer" positionX="160" positionY="192" width="128" height="135"/>
+        <element name="Customer" positionX="160" positionY="192" width="128" height="150"/>
     </elements>
 </model>

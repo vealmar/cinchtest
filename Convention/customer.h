@@ -18,5 +18,9 @@
 @property(nonatomic, retain) NSString *email;
 @property(nonatomic, retain) NSNumber *initial_show;
 @property(nonatomic, retain) NSString *stores;
+@property(nonatomic, retain) NSString *custid;
 
+- (id)initWithCustomerFromServer:(NSDictionary *)customerFromServer context:(NSManagedObjectContext *)context;
+
+- (NSDictionary *)asDictionary;
 @end

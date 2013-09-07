@@ -7,17 +7,18 @@
 //
 
 #import "CICustomerInfoViewController.h"
-#import <QuartzCore/QuartzCore.h>
 #import "MBProgressHUD.h"
 #import "Macros.h"
 #import "config.h"
 #import "SettingsManager.h"
-#import "CustomerDataController.h"
 #import "AFJSONRequestOperation.h"
+#import "CoreDataManager.h"
+#import "Customer.h"
+#import "CoreDataUtil.h"
 
 @implementation CICustomerInfoViewController {
-    MBProgressHUD *refreshing;
     NSString *selectedCustomer;
+    PullToRefreshView *pull;
 }
 @synthesize tablelayer;
 @synthesize custTable;
@@ -43,12 +44,19 @@
     [self.custTable reloadData];
     self.tablelayer.layer.masksToBounds = YES;
     self.tablelayer.layer.cornerRadius = 10.f;
+    pull = [[PullToRefreshView alloc] initWithScrollView:self.custTable];
+    [pull setDelegate:self];
+    [self.custTable addSubview:pull];
+
 }
 
 - (void)setCustomerData:(NSArray *)customerData {
     NSMutableArray *arr = [NSMutableArray array];
-    for (int i = 0; i < [customerData count]; i++) {
-        NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[[customerData objectAtIndex:i] objectForKey:kCustID], kCustID, [[customerData objectAtIndex:i] objectForKey:kBillName], kBillName, [[customerData objectAtIndex:i] objectForKey:kID], kID, [[customerData objectAtIndex:i] objectForKey:kEmail], kEmail, [[customerData objectAtIndex:i] objectForKey:kStores], kStores, nil];
+    for (int i = 0; i < [customerData count]; i++) {//todo: is this second conversion necessary?
+        NSDictionary *customer = [customerData objectAtIndex:(NSUInteger) i];
+        NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[customer objectForKey:kCustID], kCustID, [customer objectForKey:kBillName],
+                                                                        kBillName, [customer objectForKey:kID], kID, [customer objectForKey:kEmail],
+                                                                        kEmail, [customer objectForKey:kStores], kStores, nil];
         [arr addObject:dict];
     }
     if (self.tableData) {
@@ -57,21 +65,10 @@
     self.tableData = [arr copy];
     self.filteredtableData = [arr mutableCopy];
     [self.custTable reloadData];
-    if (refreshing) {
-        [refreshing hide:YES];
-        refreshing = nil;
-    }
 }
 
 - (IBAction)back:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (IBAction)refresh:(id)sender {
-    refreshing = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    refreshing.labelText = @"Refreshing";
-    [refreshing show:YES];
-    [CustomerDataController loadCustomers:self.authToken];
 }
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender {
@@ -148,39 +145,70 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kBillName], [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID]];
-    cell.tag = [[[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kID] intValue];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [[self.filteredtableData objectAtIndex:(NSUInteger) [indexPath row]] objectForKey:kBillName], [[self.filteredtableData objectAtIndex:(NSUInteger) [indexPath row]] objectForKey:kCustID]];
+    cell.tag = [[[self.filteredtableData objectAtIndex:(NSUInteger) [indexPath row]] objectForKey:kID] intValue];
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    selectedCustomer = [[self.filteredtableData objectAtIndex:[indexPath row]] objectForKey:kCustID];
+    selectedCustomer = [[self.filteredtableData objectAtIndex:(NSUInteger) [indexPath row]] objectForKey:kCustID];
     [searchText resignFirstResponder];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"Loading customers";
-    [hud show:YES];
+    NSArray *customers = [CoreDataManager getCustomers:self.managedObjectContext];
+    if (customers && customers.count > 0) {//todo use ACustomer objects
+        NSMutableArray *customerData = [[NSMutableArray alloc] init];
+        for (Customer *customer in customers) {
+            [customerData addObject:[customer asDictionary]];
+        }
+        self.customerData = customerData;
+    } else {
+        [self reLoadCustomers:NO];
+    }
+}
 
+- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
+    [self reLoadCustomers:YES];
+}
+
+- (void)reLoadCustomers:(BOOL)triggeredByPullToRefresh {
+    [[CoreDataUtil sharedManager] deleteAllObjects:@"Customer"];
+    MBProgressHUD *hud;
+    if (!triggeredByPullToRefresh) {
+        hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"Loading customers";
+        [hud show:YES];
+    }
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                                                                                         success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                            if (JSON && ([(NSArray *) JSON count] > 0)) {
+                                                                                                NSArray *customers = (NSArray *) JSON;
+                                                                                                for (NSDictionary *customer in customers) {
+                                                                                                    [self.managedObjectContext insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:self.managedObjectContext]];
+                                                                                                }
+                                                                                                [[CoreDataUtil sharedManager] saveObjects];
+                                                                                            }
                                                                                             [self setCustomerData:(NSArray *) JSON];
-                                                                                            [hud hide:YES];
+                                                                                            if (triggeredByPullToRefresh)
+                                                                                                [pull finishedLoading];
+                                                                                            else
+                                                                                                [hud hide:YES];
                                                                                         }
                                                                                         failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
                                                                                             [self setCustomerData:nil];
-                                                                                            [hud hide:YES];
+                                                                                            if (triggeredByPullToRefresh)
+                                                                                                [pull finishedLoading];
+                                                                                            else
+                                                                                                [hud hide:YES];
                                                                                         }];
     NSOperationQueue *queue = [[NSOperationQueue alloc] init];
     [queue addOperation:operation];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    // unregister for keyboard notifications while not visible.
-//    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil]; 
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationCustomersLoaded object:nil];
 }
 
@@ -211,10 +239,6 @@
                 [self.filteredtableData addObject:dict];
             }
         }
-    }
-    if ([self.filteredtableData count] == 0) {
-        //nothing matched the search, load all customers.
-
     }
     [self.custTable reloadData];
     return YES;

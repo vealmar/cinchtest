@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PullToRefreshView.h"
 
 @protocol CICustomerDelegate <NSObject>
 
@@ -14,7 +15,7 @@
 
 @end
 
-@interface CICustomerInfoViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
+@interface CICustomerInfoViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, PullToRefreshViewDelegate>
 @property(unsafe_unretained, nonatomic) IBOutlet UIView *tablelayer;
 @property(unsafe_unretained, nonatomic) IBOutlet UITableView *custTable;
 @property(strong, nonatomic) IBOutlet UIView *custView;
@@ -22,14 +23,13 @@
 @property(nonatomic, strong) NSArray *tableData;
 @property(nonatomic, strong) NSMutableArray *filteredtableData;
 @property(weak, nonatomic) IBOutlet UITextField *searchText;
+@property(strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
 @property(nonatomic, strong) NSString *authToken;
 
 - (void)setCustomerData:(NSArray *)customerData;
 
 - (IBAction)back:(id)sender;
-
-- (IBAction)refresh:(id)sender;
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 

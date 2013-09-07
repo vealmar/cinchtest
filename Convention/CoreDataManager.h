@@ -9,8 +9,13 @@
 #import <Foundation/Foundation.h>
 
 @class Order;
+@class Customer;
 
 
 @interface CoreDataManager : NSObject
 + (Order *)getOrder:(NSNumber *)orderId managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
++ (Customer *)getCustomer:(NSNumber *)customerId managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
++ (NSArray *)getCustomers:(NSManagedObjectContext *)managedObjectContext;
 @end

@@ -107,7 +107,7 @@
 								<string key="NSFrame">{{-5, 0}, {424, 445}}</string>
 								<reference key="NSSuperview" ref="285827775"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="93632812"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:418</string>
 								<reference key="IBUIBackgroundColor" ref="613413230"/>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -135,38 +135,6 @@
 						</object>
 						<reference key="IBUIGestureRecognizers" ref="0"/>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-					</object>
-					<object class="IBUIButton" id="93632812">
-						<reference key="NSNextResponder" ref="191373211"/>
-						<int key="NSvFlags">-2147483356</int>
-						<string key="NSFrame">{{34, 559}, {46, 38}}</string>
-						<reference key="NSSuperview" ref="191373211"/>
-						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="159706949"/>
-						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<bool key="IBUIOpaque">NO</bool>
-						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
-						<int key="IBUIContentHorizontalAlignment">0</int>
-						<int key="IBUIContentVerticalAlignment">0</int>
-						<reference key="IBUIHighlightedTitleColor" ref="613413230"/>
-						<object class="NSColor" key="IBUINormalTitleColor">
-							<int key="NSColorSpace">1</int>
-							<bytes key="NSRGB">MC4xOTYwNzg0MzE0IDAuMzA5ODAzOTIxNiAwLjUyMTU2ODYyNzUAA</bytes>
-						</object>
-						<reference key="IBUINormalTitleShadowColor" ref="791879471"/>
-						<object class="NSCustomResource" key="IBUINormalImage">
-							<string key="NSClassName">NSImage</string>
-							<string key="NSResourceName">refresh.png</string>
-						</object>
-						<object class="IBUIFontDescription" key="IBUIFontDescription">
-							<int key="type">2</int>
-							<int key="size">2</int>
-						</object>
-						<object class="NSFont" key="IBUIFont">
-							<string key="NSName">Helvetica-Bold</string>
-							<double key="NSSize">18</double>
-							<int key="NSfFlags">16</int>
-						</object>
 					</object>
 					<object class="IBUITextField" id="470264522">
 						<reference key="NSNextResponder" ref="191373211"/>
@@ -328,15 +296,6 @@
 					<int key="connectionID">94</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBCocoaTouchEventConnection" key="connection">
-						<string key="label">refresh:</string>
-						<reference key="source" ref="93632812"/>
-						<reference key="destination" ref="372490531"/>
-						<int key="IBEventType">7</int>
-					</object>
-					<int key="connectionID">86</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBCocoaTouchOutletConnection" key="connection">
 						<string key="label">delegate</string>
 						<reference key="source" ref="470264522"/>
@@ -376,7 +335,6 @@
 						<array class="NSMutableArray" key="children">
 							<reference ref="285827775"/>
 							<reference ref="964427167"/>
-							<reference ref="93632812"/>
 							<reference ref="470264522"/>
 							<reference ref="650377412"/>
 							<reference ref="159706949"/>
@@ -414,11 +372,6 @@
 						<reference key="parent" ref="191373211"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">85</int>
-						<reference key="object" ref="93632812"/>
-						<reference key="parent" ref="191373211"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">34</int>
 						<reference key="object" ref="130601110"/>
 						<reference key="parent" ref="285827775"/>
@@ -453,7 +406,6 @@
 				<real value="2" key="8.IBUIButtonInspectorSelectedStateConfigurationMetadataKey"/>
 				<string key="80.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="81.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
-				<string key="85.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="87.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 				<string key="93.IBPluginDependency">com.apple.InterfaceBuilder.IBCocoaTouchPlugin</string>
 			</dictionary>
@@ -471,7 +423,6 @@
 					<dictionary class="NSMutableDictionary" key="actions">
 						<string key="back:">id</string>
 						<string key="handleTap:">UITapGestureRecognizer</string>
-						<string key="refresh:">id</string>
 						<string key="submit:">id</string>
 					</dictionary>
 					<dictionary class="NSMutableDictionary" key="actionInfosByName">
@@ -482,10 +433,6 @@
 						<object class="IBActionInfo" key="handleTap:">
 							<string key="name">handleTap:</string>
 							<string key="candidateClassName">UITapGestureRecognizer</string>
-						</object>
-						<object class="IBActionInfo" key="refresh:">
-							<string key="name">refresh:</string>
-							<string key="candidateClassName">id</string>
 						</object>
 						<object class="IBActionInfo" key="submit:">
 							<string key="name">submit:</string>
@@ -533,7 +480,6 @@
 			<string key="customer-cancelin.png">{298, 48}</string>
 			<string key="customer-cancelout.png">{307, 53}</string>
 			<string key="customerBG.png">{925, 614}</string>
-			<string key="refresh.png">{46, 38}</string>
 		</dictionary>
 		<string key="IBCocoaTouchPluginVersion">2083</string>
 	</data>

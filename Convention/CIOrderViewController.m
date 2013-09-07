@@ -24,6 +24,7 @@
 #import "NilUtil.h"
 #import "CoreDataManager.h"
 #import "UIAlertViewDelegateWithBlock.h"
+#import "Customer.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -44,7 +45,8 @@
 }
 @end
 
-@implementation CIOrderViewController
+@implementation
+CIOrderViewController
 
 #pragma mark - View lifecycle
 
@@ -766,6 +768,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     ci.delegate = self;
     ci.authToken = self.authToken;
+    ci.managedObjectContext = self.managedObjectContext;
     [self presentViewController:ci animated:NO completion:nil];
 }
 
@@ -1069,21 +1072,30 @@ SG: This method gets called when you swipe on an order in the order list and tap
 #pragma mark - UIAlertViewDelegate
 
 - (void)getCustomerOfCurrentOrderAndLoadProductView {
-//    AnOrder *currentOrder = [self getCurrentOrder];
-    NSString *custId = [currentOrder.customerId stringValue];
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMER(custId), kAuthToken, self.authToken];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                                                                                            [self loadProductView:NO customer:(NSDictionary *) JSON];
-                                                                                        }
-                                                                                        failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                                                                                            [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
-                                                                                                              cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                                                                                            DLog(@"%@", [error localizedDescription]);
-                                                                                        }];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    [queue addOperation:operation];
+    NSNumber *customerId = currentOrder.customerId;
+    Customer *customer = [CoreDataManager getCustomer:customerId managedObjectContext:self.managedObjectContext];
+    if (customer) {
+        [self loadProductView:NO customer:[customer asDictionary]];
+    } else {
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+        hud.labelText = @"Loading customer";
+        [hud show:NO];
+        NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMER([customerId stringValue]), kAuthToken, self.authToken];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                                                                            success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                                [self loadProductView:NO customer:(NSDictionary *) JSON];
+                                                                                                [hud hide:NO];
+                                                                                            }
+                                                                                            failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                                                                                                [hud hide:NO];
+                                                                                                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
+                                                                                                                  cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                                                                                                NSLog(@"%@", [error localizedDescription]);
+                                                                                            }];
+        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        [queue addOperation:operation];
+    }
 }
 
 - (void)deleteOrder:(AnOrder *)orderToDelete row:(NSIndexPath *)rowToDelete {

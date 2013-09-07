@@ -142,5 +142,11 @@
 #define kCustomerNotificationKey @"customers"
 #define kPrintersLoaded @"PrintersLoaded"
 
-
+#define kCustomerId @"id"
+#define kCustomerCustId @"custid"
+#define kCustomerBillName @"billname"
+#define kCustomerImportId @"import_id"
+#define kCustomerEmail @"email"
+#define kCustomerInitialShow @"initial_show"
+#define kCustomerStores @"stores"
 #endif

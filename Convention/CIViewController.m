@@ -14,6 +14,8 @@
 #import "AFHTTPClient.h"
 #import "AFJSONRequestOperation.h"
 #import "ShowConfigurations.h"
+#import "Customer.h"
+#import "CoreDataUtil.h"
 
 @implementation CIViewController {
     CGRect originalBounds;
@@ -104,22 +106,12 @@
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
             success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
 
+                [loginHud hide:YES];
                 if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
                     authToken = [JSON objectForKey:kAuthToken];
                     vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
-
-                    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CIOrderViewController" bundle:nil];
-                    CIOrderViewController *masterViewController = [storyboard instantiateInitialViewController];
-                    masterViewController.authToken = authToken;
-                    masterViewController.vendorInfo = [vendorInfo copy];
-                    masterViewController.managedObjectContext = self.managedObjectContext;
-                    [self presentViewController:masterViewController animated:YES completion:nil];
-
-                    [[SettingsManager sharedManager] saveSetting:@"username" value:email.text];
-                    [[SettingsManager sharedManager] saveSetting:@"password" value:password.text];
+                    [self loadCustomers];
                 }
-
-                [loginHud hide:YES];
 
             } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *requestError, id JSON) {
 
@@ -140,6 +132,46 @@
             }];
 
     [op start];
+}
+
+- (void)loadCustomers {
+    MBProgressHUD *__weak hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Loading customers";
+    [hud show:YES];
+    [[CoreDataUtil sharedManager] deleteAllObjects:@"Customer"];
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                            if (JSON && ([(NSArray *) JSON count] > 0)) {
+                                                                                                NSArray *customers = (NSArray *) JSON;
+                                                                                                for (NSDictionary *customer in customers) {
+                                                                                                    [self.managedObjectContext insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:self.managedObjectContext]];
+                                                                                                }
+                                                                                                [[CoreDataUtil sharedManager] saveObjects];
+                                                                                                [hud hide:YES];
+                                                                                                [self presentOrderViewController];
+                                                                                            }
+
+                                                                                        }
+                                                                                        failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
+                                                                                            [hud hide:YES];
+                                                                                            [[[UIAlertView alloc] initWithTitle:@"Error" message:[err localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                                                                                            NSLog(@"%@ Error loading customers: %@", [self class], [err localizedDescription]);
+                                                                                        }];
+    [operation start];
+}
+
+- (void)presentOrderViewController {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CIOrderViewController" bundle:nil];
+    CIOrderViewController *masterViewController = [storyboard instantiateInitialViewController];
+    masterViewController.authToken = authToken;
+    masterViewController.vendorInfo = [vendorInfo copy];
+    masterViewController.managedObjectContext = self.managedObjectContext;
+    [self presentViewController:masterViewController animated:YES completion:nil];
+
+    [[SettingsManager sharedManager] saveSetting:@"username" value:email.text];
+    [[SettingsManager sharedManager] saveSetting:@"password" value:password.text];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
