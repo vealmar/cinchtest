@@ -47,31 +47,32 @@
     self = [super initWithEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
     if (self) {
         self.productId = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductId]];
-        self.unique_product_id = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductUniqueId]];
+        self.unique_product_id = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductUniqueId]];
         self.company = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductCompany]];
         self.idx = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductIdx]];
         self.vendid = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductVendID]];
         self.invtid = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductInvtid]];
         self.descr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDescr]];
+        self.descr2 = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDescr2]];
         self.partnbr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductPartNbr]];
         self.uom = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductUom]];
-        self.regprc = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductRegPrc]];
-        self.showprc = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShowPrice]];
+        self.regprc = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductRegPrc]];//todo decimal types are being sent over by ruby app as strings. That is why NumberUtil formatDollarAmount has to first call doubleValue on the passed object. Since the object can actually be a string. Both number and string implement doubleValue.
+        self.showprc = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShowPrice]];//for now store these decimals as strings, but after the show refactor to store and use them as actual numbers.
         self.caseqty = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductCaseQty]];
         self.dirship = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDirShip]];
-        self.linenbr = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductLineNbr]];
+        self.linenbr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductLineNbr]];
         self.new = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductNew]];
         self.adv = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductAdv]];
-        self.discount = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDiscount]];
+        self.discount = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDiscount]];
         self.vendor_id = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductVendorID]];
         self.import_id = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductImportID]];
         self.initial_show = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductInitialShow]];
-        NSString *shipdate1Str = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductInitialShow]];
+        NSString *shipdate1Str = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShipDate1]];
         if (shipdate1Str)
-            self.shipdate1 = [DateUtil convertYyyymmddToDate:shipdate1Str];
-        NSString *shipdate2Str = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductInitialShow]];
+            self.shipdate1 = [DateUtil convertYyyymmddthhmmsszToDate:shipdate1Str];
+        NSString *shipdate2Str = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShipDate2]];
         if (shipdate2Str)
-            self.shipdate2 = [DateUtil convertYyyymmddToDate:shipdate2Str];
+            self.shipdate2 = [DateUtil convertYyyymmddthhmmsszToDate:shipdate2Str];
 
     }
     return self;
@@ -120,9 +121,9 @@
     if (self.initial_show)
         [dictionary setObject:self.initial_show forKey:kProductInitialShow];
     if (self.shipdate1)
-        [dictionary setObject:[DateUtil convertDateToYyyymmdd:self.shipdate1] forKey:kProductShipDate1];
+        [dictionary setObject:[DateUtil convertDateToYyyymmddthhmmssz:self.shipdate1] forKey:kProductShipDate1];
     if (self.shipdate2)
-        [dictionary setObject:[DateUtil convertDateToYyyymmdd:self.shipdate1] forKey:kProductShipDate2];
+        [dictionary setObject:[DateUtil convertDateToYyyymmddthhmmssz:self.shipdate2] forKey:kProductShipDate2];
     return dictionary;
 }
 @end
