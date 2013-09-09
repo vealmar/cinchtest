@@ -12,7 +12,7 @@
                 <key>Key</key>
                 <string>host</string>
                 <key>DefaultValue</key>
-                <string></string>
+                <string>PigglyWiggly</string>
             </dict>
             <dict>
                 <key>Title</key>
@@ -82,7 +82,7 @@
                 <key>Key</key>
                 <string>show</string>
                 <key>DefaultValue</key>
-                <string>4</string>
+                <string>9</string>
                 <key>IsSecure</key>
                 <false/>
                 <key>KeyboardType</key>
