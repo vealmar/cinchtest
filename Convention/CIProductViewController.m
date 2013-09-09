@@ -132,7 +132,7 @@
     if (orderExistsInCoreData && orderExistsOnServer) { //pending order in the middle of whose editing the app crashed, thus leaving a copy in core data.
         if (orderRecoverySelection == OrderRecoverySelectionNone) {//Prompt user to decide if they want to overlay server order with core data values.
             if (orderRecoverySelection == OrderRecoverySelectionNone) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Recover Order?" message:@"It appears like the app crashed last time you were working on this order. Would you like to recover those changes?"
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Recover Order?" message:@"It appears like the app crashed when you were working on this order. Would you like to recover the changes you had made?"
                                                                delegate:self cancelButtonTitle:@"NO" otherButtonTitles:@"YES", nil];
                 [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
                     if ([[alert buttonTitleAtIndex:buttonIndex] isEqualToString:@"YES"]) {
@@ -1233,6 +1233,7 @@
     NSMutableDictionary *product = [self.resultData objectAtIndex:index];
     NSMutableDictionary *editableDict = [editableData objectForKey:[product objectForKey:@"id"]];
     ProductCell *cell = (ProductCell *) [self.products cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+    [helper updateCellBackground:cell product:product editableItemDetails:editableDict multiStore:self.multiStore];
 }
 
 #pragma mark - line item entry
