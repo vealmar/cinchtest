@@ -29,6 +29,8 @@
 #import "NumberUtil.h"
 #import "DateUtil.h"
 #import "Product.h"
+#import "Vendor.h"
+#import "Bulletin.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -106,6 +108,8 @@
         if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
         self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
         currentVendor = self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
+        [self loadVendors];
+        [self loadBulletins];
         [self loadAllProducts];
     } else
         [self.products reloadData];
@@ -283,7 +287,51 @@
             [self loadOrder:OrderRecoverySelectionNone];
     }
     [self deserializeOrder];
+    [self updateVendorAndBulletinLabel];
     self.viewInitialized = YES;
+}
+
+- (void)updateVendorAndBulletinLabel {
+    NSMutableString *labelText = [NSMutableString string];
+    if (currentVendor) {
+        if (vendorsData) {
+            for (NSDictionary *vendor in vendorsData) {
+                NSNumber *vendorId = (NSNumber *) [NilUtil nilOrObject:[vendor objectForKey:kVendorID]];
+                if (vendorId && [vendorId integerValue] == currentVendor) {
+                    NSString *vendId = (NSString *) [NilUtil nilOrObject:[vendor objectForKey:kVendorVendID]];
+                    NSString *vendorName = (NSString *) [NilUtil nilOrObject:[vendor objectForKey:kVendorName]];
+                    [labelText appendString:vendId ? vendId : @""];
+                    if (vendorName) {
+                        if (labelText.length > 0) {
+                            [labelText appendString:@" - "];
+                        }
+                        [labelText appendString:vendorName];
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    if (currentBulletin) {
+        if (bulletins) {
+            NSArray *currentVendorBulletins = [bulletins objectForKey:[NSNumber numberWithInt:currentVendor]];
+            if (currentVendorBulletins) {
+                for (NSDictionary *bulletin in currentVendorBulletins) {
+                    NSNumber *bulletinId = (NSNumber *) [NilUtil nilOrObject:[bulletin objectForKey:kBulletinId]];
+                    if (bulletinId && [bulletinId integerValue] == currentBulletin) {
+                        NSString *bulletinName = (NSString *) [NilUtil nilOrObject:[bulletin objectForKey:kBulletinName]];
+                        if (bulletinName == nil)
+                            bulletinName = [bulletinId stringValue];
+                        if ([labelText length] > 0)
+                            [labelText appendString:@" / "];
+                        [labelText appendString:bulletinName];
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    self.bulletinVendorLabel.text = labelText;
 }
 
 - (NSArray *)sortProductsByinvtId:(NSArray *)products {
@@ -298,31 +346,22 @@
 
 
 - (void)loadBulletins {
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETBULLETINS]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-            success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                NSMutableDictionary *bulls = [[NSMutableDictionary alloc] init];
-                [JSON enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    NSDictionary *dict = (NSDictionary *) obj;
-                    NSNumber *vendid = [NSNumber numberWithInt:[[dict objectForKey:@"vendor_id"] intValue]];
-                    if ([bulls objectForKey:vendid] == nil) {
-                        NSDictionary *any = [NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", [NSNumber numberWithInt:0], @"id", nil];
-                        NSMutableArray *arr = [[NSMutableArray alloc] init];
-                        [arr addObject:any];
-                        [bulls setObject:arr forKey:vendid];
-                    }
-                    [[bulls objectForKey:vendid] addObject:dict];
-                }];
-
-                bulletins = [NSDictionary dictionaryWithDictionary:bulls];
-                [self showVendorView];
-
-            } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                bulletins = nil;
-                [self showVendorView];
-            }];
-
-    [operation start];
+    NSArray *coreDataBulletins = [CoreDataManager getBulletins:self.managedObjectContext];
+    if (coreDataBulletins && coreDataBulletins.count > 0) {//todo use ABulletin objects
+        NSMutableDictionary *bulls = [[NSMutableDictionary alloc] init];
+        for (Bulletin *bulletin in coreDataBulletins) {
+            NSDictionary *dict = [bulletin asDictionary];
+            NSNumber *vendid = bulletin.vendor_id;
+            if ([bulls objectForKey:vendid] == nil) {
+                NSDictionary *any = [NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", [NSNumber numberWithInt:0], @"id", nil];
+                NSMutableArray *arr = [[NSMutableArray alloc] init];
+                [arr addObject:any];
+                [bulls setObject:arr forKey:vendid];
+            }
+            [[bulls objectForKey:vendid] addObject:dict];
+        }
+        bulletins = bulls;
+    }
 }
 
 /**
@@ -876,58 +915,22 @@
         return;
     }
     [selectedIdx removeAllObjects];
-
-    if (vendorsData == nil) {
-        MBProgressHUD *venderLoading = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        venderLoading.labelText = @"Loading vendors from your vendor group";
-        [venderLoading show:NO];
-
-        if (self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]]) {
-
-            NSString *url = [NSString stringWithFormat:@"%@&%@=%@", kDBGETVENDORSWithVG(self.loggedInVendorGroupId), kAuthToken, self.authToken];
-            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-            AFJSONRequestOperation *jsonOp = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                    success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-
-                        NSArray *results = [NSArray arrayWithArray:JSON];
-                        if (results == nil || [results isKindOfClass:[NSNull class]] || results.count == 0 || [results objectAtIndex:0] == nil || [[results objectAtIndex:0] objectForKey:@"vendors"] == nil) {
-                            [venderLoading hide:NO];
-                            [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Problem loading vendors! If this problem persists please notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                            return;
-                        }
-
-                        NSArray *vendors = [[results objectAtIndex:0] objectForKey:@"vendors"];
-                        NSMutableArray *vs = [NSMutableArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil], nil];
-
-                        [vendors enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                            NSDictionary *dict = (NSDictionary *) obj;
-                            [vs addObject:dict];
-                        }];
-
-                        vendorsData = [vs mutableCopy];
-                        [venderLoading hide:NO];
-                        [self loadBulletins];
-
-                    } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-
-                        [[[UIAlertView alloc] initWithTitle:@"Error!"
-                                                    message:[NSString stringWithFormat:@"Got error retrieving vendors for vendor group:%@", error.localizedDescription]
-                                                   delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-
-                        vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil], nil];
-                        [venderLoading hide:NO];
-                        [self showVendorView];
-                    }];
-
-            [jsonOp start];
-
-        } else {
-            [venderLoading hide:NO];
-            vendorsData = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil], nil];
-            [self showVendorView];
-        }
-    } else {
+    if (vendorsData && [vendorsData count] > 0) {
         [self showVendorView];
+    }
+}
+
+- (void)loadVendors {
+    NSArray *vendors = [CoreDataManager getVendors:self.managedObjectContext];
+    if (vendors && vendors.count > 0) {//todo use AVendor objects
+        NSMutableArray *vendorDataMutable = [[NSMutableArray alloc] init];
+        for (Vendor *vendor in vendors) {
+            [vendorDataMutable addObject:[vendor asDictionary]];
+        }
+        [vendorDataMutable insertObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil] atIndex:0];
+        vendorsData = vendorDataMutable;
+    } else {
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Problem loading vendors! If this problem persists please notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }
 }
 

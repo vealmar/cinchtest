@@ -72,4 +72,28 @@
     } else
         return fetchedObjects;
 }
+
++ (NSArray *)getVendors:(NSManagedObjectContext *)managedObjectContext {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"Vendor" inManagedObjectContext:managedObjectContext]];
+    NSError *error = nil;
+    NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if (error) {
+        NSLog(@"%@ Error fetching vendors. %@", [self class], [error localizedDescription]);
+        return [[NSArray alloc] init];
+    } else
+        return fetchedObjects;
+}
+
++ (NSArray *)getBulletins:(NSManagedObjectContext *)managedObjectContext {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"Bulletin" inManagedObjectContext:managedObjectContext]];
+    NSError *error = nil;
+    NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if (error) {
+        NSLog(@"%@ Error fetching bulletins. %@", [self class], [error localizedDescription]);
+        return [[NSArray alloc] init];
+    } else
+        return fetchedObjects;
+}
 @end

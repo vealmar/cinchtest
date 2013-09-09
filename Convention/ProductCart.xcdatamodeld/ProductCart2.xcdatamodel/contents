@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model name="" userDefinedModelVersionIdentifier="2" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="2061" systemVersion="11G63b" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Bulletin" representedClassName="Bulletin" syncable="YES">
+        <attribute name="bulletinId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="note1" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="note2" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="number" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="shipdate1" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="shipdate2" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="show_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="vendor_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
     <entity name="Cart" representedClassName="Cart" syncable="YES">
         <attribute name="adv" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="cartId" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -101,13 +114,39 @@
         <attribute name="shipdate" attributeType="Date" syncable="YES"/>
         <relationship name="cart" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Cart" inverseName="shipdates" inverseEntity="Cart" syncable="YES"/>
     </entity>
+    <entity name="Vendor" representedClassName="Vendor" syncable="YES">
+        <attribute name="booth" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="broker_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="commodity" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="company" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="complete" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="dept" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="dlybill" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="hideshprice" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="hidewsprice" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="initial_show" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="isle" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lines" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="owner" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="season" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="vendid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="vendorgroup_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="vendorId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+    </entity>
     <fetchRequest name="getSetupItem" entity="SetupInfo" predicateString="item == $ITEMNAME"/>
     <elements>
         <element name="Cart" positionX="90" positionY="20" width="128" height="540"/>
         <element name="Customer" positionX="160" positionY="192" width="128" height="150"/>
         <element name="Order" positionX="-200" positionY="27" width="128" height="285"/>
+        <element name="Product" positionX="160" positionY="192" width="128" height="480"/>
         <element name="SetupInfo" positionX="-270" positionY="333" width="128" height="73"/>
         <element name="ShipDate" positionX="331" positionY="215" width="128" height="75"/>
-        <element name="Product" positionX="160" positionY="192" width="128" height="480"/>
+        <element name="Vendor" positionX="160" positionY="192" width="128" height="375"/>
+        <element name="Bulletin" positionX="160" positionY="192" width="128" height="210"/>
     </elements>
 </model>

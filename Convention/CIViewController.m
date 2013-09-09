@@ -17,10 +17,15 @@
 #import "Customer.h"
 #import "CoreDataUtil.h"
 #import "Product.h"
+#import "NilUtil.h"
+#import "Vendor.h"
+#import "Bulletin.h"
 
 @implementation CIViewController {
     CGRect originalBounds;
     __weak IBOutlet UIImageView *loginBg;
+    NSArray *vendorsData;
+    NSDictionary *bulletins;
 }
 @synthesize email;
 @synthesize password;
@@ -177,15 +182,71 @@
                                                                                                     [self.managedObjectContext insertObject:[[Product alloc] initWithProductFromServer:product context:self.managedObjectContext]];
                                                                                                 }
                                                                                                 [[CoreDataUtil sharedManager] saveObjects];
-                                                                                                [hud hide:NO];
-                                                                                                [self presentOrderViewController];
                                                                                             }
+                                                                                            [hud hide:NO];
+                                                                                            [self loadVendors];
                                                                                         }
                                                                                         failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
                                                                                             [hud hide:NO];
                                                                                             [[[UIAlertView alloc] initWithTitle:@"Error" message:[err localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                                                                                             NSLog(@"%@ Error loading products: %@", [self class], [err localizedDescription]);
                                                                                         }];
+    [operation start];
+}
+
+- (void)loadVendors {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Loading vendors";
+    [hud show:NO];
+    [[CoreDataUtil sharedManager] deleteAllObjects:@"Vendor"];
+    NSNumber *vendorGroupId = (NSNumber *) [NilUtil nilOrObject:[vendorInfo objectForKey:kVendorGroupID]];
+    if (vendorGroupId) {
+        NSString *url = [NSString stringWithFormat:@"%@&%@=%@", kDBGETVENDORSWithVG([vendorGroupId stringValue]), kAuthToken, self.authToken];
+        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        AFJSONRequestOperation *jsonOp = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                    if (JSON) {
+                        NSArray *results = [NSArray arrayWithArray:JSON];
+                        NSArray *vendors = [[results objectAtIndex:0] objectForKey:@"vendors"];
+                        for (NSDictionary *vendor in vendors) {
+                            [self.managedObjectContext insertObject:[[Vendor alloc] initWithVendorFromServer:vendor context:self.managedObjectContext]];
+                        }
+                        [[CoreDataUtil sharedManager] saveObjects];
+                    }
+                    [hud hide:NO];
+                    [self loadBulletins];
+                } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
+                    [hud hide:NO];
+                    [[[UIAlertView alloc] initWithTitle:@"Error" message:[err localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                    NSLog(@"%@ Error loading vendors: %@", [self class], [err localizedDescription]);
+                }];
+        [jsonOp start];
+    }
+}
+
+- (void)loadBulletins {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Loading bulletins";
+    [hud show:NO];
+    [[CoreDataUtil sharedManager] deleteAllObjects:@"Bulletin"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETBULLETINS]];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+            success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                NSMutableDictionary *bulls = [[NSMutableDictionary alloc] init];
+                if (JSON) {
+                    for (NSDictionary *bulletin in JSON) {
+                        [self.managedObjectContext insertObject:[[Bulletin alloc] initWithBulletinFromServer:bulletin context:self.managedObjectContext]];
+                    }
+                    [[CoreDataUtil sharedManager] saveObjects];
+                }
+                [hud hide:NO];
+                [self presentOrderViewController];
+            } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
+                [hud hide:NO];
+                [[[UIAlertView alloc] initWithTitle:@"Error" message:[err localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                NSLog(@"%@ Error loading bulletins: %@", [self class], [err localizedDescription]);
+            }];
+
     [operation start];
 }
 

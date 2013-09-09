@@ -20,4 +20,8 @@
 + (NSArray *)getCustomers:(NSManagedObjectContext *)managedObjectContext;
 
 + (NSArray *)getProducts:(NSManagedObjectContext *)managedObjectContext;
+
++ (NSArray *)getVendors:(NSManagedObjectContext *)managedObjectContext;
+
++ (NSArray *)getBulletins:(NSManagedObjectContext *)managedObjectContext;
 @end

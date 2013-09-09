@@ -64,6 +64,8 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(weak, nonatomic) IBOutlet UIView *tableHeaderPigglyWiggly;
 @property(weak, nonatomic) IBOutlet UIView *tableHeaderFarris;
 
+@property(weak, nonatomic) IBOutlet UILabel *bulletinVendorLabel;
+
 - (IBAction)Cancel:(id)sender;
 
 @property(weak, nonatomic) IBOutlet UIButton *cartButton;
