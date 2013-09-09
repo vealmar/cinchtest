@@ -43,6 +43,7 @@
     CIProductViewControllerHelper *helper;
     AnOrder *savedOrder;
     PullToRefreshView *pull;
+    BOOL keyboardUp;
 }
 
 @end
@@ -73,6 +74,7 @@
         _printStationId = 0;
         self.unsavedChangesPresent = NO;
         helper = [[CIProductViewControllerHelper alloc] init];
+        keyboardUp = NO;
     }
     reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
     return self;
@@ -113,9 +115,15 @@
         [self loadAllProducts];
     } else
         [self.products reloadData];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
+    if (keyboardUp) {
+        //if the frame size was decreased to accomodate the keyboard right before cart was launched,
+        //when the view reappears, the keyboard would have been hidden (without keyboard hide notification being sent out it seems)
+        //so it is important to undo the frame resize at this point.
+        [self keyboardDidHide];
+    }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow)
                                                  name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
                                                  name:UIKeyboardDidHideNotification object:nil];
     self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
     [self.vendorTable reloadData];
@@ -889,11 +897,25 @@
 * SG: This method is called when user taps the cart button.
 */
 - (IBAction)reviewCart:(id)sender {
-    [self.hiddenTxt becomeFirstResponder];
-    [self.hiddenTxt resignFirstResponder];
-
+    //  [self.hiddenTxt becomeFirstResponder];
+    //[self.hiddenTxt resignFirstResponder];
+//    [self findAndResignFirstResponder:self.view];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(launchCart) name:kLaunchCart object:nil];
     [self sendOrderToServer:NO asPending:YES beforeCart:YES];
+}
+
+- (BOOL)findAndResignFirstResponder:(UIView *)view {
+    if (view.isFirstResponder) {
+        [view resignFirstResponder];
+        return YES;
+    } else if (view.subviews && view.subviews.count > 0) {
+        for (UIView *subView in view.subviews) {
+            if ([self findAndResignFirstResponder:subView]) {
+                return YES;
+            }
+        }
+    }
+    return NO;
 }
 
 - (void)launchCart {
@@ -905,6 +927,7 @@
     cart.discountItems = [NSMutableDictionary dictionaryWithDictionary:self.discountItems];
     cart.modalPresentationStyle = UIModalPresentationFullScreen;
     cart.customer = self.customer;
+//    [self.view endEditing:YES];
     [self presentViewController:cart animated:YES completion:nil];
 }
 
@@ -1384,7 +1407,7 @@
     selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
 }
 
-- (void)keyboardWillShow:(NSNotification *)note {
+- (void)keyboardWillShow {
     // Reducing the frame height by 300 causes it to end above the keyboard, so the keyboard cannot overlap any content. 300 is the height occupied by the keyboard.
     // In addition scroll the selected row into view.
     CGRect frame = self.products.frame;
@@ -1394,16 +1417,18 @@
     frame.size.height -= 300;
     self.products.frame = frame;
     [self.products scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    keyboardUp = YES;
     [UIView commitAnimations];
 }
 
-- (void)keyboardDidHide:(NSNotification *)note {
+- (void)keyboardDidHide {
     CGRect frame = self.products.frame;
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
     frame.size.height += 300;
     self.products.frame = frame;
+    keyboardUp = NO;
     [UIView commitAnimations];
 }
 
