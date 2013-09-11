@@ -51,6 +51,14 @@
     return num > 0;
 }
 
+- (BOOL)itemHasQuantity:(NSString *)quantity {
+    if (quantity) {
+        BOOL isMultiSTore = ([[quantity stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] startsWith:@"{"]);
+        return [self itemHasQuantity:isMultiSTore quantity:quantity];
+    } else
+        return NO;
+}
+
 - (BOOL)itemIsVoucher:(NSDictionary *)product {
     int idx = [[product objectForKey:kProductIdx] intValue];
     NSString *invtId = [product objectForKey:kProductInvtid];

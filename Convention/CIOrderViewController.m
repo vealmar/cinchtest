@@ -25,6 +25,7 @@
 #import "CoreDataManager.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "Customer.h"
+#import "CIProductViewControllerHelper.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -38,6 +39,7 @@
     NSMutableArray *partialOrders;
     NSMutableArray *persistentOrders;
     BOOL unsavedChangesPresent;
+    CIProductViewControllerHelper *helper;
 
     __weak IBOutlet UILabel *sdLabel;
     __weak IBOutlet UILabel *sqLabel;
@@ -93,6 +95,7 @@ CIOrderViewController
     [pull setDelegate:self];
     [self.sideTable addSubview:pull];
     [self loadOrders:YES highlightOrder:nil];
+    helper = [[CIProductViewControllerHelper alloc] init];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -817,7 +820,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
     if (currentOrder == nil) {
         return;
     }
-
     NSMutableArray *arr = [[NSMutableArray alloc] init];
     NSArray *data = currentOrder.lineItems;
 
@@ -840,6 +842,16 @@ SG: This method gets called when you swipe on an order in the order list and tap
         for (NSDate *date in dates) {
             NSString *str = [df stringFromDate:date];
             [strs addObject:str];
+        }
+        NSDictionary *product = lineItem.product;
+        [[ShowConfigurations instance] shipDates] ? strs.count > 0 : YES;
+        if (![helper itemHasQuantity:qty]) {
+            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no quantity. Please specify a quantity and then save.", [product objectForKey:kProductInvtid]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+            return;
+        }
+        if (![helper itemIsVoucher:product] && [[ShowConfigurations instance] shipDates] && strs.count == 0) {
+            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no ship date. Please specify ship date(s) and then save.", [product objectForKey:kProductInvtid]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+            return;
         }
 
         NSString *myId = [lineItem.itemId stringValue];

@@ -1105,7 +1105,7 @@
     self.unsavedChangesPresent = YES;
 }
 
-- (void)deleteLineItemFromOrder:(NSInteger)lineItemId {
+- (void)deleteLineItemFromOrderOnServer:(NSInteger)lineItemId {
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBOrderLineItemDelete(lineItemId)], kAuthToken, self.authToken];
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
 
@@ -1242,16 +1242,16 @@
 
 // Removes a Cart object from the data store for a given product id.
 - (void)removeLineItemFromProductCart:(NSNumber *)productId {
+    ALineItem *lineItem = [self.productCart objectForKey:productId];
+    if (self.coreDataOrder.orderId > 0) {
+        if (lineItem.itemId)
+            [self deleteLineItemFromOrderOnServer:[lineItem.itemId integerValue]];
+    }
     [self.productCart removeObjectForKey:productId];
     Cart *oldCart = [self findCartForId:[productId intValue]];
     if (oldCart) {
         [[CoreDataUtil sharedManager] deleteObject:oldCart];
         [[CoreDataUtil sharedManager] saveObjects];
-    }
-    ALineItem *lineItem = [self.productCart objectForKey:productId];
-    if (self.coreDataOrder.orderId > 0) {
-        if (lineItem.itemId)
-            [self deleteLineItemFromOrder:[lineItem.itemId integerValue]];
     }
 }
 
@@ -1307,7 +1307,7 @@
     if (hasQty) {
         [self AddToCartForIndex:idx];
     } else {
-        [self.productCart removeObjectForKey:key];
+        [self removeLineItemFromProductCart:[NSNumber numberWithInteger:[key integerValue]]];
     }
     [self updateCellColorForId:(NSUInteger) idx];
     [self updateTotals];
