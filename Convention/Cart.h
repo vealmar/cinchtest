@@ -33,7 +33,7 @@
 @property(nonatomic) float editableVoucher;
 @property(nonatomic) int32_t idx;
 @property(nonatomic) int32_t import_id;
-@property(nonatomic, retain) NSString *initial_show;
+@property(nonatomic) int32_t initial_show;
 @property(nonatomic, retain) NSString *invtid;
 @property(nonatomic, retain) NSString *linenbr;
 @property(nonatomic) BOOL new;

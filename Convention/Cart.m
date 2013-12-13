@@ -68,7 +68,7 @@
         self.editableVoucher = [lineItem.voucherPrice floatValue];
         self.idx = [(NSNumber *) [NilUtil nilOrObject:[product objectForKey:kProductIdx]] intValue];
         self.import_id = [(NSNumber *) [NilUtil nilOrObject:[product objectForKey:kProductImportID]] intValue];
-        self.initial_show = (NSString *) [NilUtil nilOrObject:[product objectForKey:kProductInitialShow]];
+        self.initial_show = (NSNumber *) [NilUtil nilOrObject:[product objectForKey:kProductInitialShow]];
         self.invtid = (NSString *) [NilUtil nilOrObject:[product objectForKey:kProductInvtid]];
         self.linenbr = (NSString *) [NilUtil nilOrObject:[product objectForKey:kProductLineNbr]];
         self.new = (BOOL) [NilUtil nilOrObject:[product objectForKey:kProductNew]];

@@ -49,7 +49,7 @@
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     originalCellValue = [NSString stringWithString:textField.text];
-    UITableView *tableView = (UITableView *) self.superview;
+    UITableView *tableView = (UITableView *) self.superview.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
     [self.delegate setSelectedRow:indexPath.row];
     return YES;
