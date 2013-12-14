@@ -25,10 +25,12 @@
 		35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5271B9DC09F494AE33569 /* ShowConfigurations.m */; };
 		35F527ED52FF1F2798544129 /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */; };
 		35F5280E4435FDF158A236FC /* FarrisCartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5234C615180F131627137 /* FarrisCartViewCell.m */; };
+		35F528723DB04DAA575BA603 /* app_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52BC2B08AE38F365E81EB /* app_bg.png */; };
 		35F52A19F4EFCD93702E646D /* ProductCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52A62C4F3539476C1736F /* ProductCell.m */; };
 		35F52AF2E661528B3EDAABF5 /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52E02103987C5239CB07D /* NumberUtil.m */; };
 		35F52B7D65E8F84C2681BE43 /* AnOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F520072428E6A11A140BBE /* AnOrder.m */; };
 		35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52CF25ABF1AF16A369494 /* NilUtil.m */; };
+		35F52E7C36B02E6EBA801A1B /* MyOrders.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52BABED1C4FFB96E78BD9 /* MyOrders.png */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
 		6414A6F11496B9A10088586B /* bluebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6F01496B9A10088586B /* bluebutton.png */; };
 		6E07A38F1461D26E0043C22B /* CICustomerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E07A38D1461D26E0043C22B /* CICustomerInfoViewController.m */; };
@@ -253,6 +255,8 @@
 		35F52A62C4F3539476C1736F /* ProductCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductCell.m; sourceTree = "<group>"; };
 		35F52B3C8A568456497B76FC /* ProductCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductCell.h; sourceTree = "<group>"; };
 		35F52B621DB88316913EF3A1 /* AnOrder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnOrder.h; sourceTree = "<group>"; };
+		35F52BABED1C4FFB96E78BD9 /* MyOrders.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MyOrders.png; sourceTree = "<group>"; };
+		35F52BC2B08AE38F365E81EB /* app_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_bg.png; sourceTree = "<group>"; };
 		35F52C01A2B5E44CEB8AFE45 /* NumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberUtil.h; sourceTree = "<group>"; };
 		35F52C47A71D4C79AE68083C /* ALineItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ALineItem.m; sourceTree = "<group>"; };
 		35F52CE4A77F64FBC2BA5559 /* NilUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NilUtil.h; sourceTree = "<group>"; };
@@ -729,6 +733,8 @@
 				6E0C5F9D15A24D29000E050A /* vendorbutton.png */,
 				6E3BEC861490556E00BF8E15 /* white_plaster.png */,
 				C7DCDEF716A1E76600F66C52 /* zero_vouchers_button.png */,
+				35F52BC2B08AE38F365E81EB /* app_bg.png */,
+				35F52BABED1C4FFB96E78BD9 /* MyOrders.png */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1377,6 +1383,8 @@
 				EB7D8FE317DB73D900F2FB8C /* SaveButton.png in Resources */,
 				EB7D8FE517DB74C300F2FB8C /* EditButton.png in Resources */,
 				EB7D8FE917DB797100F2FB8C /* DeleteIcon.png in Resources */,
+				35F528723DB04DAA575BA603 /* app_bg.png in Resources */,
+				35F52E7C36B02E6EBA801A1B /* MyOrders.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
