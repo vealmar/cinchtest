@@ -10,6 +10,7 @@
 #import "StringManipulation.h"
 #import "config.h"
 #import "NumberUtil.h"
+#import "NilUtil.h"
 
 @interface FarrisProductCell () {
     NSString *originalCellValue;
@@ -22,7 +23,8 @@
 - (void)initializeWith:(NSDictionary *)product item:(NSDictionary *)item tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     self.InvtID.text = [product objectForKey:@"invtid"];
     [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
-    self.min.text = [[product objectForKey:@"min"] stringValue];
+    NSObject *minObj = [NilUtil nilOrObject:[product objectForKey:@"min"]];
+    self.min.text = minObj != nil ? [[product objectForKey:@"min"] stringValue] : @"";
     if (item != nil && [item objectForKey:kEditableQty] != nil) {
         self.quantity.text = [item objectForKey:kEditableQty];
     } else {

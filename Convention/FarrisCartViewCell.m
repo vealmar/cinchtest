@@ -11,6 +11,7 @@
 #import "config.h"
 #import "NumberUtil.h"
 #import "ALineItem.h"
+#import "NilUtil.h"
 
 
 @implementation FarrisCartViewCell {
@@ -30,7 +31,8 @@
     UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
     self.InvtID.text = isDiscount ? @"Discount" : [product objectForKey:@"invtid"];
     [self setDescription:item.desc withSubtext:item.desc2];
-    self.min.text = [[product objectForKey:@"min"] stringValue];
+    NSObject *minObj = [NilUtil nilOrObject:[product objectForKey:@"min"]];
+    self.min.text = minObj != nil ? [[product objectForKey:@"min"] stringValue] : @"";
     if (!isDiscount) {
         self.quantity.text = item.quantity;
         self.quantity.hidden = NO;

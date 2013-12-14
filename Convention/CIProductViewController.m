@@ -808,7 +808,7 @@
         double price = [data objectForKey:kEditablePrice] ? [[data objectForKey:kEditablePrice] doubleValue]
                 : [[product objectForKey:kProductShowPrice] doubleValue]; //todo if price never changes remove price change logic
         double voucherPrice = [NilUtil nilOrObject:[product objectForKey:kProductVoucher]] ? [[product objectForKey:kProductVoucher] doubleValue] : 0;
-        grossTotal += quantity * shipDates * price;
+        grossTotal += self.showShipDates ? quantity * shipDates * price : quantity * price;
         voucherTotal += quantity * shipDates * voucherPrice;
     }
     self.totalCost.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:grossTotal]];
@@ -1260,6 +1260,8 @@
     NSMutableDictionary *editableDict = [editableData objectForKey:[product objectForKey:@"id"]];
     ProductCell *cell = (ProductCell *) [self.products cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
     [helper updateCellBackground:cell product:product editableItemDetails:editableDict multiStore:self.multiStore];
+    [self.products reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForItem:index inSection:0], nil]
+                         withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark - line item entry

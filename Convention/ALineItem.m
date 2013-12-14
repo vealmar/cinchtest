@@ -65,11 +65,11 @@
 }
 
 - (double)getItemTotal {
-    return [self getQuantity] * [self.price doubleValue] * [self.shipDates count];
+    return _shipDates ? [self getQuantity] * [self.price doubleValue] * [self.shipDates count] : [self getQuantity] * [self.price doubleValue];
 }
 
 - (double)getVoucherTotal {
-    return self.voucherPrice ? [self getQuantity] * [self.voucherPrice doubleValue] * [self.shipDates count] : 0;
+    return self.voucherPrice ? [self getQuantity] * [self.voucherPrice doubleValue] * (_shipDates ? [self.shipDates count] : 1) : 0;
 }
 
 - (NSNumber *)getInvtId {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="3084" systemVersion="11G63b" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="sXx-5f-BAu">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="4514" systemVersion="13A603" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="sXx-5f-BAu">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="2083"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3747"/>
     </dependencies>
     <scenes>
         <!--Launch View Controller-->
@@ -9,34 +9,23 @@
             <objects>
                 <viewController id="sXx-5f-BAu" customClass="LaunchViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Hf9-jG-hLu">
-                        <rect key="frame" x="0.0" y="20" width="1024" height="748"/>
+                        <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="launch_bg.png" translatesAutoresizingMaskIntoConstraints="NO" id="o2L-cG-4CT">
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="1034" id="atw-9X-DJm"/>
-                                </constraints>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="app_bg.png" id="o2L-cG-4CT">
+                                <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                             </imageView>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="avh-d0-HMV"/>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Loading..." lineBreakMode="wordWrap" numberOfLines="5" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" preferredMaxLayoutWidth="374" translatesAutoresizingMaskIntoConstraints="NO" id="eJd-z4-GTX">
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="178" id="E8E-hr-Km2"/>
-                                    <constraint firstAttribute="width" constant="374" id="yOt-Qb-MEc"/>
-                                </constraints>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" hidesWhenStopped="YES" animating="YES" style="whiteLarge" id="avh-d0-HMV">
+                                <rect key="frame" x="370" y="366" width="37" height="37"/>
+                            </activityIndicatorView>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="Loading..." lineBreakMode="wordWrap" numberOfLines="5" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" adjustsLetterSpacingToFitWidth="YES" id="eJd-z4-GTX">
+                                <rect key="frame" x="415" y="295" width="374" height="178"/>
                                 <fontDescription key="fontDescription" name="Futura-Medium" family="Futura" pointSize="24"/>
                                 <color key="textColor" red="1" green="0.56468513239999996" blue="0.2275234364" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstItem="avh-d0-HMV" firstAttribute="leading" secondItem="Hf9-jG-hLu" secondAttribute="leading" constant="370" id="30y-pn-ha3"/>
-                            <constraint firstItem="eJd-z4-GTX" firstAttribute="centerY" secondItem="Hf9-jG-hLu" secondAttribute="centerY" type="default" id="CrD-5q-VdY"/>
-                            <constraint firstItem="o2L-cG-4CT" firstAttribute="leading" secondItem="Hf9-jG-hLu" secondAttribute="leading" type="default" id="EqK-wO-qt9"/>
-                            <constraint firstItem="o2L-cG-4CT" firstAttribute="top" secondItem="Hf9-jG-hLu" secondAttribute="top" constant="-55" id="SfN-8m-g9P"/>
-                            <constraint firstItem="eJd-z4-GTX" firstAttribute="leading" secondItem="avh-d0-HMV" secondAttribute="trailing" constant="8" symbolic="YES" type="default" id="TIH-1d-al3"/>
-                            <constraint firstItem="eJd-z4-GTX" firstAttribute="centerY" secondItem="avh-d0-HMV" secondAttribute="centerY" type="default" id="Va3-Ot-48E"/>
-                        </constraints>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     </view>
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
@@ -51,22 +40,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="launch_bg.png" width="1024" height="786"/>
+        <image name="app_bg.png" width="1024" height="748"/>
     </resources>
-    <classes>
-        <class className="LaunchViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/LaunchViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="activityIndicator" candidateClass="UIActivityIndicatorView"/>
-                <relationship kind="outlet" name="label" candidateClass="UILabel"/>
-            </relationships>
-        </class>
-        <class className="NSLayoutConstraint" superclassName="NSObject">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/NSLayoutConstraint.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
+        <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
