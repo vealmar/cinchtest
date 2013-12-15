@@ -62,7 +62,7 @@
                 <key>AutocorrectionType</key>
                 <string>No</string>
                 <key>DefaultValue</key>
-                <string>http://192.168.1.254</string>
+                <string>http://app.conventioninnovations.com</string>
                 <key>IsSecure</key>
                 <false/>
                 <key>Key</key>
@@ -82,7 +82,7 @@
                 <key>Key</key>
                 <string>show</string>
                 <key>DefaultValue</key>
-                <string>8</string>
+                <string>10</string>
                 <key>IsSecure</key>
                 <false/>
                 <key>KeyboardType</key>
