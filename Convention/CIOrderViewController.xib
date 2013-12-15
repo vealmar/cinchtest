@@ -121,11 +121,11 @@
                             <rect key="frame" x="400" y="598" width="138" height="40"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
-                            <state key="normal" title="Save" image="saveout.png">
+                            <state key="normal" title="Save" image="save2out.png">
                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <color key="titleShadowColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
-                            <state key="selected" image="savein.png"/>
+                            <state key="selected" image="save2in.png"/>
                             <state key="highlighted">
                                 <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
@@ -408,7 +408,7 @@
         <image name="neworderout.png" width="307" height="53"/>
         <image name="printin.png" width="134" height="68"/>
         <image name="printout.png" width="140" height="73"/>
-        <image name="savein.png" width="134" height="49"/>
-        <image name="saveout.png" width="140" height="53"/>
+        <image name="save2in.png" width="102" height="53"/>
+        <image name="save2out.png" width="102" height="53"/>
     </resources>
 </document>
