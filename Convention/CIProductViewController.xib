@@ -382,7 +382,7 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="SearchField" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="18" id="413">
-                    <rect key="frame" x="376" y="20" width="297" height="47"/>
+                    <rect key="frame" x="376" y="40" width="297" height="47"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="26"/>
                     <textInputTraits key="textInputTraits"/>
