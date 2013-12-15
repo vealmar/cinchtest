@@ -30,7 +30,7 @@
     BOOL isDiscount = [item.category isEqualToString:@"discount"];
     UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
     self.InvtID.text = isDiscount ? @"Discount" : [product objectForKey:@"invtid"];
-    [self setDescription:item.desc withSubtext:item.desc2];
+    [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
     NSObject *minObj = [NilUtil nilOrObject:[product objectForKey:@"min"]];
     self.min.text = minObj != nil ? [[product objectForKey:@"min"] stringValue] : @"";
     if (!isDiscount) {

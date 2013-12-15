@@ -75,34 +75,26 @@
         if (!isVoucher) {
             if (hasQty) {
                 if (hasShipDates) {
-                    UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-                    view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
-                    cell.backgroundView = view;
+                    cell.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
                 } else {
-                    UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-                    view.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
-                    cell.backgroundView = view;
+                    cell.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
                 }
             } else {
-                cell.backgroundView = nil;
+                cell.backgroundColor = [UIColor whiteColor];
             }
         } else {
             if (hasQty) {
-                UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-                view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
-                cell.backgroundView = view;
+                cell.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
             } else {
-                cell.backgroundView = nil;
+                cell.backgroundColor = [UIColor whiteColor];
             }
         }
     } else {
         BOOL hasQty = [self itemHasQuantity:multiStore quantity:[editableItemDetails objectForKey:kEditableQty]];
         if (hasQty) {
-            UIView *view = [[UIView alloc] initWithFrame:cell.frame];
-            view.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
-            cell.backgroundView = view;
+            cell.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
         } else {
-            cell.backgroundView = nil;
+            cell.backgroundColor = [UIColor whiteColor];
         }
     }
 }

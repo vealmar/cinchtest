@@ -1266,8 +1266,9 @@
     NSMutableDictionary *editableDict = [editableData objectForKey:[product objectForKey:@"id"]];
     ProductCell *cell = (ProductCell *) [self.products cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
     [helper updateCellBackground:cell product:product editableItemDetails:editableDict multiStore:self.multiStore];
-    [self.products reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForItem:index inSection:0], nil]
-                         withRowAnimation:UITableViewRowAnimationNone];
+//    [self.products reloadRowsAtIndexPaths:[NSArray arrayWithObjects:[NSIndexPath indexPathForItem:index inSection:0], nil]
+//                         withRowAnimation:UITableViewRowAnimationNone];
+//    [cell setNeedsDisplay];
 }
 
 #pragma mark - line item entry
