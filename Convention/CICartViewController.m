@@ -96,6 +96,7 @@
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = NO;
         self.zeroVouchers.hidden = YES;
+        self.tableHeaderMinColumn.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     }
     customerInfoLabel.text = customer != nil &&
             customer[kBillName] != nil &&

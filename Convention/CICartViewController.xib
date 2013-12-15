@@ -20,6 +20,7 @@
                 <outlet property="netTotalLabel" destination="117" id="132"/>
                 <outlet property="products" destination="27" id="28"/>
                 <outlet property="tableHeaderFarris" destination="102" id="111"/>
+                <outlet property="tableHeaderMinColumn" destination="108" id="Zcm-nQ-1x2"/>
                 <outlet property="tableHeaderPigglyWiggly" destination="63" id="110"/>
                 <outlet property="view" destination="14" id="29"/>
                 <outlet property="voucherTotal" destination="134" id="136"/>

@@ -62,6 +62,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *discountTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *netTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
+@property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumn;
 
 - (void)QtyChange:(double)qty forIndex:(int)idx;
 

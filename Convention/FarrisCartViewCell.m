@@ -50,6 +50,7 @@
     if (isDiscount)self.showPrice.font = discountFont;
     self.delegate = productCellDelegate;
     self.tag = tag;
+    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
 }
 
 - (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {
