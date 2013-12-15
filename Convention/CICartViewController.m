@@ -55,6 +55,11 @@
     }
     return self;
 }
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
 #pragma mark - View lifecycle
 
 - (void)adjustTotals {

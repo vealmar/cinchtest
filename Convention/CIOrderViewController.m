@@ -98,6 +98,11 @@ CIOrderViewController
     helper = [[CIProductViewControllerHelper alloc] init];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
+
 - (void)viewWillAppear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow)
                                                  name:UIKeyboardWillShowNotification object:self.view.window];

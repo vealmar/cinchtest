@@ -9,7 +9,6 @@
 #import "CIAppDelegate.h"
 #import "SettingsManager.h"
 #import "LaunchViewController.h"
-#import "config.h"
 
 @implementation CIAppDelegate
 
@@ -20,48 +19,47 @@
 @synthesize window = _window;
 @synthesize networkAvailable;
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"LaunchViewController" bundle:nil];
     LaunchViewController *launchViewController = [storyboard instantiateInitialViewController];
     launchViewController.managedObjectContext = self.managedObjectContext;
     self.window.rootViewController = launchViewController;
     [self.window makeKeyAndVisible];
-	[[SettingsManager sharedManager] initialize];
-	//reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self
-													 // withUrl:kBASEURL];
-	self.networkAvailable = [reachDelegation isNetworkReachable]; //TODO: We may need actually prod it to check here.
+    [[SettingsManager sharedManager] initialize];
+    //reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self
+    // withUrl:kBASEURL];
+    self.networkAvailable = [reachDelegation isNetworkReachable]; //TODO: We may need actually prod it to check here.
+    [application setStatusBarStyle:UIStatusBarStyleLightContent];
     return YES;
 }
 
 #pragma mark Reachability
 
 
--(void)networkLost {
+- (void)networkLost {
 
-	DLog(@"Network Lost !");
+    DLog(@"Network Lost !");
 
-	networkAvailable = NO;
+    networkAvailable = NO;
 }
 
--(void)networkRestored {
+- (void)networkRestored {
 
-	DLog(@"Network Gained !");
+    DLog(@"Network Gained !");
 
-	networkAvailable = YES;
+    networkAvailable = YES;
 }
 
 #pragma mark - Core Data helper methods
 
-- (void)saveContext
-{
+- (void)saveContext {
     NSError *error = nil;
     NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
     if (managedObjectContext != nil) {
         if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
-			// Replace this implementation with code to handle the error appropriately.
-			// abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             DLog(@"Unresolved error %@, %@", error, [error userInfo]);
             abort();
         }
@@ -72,12 +70,11 @@
 
 // Returns the managed object context for the application.
 // If the context doesn't already exist, it is created and bound to the persistent store coordinator for the application.
-- (NSManagedObjectContext *)managedObjectContext
-{
+- (NSManagedObjectContext *)managedObjectContext {
     if (_managedObjectContext != nil) {
         return _managedObjectContext;
     }
-    
+
     NSPersistentStoreCoordinator *coordinator = [self persistentStoreCoordinator];
     if (coordinator != nil) {
         _managedObjectContext = [[NSManagedObjectContext alloc] init];
@@ -88,8 +85,7 @@
 
 // Returns the managed object model for the application.
 // If the model doesn't already exist, it is created from the application's model.
-- (NSManagedObjectModel *)managedObjectModel
-{
+- (NSManagedObjectModel *)managedObjectModel {
     if (_managedObjectModel != nil) {
         return _managedObjectModel;
     }
@@ -100,21 +96,20 @@
 
 // Returns the persistent store coordinator for the application.
 // If the coordinator doesn't already exist, it is created and the application's store added to it.
-- (NSPersistentStoreCoordinator *)persistentStoreCoordinator
-{
+- (NSPersistentStoreCoordinator *)persistentStoreCoordinator {
     if (_persistentStoreCoordinator != nil) {
         return _persistentStoreCoordinator;
     }
-    
+
     //DLog(@"%@", [self managedObjectModel]);
-    
+
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart2.sqlite"];
 //    [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
-    
+
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-    
-    
+
+
 //    NSDictionary *sourceMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:NSSQLiteStoreType URL:nil error:&error];
 //    if (sourceMetadata == nil) {
 //        [[[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -143,9 +138,9 @@
 //        
 //        
 //    }
-    
+
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
-                                               configuration:nil URL:storeURL options:nil error:&error]) {
+                                                   configuration:nil URL:storeURL options:nil error:&error]) {
         /*
          Replace this implementation with code to handle the error appropriately.
          
@@ -172,15 +167,14 @@
         DLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
-    
+
     return _persistentStoreCoordinator;
 }
 
 #pragma mark - Application's Documents directory
 
 // Returns the URL to the application's Documents directory.
-- (NSURL *)applicationDocumentsDirectory
-{
+- (NSURL *)applicationDocumentsDirectory {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
 

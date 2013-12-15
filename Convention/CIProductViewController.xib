@@ -38,6 +38,11 @@
                     <rect key="frame" x="0.0" y="20" width="1024" height="755"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
+                <view contentMode="scaleToFill" id="HsJ-JQ-OMN">
+                    <rect key="frame" x="0.0" y="0.0" width="1024" height="20"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                </view>
                 <view contentMode="scaleToFill" id="397" userLabel="Farris Header">
                     <rect key="frame" x="0.0" y="167" width="1024" height="44"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
