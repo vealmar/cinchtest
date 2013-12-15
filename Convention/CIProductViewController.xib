@@ -19,6 +19,7 @@
                 <outlet property="products" destination="27" id="28"/>
                 <outlet property="searchText" destination="413" id="415"/>
                 <outlet property="tableHeaderFarris" destination="397" id="406"/>
+                <outlet property="tableHeaderMinColumnLabel" destination="401" id="Dak-1M-jSo"/>
                 <outlet property="tableHeaderPigglyWiggly" destination="63" id="405"/>
                 <outlet property="totalCost" destination="408" id="410"/>
                 <outlet property="vendorDropdown" destination="94" id="391"/>

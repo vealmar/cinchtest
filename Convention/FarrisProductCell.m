@@ -36,6 +36,7 @@
     self.tag = tag;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.accessoryType = UITableViewCellAccessoryNone;
+    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
 }
 
 - (IBAction)quantityChanged:(id)sender {

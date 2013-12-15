@@ -63,6 +63,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(weak, nonatomic) IBOutlet UILabel *totalCost;
 @property(weak, nonatomic) IBOutlet UIView *tableHeaderPigglyWiggly;
 @property(weak, nonatomic) IBOutlet UIView *tableHeaderFarris;
+@property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumnLabel;
 
 @property(weak, nonatomic) IBOutlet UILabel *bulletinVendorLabel;
 

@@ -99,6 +99,7 @@
     } else {
         self.tableHeaderPigglyWiggly.hidden = YES;
         self.tableHeaderFarris.hidden = NO;
+        self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     }
     if (!self.showShipDates) self.btnSelectShipDates.hidden = YES;
 
