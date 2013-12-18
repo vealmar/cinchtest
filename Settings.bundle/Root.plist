@@ -12,7 +12,7 @@
                 <key>Key</key>
                 <string>host</string>
                 <key>DefaultValue</key>
-                <string>BillHicks</string>
+                <string>PigglyWiggly</string>
             </dict>
             <dict>
                 <key>Title</key>
@@ -62,7 +62,7 @@
                 <key>AutocorrectionType</key>
                 <string>No</string>
                 <key>DefaultValue</key>
-                <string>http://app.conventioninnovations.com</string>
+                <string>http://192.168.200.250</string>
                 <key>IsSecure</key>
                 <false/>
                 <key>Key</key>
@@ -82,7 +82,7 @@
                 <key>Key</key>
                 <string>show</string>
                 <key>DefaultValue</key>
-                <string>10</string>
+                <string>4</string>
                 <key>IsSecure</key>
                 <false/>
                 <key>KeyboardType</key>
