@@ -163,20 +163,20 @@ CIOrderViewController
         NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                    persistentOrders = [[NSMutableArray alloc] init];
-                    for (NSDictionary *order in JSON) {
-                        [persistentOrders addObject:[[AnOrder alloc] initWithJSONFromServer:order]];
-                    }
-                    partialOrders = [self loadPartialOrders];
-                    self.allorders = [partialOrders mutableCopy];
-                    [self.allorders addObjectsFromArray:persistentOrders];
-                    self.filteredOrders = [self.allorders mutableCopy];
-                    [self.sideTable reloadData];
-                    self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
-                    cleanup();
-                    [self highlightOrder:orderId];
-                } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                                                                                            success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                                persistentOrders = [[NSMutableArray alloc] init];
+                                                                                                for (NSDictionary *order in JSON) {
+                                                                                                    [persistentOrders addObject:[[AnOrder alloc] initWithJSONFromServer:order]];
+                                                                                                }
+                                                                                                partialOrders = [self loadPartialOrders];
+                                                                                                self.allorders = [partialOrders mutableCopy];
+                                                                                                [self.allorders addObjectsFromArray:persistentOrders];
+                                                                                                self.filteredOrders = [self.allorders mutableCopy];
+                                                                                                [self.sideTable reloadData];
+                                                                                                self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
+                                                                                                cleanup();
+                                                                                                [self highlightOrder:orderId];
+                                                                                            } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
                     [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@", [error localizedDescription]] delegate:nil
                                       cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                     cleanup();
@@ -878,7 +878,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSString *authorizedBy = self.authorizer.text == nil? @"" : self.authorizer.text;
     NSString *notesText = self.notes.text == nil || [self.notes.text isKindOfClass:[NSNull class]] ? @"" : self.notes.text;
 
-    NSDictionary *order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
+    NSDictionary *order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustomerID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
     NSDictionary *final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDEREDITS([currentOrder.orderId intValue]), kAuthToken, self.authToken];
 
@@ -1129,15 +1129,15 @@ SG: This method gets called when you swipe on an order in the order list and tap
             AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
             NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
             AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
-                    success:^(AFHTTPRequestOperation *op, id responseObject) {
-                        if (coreDataOrder != nil)[[CoreDataUtil sharedManager] deleteObject:coreDataOrder];
-                        [self deleteRowFromOrderListAtIndex:rowToDelete];
-                        if (currentOrder && currentOrder.orderId == orderToDelete.orderId) {
-                            self.OrderDetailScroll.hidden = YES;
-                            currentOrder = nil;
-                        }
-                        [deleteHUD hide:NO];
-                    } failure:^(AFHTTPRequestOperation *op, NSError *error) {
+                                                                                success:^(AFHTTPRequestOperation *op, id responseObject) {
+                                                                                    if (coreDataOrder != nil)[[CoreDataUtil sharedManager] deleteObject:coreDataOrder];
+                                                                                    [self deleteRowFromOrderListAtIndex:rowToDelete];
+                                                                                    if (currentOrder && currentOrder.orderId == orderToDelete.orderId) {
+                                                                                        self.OrderDetailScroll.hidden = YES;
+                                                                                        currentOrder = nil;
+                                                                                    }
+                                                                                    [deleteHUD hide:NO];
+                                                                                } failure:^(AFHTTPRequestOperation *op, NSError *error) {
                         NSString *errorMsg = [NSString stringWithFormat:@"Error deleting order. %@", error.localizedDescription];
                         [[[UIAlertView alloc] initWithTitle:@"Error" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
                         [deleteHUD hide:NO];

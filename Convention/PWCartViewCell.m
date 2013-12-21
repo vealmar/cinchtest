@@ -10,7 +10,6 @@
 #import "ProductCellDelegate.h"
 #import "config.h"
 #import "NumberUtil.h"
-#import "ALineItem.h"
 
 
 @implementation PWCartViewCell {
@@ -34,7 +33,12 @@
     return self;
 }
 
-- (void)initializeWith:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product item:(ALineItem *)item tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWith:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product tag:(NSInteger)tag
+              quantity:(NSString *)quantity
+                 price:(NSNumber *)price
+               voucher:(NSNumber *)voucherPrice
+             shipDates:(int)numOfShipDates
+   productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     self.InvtID.text = [product objectForKey:@"invtid"];
     self.descr.text = [product objectForKey:@"descr"];
     if ([product objectForKey:kProductShipDate1] != nil && ![[product objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]) {
@@ -55,20 +59,20 @@
     } else {
         self.shipDate2.text = @"";
     }
-    self.numShipDates.text = [NSString stringWithFormat:@"%d", item.shipDates.count];
+    self.numShipDates.text = [NSString stringWithFormat:@"%d", numOfShipDates];
     if ([product objectForKey:@"caseqty"] != nil && ![[product objectForKey:@"caseqty"] isKindOfClass:[NSNull class]])
         self.CaseQty.text = [product objectForKey:@"caseqty"];
     else
         self.CaseQty.text = @"";
 
-    self.qtyLbl.text = item.quantity;
+    self.qtyLbl.text = quantity;
     self.qtyLbl.hidden = multiStore;
     self.qtyBtn.hidden = !multiStore;
 
-    self.voucher.text = item.voucherPrice ? [NumberUtil formatDollarAmount:item.voucherPrice] : @"0.00";
+    self.voucher.text = voucherPrice ? [NumberUtil formatDollarAmount:voucherPrice] : @"0.00"; //todo: is the check needed?
 
     if (showPrice) {
-        self.priceLbl.text = [NumberUtil formatDollarAmount:item.price];
+        self.priceLbl.text = [NumberUtil formatDollarAmount:price];
     }
     self.delegate = productCellDelegate;
     self.tag = tag;

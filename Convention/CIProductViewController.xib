@@ -16,7 +16,7 @@
                 <outlet property="lblShipDate1" destination="75" id="392"/>
                 <outlet property="lblShipDate2" destination="74" id="393"/>
                 <outlet property="lblShipDateCount" destination="81" id="394"/>
-                <outlet property="products" destination="27" id="28"/>
+                <outlet property="productsTableView" destination="27" id="28"/>
                 <outlet property="searchText" destination="413" id="415"/>
                 <outlet property="tableHeaderFarris" destination="397" id="406"/>
                 <outlet property="tableHeaderMinColumnLabel" destination="401" id="Dak-1M-jSo"/>
@@ -43,7 +43,7 @@
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                 </view>
-                <view contentMode="scaleToFill" id="397" userLabel="Farris Header">
+                <view hidden="YES" contentMode="scaleToFill" id="397" userLabel="Farris Header">
                     <rect key="frame" x="0.0" y="167" width="1024" height="44"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>
@@ -92,7 +92,7 @@
                     </subviews>
                     <color key="backgroundColor" red="0.82352941180000006" green="0.83921568629999999" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
                 </view>
-                <view hidden="YES" contentMode="scaleToFill" id="63" userLabel="Piggly Wiggly Header">
+                <view contentMode="scaleToFill" id="63" userLabel="Piggly Wiggly Header">
                     <rect key="frame" x="0.0" y="148" width="1024" height="44"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <subviews>

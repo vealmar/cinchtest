@@ -12,6 +12,15 @@
 @implementation NumberUtil {
 
 }
+static NSDecimalNumber *oneHundredDecimal = nil;
+
++ (NSDecimalNumber *)hundredDecimal {
+    if (!oneHundredDecimal)
+        oneHundredDecimal = [NSDecimalNumber decimalNumberWithString:@"100"];
+    return oneHundredDecimal;
+}
+
+
 + (NSString *)formatDollarAmount:(NSNumber *)dollarAmount {
     if (dollarAmount) {
         NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
@@ -22,6 +31,16 @@
         return [nf stringFromNumber:[NSNumber numberWithDouble:[dollarAmount doubleValue]]];
     } else
         return @"";
+}
+
++ (int32_t)convertDollarsToCents:(NSNumber *)dollars {
+    if (dollars) {
+        NSDecimalNumber *dollarsDecimal = [NSDecimalNumber decimalNumberWithString:[dollars description]];
+        NSDecimalNumber *centsDecimal = [dollarsDecimal decimalNumberByMultiplyingBy:[self hundredDecimal]];
+        int32_t cents = [centsDecimal intValue];
+        return cents;
+    } else
+        return 0;
 }
 
 @end

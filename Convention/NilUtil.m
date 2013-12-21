@@ -10,13 +10,31 @@
 
 
 @implementation NilUtil {
-
 }
 + (NSObject *)nilOrObject:(NSObject *)object {
+    return [NilUtil objectOrDefault:object defaultObject:nil];
+}
+
++ (NSString *)objectOrDefaultString:(NSObject *)object defaultObject:(NSString *)defaultString {
+    return (NSString *) [NilUtil objectOrDefault:object defaultObject:defaultString];
+}
+
++ (NSArray *)objectOrEmptyArray:(NSObject *)object {
+    return (NSArray *) [NilUtil objectOrDefault:object defaultObject:[[NSArray alloc] init]];
+}
+
++ (NSObject *)objectOrNNull:(NSObject *)object {
+    return [NilUtil objectOrDefault:object defaultObject:[NSNull null]];
+
+}
+
++ (NSObject *)objectOrDefault:(NSObject *)object defaultObject:(NSObject *)defaultObject {
     if (object == nil || [object isKindOfClass:[NSNull class]]) {
-        return nil;
+        return defaultObject;
     } else {
         return object;
     }
 }
+
+
 @end

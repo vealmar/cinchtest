@@ -27,10 +27,10 @@
 @property(nonatomic, retain) NSString *descr;
 @property(nonatomic, retain) NSString *descr2;
 @property(nonatomic) BOOL dirship;
-@property(nonatomic) float discount;
-@property(nonatomic) float editablePrice;
+@property(nonatomic) int32_t discount;
+@property(nonatomic) int32_t editablePrice;
 @property(nonatomic, retain) NSString *editableQty;
-@property(nonatomic) float editableVoucher;
+@property(nonatomic) int32_t editableVoucher;
 @property(nonatomic) int32_t idx;
 @property(nonatomic) int32_t import_id;
 @property(nonatomic) int32_t initial_show;
@@ -51,7 +51,7 @@
 @property(nonatomic) int32_t vendor_id;
 @property(nonatomic, retain) NSString *voucher;
 @property(nonatomic, retain) Order *order;
-@property(nonatomic, retain) NSOrderedSet *shipdates;
+@property(nonatomic, retain) NSOrderedSet *shipdates; //Array of ShipDate objects.
 @end
 
 @interface Cart (CoreDataGeneratedAccessors)
@@ -76,5 +76,15 @@
 
 - (void)removeShipdates:(NSOrderedSet *)values;
 
-- (id)initWithLineItem:(ALineItem *)lineItem forProduct:(NSDictionary *)product andCustomer:(NSDictionary *)customer context:(NSManagedObjectContext *)context;
+- (NSArray *)shipDatesAsStringArray;
+
+- (id)initWithLineItem:(ALineItem *)lineItem forProduct:(NSDictionary *)product context:(NSManagedObjectContext *)context;
+
+- (id)initWithQuantity:(NSString *)quantity price:(NSNumber *)price voucherPrice:(NSNumber *)voucherPrice category:(NSString *)category shipDates:(NSArray *)shipDates
+               product:(NSDictionary *)product context:(NSManagedObjectContext *)context;
+
+- (NSNumber *)productId;
+
+- (id)initWithProduct:(NSDictionary *)product context:(NSManagedObjectContext *)context;
+
 @end

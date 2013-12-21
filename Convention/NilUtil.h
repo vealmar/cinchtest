@@ -12,4 +12,11 @@
 @interface NilUtil : NSObject
 + (NSObject *)nilOrObject:(NSObject *)object;
 
++ (NSString *)objectOrDefaultString:(NSObject *)object defaultObject:(NSString *)defaultString;
+
++ (NSArray *)objectOrEmptyArray:(NSObject *)object;
+
++ (NSObject *)objectOrNNull:(NSObject *)object;
+
++ (NSObject *)objectOrDefault:(NSObject *)object defaultObject:(NSObject *)defaultObject;
 @end

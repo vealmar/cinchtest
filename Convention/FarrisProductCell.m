@@ -41,7 +41,7 @@
 
 - (IBAction)quantityChanged:(id)sender {
     if (self.delegate) {
-        [self.delegate QtyChange:[self.quantity.text doubleValue] forIndex:self.tag];
+        [self.delegate QtyChange:[self.quantity.text intValue] forIndex:self.tag];
     }
 }
 

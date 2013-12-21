@@ -28,5 +28,10 @@
 
 - (IBAction)voucherDidChange:(id)sender;
 
-- (void)initializeWith:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product item:(ALineItem *)item tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeWith:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product tag:(NSInteger)tag
+              quantity:(NSString *)quantity
+                 price:(NSNumber *)price
+               voucher:(NSNumber *)voucherPrice
+             shipDates:(int)numOfShipDates
+   productCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 @end

@@ -32,6 +32,9 @@
 @property(nonatomic, retain) NSString *ship_notes;
 @property(nonatomic) BOOL ship_flag;
 
+- (void)updateItemQuantity:(NSString *)quantity product:(NSDictionary *)product context:(NSManagedObjectContext *)context;
+
+- (void)updateItemVoucher:(NSNumber *)voucher product:(NSDictionary *)product context:(NSManagedObjectContext *)context;
 @end
 
 @interface Order (CoreDataGeneratedAccessors)

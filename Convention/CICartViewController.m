@@ -12,14 +12,13 @@
 #import "ShowConfigurations.h"
 #import "ALineItem.h"
 #import "CIProductViewControllerHelper.h"
-#import "DateUtil.h"
 #import "NumberUtil.h"
 #import "PWCartViewCell.h"
 #import "FarrisCartViewCell.h"
 #import "SettingsManager.h"
+#import "Cart.h"
 
 @interface CICartViewController () {
-    NSMutableArray *allCartItems; //product cart items + discount items
     __weak IBOutlet UILabel *customerInfoLabel;
     __weak IBOutlet UIImageView *logo;
     NSIndexPath *selectedItemRowIndexPath;
@@ -28,8 +27,7 @@
 @end
 
 @implementation CICartViewController
-@synthesize products;
-@synthesize productData;
+@synthesize productsUITableView;
 @synthesize authToken;
 @synthesize navBar;
 @synthesize title;
@@ -38,7 +36,6 @@
 @synthesize customer;
 @synthesize delegate;
 @synthesize tOffset;
-@synthesize productCart;
 @synthesize finishTheOrder;
 @synthesize multiStore;
 @synthesize popoverController;
@@ -51,7 +48,7 @@
     if (self) {
         showPrice = YES;
         tOffset = 0;
-        productCart = [NSMutableDictionary dictionary];
+        self.productsInCart = [[NSArray alloc] init];
     }
     return self;
 }
@@ -101,47 +98,13 @@
     customerInfoLabel.text = customer != nil &&
             customer[kBillName] != nil &&
             ![customer[kBillName] isKindOfClass:[NSNull class]] ? customer[kBillName] : @"";
-
-    allCartItems = [NSMutableArray arrayWithCapacity:[self.productData count] + [self.discountItems count]];
-    double grossTotal = 0.0;
-    double voucherTotal = 0.0;
-    NSArray *lineItems = [self sortLineItemsByinvtId:[self.productData allValues]];
-    for (ALineItem *lineItem in lineItems) {
-        [allCartItems addObject:lineItem];
-        int qty = 0;
-        if (multiStore) {
-            NSDictionary *quantitiesByStore = [lineItem.quantity objectFromJSONString];
-            for (NSString *storeId in [quantitiesByStore allKeys]) {
-                qty += [[quantitiesByStore objectForKey:storeId] intValue];
-            }
-        }
-        else {
-            qty += [lineItem.quantity intValue];
-        }
-        int numOfShipDates = [lineItem.shipDates count];
-        double price = [lineItem.price doubleValue];
-        grossTotal += qty * price * (numOfShipDates == 0 ? 1 : numOfShipDates);
-
-        if (lineItem.voucherPrice != nil && ![lineItem.voucherPrice isKindOfClass:[NSNull class]]) {
-            double voucherPrice = [lineItem.voucherPrice doubleValue];
-            voucherTotal += qty * voucherPrice * (numOfShipDates == 0 ? 1 : numOfShipDates);
-        }
-    }
-    double discountTotal = 0.0;
-    NSArray *keys = [self.discountItems allKeys];
-    for (NSString *key in keys) {
-        ALineItem *discountLineItem = [self.discountItems objectForKey:key];
-        [allCartItems addObject:discountLineItem];
-        double price = [discountLineItem.price doubleValue];
-        double qty = [discountLineItem.quantity doubleValue];
-        discountTotal += price * qty;
-    }
-    self.grossTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:grossTotal]];
-    self.discountTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:discountTotal]];
-    double netTotal = grossTotal + discountTotal;
+    NSArray *totals = [delegate getTotals];
+    self.grossTotal.text = [NumberUtil formatDollarAmount:totals[0]];
+    self.discountTotal.text = [NumberUtil formatDollarAmount:totals[2]];
+    double netTotal = [(NSNumber *) totals[0] doubleValue] + [(NSNumber *) totals[2] doubleValue];
     self.netTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:netTotal]];
-    self.voucherTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:voucherTotal]];
-    [self.products reloadData];
+    self.voucherTotal.text = [NumberUtil formatDollarAmount:totals[1]];
+    [self.productsUITableView reloadData];
     [self.indicator stopAnimating];
     self.indicator.hidden = YES;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
@@ -164,63 +127,51 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
     return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
 
 #pragma mark - Table stuff
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
-    if (allCartItems) {
-        return [allCartItems count];
-    }
-    return 0;
+    return section == 0 ? self.productsInCart.count : [self.delegate getDiscountItemsCount];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([productCart count] == 0) {return nil;}
     CIProductViewControllerHelper *helper = [[CIProductViewControllerHelper alloc] init];
-    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) indexPath.row];
-    NSDictionary *editableDict = @{kEditablePrice : lineItem.price,
-            kEditableVoucher : lineItem.voucherPrice ? lineItem.voucherPrice : [NSNumber numberWithInt:0],
-            kEditableQty : lineItem.quantity,
-            kLineItemShipDates : [DateUtil convertYyyymmddArrayToDateArray:lineItem.shipDates]};
-    NSDictionary *product = [self.delegate getProduct:lineItem.productId];
-    if ([kShowCorp isEqualToString:kPigglyWiggly]) {
-        PWCartViewCell *cell = (PWCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-        [cell initializeWith:multiStore showPrice:self.showPrice product:product item:lineItem tag:[indexPath row] productCellDelegate:self];
-        [helper updateCellBackground:cell product:product editableItemDetails:editableDict multiStore:multiStore];
-        return cell;
-    } else {
+    if ([indexPath section] == 0) { //product items
+        NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
+        NSDictionary *product = [self.delegate getProduct:productId];
+        Cart *cart = [delegate getCoreDataForProduct:productId];
+        if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+            PWCartViewCell *cell = (PWCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
+            [cell initializeWith:multiStore showPrice:self.showPrice product:product tag:[indexPath row] quantity:cart.editableQty
+                           price:@(cart.editablePrice / 100.0) voucher:@(cart.editableVoucher / 100.0)
+                       shipDates:cart.shipdates.count productCellDelegate:self];
+            return cell;
+        } else {
+            FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
+            [cell initializeWith:product quantity:cart.editableQty tag:[indexPath row] ProductCellDelegate:self];
+            return cell;
+        }
+    } else { //discount items
+        NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
+        NSDictionary *product = [self.delegate getProduct:productId];
+        ALineItem *discountItem = [delegate getDiscountItemAt:[indexPath row]];
         FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-        [cell initializeWith:product item:lineItem tag:[indexPath row] ProductCellDelegate:self];
+        [cell initializeForDiscountWithProduct:product quantity:discountItem.quantity price:discountItem.price tag:[indexPath row] ProductCellDelegate:self];
         return cell;
     }
 }
-
-- (NSArray *)sortLineItemsByinvtId:(NSArray *)lineItems {
-    NSArray *sortedArray;
-    sortedArray = [lineItems sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        NSNumber *first = [(ALineItem *) a getInvtId];
-        NSNumber *second = [(ALineItem *) b getInvtId];;
-        return [first compare:second];
-    }];
-    return sortedArray;
-}
-
 
 #pragma mark - Other
 
 - (void)Cancel {
     self.indicator.hidden = NO;
     [self.indicator startAnimating];
-    if (self.delegate) {
-        [self.delegate setProductCart:[NSMutableDictionary dictionaryWithDictionary:self.productCart]];
-        [self.delegate setOrderSubmitted:NO];
-    }
+    [self.delegate setOrderSubmitted:NO];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -230,58 +181,39 @@
 
 
 - (IBAction)finishOrder:(id)sender {
-    if ([[self.productCart allKeys] count] <= 0) {
-        [[[UIAlertView alloc] initWithTitle:@"Cart Empty." message:@"You don't have anything in your cart!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        return;
-    }
-    if (self.delegate) {
-        [self.delegate setProductCart:self.productCart];
+    if ([self.delegate orderReadyForSubmission]) {
         [self.delegate setOrderSubmitted:YES];
+        [self dismissViewControllerAnimated:NO completion:nil];
     }
-    [self dismissViewControllerAnimated:NO completion:nil];
 }
 
 - (IBAction)clearVouchers:(id)sender {
-    if ([[self.productCart allKeys] count] <= 0) {
-        [[[UIAlertView alloc] initWithTitle:@"Cart Empty." message:@"You don't have anything in your cart!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        return;
+    if ([self.delegate orderReadyForSubmission]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Zero out all vouchers?" delegate:nil cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
+        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+            if (buttonIndex == 1) {
+                [self zeroAllVouchers];
+            }
+        }];
     }
-
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Zero out all vouchers?"
-                                                   delegate:nil cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-    [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
-        if (buttonIndex == 1) {
-            [self zeroAllVouchers];
-        }
-
-    }];
-
 }
 
 - (void)zeroAllVouchers {
-    for (NSString *key in [self.productCart allKeys]) {
-        ALineItem *lineItem = [self.productCart objectForKey:key];
-        lineItem.voucherPrice = [NSNumber numberWithDouble:0.0];
+    for (int i = 0; i <= self.productsInCart.count; i++) {
+        [delegate changeVoucherTo:0 forProductId:self.productsInCart[(NSUInteger) i]];
     }
-    [self.products reloadData];
+    [self.productsUITableView reloadData];
 }
 
 - (void)VoucherChange:(double)voucherPrice forIndex:(int)idx {
-    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) idx];
-    lineItem.voucherPrice = [NSNumber numberWithDouble:voucherPrice];
+    [self.delegate changeVoucherTo:voucherPrice forProductId:self.productsInCart[(NSUInteger) idx]];
 }
 
-- (void)QtyChange:(double)qty forIndex:(int)idx {
-    ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) idx];
-    if (qty <= 0) {
-        [self.productCart removeObjectForKey:lineItem.productId];
-        [self.products reloadData];
-    }
+- (void)QtyChange:(int)qty forIndex:(int)idx {
     self.grossTotal.textColor = [UIColor redColor];
     self.discountTotal.textColor = [UIColor redColor];
     self.netTotal.textColor = [UIColor redColor];
-    [self.delegate QtyChange:qty forIndex:idx];
-    lineItem.quantity = [[NSNumber numberWithDouble:qty] stringValue];
+    [self.delegate changeQuantityTo:qty forProductId:self.productsInCart[(NSUInteger) idx]];
 }
 
 - (void)QtyTouchForIndex:(int)idx {
@@ -291,43 +223,44 @@
         if (!storeQtysPO) {
             storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
         }
-        ALineItem *lineItem = (ALineItem *) [allCartItems objectAtIndex:(NSUInteger) idx];
-        storeQtysPO.stores = [[lineItem.quantity objectFromJSONString] mutableCopy];
+        NSNumber *productId = self.productsInCart[(NSUInteger) idx];
+        Cart *cart = [delegate getCoreDataForProduct:productId];
+        storeQtysPO.stores = [[cart.editableQty objectFromJSONString] mutableCopy];
         storeQtysPO.tag = idx;
         storeQtysPO.editable = NO;
         storeQtysPO.delegate = (id <CIStoreQtyTableDelegate>) self;
-        CGRect frame = [self.products rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
+        CGRect frame = [self.productsUITableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
         frame = CGRectOffset(frame, 750, 0);
         popoverController = [[UIPopoverController alloc] initWithContentViewController:storeQtysPO];
-        [popoverController presentPopoverFromRect:frame inView:self.products permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        [popoverController presentPopoverFromRect:frame inView:self.productsUITableView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
 }
 #pragma Keyboard
 
 - (void)setSelectedRow:(NSUInteger)index {
-    selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
+    selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0]; //todo: this view has two sections now
 }
 
 - (void)keyboardWillShow:(NSNotification *)note {
     // Reducing the frame height by 300 causes it to end above the keyboard, so the keyboard cannot overlap any content. 300 is the height occupied by the keyboard.
     // In addition scroll the selected row into view.
-    CGRect frame = self.products.frame;
+    CGRect frame = self.productsUITableView.frame;
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
     frame.size.height -= 300;
-    self.products.frame = frame;
-    [self.products scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    self.productsUITableView.frame = frame;
+    [self.productsUITableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
     [UIView commitAnimations];
 }
 
 - (void)keyboardDidHide:(NSNotification *)note {
-    CGRect frame = self.products.frame;
+    CGRect frame = self.productsUITableView.frame;
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
     frame.size.height += 300;
-    self.products.frame = frame;
+    self.productsUITableView.frame = frame;
     [UIView commitAnimations];
 }
 @end

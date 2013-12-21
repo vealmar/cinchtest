@@ -120,7 +120,7 @@ static DateUtil *sharedInstance;
 
 + (NSArray *)convertDateArrayToYyyymmddArray:(NSArray *)nsdates {
     NSMutableArray *jsonDates = [[NSMutableArray alloc] init];
-    if ([nsdates count] > 0) {
+    if (nsdates && [nsdates count] > 0) {
         for (NSDate *nsdate in nsdates) {
             [jsonDates addObject:[DateUtil convertDateToYyyymmdd:nsdate]];
         }

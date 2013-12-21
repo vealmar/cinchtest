@@ -99,7 +99,7 @@
 - (IBAction)qtyChanged:(id)sender {
     self.qtyLbl.text = self.quantity.text;
     if (self.delegate) {
-        [self.delegate QtyChange:[self.quantity.text doubleValue] forIndex:self.tag];
+        [self.delegate QtyChange:[self.quantity.text intValue] forIndex:self.tag];
     }
 }
 

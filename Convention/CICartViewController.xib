@@ -18,7 +18,7 @@
                 <outlet property="logo" destination="125" id="126"/>
                 <outlet property="netTotal" destination="118" id="121"/>
                 <outlet property="netTotalLabel" destination="117" id="132"/>
-                <outlet property="products" destination="27" id="28"/>
+                <outlet property="productsUITableView" destination="27" id="28"/>
                 <outlet property="tableHeaderFarris" destination="102" id="111"/>
                 <outlet property="tableHeaderMinColumn" destination="108" id="Zcm-nQ-1x2"/>
                 <outlet property="tableHeaderPigglyWiggly" destination="63" id="110"/>

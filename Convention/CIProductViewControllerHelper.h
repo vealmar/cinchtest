@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class ProductCell;
+@class Order;
 
 
 @interface CIProductViewControllerHelper : NSObject
@@ -27,5 +28,12 @@
 
 - (UITableViewCell *)dequeueReusableCartViewCell:(UITableView *)table;
 
-- (double)getQuantity:(NSString *)quantity;
+- (int)getQuantity:(NSString *)quantity;
+
+- (NSDictionary *)prepareJsonRequestParameterFromOrder:(Order *)coreDataOrder notes:(NSString *)notes shipNotes:(NSString *)shipNotes
+                                              shipFlag:(NSString *)shipFlag
+                                          authorizedBy:(NSString *)authorizedBy
+                                             printFlag:(NSString *)printFlag
+                                        printStationId:(NSNumber *)printStationId;
+
 @end

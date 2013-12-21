@@ -12,15 +12,18 @@
 #import "StringManipulation.h"
 #import "ShowConfigurations.h"
 #import "SettingsManager.h"
+#import "Order.h"
+#import "NilUtil.h"
+#import "Cart.h"
 
 
 @implementation CIProductViewControllerHelper {
 
 }
 
-- (double)getQuantity:(NSString *)quantity {
+- (int)getQuantity:(NSString *)quantity {
     if ([[quantity stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] startsWith:@"{"]) {
-        double qty = 0;
+        int qty = 0;
         NSDictionary *quantitiesByStore = [quantity objectFromJSONString];
         for (NSString *storeId in [quantitiesByStore allKeys]) {
             qty += [[quantitiesByStore objectForKey:storeId] intValue];
@@ -28,7 +31,7 @@
         return qty;
     }
     else {
-        return [quantity doubleValue];
+        return [quantity intValue];
     }
 }
 
@@ -118,4 +121,41 @@
     }
     return cell;
 }
+
+- (NSDictionary *)prepareJsonRequestParameterFromOrder:(Order *)coreDataOrder notes:(NSString *)notes shipNotes:(NSString *)shipNotes
+                                              shipFlag:(NSString *)shipFlag
+                                          authorizedBy:(NSString *)authorizedBy
+                                             printFlag:(NSString *)printFlag
+                                        printStationId:(NSNumber *)printStationId {
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:coreDataOrder.carts.count];
+    for (Cart *cart in coreDataOrder.carts) {
+        BOOL hasQuantity = [self itemHasQuantity:cart.editableQty];
+        NSDictionary *proDict;
+        if (hasQuantity) { //only include items that have non-zero quantity specified
+            proDict = [NSDictionary dictionaryWithObjectsAndKeys:cart.orderLineItem_id == 0 ? [NSNull null] : [NSNumber numberWithInt:cart.orderLineItem_id], kID,
+                                                                 [NSNumber numberWithInt:cart.cartId], kLineItemProductID,
+                                                                 [NilUtil objectOrNNull:cart.editableQty], kLineItemQuantity,
+                                                                 @(cart.editablePrice / 100.0), kLineItemPrice,
+                                                                 @(cart.editableVoucher / 100.0), kLineItemVoucherPrice,
+                                                                 [ShowConfigurations instance].shipDates ? cart.shipDatesAsStringArray : @[], kLineItemShipDates,
+
+                                                                 nil];
+        } else if (cart.orderLineItem_id != 0) { //if quantity is 0 and item exists on server, tell server to destroy it. if it does not exist on server, don't include it.
+            proDict = [NSDictionary dictionaryWithObjectsAndKeys:@(cart.orderLineItem_id), kID, @(1), @"_destroy", nil];
+        }
+        if (proDict) [arr addObject:(id) proDict];
+    }
+    NSMutableDictionary *newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNNull:coreDataOrder.customer_id], kOrderCustomerID,
+                                                                                      [NilUtil objectOrNNull:notes], kNotes,
+                                                                                      [NilUtil objectOrNNull:shipNotes], kShipNotes,
+                                                                                      [NilUtil objectOrNNull:authorizedBy], kAuthorizedBy,
+                                                                                      [NilUtil objectOrNNull:shipFlag], kShipFlag,
+                                                                                      [NilUtil objectOrNNull:coreDataOrder.status], kOrderStatus,
+                                                                                      arr, kOrderItems,
+                                                                                      [NilUtil objectOrNNull:printFlag], kOrderPrint,
+                                                                                      [NilUtil objectOrNNull:printStationId], kOrderPrinter , nil]; //todo check printer settings get set correctly, i.e. blank string evaluates to null. what happens if you send nil?
+    return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
+}
+
+
 @end

@@ -22,6 +22,12 @@
                                 <rect key="frame" x="0.0" y="20" width="1024" height="768"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
+                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="No Orders." textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" translatesAutoresizingMaskIntoConstraints="NO" id="u65-FR-JzO">
+                                <rect key="frame" x="557" y="334" width="250" height="100"/>
+                                <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="37"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E68-Qz-v9j">
                                 <rect key="frame" x="0.0" y="0.0" width="1024" height="20"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -209,12 +215,6 @@
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="OXD-Va-kPL">
                                         <rect key="frame" x="9" y="266" width="668" height="299"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <label key="tableFooterView" hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" text="No Orders." textAlignment="center" lineBreakMode="tailTruncation" minimumFontSize="10" id="u65-FR-JzO">
-                                            <rect key="frame" x="0.0" y="0.0" width="668" height="186"/>
-                                            <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="37"/>
-                                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
                                         <connections>
                                             <outlet property="dataSource" destination="L2z-Wh-GlW" id="keZ-gQ-fue"/>
                                             <outlet property="delegate" destination="L2z-Wh-GlW" id="sYU-Bh-1ZY"/>

@@ -62,22 +62,22 @@
         self.authorized = @"";
         self.coreDataOrder = order;
         // TODO: setup line items
-        double itemTotal = 0.f;
+        int32_t itemTotal = 0;
         for (int i = 0; i < order.carts.count; i++) {
             Cart *lineItem = (Cart *) [order.carts objectAtIndex:(NSUInteger) i];
             __autoreleasing NSError *err = nil;
             NSMutableDictionary *dict = [lineItem.editableQty objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-            double itemQty = 0;
+            int32_t itemQty = 0;
             if (err) { //SG: if the item quantity is not a json/hash like string.
-                itemQty = [lineItem.editableQty doubleValue];
+                itemQty = [lineItem.editableQty intValue];
             } else { //SG: if item quantity is a json/hash like string i.e. there is more than one quantity for this item. This will happen when the customer has multiple stores.
                 for (NSString *key in dict.allKeys) {
-                    itemQty += [[dict objectForKey:key] doubleValue];
+                    itemQty += [[dict objectForKey:key] intValue];
                 }
             }
             itemTotal += itemQty * lineItem.editablePrice; //todo: is this correct? doesn't account for ship dates.
         };
-        self.total = [NSNumber numberWithDouble:itemTotal];
+        self.total = [NSNumber numberWithDouble:itemTotal / 100.0];
     }
     return self;
 }

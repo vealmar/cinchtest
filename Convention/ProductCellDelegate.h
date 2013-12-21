@@ -12,7 +12,7 @@
 @required
 - (void)VoucherChange:(double)price forIndex:(int)idx;
 
-- (void)QtyChange:(double)qty forIndex:(int)idx;
+- (void)QtyChange:(int)qty forIndex:(int)idx;
 
 - (void)QtyTouchForIndex:(int)idx;
 

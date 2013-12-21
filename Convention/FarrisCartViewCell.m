@@ -10,7 +10,6 @@
 #import "ProductCellDelegate.h"
 #import "config.h"
 #import "NumberUtil.h"
-#import "ALineItem.h"
 #import "NilUtil.h"
 
 
@@ -26,28 +25,37 @@
 @synthesize regPrice;
 @synthesize showPrice;
 
-- (void)initializeWith:(NSDictionary *)product item:(ALineItem *)item tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
-    BOOL isDiscount = [item.category isEqualToString:@"discount"];
+- (void)initializeForDiscountWithProduct:(NSDictionary *)product quantity:(NSString *)itemQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
-    self.InvtID.text = isDiscount ? @"Discount" : [product objectForKey:@"invtid"];
+    self.InvtID.text = @"Discount";
     [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
     NSObject *minObj = [NilUtil nilOrObject:[product objectForKey:@"min"]];
     self.min.text = minObj != nil ? [[product objectForKey:@"min"] stringValue] : @"";
-    if (!isDiscount) {
-        self.quantity.text = item.quantity;
-        self.quantity.hidden = NO;
-        self.qtyLbl.hidden = YES;
-    }
-    else {
-        NSString *qty = item.quantity;
-        self.qtyLbl.text = qty;
-        self.quantity.hidden = YES;
-        self.qtyLbl.font = discountFont;
-        self.qtyLbl.hidden = NO;
-    }
-    self.regPrice.text = isDiscount ? @"" : [NumberUtil formatDollarAmount:[product objectForKey:kProductRegPrc]];
-    self.showPrice.text = isDiscount ? [NumberUtil formatDollarAmount:item.price] : [NumberUtil formatDollarAmount:[product objectForKey:kProductShowPrice]];
-    if (isDiscount)self.showPrice.font = discountFont;
+    NSString *qty = itemQuantity;
+    self.qtyLbl.text = qty;
+    self.quantity.hidden = YES;
+    self.qtyLbl.font = discountFont;
+    self.qtyLbl.hidden = NO;
+    self.regPrice.text = @"";
+    self.showPrice.text = [NumberUtil formatDollarAmount:price];
+    self.showPrice.font = discountFont;
+    self.delegate = productCellDelegate;
+    self.tag = tag;
+    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+}
+
+- (void)initializeWith:(NSDictionary *)product
+              quantity:(NSString *)itemQuantity
+                   tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    self.InvtID.text = [product objectForKey:@"invtid"];
+    [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
+    NSObject *minObj = [NilUtil nilOrObject:[product objectForKey:@"min"]];
+    self.min.text = minObj != nil ? [[product objectForKey:@"min"] stringValue] : @"";
+    self.quantity.text = itemQuantity;
+    self.quantity.hidden = NO;
+    self.qtyLbl.hidden = YES;
+    self.regPrice.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductRegPrc]];
+    self.showPrice.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductShowPrice]];
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
@@ -70,7 +78,7 @@
 
 - (IBAction)quantityChanged:(id)sender {
     if (self.delegate) {
-        [self.delegate QtyChange:[self.quantity.text doubleValue] forIndex:self.tag];
+        [self.delegate QtyChange:[self.quantity.text intValue] forIndex:self.tag];
     }
 }
 @end

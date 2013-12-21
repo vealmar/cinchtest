@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 }
 
-@property(nonatomic, strong) IBOutlet UITableView *products;
+@property(nonatomic, strong) IBOutlet UITableView *productsTableView;
 @property(nonatomic, strong) IBOutlet UIImageView *ciLogo;
 @property(nonatomic, strong) IBOutlet UITextField *hiddenTxt;
 @property(weak, nonatomic) IBOutlet UITextField *searchText;
@@ -92,15 +92,15 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic, assign) id <CIProductViewDelegate> delegate;
 @property(nonatomic, strong) UIPopoverController *poController;
 @property(nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
-@property(nonatomic, strong) NSArray *resultData; //list of all products displayed (filtered by search criteria, selected vendor, bulletin etc.)
-@property(nonatomic, strong) NSMutableDictionary *vendorProductMap; //key is product_id.
-@property(nonatomic, strong) NSMutableDictionary *allproductsMap; //key is product_id.
+@property(nonatomic, strong) NSArray *resultData; //Array of all products displayed (filtered by search criteria, selected vendor, bulletin etc.)
+@property(nonatomic, strong) NSMutableDictionary *vendorProductMap; //key is product_id. All products for the selected vendor or foe all vendors if the selected vendor is 'Any'. This is used when performing Search, so that the search is limited to the selected vendor's products.
+@property(nonatomic, strong) NSMutableDictionary *allproductsMap; //All products for all vendors of this vendor's vendor group. key is product_id (NSNumber*).
 @property(nonatomic, strong) NSDictionary *customer;
 @property(nonatomic, strong) NSString *authToken;
 @property(nonatomic, strong) NSString *loggedInVendorId; //vendor#id of logged in vendor
 @property(nonatomic, strong) NSString *loggedInVendorGroupId;
 //vendor#vendorgroup_id of logged in vendor
-@property(nonatomic, strong) NSMutableDictionary *productCart; //key is product_id. Contains order's items.
+@property(nonatomic, strong) NSMutableDictionary *productCart; //key is product_id. Value is ALineItem. Line items get added or removed from the cart when quantity changes. They are added or removed irrespective of ship dates.
 @property(nonatomic, strong) NSMutableDictionary *discountItems;
 @property(nonatomic) BOOL viewInitialized;
 @property(nonatomic) BOOL orderSubmitted;
@@ -118,7 +118,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic) BOOL newOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
 
-- (void)QtyChange:(double)qty forIndex:(int)idx;
+- (void)QtyChange:(int)qty forIndex:(int)idx;
 
 - (void)setVendor:(NSInteger)vendorId;
 

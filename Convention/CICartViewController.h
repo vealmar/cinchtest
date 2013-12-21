@@ -11,25 +11,38 @@
 #import "PWProductCell.h"
 #import "CIStoreQtyTableViewController.h"
 
-@protocol CICartViewDelegate <NSObject>
+@class Cart;
+@class ALineItem;
 
-- (void)setProductCart:(NSMutableDictionary *)cart;
+@protocol CICartViewDelegate <NSObject>
 
 - (void)setOrderSubmitted:(BOOL)yes;
 
-- (void)QtyChange:(double)qty forIndex:(int)idx;
+- (void)changeQuantityTo:(int)qty forProductId:(NSNumber *)productId;
+
+- (void)changeVoucherTo:(double)voucher forProductId:(NSNumber *)productId;
 
 - (NSDictionary *)getProduct:(NSNumber *)productId;
+
+//Returns array with gross total, voucher total and discount total. All items in array are NSNumbers.
+- (NSArray *)getTotals;
+
+- (Cart *)getCoreDataForProduct:(NSNumber *)productId;
+
+- (NSUInteger)getDiscountItemsCount;
+
+- (ALineItem *)getDiscountItemAt:(int)index;
+
+- (BOOL)orderReadyForSubmission;
+
 @end
 
 @interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate>
 
-@property(nonatomic, strong) IBOutlet UITableView *products;
-@property(nonatomic, strong) NSMutableDictionary *productData;
+@property(nonatomic, strong) IBOutlet UITableView *productsUITableView;
+@property(nonatomic, strong) NSArray *productsInCart;
 @property(nonatomic, strong) NSDictionary *customer;
 @property(nonatomic, strong) NSString *authToken;
-@property(nonatomic, strong) NSMutableDictionary *productCart;
-@property(nonatomic, strong) NSMutableDictionary *discountItems;
 @property(nonatomic) BOOL showPrice;
 @property(nonatomic) BOOL multiStore;
 @property(nonatomic) int tOffset;
@@ -64,7 +77,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumn;
 
-- (void)QtyChange:(double)qty forIndex:(int)idx;
+- (void)QtyChange:(int)qty forIndex:(int)idx;
 
 - (void)VoucherChange:(double)voucherPrice forIndex:(int)idx;
 

@@ -26,8 +26,6 @@
 
 - (id)initWithJsonFromServer:(NSDictionary *)json;
 
-- (id)initWithCoreData:(Cart *)coreDataLineItem product:(NSDictionary *)product;
-
 - (double)getQuantity;
 
 - (double)getItemTotal;

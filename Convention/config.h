@@ -79,10 +79,12 @@
 
 //Order keys:
 #define kOrder @"order"
+#define kOrderPrint @"print"
+#define kOrderPrinter @"printer"
+
 //Customer Info keys:
 #define kCustID @"custid"
-#define kOrderCustID @"customer_id"
-#define kEmail @"email"
+#define kOrderCustomerID @"customer_id"
 #define kStores @"stores"
 
 #define kShipNotes @"ship_notes"
