@@ -131,16 +131,16 @@
         BOOL hasQuantity = [self itemHasQuantity:cart.editableQty];
         NSDictionary *proDict;
         if (hasQuantity) { //only include items that have non-zero quantity specified
-            proDict = [NSDictionary dictionaryWithObjectsAndKeys:cart.orderLineItem_id == 0 ? [NSNull null] : [NSNumber numberWithInt:cart.orderLineItem_id], kID,
-                                                                 [NSNumber numberWithInt:cart.cartId], kLineItemProductID,
+            proDict = [NSDictionary dictionaryWithObjectsAndKeys:[cart.orderLineItem_id intValue] == 0 ? [NSNull null] : cart.orderLineItem_id, kID,
+                                                                 cart.cartId, kLineItemProductID,
                                                                  [NilUtil objectOrNNull:cart.editableQty], kLineItemQuantity,
-                                                                 @(cart.editablePrice / 100.0), kLineItemPrice,
-                                                                 @(cart.editableVoucher / 100.0), kLineItemVoucherPrice,
+                                                                 @([cart.editablePrice intValue] / 100.0), kLineItemPrice,
+                                                                 @([cart.editableVoucher intValue] / 100.0), kLineItemVoucherPrice,
                                                                  [ShowConfigurations instance].shipDates ? cart.shipDatesAsStringArray : @[], kLineItemShipDates,
 
                                                                  nil];
-        } else if (cart.orderLineItem_id != 0) { //if quantity is 0 and item exists on server, tell server to destroy it. if it does not exist on server, don't include it.
-            proDict = [NSDictionary dictionaryWithObjectsAndKeys:@(cart.orderLineItem_id), kID, @(1), @"_destroy", nil];
+        } else if ([cart.orderLineItem_id intValue] != 0) { //if quantity is 0 and item exists on server, tell server to destroy it. if it does not exist on server, don't include it.
+            proDict = [NSDictionary dictionaryWithObjectsAndKeys:cart.orderLineItem_id, kID, @(1), @"_destroy", nil];
         }
         if (proDict) [arr addObject:(id) proDict];
     }
@@ -152,7 +152,7 @@
                                                                                       [NilUtil objectOrNNull:coreDataOrder.status], kOrderStatus,
                                                                                       arr, kOrderItems,
                                                                                       [NilUtil objectOrNNull:printFlag], kOrderPrint,
-                                                                                      [NilUtil objectOrNNull:printStationId], kOrderPrinter , nil]; //todo check printer settings get set correctly, i.e. blank string evaluates to null. what happens if you send nil?
+                                                                                      [NilUtil objectOrNNull:printStationId], kOrderPrinter , nil];
     return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
 }
 

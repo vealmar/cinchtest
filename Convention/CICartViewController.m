@@ -148,7 +148,7 @@
         if ([kShowCorp isEqualToString:kPigglyWiggly]) {
             PWCartViewCell *cell = (PWCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
             [cell initializeWith:multiStore showPrice:self.showPrice product:product tag:[indexPath row] quantity:cart.editableQty
-                           price:@(cart.editablePrice / 100.0) voucher:@(cart.editableVoucher / 100.0)
+                           price:@([cart.editablePrice intValue] / 100.0) voucher:@([cart.editableVoucher intValue] / 100.0)
                        shipDates:cart.shipdates.count productCellDelegate:self];
             return cell;
         } else {

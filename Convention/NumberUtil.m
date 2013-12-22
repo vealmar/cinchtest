@@ -13,11 +13,18 @@
 
 }
 static NSDecimalNumber *oneHundredDecimal = nil;
+static NSNumber *zeroNSNumber = nil;
 
 + (NSDecimalNumber *)hundredDecimal {
     if (!oneHundredDecimal)
         oneHundredDecimal = [NSDecimalNumber decimalNumberWithString:@"100"];
     return oneHundredDecimal;
+}
+
++ (NSNumber *)zeroIntNSNumber {
+    if (!zeroNSNumber)
+        zeroNSNumber = @(0);
+    return zeroNSNumber;
 }
 
 
@@ -33,14 +40,14 @@ static NSDecimalNumber *oneHundredDecimal = nil;
         return @"";
 }
 
-+ (int32_t)convertDollarsToCents:(NSNumber *)dollars {
++ (NSNumber *)convertDollarsToCents:(NSNumber *)dollars {
     if (dollars) {
         NSDecimalNumber *dollarsDecimal = [NSDecimalNumber decimalNumberWithString:[dollars description]];
         NSDecimalNumber *centsDecimal = [dollarsDecimal decimalNumberByMultiplyingBy:[self hundredDecimal]];
-        int32_t cents = [centsDecimal intValue];
-        return cents;
+        int cents = [centsDecimal intValue];
+        return [NSNumber numberWithInt:cents];
     } else
-        return 0;
+        return [self zeroIntNSNumber];
 }
 
 @end

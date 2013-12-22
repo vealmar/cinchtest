@@ -12,5 +12,5 @@
 @interface NumberUtil : NSObject
 + (NSString *)formatDollarAmount:(NSNumber *)dollarAmount;
 
-+ (int32_t)convertDollarsToCents:(NSNumber *)dollars;
++ (NSNumber *)convertDollarsToCents:(NSNumber *)dollars;
 @end

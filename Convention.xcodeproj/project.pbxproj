@@ -179,7 +179,6 @@
 		C75EF9A11730D1A90086EC52 /* cancel.png in Resources */ = {isa = PBXBuildFile; fileRef = C75EF97E1730D1A90086EC52 /* cancel.png */; };
 		C75EF9A21730D1A90086EC52 /* magnify.png in Resources */ = {isa = PBXBuildFile; fileRef = C75EF97F1730D1A90086EC52 /* magnify.png */; };
 		C75EF9A31730D1A90086EC52 /* orderBG.png in Resources */ = {isa = PBXBuildFile; fileRef = C75EF9801730D1A90086EC52 /* orderBG.png */; };
-		C76D3E5E16AE322400F055F4 /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = C76D3E5D16AE322400F055F4 /* Cart.m */; };
 		C76D3E6116AE322400F055F4 /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = C76D3E6016AE322400F055F4 /* Order.m */; };
 		C76D3E6416AE322400F055F4 /* ShipDate.m in Sources */ = {isa = PBXBuildFile; fileRef = C76D3E6316AE322400F055F4 /* ShipDate.m */; };
 		C76E63FE173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = C76E63FD173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m */; };
@@ -210,6 +209,7 @@
 		EB7D8FE917DB797100F2FB8C /* DeleteIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7D8FE817DB797100F2FB8C /* DeleteIcon.png */; };
 		EB7D8FEC17DDD4E300F2FB8C /* Vendor.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FEB17DDD4E300F2FB8C /* Vendor.m */; };
 		EB7D8FEF17DDD60100F2FB8C /* Bulletin.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FEE17DDD60100F2FB8C /* Bulletin.m */; };
+		EBCB6CD518666DAB00457CAB /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB6CD418666DAB00457CAB /* Cart.m */; };
 		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
 		EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */; };
 		EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */; };
@@ -468,8 +468,6 @@
 		C75EF97E1730D1A90086EC52 /* cancel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancel.png; sourceTree = "<group>"; };
 		C75EF97F1730D1A90086EC52 /* magnify.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magnify.png; sourceTree = "<group>"; };
 		C75EF9801730D1A90086EC52 /* orderBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orderBG.png; sourceTree = "<group>"; };
-		C76D3E5C16AE322400F055F4 /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
-		C76D3E5D16AE322400F055F4 /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
 		C76D3E5F16AE322400F055F4 /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
 		C76D3E6016AE322400F055F4 /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		C76D3E6216AE322400F055F4 /* ShipDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShipDate.h; sourceTree = "<group>"; };
@@ -520,6 +518,8 @@
 		EB7D8FEB17DDD4E300F2FB8C /* Vendor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vendor.m; sourceTree = "<group>"; };
 		EB7D8FED17DDD60100F2FB8C /* Bulletin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bulletin.h; sourceTree = "<group>"; };
 		EB7D8FEE17DDD60100F2FB8C /* Bulletin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bulletin.m; sourceTree = "<group>"; };
+		EBCB6CD318666DAB00457CAB /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
+		EBCB6CD418666DAB00457CAB /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
 		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
 		EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
 		EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
@@ -834,6 +834,8 @@
 		6E7698A7153E8BD0003CF4AC /* models */ = {
 			isa = PBXGroup;
 			children = (
+				EBCB6CD318666DAB00457CAB /* Cart.h */,
+				EBCB6CD418666DAB00457CAB /* Cart.m */,
 				EB7D8FDA17DA61E100F2FB8C /* Customer.h */,
 				EB7D8FDB17DA61E100F2FB8C /* Customer.m */,
 				C727F68E1671A2AC00F2847D /* CoreDataUtil.h */,
@@ -855,8 +857,6 @@
 				C76D3E6316AE322400F055F4 /* ShipDate.m */,
 				C76D3E5F16AE322400F055F4 /* Order.h */,
 				C76D3E6016AE322400F055F4 /* Order.m */,
-				C76D3E5C16AE322400F055F4 /* Cart.h */,
-				C76D3E5D16AE322400F055F4 /* Cart.m */,
 				C71653A61671173900F65D02 /* SetupInfo.h */,
 				C71653A71671173900F65D02 /* SetupInfo.m */,
 				C73E2FDD165C810B00FE8DE9 /* ProductCart.xcmappingmodel */,
@@ -1424,6 +1424,7 @@
 				33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */,
 				33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */,
 				33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */,
+				EBCB6CD518666DAB00457CAB /* Cart.m in Sources */,
 				6E118572145F2F2200568ED1 /* main.m in Sources */,
 				6E118576145F2F2200568ED1 /* CIAppDelegate.m in Sources */,
 				6E118579145F2F2200568ED1 /* CIViewController.m in Sources */,
@@ -1478,7 +1479,6 @@
 				C7DCDF0816A297FE00F66C52 /* BulletinViewController.m in Sources */,
 				C7CF070C16AC55D8001DADED /* MICheckBox.m in Sources */,
 				C75D61B716ACA6C300441B63 /* FarrisProductCell.m in Sources */,
-				C76D3E5E16AE322400F055F4 /* Cart.m in Sources */,
 				C76D3E6116AE322400F055F4 /* Order.m in Sources */,
 				C76D3E6416AE322400F055F4 /* ShipDate.m in Sources */,
 				C76E63FE173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m in Sources */,

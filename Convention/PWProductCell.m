@@ -72,7 +72,7 @@
     }
 
     if (cart.editablePrice != nil) {
-        self.priceLbl.text = [NumberUtil formatDollarAmount:@(cart.editablePrice)];
+        self.priceLbl.text = [NumberUtil formatDollarAmount:cart.editablePrice];
     } else if ([product objectForKey:kProductShowPrice] != nil) {
         self.priceLbl.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductShowPrice]];
     } else {

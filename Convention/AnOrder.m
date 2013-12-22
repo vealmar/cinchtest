@@ -75,7 +75,7 @@
                     itemQty += [[dict objectForKey:key] intValue];
                 }
             }
-            itemTotal += itemQty * lineItem.editablePrice; //todo: is this correct? doesn't account for ship dates.
+            itemTotal += itemQty * [lineItem.editablePrice intValue]; //todo: is this correct? doesn't account for ship dates.
         };
         self.total = [NSNumber numberWithDouble:itemTotal / 100.0];
     }
