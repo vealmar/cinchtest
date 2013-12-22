@@ -10,6 +10,7 @@
 #import "StringManipulation.h"
 #import "config.h"
 #import "NumberUtil.h"
+#import "Cart.h"
 
 @interface PWProductCell () {
     NSString *originalCellValue;
@@ -30,7 +31,7 @@
 @synthesize delegate;
 @synthesize numShipDates;
 
-- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(NSDictionary *)product item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(NSDictionary *)product cart:(Cart *)cart checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     self.InvtID.text = [product objectForKey:@"invtid"];
     self.descr.text = [product objectForKey:@"descr"];
     if ([product objectForKey:kProductShipDate1] != nil && ![[product objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]) {
@@ -52,13 +53,8 @@
         self.shipDate2.text = @"";
     }
 
-    self.numShipDates.text = ([[item objectForKey:kLineItemShipDates] isKindOfClass:[NSArray class]]
-            ? [NSString stringWithFormat:@"%d", ((NSArray *) [item objectForKey:kLineItemShipDates]).count] : @"0");
-    if (!multiStore && item != nil && [item objectForKey:kEditableQty] != nil) {
-        self.quantity.text = [item objectForKey:kEditableQty];
-    }
-    else
-        self.quantity.text = @"0";
+    self.numShipDates.text = [NSString stringWithFormat:@"%d", cart.shipdates ? cart.shipdates.count : 0];
+    self.quantity.text = !multiStore && cart.editableQty != nil? cart.editableQty : @"0";
 
     if ([product objectForKey:@"caseqty"] != nil && ![[product objectForKey:@"caseqty"] isKindOfClass:[NSNull class]])
         self.CaseQty.text = [product objectForKey:@"caseqty"];
@@ -69,17 +65,14 @@
         self.qtyLbl.hidden = YES;
         self.quantity.hidden = YES;
     }
-//    if (item != nil && [item objectForKey:kEditableVoucher] != nil) {
-//        self.voucherLbl.text = [NumberUtil formatDollarAmount:[item objectForKey:kEditableVoucher]];
-//    } else
     if ([product objectForKey:kProductVoucher] != nil) {
         self.voucherLbl.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductVoucher]];
     } else {
         self.voucherLbl.text = @"0.00";
     }
 
-    if (item != nil && [item objectForKey:kEditablePrice] != nil) {
-        self.priceLbl.text = [NumberUtil formatDollarAmount:[item objectForKey:kEditablePrice]];
+    if (cart.editablePrice != nil) {
+        self.priceLbl.text = [NumberUtil formatDollarAmount:@(cart.editablePrice)];
     } else if ([product objectForKey:kProductShowPrice] != nil) {
         self.priceLbl.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductShowPrice]];
     } else {

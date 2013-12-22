@@ -10,6 +10,7 @@
 
 @class ProductCell;
 @class Order;
+@class Cart;
 
 
 @interface CIProductViewControllerHelper : NSObject
@@ -21,8 +22,7 @@
 
 - (BOOL)itemIsVoucher:(NSDictionary *)product;
 
-- (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product
-         editableItemDetails:(NSDictionary *)editableItemDetails multiStore:(BOOL)multiStore;
+- (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product cart:(Cart *)cart;
 
 - (UITableViewCell *)dequeueReusableProductCell:(UITableView *)table;
 

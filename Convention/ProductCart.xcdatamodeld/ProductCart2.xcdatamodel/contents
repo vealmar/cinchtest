@@ -30,7 +30,7 @@
         <attribute name="idx" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="initial_show" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="invtid" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="invtid" attributeType="String" syncable="YES"/>
         <attribute name="linenbr" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="new" optional="YES" attributeType="Boolean" defaultValueString="YES" syncable="YES"/>
         <attribute name="orderLineItem_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>

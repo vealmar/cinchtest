@@ -69,11 +69,10 @@
 }
 
 - (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product
-         editableItemDetails:(NSDictionary *)editableItemDetails multiStore:(BOOL)multiStore {
+                        cart:(Cart *)cart {
     if ([ShowConfigurations instance].shipDates) {
-        BOOL hasQty = [self itemHasQuantity:multiStore quantity:(NSString *) [editableItemDetails objectForKey:kEditableQty]];
-        NSArray *shipDates = [editableItemDetails objectForKey:kLineItemShipDates];
-        BOOL hasShipDates = shipDates && [shipDates count] > 0;
+        BOOL hasQty = [self itemHasQuantity:cart.editableQty];
+        BOOL hasShipDates = cart.shipdates && cart.shipdates.count > 0;
         BOOL isVoucher = [self itemIsVoucher:product];
         if (!isVoucher) {
             if (hasQty) {
@@ -93,7 +92,7 @@
             }
         }
     } else {
-        BOOL hasQty = [self itemHasQuantity:multiStore quantity:[editableItemDetails objectForKey:kEditableQty]];
+        BOOL hasQty = [self itemHasQuantity:cart.editableQty];
         if (hasQty) {
             cell.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
         } else {

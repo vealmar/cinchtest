@@ -35,7 +35,6 @@
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
     int currentBulletin; //Bulletin selected in the bulletin drop down
     NSArray *vendorsData; //Vendors belonging to the same vendor group as the logged in vendors. These vendors are displayed in the bulletins drop down.
-    NSMutableDictionary *editableData; //Key is product id(NSNumber*). Value is editable data like quantity, ship dates and voucher (NSDictionary *). Keys for the value dictionary are: kEditableQty, kEditablePrice, kEditableVoucher, kLineItemShipDates. Quantity value is NSSTring*, ship dates is array of NSString*, price and coucher are NSNumber*.
     NSMutableSet *selectedIdx; //Item rows selected for specifying ship dates. These rows appear with a checkmark.
     NSDictionary *bulletins;
     NSIndexPath *selectedItemRowIndexPath;
@@ -65,7 +64,6 @@
         self.allproductsMap = [NSMutableDictionary dictionary];
         self.vendorProductMap = [NSMutableDictionary dictionary];
         self.discountItems = [NSMutableDictionary dictionary];
-        editableData = [NSMutableDictionary dictionary];
         selectedIdx = [NSMutableSet set];
         self.multiStore = NO;
         self.orderSubmitted = NO;
@@ -427,21 +425,19 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.productsTableView) {
         NSMutableDictionary *product = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-        NSMutableDictionary *editableDict = [editableData objectForKey:[product objectForKey:@"id"]];
-        [helper updateCellBackground:cell product:product editableItemDetails:editableDict multiStore:self.multiStore];
+        [helper updateCellBackground:cell product:product cart:[self findCartForId:[[product objectForKey:kProductId] intValue]]];
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (myTableView == self.productsTableView && self.resultData == nil)return nil;
     NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-    NSMutableDictionary *editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
     UITableViewCell *cell = [self dequeueReusableProductCell];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         BOOL rowIsSelected = [selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]] && ![[dict objectForKey:@"invtid"] isEqualToString:@"0"];
-        [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore product:dict item:editableDict checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
+        [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore product:dict cart:[self findCartForId:[[dict objectForKey:kProductId] intValue]] checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
     } else {
-        [(FarrisProductCell *) cell initializeWith:dict item:editableDict tag:[indexPath row] ProductCellDelegate:self];
+        [(FarrisProductCell *) cell initializeWith:dict cart:[self findCartForId:[[dict objectForKey:kProductId] intValue]] tag:[indexPath row] ProductCellDelegate:self];
     }
     return cell;
 }
@@ -534,15 +530,6 @@
 }
 
 - (void)deserializeOrder {
-    for (Cart *cart in self.coreDataOrder.carts) {
-        NSNumber *productId = [NSNumber numberWithInt:cart.cartId];
-        NSMutableDictionary *ed = [[NSMutableDictionary alloc] init];
-        [ed setObject:@(cart.editablePrice / 100.0) forKey:kEditablePrice];
-        [ed setObject:cart.editableQty forKey:kEditableQty];
-        [ed setObject:@(cart.editableVoucher / 100.0) forKey:kEditableVoucher];
-        [ed setObject:cart.shipDatesAsStringArray forKey:kLineItemShipDates]; //todo change kLineItemShipDates to kEditableShipDates?
-        [editableData setObject:ed forKey:productId];
-    }
     [self.productsTableView reloadData];
     [self updateTotals];
     self.viewInitialized = YES;
@@ -674,20 +661,8 @@
 }
 
 - (void)updateTotals {
-    double grossTotal = 0.0;
-    double voucherTotal = 0.0;//todo not used
-    for (NSNumber *productId in [editableData keyEnumerator]) {
-        NSDictionary *data = [editableData objectForKey:productId];
-        NSDictionary *product = [self.allproductsMap objectForKey:productId];
-        double quantity = [helper getQuantity:[data objectForKey:kEditableQty]];
-        int shipDates = [data objectForKey:kLineItemShipDates] ? [(NSArray *) [data objectForKey:kLineItemShipDates] count] : 0;
-        double price = [data objectForKey:kEditablePrice] ? [[data objectForKey:kEditablePrice] doubleValue]
-                : [[product objectForKey:kProductShowPrice] doubleValue]; //todo if price never changes remove price change logic
-        double voucherPrice = [NilUtil nilOrObject:[product objectForKey:kProductVoucher]] ? [[product objectForKey:kProductVoucher] doubleValue] : 0;
-        grossTotal += self.showShipDates ? quantity * shipDates * price : quantity * price;
-        voucherTotal += quantity * shipDates * voucherPrice; //todo is this correct. shouldnt ship dates be 1 for vouchers?
-    }
-    self.totalCost.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:grossTotal]];
+    NSArray *totals = [self getTotals];
+    self.totalCost.text = [NumberUtil formatDollarAmount:totals[0]];
 }
 
 
@@ -755,12 +730,9 @@
 }
 
 - (NSArray *)constructProductCart {
-    NSMutableArray *productCart = [[NSMutableArray alloc] initWithCapacity:editableData.count];
-    for (NSNumber *key in editableData) {
-        NSDictionary *editableDict = [editableData objectForKey:key];
-        if ([helper itemHasQuantity:[editableDict objectForKey:kEditableQty]]) {
-            [productCart addObject:key];
-        }
+    NSMutableArray *productCart = [[NSMutableArray alloc] initWithCapacity:self.coreDataOrder.carts.count];
+    for (Cart *cart in self.coreDataOrder.carts) {
+        [productCart addObject:cart.productId];
     }
     return [self sortProductsByinvtId:productCart];
 }
@@ -892,13 +864,6 @@
         [selectedIdx enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
             NSNumber *idx = (NSNumber *) obj;
             NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) [idx integerValue]];
-            NSMutableDictionary *editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
-            NSMutableDictionary *edict = [self createIfDoesntExist:editableDict orig:dict];
-            if (edict == nil) {
-                edict = editableDict;
-            }
-            [edict setObject:dates forKey:kLineItemShipDates];
-            [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
             if ([self.productCart objectForKey:[dict objectForKey:@"id"]] != nil) {
                 [self updateShipDatesInCartWithId:[[dict objectForKey:@"id"] intValue] forDates:dates];
                 [self updateTotals];
@@ -913,12 +878,13 @@
     __block NSMutableArray *selectedArr = [NSMutableArray array];
     for (NSNumber *idx in selectedIdx) {
         NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) [idx integerValue]];
-        NSMutableDictionary *editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
-        if (editableDict && [editableDict objectForKey:kLineItemShipDates]) {
-            if ([[editableDict objectForKey:kLineItemShipDates] isKindOfClass:[NSArray class]] && ((NSArray *) [editableDict objectForKey:kLineItemShipDates]).count > 0) {
-                [selectedArr addObjectsFromArray:((NSArray *) [editableDict objectForKey:kLineItemShipDates])];
+        for (Cart *cart in self.coreDataOrder.carts) {
+            if (cart.shipdates && cart.shipdates.count > 0) {
+                [selectedArr addObjectsFromArray:[cart shipDatesAsStringArray]];
             }
         }
+
+
     }
     NSArray *selectedDates = [[[NSOrderedSet orderedSetWithArray:selectedArr] array] copy];
     if (ranges.count > 1) {
@@ -1031,9 +997,8 @@
 
 - (void)updateCellColorForId:(NSUInteger)index {
     NSMutableDictionary *product = [self.resultData objectAtIndex:index];
-    NSMutableDictionary *editableDict = [editableData objectForKey:[product objectForKey:@"id"]];
     ProductCell *cell = (ProductCell *) [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-    [helper updateCellBackground:cell product:product editableItemDetails:editableDict multiStore:self.multiStore];
+    [helper updateCellBackground:cell product:product cart:[self findCartForId:[[product objectForKey:kProductId] intValue]]];
 }
 
 #pragma mark - line item entry
@@ -1046,13 +1011,8 @@
             self.storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
         }
         NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) idx];
-        NSMutableDictionary *editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
-        NSMutableDictionary *edict = [self createIfDoesntExist:editableDict orig:dict];
-        if (edict == nil ) {
-            edict = editableDict;
-        }
-        self.storeQtysPO.stores = [[[edict objectForKey:kEditableQty] objectFromJSONString] mutableCopy];
-        [editableData setObject:edict forKey:[dict objectForKey:@"id"]];
+        Cart *cart = [self findCartForId:[[dict objectForKey:kProductId] intValue]];
+        self.storeQtysPO.stores = [[cart.editableQty objectFromJSONString] mutableCopy];
         self.storeQtysPO.tag = idx;
         self.storeQtysPO.delegate = self;
         CGRect frame = [self.productsTableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
@@ -1066,11 +1026,6 @@
     NSString *JSON = [qty JSONString];
     NSNumber *key = [[self.resultData objectAtIndex:(NSUInteger) idx] objectForKey:@"id"];
     NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) idx];
-    NSMutableDictionary *editableDict = [editableData objectForKey:[dict objectForKey:@"id"]];
-    NSMutableDictionary *edict = [self createIfDoesntExist:editableDict orig:dict];
-    if (edict == nil ) {edict = editableDict;}
-    [edict setValue:JSON forKey:kEditableQty];
-    [editableData setObject:edict forKey:key];
     [self.coreDataOrder updateItemQuantity:JSON product:dict context:self.managedObjectContext];
     [self updateCellColorForId:(NSUInteger) idx];
     [self updateTotals];
@@ -1228,26 +1183,12 @@
 
 - (void)changeQuantityTo:(int)qty forProductId:(NSNumber *)productId {
     NSDictionary *product = [self.allproductsMap objectForKey:productId];
-    NSMutableDictionary *editableDict = [editableData objectForKey:productId];
-    NSMutableDictionary *edict = [self createIfDoesntExist:editableDict orig:product];
-    if (edict == nil ) {
-        edict = editableDict;
-    }
-    [edict setObject:[[NSNumber numberWithDouble:qty] stringValue] forKey:kEditableQty];
-    [editableData setObject:edict forKey:productId];
     [self.coreDataOrder updateItemQuantity:[NSString stringWithFormat:@"%i", qty] product:product context:self.managedObjectContext];
     self.unsavedChangesPresent = YES;
 }
 
 - (void)changeVoucherTo:(double)voucher forProductId:(NSNumber *)productId {
     NSMutableDictionary *product = [self.allproductsMap objectForKey:productId];
-    NSMutableDictionary *editableDict = [editableData objectForKey:productId];
-    NSMutableDictionary *edict = [self createIfDoesntExist:editableDict orig:product];
-    if (edict == nil ) {
-        edict = editableDict;
-    }
-    [edict setObject:[NSNumber numberWithDouble:voucher] forKey:kEditableVoucher];
-    [editableData setObject:edict forKey:productId];
     [self.coreDataOrder updateItemVoucher:@(voucher) product:product context:self.managedObjectContext];
     self.unsavedChangesPresent = YES;
 }
