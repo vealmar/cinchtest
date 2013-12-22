@@ -12,7 +12,6 @@
 #import "CICalendarViewController.h"
 #import "SettingsManager.h"
 #import "CoreDataUtil.h"
-#import "Cart.h"
 #import "ShipDate.h"
 #import "Order+Extensions.h"
 #import "StringManipulation.h"
@@ -30,6 +29,7 @@
 #import "Product.h"
 #import "Vendor.h"
 #import "Bulletin.h"
+#import "Cart+Extensions.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down

@@ -14,7 +14,7 @@
 #import "SettingsManager.h"
 #import "Order.h"
 #import "NilUtil.h"
-#import "Cart.h"
+#import "Cart+Extensions.h"
 
 
 @implementation CIProductViewControllerHelper {

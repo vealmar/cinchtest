@@ -31,10 +31,6 @@
 @property(nonatomic, retain) NSString *notes;
 @property(nonatomic, retain) NSString *ship_notes;
 @property(nonatomic) BOOL ship_flag;
-
-- (void)updateItemQuantity:(NSString *)quantity product:(NSDictionary *)product context:(NSManagedObjectContext *)context;
-
-- (void)updateItemVoucher:(NSNumber *)voucher product:(NSDictionary *)product context:(NSManagedObjectContext *)context;
 @end
 
 @interface Order (CoreDataGeneratedAccessors)
@@ -58,6 +54,4 @@
 - (void)addCarts:(NSOrderedSet *)values;
 
 - (void)removeCarts:(NSOrderedSet *)values;
-
-- (id)initWithOrder:(AnOrder *)orderFromServer forCustomer:(NSDictionary *)customer vendorId:(NSNumber *)vendorId vendorGroup:(NSString *)vendorGroup andVendorGroupId:(NSString *)vendorGroupId context:(NSManagedObjectContext *)context;
 @end
