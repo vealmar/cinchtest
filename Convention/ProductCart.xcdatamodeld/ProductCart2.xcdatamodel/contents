@@ -35,16 +35,15 @@
         <attribute name="authorized" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="billname" attributeType="String" syncable="YES"/>
         <attribute name="created_at" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="custid" attributeType="String" syncable="YES"/>
+        <attribute name="custid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="customer_id" attributeType="String" syncable="YES"/>
-        <attribute name="multiStore" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="orderId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="print" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="printer" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="ship_flag" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="ship_notes" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="status" attributeType="String" defaultValueString="pending" syncable="YES"/>
-        <attribute name="totalCost" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="vendor_id" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="vendorGroup" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendorGroupId" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="carts" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="Cart" inverseName="order" inverseEntity="Cart" syncable="YES"/>

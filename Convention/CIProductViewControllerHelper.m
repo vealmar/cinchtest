@@ -121,11 +121,7 @@
     return cell;
 }
 
-- (NSDictionary *)prepareJsonRequestParameterFromOrder:(Order *)coreDataOrder notes:(NSString *)notes shipNotes:(NSString *)shipNotes
-                                              shipFlag:(NSString *)shipFlag
-                                          authorizedBy:(NSString *)authorizedBy
-                                             printFlag:(NSString *)printFlag
-                                        printStationId:(NSNumber *)printStationId {
+- (NSDictionary *)prepareJsonRequestParameterFromOrder:(Order *)coreDataOrder {
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:coreDataOrder.carts.count];
     for (Cart *cart in coreDataOrder.carts) {
         BOOL hasQuantity = [self itemHasQuantity:cart.editableQty];
@@ -145,14 +141,14 @@
         if (proDict) [arr addObject:(id) proDict];
     }
     NSMutableDictionary *newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNNull:coreDataOrder.customer_id], kOrderCustomerID,
-                                                                                      [NilUtil objectOrNNull:notes], kNotes,
-                                                                                      [NilUtil objectOrNNull:shipNotes], kShipNotes,
-                                                                                      [NilUtil objectOrNNull:authorizedBy], kAuthorizedBy,
-                                                                                      [NilUtil objectOrNNull:shipFlag], kShipFlag,
+                                                                                      [NilUtil objectOrNNull:coreDataOrder.notes], kNotes,
+                                                                                      [NilUtil objectOrNNull:coreDataOrder.ship_notes], kShipNotes,
+                                                                                      [NilUtil objectOrNNull:coreDataOrder.authorized], kAuthorizedBy,
+                                                                                      [coreDataOrder.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
                                                                                       [NilUtil objectOrNNull:coreDataOrder.status], kOrderStatus,
                                                                                       arr, kOrderItems,
-                                                                                      [NilUtil objectOrNNull:printFlag], kOrderPrint,
-                                                                                      [NilUtil objectOrNNull:printStationId], kOrderPrinter , nil];
+                                                                                      [coreDataOrder.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,
+                                                                                      [NilUtil objectOrNNull:coreDataOrder.printer], kOrderPrinter , nil];
     return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
 }
 

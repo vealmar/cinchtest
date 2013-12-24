@@ -2,8 +2,8 @@
 //  Order.m
 //  Convention
 //
-//  Created by Kerry Sanders on 1/21/13.
-//  Copyright (c) 2013 MotionMobs. All rights reserved.
+//  Created by septerr on 12/23/13.
+//  Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 
 #import "Order.h"
@@ -11,21 +11,20 @@
 
 @implementation Order
 
-@dynamic billname;
-@dynamic created_at;
-@dynamic multiStore;
-@dynamic orderId;
-@dynamic status;
-@dynamic totalCost;
-@dynamic vendor_id;
-@dynamic vendorGroup;
-@dynamic vendorGroupId;
-@dynamic customer_id;
-@dynamic custid;
-@dynamic carts;
 @dynamic authorized;
+@dynamic billname;
+@dynamic custid;
+@dynamic customer_id;
 @dynamic notes;
-@dynamic ship_notes;
+@dynamic orderId;
+@dynamic print;
+@dynamic printer;
 @dynamic ship_flag;
+@dynamic ship_notes;
+@dynamic status;
+@dynamic vendorGroupId;
+@dynamic vendorGroup;
+@dynamic created_at;
+@dynamic carts;
 
 @end

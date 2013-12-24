@@ -49,7 +49,7 @@
     self = [super init];
     if (self) {
         self.customerId = [NSNumber numberWithInt:[order.customer_id intValue]];
-        self.orderId = [NSNumber numberWithInt:order.orderId];
+        self.orderId = order.orderId;
         self.notes = @"";
         self.voucherTotal = [NSNumber numberWithInt:0]; //todo: voucher total not stored or evaluated for core data?
         self.shipNotes = @"";

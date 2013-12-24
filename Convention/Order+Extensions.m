@@ -11,6 +11,8 @@
 #import "NumberUtil.h"
 #import "Cart+Extensions.h"
 #import "AnOrder.h"
+#import "NilUtil.h"
+#import "CIProductViewControllerHelper.h"
 
 @implementation Order (Extensions)
 
@@ -20,18 +22,14 @@
         self.billname = [customer objectForKey:kBillName];
         self.customer_id = [orderFromServer.customerId stringValue];
         self.custid = [orderFromServer.customer objectForKey:@"custid"];
-        self.multiStore = [[customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [customer objectForKey:kStores]) count] > 0;
         self.status = orderFromServer.status;
         self.created_at = [NSDate date]; //the time this core data entry was created. It is later used by ciroderviewcontroller to sort the partial orders.
-        self.vendorGroup = vendorGroup;
         self.vendorGroupId = vendorGroupId;
-        self.vendor_id = [vendorId intValue];
-        self.orderId = [orderFromServer.orderId intValue];
-        self.totalCost = [orderFromServer.total doubleValue];
+        self.orderId = orderFromServer.orderId;
         self.authorized = orderFromServer.authorized;
         self.notes = orderFromServer.notes;
         self.ship_notes = orderFromServer.shipNotes;
-        self.ship_flag = (BOOL) orderFromServer.shipFlag;
+        self.ship_flag = [NSNumber numberWithBool:(BOOL) orderFromServer.shipFlag];
     }
     return self;
 }
@@ -79,6 +77,25 @@
     [_carts addObject:value];
     self.carts = _carts;
     [self didChangeValueForKey:@"carts"];
+}
+
+- (NSDictionary *)asJSONReqParameter {
+    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:self.carts.count];
+    for (Cart *cart in self.carts) {
+        BOOL hasQuantity = [[[CIProductViewControllerHelper alloc] init] itemHasQuantity:cart.editableQty];
+        NSDictionary *proDict = [cart asJsonReqParameter];
+        if (proDict) [arr addObject:(id) proDict];
+    }
+    NSMutableDictionary *newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNNull:self.customer_id], kOrderCustomerID,
+                                                                                      [NilUtil objectOrNNull:self.notes], kNotes,
+                                                                                      [NilUtil objectOrNNull:self.ship_notes], kShipNotes,
+                                                                                      [NilUtil objectOrNNull:self.authorized], kAuthorizedBy,
+                                                                                      [self.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
+                                                                                      [NilUtil objectOrNNull:self.status], kOrderStatus,
+                                                                                      arr, kOrderItems,
+                                                                                      [self.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,
+                                                                                      [NilUtil objectOrNNull:self.printer], kOrderPrinter , nil];
+    return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
 }
 
 @end

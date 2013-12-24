@@ -20,4 +20,7 @@
              productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
 
 - (id)initWithProduct:(NSDictionary *)product context:(NSManagedObjectContext *)context;
+
+- (NSDictionary *)asJsonReqParameter;
+
 @end

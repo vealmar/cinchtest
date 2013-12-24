@@ -179,7 +179,6 @@
 		C75EF9A11730D1A90086EC52 /* cancel.png in Resources */ = {isa = PBXBuildFile; fileRef = C75EF97E1730D1A90086EC52 /* cancel.png */; };
 		C75EF9A21730D1A90086EC52 /* magnify.png in Resources */ = {isa = PBXBuildFile; fileRef = C75EF97F1730D1A90086EC52 /* magnify.png */; };
 		C75EF9A31730D1A90086EC52 /* orderBG.png in Resources */ = {isa = PBXBuildFile; fileRef = C75EF9801730D1A90086EC52 /* orderBG.png */; };
-		C76D3E6116AE322400F055F4 /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = C76D3E6016AE322400F055F4 /* Order.m */; };
 		C76D3E6416AE322400F055F4 /* ShipDate.m in Sources */ = {isa = PBXBuildFile; fileRef = C76D3E6316AE322400F055F4 /* ShipDate.m */; };
 		C76E63FE173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m in Sources */ = {isa = PBXBuildFile; fileRef = C76E63FD173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m */; };
 		C779A6F9167509B0001C2032 /* PrinterSelectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C779A6F7167509B0001C2032 /* PrinterSelectionViewController.m */; };
@@ -209,6 +208,7 @@
 		EB7D8FE917DB797100F2FB8C /* DeleteIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7D8FE817DB797100F2FB8C /* DeleteIcon.png */; };
 		EB7D8FEC17DDD4E300F2FB8C /* Vendor.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FEB17DDD4E300F2FB8C /* Vendor.m */; };
 		EB7D8FEF17DDD60100F2FB8C /* Bulletin.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FEE17DDD60100F2FB8C /* Bulletin.m */; };
+		EB8B12721869254200321AE7 /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = EB8B12711869254200321AE7 /* Order.m */; };
 		EBCB6CD518666DAB00457CAB /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB6CD418666DAB00457CAB /* Cart.m */; };
 		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
 		EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */; };
@@ -468,8 +468,6 @@
 		C75EF97E1730D1A90086EC52 /* cancel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancel.png; sourceTree = "<group>"; };
 		C75EF97F1730D1A90086EC52 /* magnify.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magnify.png; sourceTree = "<group>"; };
 		C75EF9801730D1A90086EC52 /* orderBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orderBG.png; sourceTree = "<group>"; };
-		C76D3E5F16AE322400F055F4 /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
-		C76D3E6016AE322400F055F4 /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		C76D3E6216AE322400F055F4 /* ShipDate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShipDate.h; sourceTree = "<group>"; };
 		C76D3E6316AE322400F055F4 /* ShipDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShipDate.m; sourceTree = "<group>"; };
 		C76E63FC173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+FindAndResignFirstResponder.h"; sourceTree = "<group>"; };
@@ -518,6 +516,8 @@
 		EB7D8FEB17DDD4E300F2FB8C /* Vendor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vendor.m; sourceTree = "<group>"; };
 		EB7D8FED17DDD60100F2FB8C /* Bulletin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bulletin.h; sourceTree = "<group>"; };
 		EB7D8FEE17DDD60100F2FB8C /* Bulletin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bulletin.m; sourceTree = "<group>"; };
+		EB8B12701869254200321AE7 /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
+		EB8B12711869254200321AE7 /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		EBCB6CD318666DAB00457CAB /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
 		EBCB6CD418666DAB00457CAB /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
 		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
@@ -834,6 +834,8 @@
 		6E7698A7153E8BD0003CF4AC /* models */ = {
 			isa = PBXGroup;
 			children = (
+				EB8B12701869254200321AE7 /* Order.h */,
+				EB8B12711869254200321AE7 /* Order.m */,
 				EBCB6CD318666DAB00457CAB /* Cart.h */,
 				EBCB6CD418666DAB00457CAB /* Cart.m */,
 				EB7D8FDA17DA61E100F2FB8C /* Customer.h */,
@@ -855,8 +857,6 @@
 				EB7D8FDE17DAF02800F2FB8C /* Product.m */,
 				C76D3E6216AE322400F055F4 /* ShipDate.h */,
 				C76D3E6316AE322400F055F4 /* ShipDate.m */,
-				C76D3E5F16AE322400F055F4 /* Order.h */,
-				C76D3E6016AE322400F055F4 /* Order.m */,
 				C71653A61671173900F65D02 /* SetupInfo.h */,
 				C71653A71671173900F65D02 /* SetupInfo.m */,
 				C73E2FDD165C810B00FE8DE9 /* ProductCart.xcmappingmodel */,
@@ -1475,11 +1475,11 @@
 				C71653A81671173900F65D02 /* SetupInfo.m in Sources */,
 				C727F6901671A2AC00F2847D /* CoreDataUtil.m in Sources */,
 				C779A6F9167509B0001C2032 /* PrinterSelectionViewController.m in Sources */,
+				EB8B12721869254200321AE7 /* Order.m in Sources */,
 				C7DCDF0316A26C4B00F66C52 /* VendorViewController.m in Sources */,
 				C7DCDF0816A297FE00F66C52 /* BulletinViewController.m in Sources */,
 				C7CF070C16AC55D8001DADED /* MICheckBox.m in Sources */,
 				C75D61B716ACA6C300441B63 /* FarrisProductCell.m in Sources */,
-				C76D3E6116AE322400F055F4 /* Order.m in Sources */,
 				C76D3E6416AE322400F055F4 /* ShipDate.m in Sources */,
 				C76E63FE173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m in Sources */,
 				EBE8941817B71603005F1895 /* LaunchViewController.m in Sources */,

@@ -223,7 +223,7 @@ These partial orders then are put at the beginning of the self.orders array.
     NSArray *partialCoreDataOrders = [[CoreDataUtil sharedManager] fetchObjects:@"Order" sortField:@"created_at"];
     NSMutableArray *orders = [[NSMutableArray alloc] init];
     for (Order *order in partialCoreDataOrders) {
-        int orderId = order.orderId;
+        int orderId = [order.orderId intValue];
         if (orderId == 0 && [order.vendorGroup isEqualToString:[[self.vendorInfo objectForKey:kID] stringValue]]) {  //this is a partial order (orderId eq 0). Make sure the order is for logged in vendor. If vendors switch ipads we do not want to show them each other's orders.
             AnOrder *anOrder = [[AnOrder alloc] initWithCoreData:order];
             [orders addObject:anOrder];

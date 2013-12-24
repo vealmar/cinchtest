@@ -304,15 +304,12 @@
         [self.coreDataOrder setBillname:self.customerLabel.text];
         [self.coreDataOrder setCustomer_id:customerId];
         [self.coreDataOrder setCustid:custId];
-        [self.coreDataOrder setMultiStore:self.multiStore];
         [self.coreDataOrder setStatus:@"partial"];
         [self.coreDataOrder setVendorGroup:self.loggedInVendorId];
         [self.coreDataOrder setVendorGroupId:self.loggedInVendorGroupId];
-        [self.coreDataOrder setVendor_id:currentVendor];
         [self.coreDataOrder setCustid:custId];
         [self.coreDataOrder setCustomer_id:customerId];
         [self.coreDataOrder setBillname:[self.customer objectForKey:kBillName]];
-        [self.coreDataOrder setMultiStore:self.multiStore];
         NSError *error = nil;
         BOOL success = [context save:&error];
         if (!success) {
@@ -483,7 +480,7 @@
 #pragma mark - Events
 
 - (void)Cancel {
-    if (_coreDataOrder.orderId == 0) {
+    if ([_coreDataOrder.orderId intValue] == 0) {
         UIAlertView *alertView = [[UIAlertView alloc]
                 initWithTitle:@"Cancel Order?"
                       message:@"This will cancel the current order."
@@ -801,16 +798,13 @@
 - (void)sendOrderToServer:(BOOL)printThisOrder asPending:(BOOL)asPending beforeCart:(BOOL)beforeCart {
     if (![self orderReadyForSubmission]) {return;}
     self.coreDataOrder.status = asPending ? @"pending" : @"complete"; //todo is this needed? Upon return from server, this will be updated. no?
-    NSString *notes = asPending ? nil : [self.customer objectForKey:kNotes]; //todo: store notes etc in an object other than customer?
-    NSString *shipFlag = asPending ? @"0" : [self.customer objectForKey:kShipFlag];
-    NSString *shipNotes = asPending ? @"" : [self.customer objectForKey:kShipNotes];
-    NSString *authorizedBy = asPending ? @"" : [self.customer objectForKey:kAuthorizedBy];
-    NSDictionary *final = [helper prepareJsonRequestParameterFromOrder:self.coreDataOrder notes:notes shipNotes:shipNotes shipFlag:shipFlag authorizedBy:authorizedBy printFlag:printThisOrder ? @"TRUE" : @"FALSE"
-                                                        printStationId:printThisOrder ? [NSNumber numberWithInt:self.printStationId] : nil];
-    NSString *url = _coreDataOrder.orderId == 0 ? [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken] : [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS(_coreDataOrder.orderId)], kAuthToken, self.authToken];
+    self.coreDataOrder.print = [NSNumber numberWithBool:printThisOrder];
+    self.coreDataOrder.printer = printThisOrder ? [NSNumber numberWithInt:self.printStationId] : nil;
+    NSDictionary *final = [self.coreDataOrder asJSONReqParameter];
+    NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken] : [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS([self.coreDataOrder.orderId intValue])], kAuthToken, self.authToken];
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
     [client setParameterEncoding:AFJSONParameterEncoding];
-    NSString *method = _coreDataOrder.orderId > 0 ? @"PUT" : @"POST";
+    NSString *method = [self.coreDataOrder.orderId intValue] > 0 ? @"PUT" : @"POST";
     MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     submit.labelText = asPending ? @"Calculating order total" : @"Submitting order";
     [submit show:NO];
@@ -856,14 +850,20 @@
 #pragma mark - CIFinalCustomerDelegate
 
 - (void)setAuthorizedByInfo:(NSDictionary *)info {
-    NSMutableDictionary *customerCopy = [self.customer mutableCopy];
-    [customerCopy setObject:[info objectForKey:kShipNotes] forKey:kShipNotes];
-    [customerCopy setObject:[info objectForKey:kNotes] forKey:kNotes];
-    [customerCopy setObject:[info objectForKey:kAuthorizedBy] forKey:kAuthorizedBy];
+//    NSMutableDictionary *customerCopy = [self.customer mutableCopy];
+//    [customerCopy setObject:[info objectForKey:kShipNotes] forKey:kShipNotes];
+//    [customerCopy setObject:[info objectForKey:kNotes] forKey:kNotes];
+//    [customerCopy setObject:[info objectForKey:kAuthorizedBy] forKey:kAuthorizedBy];
+//    if (!([kShowCorp isEqualToString:kPigglyWiggly])) {
+//        [customerCopy setObject:[info objectForKey:kShipFlag] forKey:kShipFlag];
+//    }
+//    self.customer = customerCopy;
+    self.coreDataOrder.ship_notes = [info objectForKey:kShipNotes];
+    self.coreDataOrder.notes = [info objectForKey:kNotes];
+    self.coreDataOrder.authorized = [info objectForKey:kAuthorizedBy];
     if (!([kShowCorp isEqualToString:kPigglyWiggly])) {
-        [customerCopy setObject:[info objectForKey:kShipFlag] forKey:kShipFlag];
+        self.coreDataOrder.authorized = [info objectForKey:kShipFlag];
     }
-    self.customer = customerCopy;
 }
 
 - (NSDictionary *)getCustomerInfo {
@@ -1148,7 +1148,7 @@
         if (self.delegate != nil) {
             NSNumber *orderId = nil;
             if (self.coreDataOrder != nil) {
-                orderId = self.coreDataOrder != nil? [NSNumber numberWithInt:self.coreDataOrder.orderId] : nil;
+                orderId = self.coreDataOrder != nil? self.coreDataOrder.orderId : nil;
                 [[CoreDataUtil sharedManager] deleteObject:self.coreDataOrder];  //always delete the core data entry before exiting this view. core data should contain an entry only if the order crashed in the middle of an order
             }
             [self.delegate Return:orderId order:savedOrder updateStatus:status];
