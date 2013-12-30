@@ -24,6 +24,8 @@
 @property(weak, nonatomic) IBOutlet UITextField *price;
 @property(weak, nonatomic) IBOutlet UILabel *priceLbl;
 @property(weak, nonatomic) IBOutlet UILabel *total;
+@property(weak, nonatomic) IBOutlet UITextView *errorMessageView;
+@property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
 
 @property(nonatomic, assign) id <ItemEditDelegate> delegate;
 

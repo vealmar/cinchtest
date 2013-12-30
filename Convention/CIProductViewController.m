@@ -16,7 +16,6 @@
 #import "Order+Extensions.h"
 #import "StringManipulation.h"
 #import "AFJSONRequestOperation.h"
-#import "AFHTTPClient.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "FarrisProductCell.h"
 #import "ShowConfigurations.h"
@@ -30,6 +29,7 @@
 #import "Vendor.h"
 #import "Bulletin.h"
 #import "Cart+Extensions.h"
+#import "Error.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -110,9 +110,7 @@
     if (!self.showShipDates) self.btnSelectShipDates.hidden = YES;
 
     if (self.orderSubmitted) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self finishOrder:nil]; //SG: Displays the view that asks the user for Authorized By, Notes etc information in a modal window.
-        });
+        [self sendOrderToServer:NO asPending:YES beforeCart:NO]; //first save as pending, if success then complete it
     } else if (!self.viewInitialized) {
         if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
         self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
@@ -136,6 +134,7 @@
                                                  name:UIKeyboardDidHideNotification object:nil];
     self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
     [self.vendorTable reloadData];
+    [self updateErrorsView];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -196,23 +195,8 @@
 
 - (Order *)createCoreDataCopyOfOrder:(AnOrder *)order {
     Order *coreDataOrder = [[Order alloc] initWithOrder:order forCustomer:self.customer vendorId:[[NSNumber alloc] initWithInt:[self.loggedInVendorId intValue]] vendorGroup:self.loggedInVendorId andVendorGroupId:self.loggedInVendorGroupId context:self.managedObjectContext];
-    NSMutableOrderedSet *carts = [[NSMutableOrderedSet alloc] init];
-    for (ALineItem *lineItem in order.lineItems) {
-        if ([lineItem.category isEqualToString:@"standard"]) {//if it is a discount item, core data throws error when saving the cart item becasue of nil value in required fields - company, regprc, showprc, invtid.
-            NSNumber *product_id = lineItem.productId;
-            NSDictionary *product = [self.allproductsMap objectForKey:product_id];
-            Cart *cart = [[Cart alloc] initWithLineItem:lineItem forProduct:product context:self.managedObjectContext];
-            [carts addObject:cart];
-        }
-    }
-    coreDataOrder.carts = carts;
     [self.managedObjectContext insertObject:coreDataOrder];
-    NSError *error = nil;
-    if (![self.managedObjectContext save:&error]) {
-        NSString *msg = [NSString stringWithFormat:@"Error loading order: %@", [error localizedDescription]];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alert show];
-    }
+    [helper saveManagedContext:self.managedObjectContext];
     return coreDataOrder;
 }
 
@@ -402,6 +386,20 @@
     }
 }
 
+- (void)updateErrorsView {
+    NSSet *errors = self.coreDataOrder ? self.coreDataOrder.errors : nil;
+    if (errors && errors.count > 0) {
+        NSMutableString *bulletList = [NSMutableString stringWithCapacity:errors.count * 30];
+        for (Error *error in errors) {
+            [bulletList appendFormat:@"\u2022 %@\n", error.message];
+        }
+        self.errorMessageTextView.text = bulletList;
+        self.errorMessageTextView.hidden = NO;
+    } else {
+        self.errorMessageTextView.text = @"";
+        self.errorMessageTextView.hidden = YES;
+    }
+}
 
 #pragma mark - Other Views
 
@@ -457,6 +455,8 @@
         BOOL rowIsSelected = [selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]] && ![[dict objectForKey:@"invtid"] isEqualToString:@"0"];
         [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore product:dict cart:[self.coreDataOrder findCartForProductId:[dict objectForKey:kProductId]] checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
     } else {
+        Cart *cart = [self.coreDataOrder findCartForProductId:(NSNumber *) [dict objectForKey:kProductId]];
+        NSString *errorMessage = cart.errors.count > 0 ? ((Error *) cart.errors.anyObject).message : nil;
         [(FarrisProductCell *) cell initializeWith:dict cart:[self.coreDataOrder findCartForProductId:[dict objectForKey:kProductId]] tag:[indexPath row] ProductCellDelegate:self];
     }
     return cell;
@@ -475,6 +475,16 @@
             }
         }
     }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        NSDictionary *product = self.resultData[(NSUInteger) indexPath.row];
+        Cart *cart = [self.coreDataOrder findCartForProductId:(NSNumber *) [product objectForKey:kProductId]];
+        if (cart.errors.count > 0)
+            return 44 + cart.errors.count * 42;
+    }
+    return 44;
 }
 
 #pragma mark - Events
@@ -537,10 +547,6 @@
     if (vendorsData && [vendorsData count] > 0) {
         [self showVendorView];
     }
-}
-
-- (IBAction)calcOrder:(id)sender {
-    [self sendOrderToServer:NO asPending:YES beforeCart:NO];
 }
 
 - (IBAction)submit:(id)sender {
@@ -607,7 +613,6 @@
 * SG: This method is called when user taps the cart button.
 */
 - (IBAction)reviewCart:(id)sender {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(launchCart) name:kLaunchCart object:nil];
     [self sendOrderToServer:NO asPending:YES beforeCart:YES];
 }
 
@@ -797,39 +802,49 @@
 
 - (void)sendOrderToServer:(BOOL)printThisOrder asPending:(BOOL)asPending beforeCart:(BOOL)beforeCart {
     if (![self orderReadyForSubmission]) {return;}
-    self.coreDataOrder.status = asPending ? @"pending" : @"complete"; //todo is this needed? Upon return from server, this will be updated. no?
+    self.coreDataOrder.status = beforeCart ? @"pending" : @"complete"; //todo is this needed? Upon return from server, this will be updated. no?
     self.coreDataOrder.print = [NSNumber numberWithBool:printThisOrder];
     self.coreDataOrder.printer = printThisOrder ? [NSNumber numberWithInt:self.printStationId] : nil;
-    NSDictionary *final = [self.coreDataOrder asJSONReqParameter];
-    NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken] : [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS([self.coreDataOrder.orderId intValue])], kAuthToken, self.authToken];
-    AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
-    [client setParameterEncoding:AFJSONParameterEncoding];
+    NSDictionary *parameters = [self.coreDataOrder asJSONReqParameter];
     NSString *method = [self.coreDataOrder.orderId intValue] > 0 ? @"PUT" : @"POST";
-    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    submit.labelText = asPending ? @"Calculating order total" : @"Submitting order";
-    [submit show:NO];
-    NSMutableURLRequest *request = [client requestWithMethod:method path:nil parameters:final];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                                                                                            [submit hide:NO];
-                                                                                            self.unsavedChangesPresent = NO;
-                                                                                            savedOrder = [[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) JSON];
-                                                                                            if (asPending) {
-                                                                                                [self updateDiscountItems:savedOrder];
-                                                                                                [self.managedObjectContext deleteObject:self.coreDataOrder];//delete existing core data representation
-                                                                                                self.coreDataOrder = [self createCoreDataCopyOfOrder:savedOrder];//create fresh new core data representation
-                                                                                                [[CoreDataUtil sharedManager] saveObjects];
-                                                                                                [self updateTotals];
-                                                                                                if (beforeCart)[[NSNotificationCenter defaultCenter] postNotificationName:kLaunchCart object:nil];
-                                                                                            } else {
-                                                                                                [self Return];
-                                                                                            }
-                                                                                        } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                [submit hide:NO];
-                NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-            }];
-    [operation start];
+    NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken] :
+            [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS([self.coreDataOrder.orderId intValue])], kAuthToken, self.authToken];
+    void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+        savedOrder = [self loadJson:JSON];
+        [self updateDiscountItems:savedOrder];
+        if (asPending) {
+            if (beforeCart)
+                [self launchCart];
+            else {
+                //complete this order
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self finishOrder:nil]; //SG: Displays the view that asks the user for Authorized By, Notes etc information in a modal window.
+                });
+            }
+        } else {
+            [self Return];
+        }
+    };
+    void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        if (JSON) {
+            [self loadJson:JSON];
+            [self launchCart];
+        }
+    };
+    [helper sendRequest:method url:url parameters:parameters successBlock:successBlock
+           failureBlock:failureBlock view:self.view loadingText:@"Submitting order"];
+
+}
+
+- (AnOrder *)loadJson:(id)JSON {
+    AnOrder *anOrder = [[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) JSON];
+    [self.managedObjectContext deleteObject:self.coreDataOrder];//delete existing core data representation
+    self.coreDataOrder = [self createCoreDataCopyOfOrder:anOrder];//create fresh new core data representation
+    [[CoreDataUtil sharedManager] saveObjects];
+    [self.productsTableView reloadData];
+    [self updateTotals];
+    [self updateErrorsView];
+    return anOrder;
 }
 
 - (void)updateDiscountItems:(AnOrder *)order {
@@ -850,14 +865,6 @@
 #pragma mark - CIFinalCustomerDelegate
 
 - (void)setAuthorizedByInfo:(NSDictionary *)info {
-//    NSMutableDictionary *customerCopy = [self.customer mutableCopy];
-//    [customerCopy setObject:[info objectForKey:kShipNotes] forKey:kShipNotes];
-//    [customerCopy setObject:[info objectForKey:kNotes] forKey:kNotes];
-//    [customerCopy setObject:[info objectForKey:kAuthorizedBy] forKey:kAuthorizedBy];
-//    if (!([kShowCorp isEqualToString:kPigglyWiggly])) {
-//        [customerCopy setObject:[info objectForKey:kShipFlag] forKey:kShipFlag];
-//    }
-//    self.customer = customerCopy;
     self.coreDataOrder.ship_notes = [info objectForKey:kShipNotes];
     self.coreDataOrder.notes = [info objectForKey:kNotes];
     self.coreDataOrder.authorized = [info objectForKey:kAuthorizedBy];

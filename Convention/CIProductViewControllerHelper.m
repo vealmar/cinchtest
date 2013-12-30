@@ -13,8 +13,10 @@
 #import "ShowConfigurations.h"
 #import "SettingsManager.h"
 #import "Order.h"
-#import "NilUtil.h"
 #import "Cart+Extensions.h"
+#import "MBProgressHUD.h"
+#import "AFJSONRequestOperation.h"
+#import "AFHTTPClient.h"
 
 
 @implementation CIProductViewControllerHelper {
@@ -121,35 +123,38 @@
     return cell;
 }
 
-- (NSDictionary *)prepareJsonRequestParameterFromOrder:(Order *)coreDataOrder {
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:coreDataOrder.carts.count];
-    for (Cart *cart in coreDataOrder.carts) {
-        BOOL hasQuantity = [self itemHasQuantity:cart.editableQty];
-        NSDictionary *proDict;
-        if (hasQuantity) { //only include items that have non-zero quantity specified
-            proDict = [NSDictionary dictionaryWithObjectsAndKeys:[cart.orderLineItem_id intValue] == 0 ? [NSNull null] : cart.orderLineItem_id, kID,
-                                                                 cart.cartId, kLineItemProductID,
-                                                                 [NilUtil objectOrNNull:cart.editableQty], kLineItemQuantity,
-                                                                 @([cart.editablePrice intValue] / 100.0), kLineItemPrice,
-                                                                 @([cart.editableVoucher intValue] / 100.0), kLineItemVoucherPrice,
-                                                                 [ShowConfigurations instance].shipDates ? cart.shipDatesAsStringArray : @[], kLineItemShipDates,
-
-                                                                 nil];
-        } else if ([cart.orderLineItem_id intValue] != 0) { //if quantity is 0 and item exists on server, tell server to destroy it. if it does not exist on server, don't include it.
-            proDict = [NSDictionary dictionaryWithObjectsAndKeys:cart.orderLineItem_id, kID, @(1), @"_destroy", nil];
-        }
-        if (proDict) [arr addObject:(id) proDict];
+- (void)saveManagedContext:(NSManagedObjectContext *)managedObjectContext {
+    NSError *error = nil;
+    if (![managedObjectContext save:&error]) {
+        NSString *msg = [NSString stringWithFormat:@"Error loading order: %@", [error localizedDescription]];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
     }
-    NSMutableDictionary *newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNNull:coreDataOrder.customer_id], kOrderCustomerID,
-                                                                                      [NilUtil objectOrNNull:coreDataOrder.notes], kNotes,
-                                                                                      [NilUtil objectOrNNull:coreDataOrder.ship_notes], kShipNotes,
-                                                                                      [NilUtil objectOrNNull:coreDataOrder.authorized], kAuthorizedBy,
-                                                                                      [coreDataOrder.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
-                                                                                      [NilUtil objectOrNNull:coreDataOrder.status], kOrderStatus,
-                                                                                      arr, kOrderItems,
-                                                                                      [coreDataOrder.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,
-                                                                                      [NilUtil objectOrNNull:coreDataOrder.printer], kOrderPrinter , nil];
-    return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
+}
+
+- (void)sendRequest:(NSString *)httpMethod url:(NSString *)url parameters:(NSDictionary *)parameters
+       successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
+       failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock
+               view:(UIView *)view loadingText:(NSString *)loadingText {
+    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    submit.labelText = loadingText;
+    [submit show:NO];
+    AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
+    [client setParameterEncoding:AFJSONParameterEncoding];
+
+    NSMutableURLRequest *request = [client requestWithMethod:httpMethod path:nil parameters:parameters];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
+                                                                                            [submit hide:NO];
+                                                                                            successBlock(req, response, json);
+                                                                                        } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
+                [submit hide:NO];
+                failureBlock(req, response, error, json);
+                NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+                NSString *alertMessage = statusCode == 422 ? @"There was an error processing this request. Please correct any errors indicated on the screen and try again." : [NSString stringWithFormat:@"There was an error submitting this request. Status Code: %d", statusCode];
+                [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+            }];
+    [operation start];
 }
 
 

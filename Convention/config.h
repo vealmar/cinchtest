@@ -177,5 +177,8 @@
 #define kBulletinStatus @"status"
 #define kBulletinImportId @"import_id"
 
+#define kErrors @"errors"
+#define kLineItemErrors @"line_item_errors"
+
 
 #endif

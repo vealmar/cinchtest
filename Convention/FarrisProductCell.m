@@ -38,6 +38,7 @@
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.accessoryType = UITableViewCellAccessoryNone;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+    [self updateErrorsView:cart.errors];
 }
 
 - (IBAction)quantityChanged:(id)sender {
@@ -55,7 +56,7 @@
     originalCellValue = [NSString stringWithString:textField.text];
     UITableView *tableView = (UITableView *) self.superview.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
-    [self.delegate setSelectedRow:indexPath.row];
+    [self.delegate setSelectedRow:(NSUInteger) indexPath.row];
     return YES;
 }
 

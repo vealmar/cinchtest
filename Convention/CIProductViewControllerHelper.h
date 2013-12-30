@@ -18,8 +18,6 @@
 
 - (BOOL)itemHasQuantity:(NSString *)quantity;
 
-- (NSArray *)getItemShipDatesToSendToServer:(NSDictionary *)lineItem;
-
 - (BOOL)itemIsVoucher:(NSDictionary *)product;
 
 - (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product cart:(Cart *)cart;
@@ -30,10 +28,11 @@
 
 - (int)getQuantity:(NSString *)quantity;
 
-- (NSDictionary *)prepareJsonRequestParameterFromOrder:(Order *)coreDataOrder notes:(NSString *)notes shipNotes:(NSString *)shipNotes
-                                              shipFlag:(NSString *)shipFlag
-                                          authorizedBy:(NSString *)authorizedBy
-                                             printFlag:(NSString *)printFlag
-                                        printStationId:(NSNumber *)printStationId;
+- (void)saveManagedContext:(NSManagedObjectContext *)managedObjectContext;
+
+- (void)sendRequest:(NSString *)httpMethod url:(NSString *)url parameters:(NSDictionary *)parameters
+       successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
+       failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock
+               view:(UIView *)view loadingText:(NSString *)loadingText;
 
 @end

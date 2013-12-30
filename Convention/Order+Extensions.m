@@ -13,6 +13,9 @@
 #import "AnOrder.h"
 #import "NilUtil.h"
 #import "CIProductViewControllerHelper.h"
+#import "Error.h"
+#import "Error+Extensions.h"
+#import "ALineItem.h"
 
 @implementation Order (Extensions)
 
@@ -30,6 +33,18 @@
         self.notes = orderFromServer.notes;
         self.ship_notes = orderFromServer.shipNotes;
         self.ship_flag = [NSNumber numberWithBool:(BOOL) orderFromServer.shipFlag];
+        for (NSString *error in [NilUtil objectOrEmptyArray:orderFromServer.errors]) {
+            Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
+            [self addErrorsObject:lineItemrError];
+        }
+        NSMutableOrderedSet *carts = [[NSMutableOrderedSet alloc] init];
+        for (ALineItem *lineItem in orderFromServer.lineItems) {
+            if ([lineItem.category isEqualToString:@"standard"]) {//if it is a discount item, core data throws error when saving the cart item becasue of nil value in required fields - company, regprc, showprc, invtid.
+                Cart *cart = [[Cart alloc] initWithLineItem:lineItem context:self.managedObjectContext];
+                [carts addObject:cart];
+            }
+        }
+        self.carts = carts;
     }
     return self;
 }

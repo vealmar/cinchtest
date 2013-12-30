@@ -81,8 +81,6 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 - (IBAction)dismissVendorTouched:(id)sender;
 
-- (IBAction)calcOrder:(id)sender;
-
 - (IBAction)searchProducts:(id)sender;
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)recognizer;
@@ -117,6 +115,9 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 //Working copy of selected or new order
 @property(nonatomic) BOOL newOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
+@property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
+
+@property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
 
 - (void)QtyChange:(int)qty forIndex:(int)idx;
 

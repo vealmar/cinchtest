@@ -22,6 +22,7 @@
     __weak IBOutlet UILabel *customerInfoLabel;
     __weak IBOutlet UIImageView *logo;
     NSIndexPath *selectedItemRowIndexPath;
+    CIProductViewControllerHelper *helper;
 }
 
 @end
@@ -48,6 +49,7 @@
     if (self) {
         showPrice = YES;
         tOffset = 0;
+        helper = [[CIProductViewControllerHelper alloc] init];
         self.productsInCart = [[NSArray alloc] init];
     }
     return self;
@@ -140,7 +142,6 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CIProductViewControllerHelper *helper = [[CIProductViewControllerHelper alloc] init];
     if ([indexPath section] == 0) { //product items
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
         NSDictionary *product = [self.delegate getProduct:productId];
@@ -153,7 +154,7 @@
             return cell;
         } else {
             FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-            [cell initializeWith:product quantity:cart.editableQty tag:[indexPath row] ProductCellDelegate:self];
+            [cell initializeWith:product cart:cart tag:[indexPath row] ProductCellDelegate:self];
             return cell;
         }
     } else { //discount items
@@ -163,6 +164,26 @@
         FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
         [cell initializeForDiscountWithProduct:product quantity:discountItem.quantity price:discountItem.price tag:[indexPath row] ProductCellDelegate:self];
         return cell;
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
+        NSDictionary *product = [self.delegate getProduct:productId];
+        Cart *cart = [delegate getCoreDataForProduct:productId];
+        if (cart.errors.count > 0)
+            return 44 + cart.errors.count * 42;
+    }
+    return 44;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0) {
+        NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
+        NSDictionary *product = [self.delegate getProduct:productId];
+        Cart *cart = [delegate getCoreDataForProduct:productId];
+        [helper updateCellBackground:cell product:product cart:cart];
     }
 }
 
@@ -214,6 +235,11 @@
     self.discountTotal.textColor = [UIColor redColor];
     self.netTotal.textColor = [UIColor redColor];
     [self.delegate changeQuantityTo:qty forProductId:self.productsInCart[(NSUInteger) idx]];
+    NSNumber *productId = self.productsInCart[(NSUInteger) idx];
+    NSDictionary *product = [self.delegate getProduct:productId];
+    Cart *cart = [self.delegate getCoreDataForProduct:productId];
+    ProductCell *cell = (ProductCell *) [self.productsUITableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:(NSUInteger) idx inSection:0]];
+    [helper updateCellBackground:cell product:product cart:cart];
 }
 
 - (void)QtyTouchForIndex:(int)idx {

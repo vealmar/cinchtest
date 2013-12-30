@@ -15,13 +15,19 @@
 #import "CIProductViewControllerHelper.h"
 #import "NilUtil.h"
 #import "ShowConfigurations.h"
+#import "Error.h"
+#import "Error+Extensions.h"
 
 @implementation Cart (Extensions)
 
-- (id)initWithLineItem:(ALineItem *)lineItem forProduct:(NSDictionary *)product context:(NSManagedObjectContext *)context {
+- (id)initWithLineItem:(ALineItem *)lineItem context:(NSManagedObjectContext *)context {
     self = [self initWithQuantity:lineItem.quantity price:lineItem.price voucherPrice:lineItem.voucherPrice category:lineItem.category shipDates:lineItem.shipDates
-                        productId:[product objectForKey:kProductId] context:context];
+                        productId:lineItem.productId context:context];
     self.orderLineItem_id = lineItem.itemId;
+    for (NSString *error in [NilUtil objectOrEmptyArray:lineItem.errors]) {
+        Error *lineItemError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
+        [self addErrorsObject:lineItemError];
+    }
     return self;
 }
 

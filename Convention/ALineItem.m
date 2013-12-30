@@ -29,6 +29,7 @@
         self.product = (NSDictionary *) [NilUtil nilOrObject:[json objectForKey:@"product"]];
         self.productId = (NSNumber *) [NilUtil nilOrObject:[json objectForKey:@"product_id"]];
         self.price = (NSNumber *) [NilUtil nilOrObject:[json objectForKey:@"price"]];
+        self.errors = (NSArray *) [NilUtil nilOrObject:[json objectForKey:@"errors"]];
     }
     return self;
 }

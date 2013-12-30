@@ -21,7 +21,6 @@
 #import "ShowConfigurations.h"
 #import "AnOrder.h"
 #import "ALineItem.h"
-#import "NilUtil.h"
 #import "CoreDataManager.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "Customer.h"
@@ -534,8 +533,13 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable)
         return 114;
-    else
-        return 44;
+    else {
+        ALineItem *data = [currentOrder.lineItems objectAtIndex:(NSUInteger) [indexPath row]];
+        if (data.errors.count > 0)
+            return 44 + data.errors.count * 42;
+        else
+            return 44;
+    }
 }
 
 #pragma mark - CIItemEditDelegate
@@ -887,11 +891,14 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSMutableURLRequest *request = [client requestWithMethod:@"PUT" path:nil parameters:final];
 
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-        NSNumber *orderId = JSON != nil? (NSNumber *) [NilUtil nilOrObject:[(NSDictionary *) JSON objectForKey:kID]] : nil;
         unsavedChangesPresent = NO;
         AnOrder *savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
         [self persistentOrderUpdated:savedOrder];
     }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        if (JSON) {
+            AnOrder *savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
+            [self persistentOrderUpdated:savedOrder];
+        }
         NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }];

@@ -11,6 +11,7 @@
 #import "config.h"
 #import "NumberUtil.h"
 #import "NilUtil.h"
+#import "Cart.h"
 
 
 @implementation FarrisCartViewCell {
@@ -42,16 +43,15 @@
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+    [self updateErrorsView:[[NSSet alloc] init]];
 }
 
-- (void)initializeWith:(NSDictionary *)product
-              quantity:(NSString *)itemQuantity
-                   tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWith:(NSDictionary *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     self.InvtID.text = [product objectForKey:@"invtid"];
     [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
     NSObject *minObj = [NilUtil nilOrObject:[product objectForKey:@"min"]];
     self.min.text = minObj != nil ? [[product objectForKey:@"min"] stringValue] : @"";
-    self.quantity.text = itemQuantity;
+    self.quantity.text = cart.editableQty;
     self.quantity.hidden = NO;
     self.qtyLbl.hidden = YES;
     self.regPrice.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductRegPrc]];
@@ -59,6 +59,7 @@
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+    [self updateErrorsView:cart.errors];
 }
 
 - (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {

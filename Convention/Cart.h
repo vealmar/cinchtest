@@ -2,16 +2,17 @@
 //  Cart.h
 //  Convention
 //
-//  Created by septerr on 12/21/13.
+//  Created by septerr on 12/27/13.
 //  Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "EditableEntity.h"
 
 @class Order, ShipDate;
 
-@interface Cart : NSManagedObject
+@interface Cart : EditableEntity
 
 @property(nonatomic, retain) NSNumber *cartId;
 @property(nonatomic, retain) NSNumber *editablePrice;

@@ -23,6 +23,7 @@
 @property(strong, nonatomic) NSDictionary *product;
 @property(strong, nonatomic) NSNumber *productId;
 @property(strong, nonatomic) NSNumber *price;
+@property(strong, nonatomic) NSArray *errors;
 
 - (id)initWithJsonFromServer:(NSDictionary *)json;
 
