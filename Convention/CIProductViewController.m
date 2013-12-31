@@ -918,11 +918,11 @@
 #pragma Return
 - (void)Return {
     BOOL orderWasSaved = self.savedOrder != nil;
-    enum OrderUpdateStatus status = [self.selectedOrder.status isEqualToString:@"partial"] && orderWasSaved ? PartialOrderCancelled
-            : [self.selectedOrder.status isEqualToString:@"partial"] && orderWasSaved ? PartialOrderSaved
-                    : [self.selectedOrder.orderId intValue] != 0 && !orderWasSaved ? PersistentOrderUnchanged
-                            : [self.selectedOrder.orderId intValue] != 0 && orderWasSaved ? PersistentOrderUpdated
-                                    : self.newOrder && !orderWasSaved ? NewOrderCancelled
+    enum OrderUpdateStatus status = [self.selectedOrder.status isEqualToString:@"partial"] && self.savedOrder == nil? PartialOrderCancelled
+            : [self.selectedOrder.status isEqualToString:@"partial"] && self.savedOrder != nil? PartialOrderSaved
+                    : [self.selectedOrder.orderId intValue] != 0 && self.savedOrder == nil? PersistentOrderUnchanged
+                            : [self.selectedOrder.orderId intValue] != 0 && self.savedOrder != nil? PersistentOrderUpdated
+                                    : self.newOrder && self.savedOrder == nil? NewOrderCancelled
                                             : NewOrderCreated;
 
     [self dismissViewControllerAnimated:YES completion:^{
