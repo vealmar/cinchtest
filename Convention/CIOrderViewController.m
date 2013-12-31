@@ -334,7 +334,7 @@ SG: The argument 'detail' is the selected order.
     if ([ShowConfigurations instance].printing) {
         productView.availablePrinters = [availablePrinters copy];
         if (![currentPrinter isEmpty])
-            productView.printStationId = [[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue];
+            productView.selectedPrintStationId = [[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue];
     }
     [productView setTitle:@"Select Products"];
     [self presentViewController:productView animated:NO completion:nil];

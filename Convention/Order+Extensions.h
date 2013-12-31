@@ -21,6 +21,12 @@
 
 - (Cart *)findCartForProductId:(NSNumber *)productId;
 
+- (DiscountLineItem *)findDiscountForLineItemId:(NSNumber *)lineItemId;
+
+- (NSArray *)productIds;
+
+- (NSArray *)discountLineItemIds;
+
 - (NSDictionary *)asJSONReqParameter;
 
 @end

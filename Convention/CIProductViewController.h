@@ -73,8 +73,6 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 - (IBAction)submit:(id)sender;
 
-- (IBAction)finishOrder:(id)sender;
-
 - (IBAction)reviewCart:(id)sender;
 
 - (IBAction)vendorTouch:(id)sender;
@@ -103,17 +101,14 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic) BOOL orderSubmitted;
 @property(nonatomic) BOOL multiStore;
 @property(nonatomic) NSInteger orderId;
-@property(nonatomic) int printStationId;
+@property(nonatomic) int selectedPrintStationId;
 @property(nonatomic, strong) NSDictionary *availablePrinters;
 @property(nonatomic) BOOL allowPrinting;
 @property(nonatomic) BOOL showShipDates;
 @property(nonatomic, strong) NSManagedObjectContext *managedObjectContext;
-@property(nonatomic, strong) AnOrder *selectedOrder;
 //Order selected in the order view controller
-@property(nonatomic, strong) Order *coreDataOrder;
-//Working copy of selected or new order
+@property(nonatomic, strong) AnOrder *selectedOrder;
 @property(nonatomic) BOOL newOrder;
-@property(nonatomic) BOOL unsavedChangesPresent;
 @property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
 
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
@@ -125,5 +120,4 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 - (void)setBulletin:(NSInteger)bulletinId;
 
 - (void)dismissVendorPopover;
-
 @end

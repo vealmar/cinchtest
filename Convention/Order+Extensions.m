@@ -17,6 +17,8 @@
 #import "Error+Extensions.h"
 #import "ALineItem.h"
 #import "Product+Extensions.h"
+#import "DiscountLineItem.h"
+#import "DiscountLineItem+Extensions.h"
 
 @implementation Order (Extensions)
 
@@ -38,17 +40,32 @@
             Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
             [self addErrorsObject:lineItemrError];
         }
-        NSMutableOrderedSet *carts = [[NSMutableOrderedSet alloc] init];
+        NSMutableSet *carts = [NSMutableSet set];
+        NSMutableSet *discountLineItems = [NSMutableSet set];
         for (ALineItem *lineItem in orderFromServer.lineItems) {
             if ([lineItem.category isEqualToString:@"standard"]) {//if it is a discount item, core data throws error when saving the cart item becasue of nil value in required fields - company, regprc, showprc, invtid.
                 Cart *cart = [[Cart alloc] initWithLineItem:lineItem context:self.managedObjectContext];
                 [carts addObject:cart];
+            } else if ([lineItem.category isEqualToString:@"discount"]) {
+                DiscountLineItem *discountLineItem = [[DiscountLineItem alloc] initWithLineItem:lineItem context:context];
+                [discountLineItems addObject:discountLineItem];
             }
+
         }
         self.carts = carts;
+        self.discountLineItems = discountLineItems;
     }
     return self;
 }
+
+- (DiscountLineItem *)findDiscountForLineItemId:(NSNumber *)lineItemId {
+    for (DiscountLineItem *discountLineItem in self.discountLineItems) {
+        if ([discountLineItem.lineItemId intValue] == [lineItemId intValue])
+            return discountLineItem;
+    }
+    return nil;
+}
+
 
 - (Cart *)findCartForProductId:(NSNumber *)productId {
     for (Cart *cart in self.carts) {
@@ -86,13 +103,20 @@
     }
 }
 
+- (NSArray *)productIds {
+    NSMutableArray *productIds = [[NSMutableArray alloc] initWithCapacity:self.carts.count];
+    for (Cart *cart in self.carts) {
+        [productIds addObject:cart.cartId];
+    }
+    return productIds;
+}
 
-- (void)addCartsObject:(Cart *)value {
-    [self willChangeValueForKey:@"carts"];
-    NSMutableOrderedSet *_carts = [NSMutableOrderedSet orderedSetWithOrderedSet:self.carts];
-    [_carts addObject:value];
-    self.carts = _carts;
-    [self didChangeValueForKey:@"carts"];
+- (NSArray *)discountLineItemIds {
+    NSMutableArray *discountLineItemIds = [[NSMutableArray alloc] initWithCapacity:self.discountLineItems.count];
+    for (DiscountLineItem *discountLineItem in self.discountLineItems) {
+        [discountLineItemIds addObject:discountLineItem.lineItemId];
+    }
+    return discountLineItemIds;
 }
 
 - (NSDictionary *)asJSONReqParameter {

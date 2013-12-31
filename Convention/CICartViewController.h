@@ -14,34 +14,18 @@
 @class Cart;
 @class ALineItem;
 @class Product;
+@class Order;
+@class AnOrder;
 
 @protocol CICartViewDelegate <NSObject>
 
-- (void)setOrderSubmitted:(BOOL)yes;
-
-- (void)changeQuantityTo:(int)qty forProductId:(NSNumber *)productId;
-
-- (void)changeVoucherTo:(double)voucher forProductId:(NSNumber *)productId;
-
-- (Product *)getProduct:(NSNumber *)productId;
-
-//Returns array with gross total, voucher total and discount total. All items in array are NSNumbers.
-- (NSArray *)getTotals;
-
-- (Cart *)getCoreDataForProduct:(NSNumber *)productId;
-
-- (NSUInteger)getDiscountItemsCount;
-
-- (ALineItem *)getDiscountItemAt:(int)index;
-
-- (BOOL)orderReadyForSubmission;
+- (void)cartViewDismissedWith:(Order *)coreDataOrder savedOrder:(AnOrder *)savedOrder unsavedChangesPresent:(BOOL)unsavedChangesPresent orderCompleted:(BOOL)orderCompleted;
 
 @end
 
 @interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate>
 
 @property(nonatomic, strong) IBOutlet UITableView *productsUITableView;
-@property(nonatomic, strong) NSArray *productsInCart;
 @property(nonatomic, strong) NSDictionary *customer;
 @property(nonatomic, strong) NSString *authToken;
 @property(nonatomic) BOOL showPrice;
@@ -78,7 +62,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumn;
 
-- (id)initWithOrder:(Order *)coreDataOrder;
+- (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token loggedInVendorId:(NSString *)loggedInVendorId loggedInVendorGroupId:(NSString *)loggedInVendorGroupId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 - (void)QtyChange:(int)qty forIndex:(int)idx;
 

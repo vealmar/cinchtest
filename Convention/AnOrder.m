@@ -10,9 +10,9 @@
 #import "ALineItem.h"
 #import "Order.h"
 #import "config.h"
-#import "JSONKit.h"
 #import "Cart.h"
 #import "NilUtil.h"
+#import "CIProductViewControllerHelper.h"
 
 
 @implementation AnOrder {
@@ -62,23 +62,16 @@
         self.customer = customer;
         self.authorized = @"";
         self.coreDataOrder = order;
-        // TODO: setup line items
-        int32_t itemTotal = 0;
-        for (int i = 0; i < order.carts.count; i++) {
-            Cart *lineItem = (Cart *) [order.carts objectAtIndex:(NSUInteger) i];
-            __autoreleasing NSError *err = nil;
-            NSMutableDictionary *dict = [lineItem.editableQty objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-            int32_t itemQty = 0;
-            if (err) { //SG: if the item quantity is not a json/hash like string.
-                itemQty = [lineItem.editableQty intValue];
-            } else { //SG: if item quantity is a json/hash like string i.e. there is more than one quantity for this item. This will happen when the customer has multiple stores.
-                for (NSString *key in dict.allKeys) {
-                    itemQty += [[dict objectForKey:key] intValue];
-                }
+        int itemTotal = 0;
+        int voucherTotal = 0;
+        for (Cart *cart in order.carts) {
+            int itemQty = [CIProductViewControllerHelper getQuantity:cart.editableQty];
+            itemTotal += itemQty * [cart.editablePrice intValue] * cart.shipdates.count;
+            if (cart.product && [CIProductViewControllerHelper itemIsVoucher:cart.product]) {
+                voucherTotal += itemQty * [cart.editableVoucher intValue] * cart.shipdates.count;
             }
-            itemTotal += itemQty * [lineItem.editablePrice intValue]; //todo: is this correct? doesn't account for ship dates.
         };
-        self.total = [NSNumber numberWithDouble:itemTotal / 100.0];
+        self.total = @(itemTotal / 100.0);
     }
     return self;
 }

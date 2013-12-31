@@ -2,7 +2,7 @@
 //  Cart.m
 //  Convention
 //
-//  Created by septerr on 12/30/13.
+//  Created by septerr on 12/31/13.
 //  Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 
@@ -17,7 +17,7 @@
 @dynamic editableVoucher;
 @dynamic orderLineItem_id;
 @dynamic order;
-@dynamic shipdates;
 @dynamic product;
+@dynamic shipdates;
 
 @end

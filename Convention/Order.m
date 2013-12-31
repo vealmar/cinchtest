@@ -2,7 +2,7 @@
 //  Order.m
 //  Convention
 //
-//  Created by septerr on 12/27/13.
+//  Created by septerr on 12/31/13.
 //  Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 
@@ -26,5 +26,6 @@
 @dynamic vendorGroup;
 @dynamic vendorGroupId;
 @dynamic carts;
+@dynamic discountLineItems;
 
 @end

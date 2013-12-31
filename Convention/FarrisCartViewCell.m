@@ -26,18 +26,17 @@
 @synthesize regPrice;
 @synthesize showPrice;
 
-- (void)initializeForDiscountWithProduct:(Product *)product quantity:(NSString *)itemQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeForDiscountWithProduct:(Product *)product quantity:(NSNumber *)itemQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
     self.InvtID.text = @"Discount";
     [self setDescription:product.descr withSubtext:product.descr2];
     self.min.text = [NilUtil objectOrDefaultString:product.min defaultObject:@""];
-    NSString *qty = itemQuantity;
-    self.qtyLbl.text = qty;
+    self.qtyLbl.text = [itemQuantity stringValue];
     self.quantity.hidden = YES;
     self.qtyLbl.font = discountFont;
     self.qtyLbl.hidden = NO;
     self.regPrice.text = @"";
-    self.showPrice.text = [NumberUtil formatDollarAmount:price];
+    self.showPrice.text = [NumberUtil formatCentsAsCurrency:price];
     self.showPrice.font = discountFont;
     self.delegate = productCellDelegate;
     self.tag = tag;
@@ -45,15 +44,15 @@
     [self updateErrorsView:[[NSSet alloc] init]];
 }
 
-- (void)initializeWith:(Product *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
-    self.InvtID.text = product.invtid;
-    [self setDescription:product.descr withSubtext:product.descr2];
-    self.min.text = [NilUtil objectOrDefaultString:product.min defaultObject:@""];
+- (void)initializeWithCart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    self.InvtID.text = cart.product.invtid;
+    [self setDescription:cart.product.descr withSubtext:cart.product.descr2];
+    self.min.text = [NilUtil objectOrDefaultString:cart.product.min defaultObject:@""];
     self.quantity.text = cart.editableQty;
     self.quantity.hidden = NO;
     self.qtyLbl.hidden = YES;
-    self.regPrice.text = [NumberUtil formatCentsAsCurrency:product.regprc];
-    self.showPrice.text = [NumberUtil formatCentsAsCurrency:product.showprc];
+    self.regPrice.text = [NumberUtil formatCentsAsCurrency:cart.product.regprc];
+    self.showPrice.text = [NumberUtil formatCentsAsCurrency:cart.product.showprc];
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.

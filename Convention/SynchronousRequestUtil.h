@@ -5,7 +5,12 @@
 
 #import <Foundation/Foundation.h>
 
+@class SynchronousResponse;
+
 
 @interface SynchronousRequestUtil : NSObject
-+ (NSDictionary *)sendRequestTo:(NSString *)url error:(NSError **)error;
+
++ (SynchronousResponse *)sendRequestTo:(NSString *)url;
+
++ (SynchronousResponse *)sendRequestTo:(NSString *)url method:(NSString *)method parameters:(NSDictionary *)parameters;
 @end

@@ -18,7 +18,7 @@
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     UITableView *tableView = (UITableView *) self.superview.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
-    [self.delegate setSelectedRow:(NSUInteger) [indexPath row]];
+    [self.delegate setSelectedRow:indexPath];
     return YES;
 }
 

@@ -2,14 +2,14 @@
 //  Product.h
 //  Convention
 //
-//  Created by septerr on 12/30/13.
+//  Created by septerr on 12/31/13.
 //  Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Cart;
+@class Cart, DiscountLineItem;
 
 @interface Product : NSManagedObject
 
@@ -42,6 +42,26 @@
 @property(nonatomic, retain) NSString *vendid;
 @property(nonatomic, retain) NSNumber *vendor_id;
 @property(nonatomic, retain) NSNumber *voucher;
-@property(nonatomic, retain) Cart *carts;
+@property(nonatomic, retain) NSSet *carts;
+@property(nonatomic, retain) NSSet *discountLineItems;
+@end
+
+@interface Product (CoreDataGeneratedAccessors)
+
+- (void)addCartsObject:(Cart *)value;
+
+- (void)removeCartsObject:(Cart *)value;
+
+- (void)addCarts:(NSSet *)values;
+
+- (void)removeCarts:(NSSet *)values;
+
+- (void)addDiscountLineItemsObject:(DiscountLineItem *)value;
+
+- (void)removeDiscountLineItemsObject:(DiscountLineItem *)value;
+
+- (void)addDiscountLineItems:(NSSet *)values;
+
+- (void)removeDiscountLineItems:(NSSet *)values;
 
 @end

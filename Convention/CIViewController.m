@@ -21,6 +21,8 @@
 #import "Vendor.h"
 #import "Bulletin.h"
 #import "Product+Extensions.h"
+#import "Cart.h"
+#import "DiscountLineItem.h"
 
 @implementation CIViewController {
     CGRect originalBounds;
@@ -145,12 +147,12 @@
     MBProgressHUD *__weak hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Loading customers";
     [hud show:NO];
-    [[CoreDataUtil sharedManager] deleteAllObjects:@"Customer"];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                                                                                         success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
                                                                                             if (JSON && ([(NSArray *) JSON count] > 0)) {
+                                                                                                [[CoreDataUtil sharedManager] deleteAllObjects:@"Customer"];
                                                                                                 NSArray *customers = (NSArray *) JSON;
                                                                                                 for (NSDictionary *customer in customers) {
                                                                                                     [self.managedObjectContext insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:self.managedObjectContext]];
@@ -172,15 +174,30 @@
     MBProgressHUD *__weak hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Loading products";
     [hud show:NO];
-    [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, self.authToken, kVendorGroupID, [[self.vendorInfo objectForKey:kVendorGroupID] stringValue]];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                                                                                         success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
                                                                                             if (JSON && ([(NSArray *) JSON count] > 0)) {
+                                                                                                [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
                                                                                                 NSArray *products = (NSArray *) JSON;
-                                                                                                for (NSDictionary *product in products) {
-                                                                                                    [self.managedObjectContext insertObject:[[Product alloc] initWithProductFromServer:product context:self.managedObjectContext]];
+                                                                                                for (NSDictionary *productJson in products) {
+                                                                                                    Product *product = [[Product alloc] initWithProductFromServer:productJson context:self.managedObjectContext];
+                                                                                                    [self.managedObjectContext insertObject:product];
+                                                                                                    //re-establish connection between carts and products
+                                                                                                    NSArray *carts = [[CoreDataUtil sharedManager] fetchArray:@"Cart" withPredicate:[NSPredicate predicateWithFormat:@"(cartId == %@)", product.productId]];
+                                                                                                    if (carts) {
+                                                                                                        for (Cart *cart in carts) {
+                                                                                                            cart.product = product;
+                                                                                                        }
+                                                                                                    }
+                                                                                                    //re-establish connection between discount line items and products
+                                                                                                    NSArray *discountLineItems = [[CoreDataUtil sharedManager] fetchArray:@"DiscountLineItem" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", product.productId]];
+                                                                                                    if (discountLineItems) {
+                                                                                                        for (DiscountLineItem *discountLineItem in discountLineItems) {
+                                                                                                            discountLineItem.product = product;
+                                                                                                        }
+                                                                                                    }
                                                                                                 }
                                                                                                 [[CoreDataUtil sharedManager] saveObjects];
                                                                                             }

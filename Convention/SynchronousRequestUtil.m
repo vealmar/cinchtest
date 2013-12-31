@@ -4,27 +4,35 @@
 //
 
 #import "SynchronousRequestUtil.h"
+#import "SynchronousResponse.h"
 
 
 @implementation SynchronousRequestUtil {
 
 }
-+ (NSDictionary *)sendRequestTo:(NSString *)url error:(NSError **)error {
++ (SynchronousResponse *)sendRequestTo:(NSString *)url {
+    return [self sendRequestTo:url method:@"GET" parameters:nil];
+}
+
++ (SynchronousResponse *)sendRequestTo:(NSString *)url method:(NSString *)method parameters:(NSDictionary *)parameters {
+    NSHTTPURLResponse *responseCode = nil;
+    NSError *jsonParamError, *error, *jsonError;
     NSDictionary *json;
     NSURL *nsUrl = [NSURL URLWithString:url];
-    NSURLRequest *urlRequest = [NSURLRequest requestWithURL:nsUrl];
-    NSHTTPURLResponse *responseCode = nil;
-    NSData *data = [NSURLConnection sendSynchronousRequest:urlRequest returningResponse:&responseCode error:error];
+    NSData *requestParameters = parameters ? [NSJSONSerialization dataWithJSONObject:parameters options:0 error:&jsonParamError] : [[NSData alloc] init];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:nsUrl cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:50];
+    [request setHTTPMethod:method];
+    [request setHTTPBody:requestParameters];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&responseCode error:&error];
     if (data) {
-        NSError *jsonError;
-        json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&jsonError];
-        if (jsonError) {
-            [[[UIAlertView alloc] initWithTitle:@"Error!" message:error ? jsonError.localizedDescription : @"There was a problem processing this request." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        }
+        json = [self parseJson:data error:&jsonError];
     }
-    if ([responseCode statusCode] < 200 || [responseCode statusCode] > 299) {
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:error ? (*error).localizedDescription : @"There was a problem processing this request." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-    }
-    return json;
+    return [[SynchronousResponse alloc] initWithStatusCode:[responseCode statusCode] andJson:json];
 }
+
++ (NSDictionary *)parseJson:(NSData *)data error:(NSError **)error {
+    return [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:error];
+}
+
 @end

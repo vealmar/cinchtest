@@ -39,6 +39,18 @@
         <attribute name="initial_show" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="stores" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="DiscountLineItem" representedClassName="DiscountLineItem" syncable="YES">
+        <attribute name="lineItemId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="price" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="productId" optional="YES" attributeType="Integer 32" syncable="YES"/>
+        <attribute name="quantity" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="voucherPrice" optional="YES" attributeType="Integer 32" defaultValueString="0.0"
+                   syncable="YES"/>
+        <relationship name="order" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Order"
+                      inverseName="discountLineItems" inverseEntity="Order" syncable="YES"/>
+        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product"
+                      inverseName="discountLineItems" inverseEntity="Product" syncable="YES"/>
+    </entity>
     <entity name="EditableEntity" representedClassName="EditableEntity" isAbstract="YES" syncable="YES">
         <relationship name="errors" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Error"
                       inverseName="editableEntity" inverseEntity="Error" syncable="YES"/>
@@ -64,8 +76,11 @@
         <attribute name="status" attributeType="String" defaultValueString="pending" syncable="YES"/>
         <attribute name="vendorGroup" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendorGroupId" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES"
-                      destinationEntity="Cart" inverseName="order" inverseEntity="Cart" syncable="YES"/>
+        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Cart"
+                      inverseName="order" inverseEntity="Cart" syncable="YES"/>
+        <relationship name="discountLineItems" optional="YES" toMany="YES" deletionRule="Cascade"
+                      destinationEntity="DiscountLineItem" inverseName="order" inverseEntity="DiscountLineItem"
+                      syncable="YES"/>
     </entity>
     <entity name="Product" representedClassName="Product" syncable="YES">
         <attribute name="adv" optional="YES" attributeType="Boolean" syncable="YES"/>
@@ -97,8 +112,11 @@
         <attribute name="vendid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendor_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="voucher" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="carts" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Cart"
+        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Cart"
                       inverseName="product" inverseEntity="Cart" syncable="YES"/>
+        <relationship name="discountLineItems" optional="YES" toMany="YES" deletionRule="Nullify"
+                      destinationEntity="DiscountLineItem" inverseName="product" inverseEntity="DiscountLineItem"
+                      syncable="YES"/>
     </entity>
     <entity name="SetupInfo" representedClassName="SetupInfo" syncable="YES">
         <attribute name="item" attributeType="String" syncable="YES"/>
@@ -146,5 +164,6 @@
         <element name="SetupInfo" positionX="0" positionY="0" width="0" height="0"/>
         <element name="ShipDate" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Vendor" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="DiscountLineItem" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>

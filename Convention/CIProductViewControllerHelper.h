@@ -7,6 +7,7 @@
 
 
 #import <Foundation/Foundation.h>
+#import "AnOrder.h"
 
 @class ProductCell;
 @class Order;
@@ -19,7 +20,7 @@
 
 - (BOOL)itemHasQuantity:(NSString *)quantity;
 
-- (BOOL)itemIsVoucher:(Product *)product;
++ (BOOL)itemIsVoucher:(Product *)product;
 
 - (BOOL)isProductAVoucher:(NSNumber *)productId;
 
@@ -29,9 +30,23 @@
 
 - (UITableViewCell *)dequeueReusableCartViewCell:(UITableView *)table;
 
-- (int)getQuantity:(NSString *)quantity;
++ (int)getQuantity:(NSString *)quantity;
+
+- (Order *)createCoreDataCopyOfOrder:(AnOrder *)order
+                            customer:(NSDictionary *)customer
+                    loggedInVendorId:(NSString *)loggedInVendorId
+               loggedInVendorGroupId:(NSString *)loggedInVendorGroupId
+                managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
+- (NSArray *)sortProductsByinvtId:(NSArray *)productIdsOrProducts;
+
+- (NSArray *)sortDiscountsByLineItemId:(NSArray *)lineItemIds;
 
 - (void)saveManagedContext:(NSManagedObjectContext *)managedObjectContext;
+
+- (BOOL)isOrderReadyForSubmission:(Order *)coreDataOrder;
+
+- (NSArray *)getTotals:(Order *)coreDataOrder;
 
 - (void)sendRequest:(NSString *)httpMethod url:(NSString *)url parameters:(NSDictionary *)parameters
        successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock

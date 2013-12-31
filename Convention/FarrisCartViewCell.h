@@ -26,7 +26,7 @@
 
 - (IBAction)quantityChanged:(id)sender;
 
-- (void)initializeWith:(Product *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeWithCart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 
-- (void)initializeForDiscountWithProduct:(Product *)product quantity:(NSString *)ITEMQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeForDiscountWithProduct:(Product *)product quantity:(NSNumber *)ITEMQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 @end

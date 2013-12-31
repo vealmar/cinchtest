@@ -19,7 +19,6 @@
 #import "FarrisProductCell.h"
 #import "ShowConfigurations.h"
 #import "AnOrder.h"
-#import "ALineItem.h"
 #import "CoreDataManager.h"
 #import "CIProductViewControllerHelper.h"
 #import "NilUtil.h"
@@ -39,11 +38,13 @@
     NSDictionary *bulletins;
     NSIndexPath *selectedItemRowIndexPath;
     CIProductViewControllerHelper *helper;
-    AnOrder *savedOrder;
     PullToRefreshView *pull;
     BOOL keyboardUp;
 }
-
+@property(strong, nonatomic) AnOrder *savedOrder;
+@property(nonatomic) BOOL unsavedChangesPresent;
+//Working copy of selected or new order
+@property(nonatomic, strong) Order *coreDataOrder;
 @end
 
 @implementation CIProductViewController
@@ -62,11 +63,10 @@
         currentVendor = 0;
         currentBulletin = 0;
         self.vendorProductIds = [NSMutableArray array];
-        self.discountItems = [NSMutableDictionary dictionary];
         selectedIdx = [NSMutableSet set];
         self.multiStore = NO;
         self.orderSubmitted = NO;
-        _printStationId = 0;
+        self.selectedPrintStationId = 0;
         self.unsavedChangesPresent = NO;
         helper = [[CIProductViewControllerHelper alloc] init];
         keyboardUp = NO;
@@ -92,12 +92,12 @@
     [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
     self.showShipDates = [[ShowConfigurations instance] shipDates];
     self.allowPrinting = [ShowConfigurations instance].printing;
+    self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.productsTableView];
     [pull setDelegate:self];
     [self.productsTableView addSubview:pull];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
+    currentVendor = self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
+    if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         self.tableHeaderPigglyWiggly.hidden = NO;
         self.tableHeaderFarris.hidden = YES;
@@ -107,19 +107,23 @@
         self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     }
     if (!self.showShipDates) self.btnSelectShipDates.hidden = YES;
+}
 
-    if (self.orderSubmitted) {
-        [self sendOrderToServer:NO asPending:YES beforeCart:NO]; //first save as pending, if success then complete it
-    } else if (!self.viewInitialized) {
-        if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
-        self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
-        currentVendor = self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
+- (void)viewWillAppear:(BOOL)animated {
+    if (!self.viewInitialized) {
+        if (self.coreDataOrder == nil) {
+            if (self.newOrder)
+                [self createNewOrder];
+            else
+                [self loadOrder:OrderRecoverySelectionNone];
+        }
         [self loadVendors];
         [self loadBulletins];
         [self loadProductsForCurrentVendorAndBulletin];
+        [self deserializeOrder];
+        self.viewInitialized = YES;
     } else {
-        [self.productsTableView reloadData];
-        [self updateTotals];
+        [self deserializeOrder];
     }
     if (keyboardUp) {
         //if the frame size was decreased to accomodate the keyboard right before cart was launched,
@@ -135,6 +139,14 @@
     [self.vendorTable reloadData];
     [self updateErrorsView];
 }
+
+- (void)viewDidAppear:(BOOL)animated {
+    if (self.orderSubmitted) {
+        [super viewDidAppear:animated];
+        [self loadNotesForm];
+    }
+}
+
 
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -165,38 +177,29 @@
     BOOL orderExistsOnServer = self.selectedOrder.orderId != nil && [self.selectedOrder.orderId intValue] != 0;
     if (orderExistsInCoreData && orderExistsOnServer) { //pending order in the middle of whose editing the app crashed, thus leaving a copy in core data.
         if (orderRecoverySelection == OrderRecoverySelectionNone) {//Prompt user to decide if they want to overlay server order with core data values.
-            if (orderRecoverySelection == OrderRecoverySelectionNone) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Recover Order?" message:@"It appears like the app crashed when you were working on this order. Would you like to recover the changes you had made?"
-                                                               delegate:self cancelButtonTitle:@"NO" otherButtonTitles:@"YES", nil];
-                [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
-                    if ([[alert buttonTitleAtIndex:buttonIndex] isEqualToString:@"YES"]) {
-                        [self loadOrder:OrderRecoverySelectionYes];
-                    } else
-                        [self loadOrder:OrderRecoverySelectionNo];
-                    [self deserializeOrder];
-                }];
-            }
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Recover Order?" message:@"It appears like the app crashed when you were working on this order. Would you like to recover the changes you had made?"
+                                                           delegate:self cancelButtonTitle:@"NO" otherButtonTitles:@"YES", nil];
+            [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+                if ([[alert buttonTitleAtIndex:buttonIndex] isEqualToString:@"YES"]) {
+                    [self loadOrder:OrderRecoverySelectionYes];
+                } else
+                    [self loadOrder:OrderRecoverySelectionNo];
+                [self deserializeOrder];
+            }];
         } else if (orderRecoverySelection == OrderRecoverySelectionNo) {
             [[CoreDataUtil sharedManager] deleteObject:coreDataOrder]; //delete existing core data entry. Start fresh with the order from server
             [[CoreDataUtil sharedManager] saveObjects];
-            self.coreDataOrder = [self createCoreDataCopyOfOrder:self.selectedOrder];
+            self.coreDataOrder = [helper createCoreDataCopyOfOrder:self.selectedOrder customer:self.customer loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];
         } else if (orderRecoverySelection == OrderRecoverySelectionYes) {
             self.coreDataOrder = coreDataOrder; //Use the order from core data
             self.unsavedChangesPresent = YES;
         }
     } else if (orderExistsOnServer) {//pending order.
-        self.coreDataOrder = [self createCoreDataCopyOfOrder:self.selectedOrder];
+        self.coreDataOrder = [helper createCoreDataCopyOfOrder:self.selectedOrder customer:self.customer loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];
     } else if (orderExistsInCoreData) {//partial order i.e. a brand new order in the middle of which the app crashed. Hence there is a copy in core data but none on server.
         self.coreDataOrder = coreDataOrder;
         self.unsavedChangesPresent = YES;
     }
-}
-
-- (Order *)createCoreDataCopyOfOrder:(AnOrder *)order {
-    Order *coreDataOrder = [[Order alloc] initWithOrder:order forCustomer:self.customer vendorId:[[NSNumber alloc] initWithInt:[self.loggedInVendorId intValue]] vendorGroup:self.loggedInVendorId andVendorGroupId:self.loggedInVendorGroupId context:self.managedObjectContext];
-    [self.managedObjectContext insertObject:coreDataOrder];
-    [helper saveManagedContext:self.managedObjectContext];
-    return coreDataOrder;
 }
 
 - (void)reloadProducts {
@@ -211,7 +214,7 @@
     self.vendorProductIds = [[NSMutableArray alloc] init];
     [[CoreDataManager getProducts:self.managedObjectContext] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Product *product = (Product *) obj;
-        NSNumber *vendorId = (NSNumber *) product.vendor_id;
+        NSNumber *vendorId = product.vendor_id;
         if (currentVendor == 0 || (vendorId && [vendorId integerValue] == currentVendor)) {
             NSNumber *productId = product.productId;
             [self.vendorProductIds addObject:productId];
@@ -220,17 +223,8 @@
                 [resultData addObject:product.productId];
         }
     }];
-    self.resultData = [self sortProductsByinvtId:resultData];
-    [self.productsTableView reloadData];
-    if (self.coreDataOrder == nil) { //todo why is this being done here? SHouldn't it be in viewwillappear or viewdidload?
-        if (self.newOrder)
-            [self createNewOrder];
-        else
-            [self loadOrder:OrderRecoverySelectionNone];
-    }
-    [self deserializeOrder];
+    self.resultData = [helper sortProductsByinvtId:resultData];
     [self updateVendorAndBulletinLabel];
-    self.viewInitialized = YES;
 }
 
 - (void)createNewOrder {
@@ -263,19 +257,6 @@
 - (void)deserializeOrder {
     [self.productsTableView reloadData];
     [self updateTotals];
-    self.viewInitialized = YES;
-}
-
-- (NSArray *)sortProductsByinvtId:(NSArray *)productIdsOrProducts {
-    NSArray *sortedArray;
-    sortedArray = [productIdsOrProducts sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        Product *product1 = [a isKindOfClass:[Product class]] ? a : [Product findProduct:a];
-        Product *product2 = [b isKindOfClass:[Product class]] ? b : [Product findProduct:b];
-        NSString *first = (NSString *) [NilUtil nilOrObject:product1.invtid];
-        NSString *second = (NSString *) [NilUtil nilOrObject:product2.invtid];
-        return [first compare:second];
-    }];
-    return sortedArray;
 }
 
 - (void)updateVendorAndBulletinLabel {
@@ -389,17 +370,12 @@
 }
 
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
-    if (self.resultData && myTableView == self.productsTableView) { //todo: why is this check needed?
-        return [self.resultData count];
-    }
-    return 0;
+    return [self.resultData count];
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView == self.productsTableView) {
-        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-        [helper updateCellBackground:cell cart:[self.coreDataOrder findCartForProductId:productId]];
-    }
+    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
+    [helper updateCellBackground:cell cart:[self.coreDataOrder findCartForProductId:productId]];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -416,7 +392,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.showShipDates && tableView == self.productsTableView) {
+    if (self.showShipDates) {
         NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
         Product *product = [Product findProduct:productId];
         if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]) {
@@ -432,33 +408,19 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        NSNumber *productId = self.resultData[(NSUInteger) indexPath.row];
-        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        if (cart.errors.count > 0)
-            return 44 + cart.errors.count * 42;
-    }
-    return 44;
+    NSNumber *productId = self.resultData[(NSUInteger) indexPath.row];
+    Cart *cart = [self.coreDataOrder findCartForProductId:productId];
+    return (cart.errors.count > 0) ? 44 + cart.errors.count * 42 : 44;
 }
 
 #pragma mark - Events
 
-- (void)Cancel {
-    if ([_coreDataOrder.orderId intValue] == 0) {
-        UIAlertView *alertView = [[UIAlertView alloc]
-                initWithTitle:@"Cancel Order?"
-                      message:@"This will cancel the current order."
-                     delegate:self
-            cancelButtonTitle:@"Cancel"
-            otherButtonTitles:@"OK", nil];
+- (IBAction)Cancel:(id)sender {
+    if ([self.coreDataOrder.orderId intValue] == 0) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Cancel Order?" message:@"This will cancel the current order." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
         [alertView show];
     } else if (self.unsavedChangesPresent) {
-        UIAlertView *alertView = [[UIAlertView alloc]
-                initWithTitle:@"Exit Without Saving?"
-                      message:@"There are some unsaved changes. Are you sure you want to exit without saving?"
-                     delegate:self
-            cancelButtonTitle:@"No"
-            otherButtonTitles:@"Yes", nil];
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Exit Without Saving?" message:@"There are some unsaved changes. Are you sure you want to exit without saving?" delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
         [UIAlertViewDelegateWithBlock showAlertView:alertView withCallBack:^(NSInteger buttonIndex) {
             if ([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"Yes"]) {
                 [self Return];
@@ -467,28 +429,6 @@
     } else {
         [self Return];
     }
-}
-
-- (IBAction)Cancel:(id)sender {
-    [self Cancel];
-}
-
-- (void)launchCart {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kLaunchCart object:nil];
-    CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder];
-    cart.delegate = self;
-    cart.modalPresentationStyle = UIModalPresentationFullScreen;
-    cart.customer = self.customer;
-    cart.productsInCart = [[self constructProductCart] copy];
-    [self presentViewController:cart animated:YES completion:nil];
-}
-
-- (NSArray *)constructProductCart {
-    NSMutableArray *productCart = [[NSMutableArray alloc] initWithCapacity:self.coreDataOrder.carts.count];
-    for (Cart *cart in self.coreDataOrder.carts) {
-        [productCart addObject:cart.cartId];
-    }
-    return [self sortProductsByinvtId:productCart];
 }
 
 - (IBAction)vendorTouch:(id)sender {
@@ -503,57 +443,32 @@
     }
 }
 
-- (IBAction)submit:(id)sender {
-
-    if (self.allowPrinting) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to print the order after submission?"
-                                                       delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", @"No", nil];
-        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
-
-            if (buttonIndex != 0) {
-                if (buttonIndex == 1) { // YES
-                    if (_printStationId == 0) {
-                        if (_availablePrinters == nil) {
-                            NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETPRINTERS]];
-                            AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-
-                                if (JSON != nil && [JSON isKindOfClass:[NSArray class]] && [JSON count] > 0) {
-                                    NSMutableDictionary *printStations = [[NSMutableDictionary alloc] initWithCapacity:[JSON count]];
-                                    for (NSDictionary *printer in JSON) {
-                                        [printStations setObject:printer forKey:[printer objectForKey:@"name"]];
-                                    }
-
-                                    _availablePrinters = [NSDictionary dictionaryWithDictionary:printStations];
-                                    [self selectPrintStation];
-                                }
-
-                            }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-
-                                NSString *msg = [NSString stringWithFormat:@"Unable to load available printers. Order will not be printed. %@", [error localizedDescription]];
-                                [[[UIAlertView alloc] initWithTitle:@"No Printers" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-                            }];
-
-                            [operation start];
-                        } else {
-                            [self selectPrintStation];
-                        }
-
-                    } else {
-                        [self sendOrderToServer:YES asPending:NO beforeCart:NO];
-                    }
-                } else { // NO
-                    [self sendOrderToServer:NO asPending:NO beforeCart:NO];
-                }
+- (void)loadPrintersAndPromptForSelection {
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETPRINTERS]];
+    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+        if (JSON != nil && [JSON isKindOfClass:[NSArray class]] && [JSON count] > 0) {
+            NSMutableDictionary *printStations = [[NSMutableDictionary alloc] initWithCapacity:[JSON count]];
+            for (NSDictionary *printer in JSON) {
+                [printStations setObject:printer forKey:[printer objectForKey:@"name"]];
             }
-        }];
-    } else {
-        [self sendOrderToServer:NO asPending:NO beforeCart:NO];
-    }
+            self.availablePrinters = [NSDictionary dictionaryWithDictionary:printStations];
+            if (self.availablePrinters == nil || self.availablePrinters.count == 0) {
+                NSString *msg = @"No printers are available. Order will not be printed.";
+                [[[UIAlertView alloc] initWithTitle:@"No Printers" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+                [self sendOrderToServer:NO ];
+            } else {
+                [self prompForPrinterSelection];
+            }
+        }
+    }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        NSString *msg = [NSString stringWithFormat:@"Unable to load available printers. Order will not be printed. %@", [error localizedDescription]];
+        [[[UIAlertView alloc] initWithTitle:@"No Printers" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+    }];
+    [operation start];
 }
 
-//SG: This method loads the view that is displayed after you Submit an order. It prompts the user for information like Authorized By and Notes.
-- (IBAction)finishOrder:(id)sender {
-    if ([self orderReadyForSubmission]) {
+- (void)loadNotesForm {
+    if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
         CIFinalCustomerInfoViewController *ci = [[CIFinalCustomerInfoViewController alloc] initWithNibName:@"CIFinalCustomerInfoViewController" bundle:nil];
         ci.order = self.coreDataOrder;
         ci.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -567,7 +482,11 @@
 * SG: This method is called when user taps the cart button.
 */
 - (IBAction)reviewCart:(id)sender {
-    [self sendOrderToServer:NO asPending:YES beforeCart:YES];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kLaunchCart object:nil];
+    CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder customer:self.customer authToken:self.authToken loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId andManagedObjectContext:self.managedObjectContext];
+    cart.delegate = self;
+    cart.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:cart animated:YES completion:nil];
 }
 
 - (BOOL)findAndResignFirstResponder:(UIView *)view {
@@ -747,46 +666,30 @@
     [UIView commitAnimations];
 }
 
-- (void)sendOrderToServer:(BOOL)printThisOrder asPending:(BOOL)asPending beforeCart:(BOOL)beforeCart {
-    if (![self orderReadyForSubmission]) {return;}
-    self.coreDataOrder.status = beforeCart ? @"pending" : @"complete"; //todo is this needed? Upon return from server, this will be updated. no?
+- (void)sendOrderToServer:(BOOL)printThisOrder {
+    if (![helper isOrderReadyForSubmission:self.coreDataOrder]) {return;}
+    self.coreDataOrder.status = @"complete";
     self.coreDataOrder.print = [NSNumber numberWithBool:printThisOrder];
-    self.coreDataOrder.printer = printThisOrder ? [NSNumber numberWithInt:self.printStationId] : nil;
+    self.coreDataOrder.printer = printThisOrder ? [NSNumber numberWithInt:self.selectedPrintStationId] : nil;
     NSDictionary *parameters = [self.coreDataOrder asJSONReqParameter];
     NSString *method = [self.coreDataOrder.orderId intValue] > 0 ? @"PUT" : @"POST";
-    NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken] :
-            [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS([self.coreDataOrder.orderId intValue])], kAuthToken, self.authToken];
+    NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken] : [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS([self.coreDataOrder.orderId intValue])], kAuthToken, self.authToken];
     void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-        savedOrder = [self loadJson:JSON];
-        [self updateDiscountItems:savedOrder];
-        if (asPending) {
-            if (beforeCart)
-                [self launchCart];
-            else {
-                //complete this order
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self finishOrder:nil]; //SG: Displays the view that asks the user for Authorized By, Notes etc information in a modal window.
-                });
-            }
-        } else {
-            [self Return];
-        }
+        self.savedOrder = [self loadJson:JSON];
+        [self Return];
     };
     void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
         if (JSON) {
             [self loadJson:JSON];
-            [self launchCart];
         }
     };
-    [helper sendRequest:method url:url parameters:parameters successBlock:successBlock
-           failureBlock:failureBlock view:self.view loadingText:@"Submitting order"];
-
+    [helper sendRequest:method url:url parameters:parameters successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Submitting order"];
 }
 
 - (AnOrder *)loadJson:(id)JSON {
     AnOrder *anOrder = [[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) JSON];
     [self.managedObjectContext deleteObject:self.coreDataOrder];//delete existing core data representation
-    self.coreDataOrder = [self createCoreDataCopyOfOrder:anOrder];//create fresh new core data representation
+    self.coreDataOrder = [helper createCoreDataCopyOfOrder:anOrder customer:self.customer loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];//create fresh new core data representation
     [[CoreDataUtil sharedManager] saveObjects];
     [self.productsTableView reloadData];
     [self updateTotals];
@@ -794,18 +697,8 @@
     return anOrder;
 }
 
-- (void)updateDiscountItems:(AnOrder *)order {
-    self.discountItems = [NSMutableDictionary dictionary];
-    for (int i = 0; i < [order.lineItems count]; i++) {
-        ALineItem *lineItemFromServer = (ALineItem *) order.lineItems[i];
-        if ([lineItemFromServer.category isEqualToString:@"discount"]) {
-            [self.discountItems setObject:lineItemFromServer forKey:lineItemFromServer.itemId];
-        }
-    }
-}
-
 - (void)updateTotals {
-    NSArray *totals = [self getTotals];
+    NSArray *totals = [helper getTotals:self.coreDataOrder];
     self.totalCost.text = [NumberUtil formatDollarAmount:totals[0]];
 }
 
@@ -824,74 +717,58 @@
     return [self.customer copy];
 }
 
+//Called from the authorization, notes etc. popup
+- (IBAction)submit:(id)sender {
+    if (self.allowPrinting) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to print the order after submission?" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Yes", @"No", nil];
+        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+            if (buttonIndex == 1) { // YES
+                if (self.selectedPrintStationId == 0) {
+                    if (self.availablePrinters == nil) {
+                        [self loadPrintersAndPromptForSelection];
+                    } else {
+                        [self prompForPrinterSelection];
+                    }
+                } else {
+                    [self sendOrderToServer:YES ];
+                }
+            } else { // NO
+                [self sendOrderToServer:NO ];
+            }
+        }];
+    } else {
+        [self sendOrderToServer:NO ];
+    }
+}
+
 #pragma - UIPrinterSelectedDelegate
 
 - (void)setSelectedPrinter:(NSString *)printer {
     [self.poController dismissPopoverAnimated:YES];
     [[SettingsManager sharedManager] saveSetting:@"printer" value:printer];
-    _printStationId = [[[_availablePrinters objectForKey:printer] objectForKey:@"id"] intValue];
-    [self sendOrderToServer:YES asPending:NO beforeCart:NO];
+    self.selectedPrintStationId = [[[self.availablePrinters objectForKey:printer] objectForKey:@"id"] intValue];
+    [self sendOrderToServer:YES ];
 }
 
-- (void)selectPrintStation {
+- (void)prompForPrinterSelection {
     PrinterSelectionViewController *psvc = [[PrinterSelectionViewController alloc] initWithNibName:@"PrinterSelectionViewController" bundle:nil];
     psvc.title = @"Available Printers";
-    NSArray *keys = [[[_availablePrinters allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] copy];
+    NSArray *keys = [[[self.availablePrinters allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] copy];
     psvc.availablePrinters = [NSArray arrayWithArray:keys];
     psvc.delegate = self;
-
     CGRect frame = self.cartButton.frame;
     frame = CGRectOffset(frame, 0, 0);
-
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:psvc];
     self.poController = [[UIPopoverController alloc] initWithContentViewController:nav];
     [self.poController presentPopoverFromRect:frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
-#pragma mark CICartViewDelegate
-
-- (BOOL)orderReadyForSubmission {
-    //check there are items in cart
-    if (!self.coreDataOrder.carts || self.coreDataOrder.carts.count == 0) {//todo: do you need to check for null?
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Please add at least one product to the cart before continuing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        return NO;
-    }
-    //at least one item has non-zero quantity
-    NSUInteger index = [self.coreDataOrder.carts indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        return [helper itemHasQuantity:((Cart *) obj).editableQty] ? YES : NO;
-    }];
-    if (index == NSNotFound) {
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Please add at least one product to the cart before continuing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        return NO;
-    }
-
-    //if using ship dates, all items with non-zero quantity (except vouchers) should have ship date(s)
-    if (self.showShipDates) {
-        for (Cart *cart in self.coreDataOrder.carts) {
-            Product *product = [Product findProduct:cart.cartId];
-            BOOL hasQty = [helper itemHasQuantity:cart.editableQty];
-            if (hasQty && ![helper itemIsVoucher:product]) {
-                BOOL hasShipDates = [NilUtil objectOrEmptyArray:cart.shipdates].count > 0; //todo is call to nilutil needed?
-                if (!hasShipDates) {
-                    [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have ship date(s) before the order can be submitted. Check cart items and try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-                    return NO;
-                }
-            }
-        }
-    }
-    return YES;
-}
-
 #pragma mark - ProductCellDelegate
-
-- (void)VoucherChange:(double)price forIndex:(int)idx {
-    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
-    [self changeVoucherTo:price forProductId:productId];
-}
 
 - (void)QtyChange:(int)qty forIndex:(int)idx {
     NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
-    [self changeQuantityTo:qty forProductId:productId];
+    [self.coreDataOrder updateItemQuantity:[NSString stringWithFormat:@"%i", qty] productId:productId context:self.managedObjectContext];
+    self.unsavedChangesPresent = YES;
     [self updateCellColorForId:(NSUInteger) idx];
     [self updateTotals];
 }
@@ -924,8 +801,14 @@
     self.unsavedChangesPresent = YES;
 }
 
-- (void)setSelectedRow:(NSUInteger)index {
-    selectedItemRowIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
+- (void)VoucherChange:(double)price forIndex:(int)idx {
+    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
+    [self.coreDataOrder updateItemVoucher:@(price) productId:productId context:self.managedObjectContext];
+    self.unsavedChangesPresent = YES;
+}
+
+- (void)setSelectedRow:(NSIndexPath *)index {
+    selectedItemRowIndexPath = index;
 }
 
 #pragma mark - Core Data routines
@@ -1025,73 +908,21 @@
 }
 
 #pragma CICartViewDelegate
-//Returns array with gross total, voucher total and discount total. All items in array are NSNumbers.
-- (NSArray *)getTotals {
-    int grossTotal = 0;
-    int voucherTotal = 0;
-    int discountTotal = 0;
-    if (self.coreDataOrder) {
-        for (Cart *cart in self.coreDataOrder.carts) {
-            int qty = [helper getQuantity:cart.editableQty]; //takes care of resolving quantities for multi stores
-            int numOfShipDates = cart.shipdates.count;
-            int price = [cart.editablePrice intValue];//todo switchto using product#showprice
-            grossTotal += qty * price * (numOfShipDates == 0 ? 1 : numOfShipDates);
-            if ([cart.editableVoucher intValue] != 0) {//cart.editableVoucher will never be null. all number fields have a default value of 0 in core data. you can change the default if you want .
-                voucherTotal += qty * [cart.editableVoucher intValue] * (numOfShipDates == 0 ? 1 : numOfShipDates);
-            }
-        }
-        //discount items are not being saved in core data. after order is saved to server, we simply save the returned discount items in discountItems array.
-        //todo: as you make changes to the quantities in the cart view, the discounts will no longer be valid.
-        NSArray *keys = [self.discountItems allKeys];
-        for (NSString *key in keys) {
-            ALineItem *discountLineItem = [self.discountItems objectForKey:key];
-            int price = [[NumberUtil convertDollarsToCents:discountLineItem.price] intValue];
-            int qty = [discountLineItem.quantity intValue];
-            discountTotal += price * qty;
-        }
-    }
-    return @[@(grossTotal / 100.0), @(voucherTotal / 100.0), @(discountTotal / 100.0)];
-}
-
-- (void)changeQuantityTo:(int)qty forProductId:(NSNumber *)productId {
-    [self.coreDataOrder updateItemQuantity:[NSString stringWithFormat:@"%i", qty] productId:productId context:self.managedObjectContext];
-    self.unsavedChangesPresent = YES;
-}
-
-- (void)changeVoucherTo:(double)voucher forProductId:(NSNumber *)productId {
-    [self.coreDataOrder updateItemVoucher:@(voucher) productId:productId context:self.managedObjectContext];
-    self.unsavedChangesPresent = YES;
-}
-
-- (Cart *)getCoreDataForProduct:(NSNumber *)productId {
-    NSUInteger index = [self.coreDataOrder.carts indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        return [((Cart *) obj).cartId intValue] == [productId intValue] ? YES : NO;
-    }];
-    return index == NSNotFound ? nil : self.coreDataOrder.carts[index];
-}
-
-- (NSUInteger)getDiscountItemsCount {
-    return self.discountItems ? self.discountItems.count : 0;
-}
-
-- (ALineItem *)getDiscountItemAt:(int)index {
-    NSArray *sortedKeys = [self.discountItems keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        return [obj1 compare:obj2];
-    }];
-    return [self.discountItems objectForKey:sortedKeys[(NSUInteger) index]];
-}
-
-- (Product *)getProduct:(NSNumber *)productId {
-    return (Product *) [Product findProduct:productId];
+- (void)cartViewDismissedWith:(Order *)coreDataOrder savedOrder:(AnOrder *)savedOrder unsavedChangesPresent:(BOOL)unsavedChangesPresent orderCompleted:(BOOL)orderCompleted {
+    self.coreDataOrder = coreDataOrder;
+    self.savedOrder = savedOrder;
+    self.unsavedChangesPresent = unsavedChangesPresent;
+    self.orderSubmitted = orderCompleted;
 }
 
 #pragma Return
 - (void)Return {
-    enum OrderUpdateStatus status = [self.selectedOrder.status isEqualToString:@"partial"] && savedOrder == nil? PartialOrderCancelled
-            : [self.selectedOrder.status isEqualToString:@"partial"] && savedOrder != nil? PartialOrderSaved
-                    : [self.selectedOrder.orderId intValue] != 0 && savedOrder == nil? PersistentOrderUnchanged
-                            : [self.selectedOrder.orderId intValue] != 0 && savedOrder != nil? PersistentOrderUpdated
-                                    : self.newOrder && savedOrder == nil? NewOrderCancelled
+    BOOL orderWasSaved = self.savedOrder != nil;
+    enum OrderUpdateStatus status = [self.selectedOrder.status isEqualToString:@"partial"] && orderWasSaved ? PartialOrderCancelled
+            : [self.selectedOrder.status isEqualToString:@"partial"] && orderWasSaved ? PartialOrderSaved
+                    : [self.selectedOrder.orderId intValue] != 0 && !orderWasSaved ? PersistentOrderUnchanged
+                            : [self.selectedOrder.orderId intValue] != 0 && orderWasSaved ? PersistentOrderUpdated
+                                    : self.newOrder && !orderWasSaved ? NewOrderCancelled
                                             : NewOrderCreated;
 
     [self dismissViewControllerAnimated:YES completion:^{
@@ -1101,7 +932,7 @@
                 orderId = self.coreDataOrder != nil? self.coreDataOrder.orderId : nil;
                 [[CoreDataUtil sharedManager] deleteObject:self.coreDataOrder];  //always delete the core data entry before exiting this view. core data should contain an entry only if the order crashed in the middle of an order
             }
-            [self.delegate Return:orderId order:savedOrder updateStatus:status];
+            [self.delegate Return:orderId order:self.savedOrder updateStatus:status];
         }
     }];
 }

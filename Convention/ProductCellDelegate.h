@@ -16,6 +16,6 @@
 
 - (void)QtyTouchForIndex:(int)idx;
 
-- (void)setSelectedRow:(NSUInteger)index;
+- (void)setSelectedRow:(NSIndexPath *)index;
 
 @end

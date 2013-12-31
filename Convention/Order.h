@@ -2,7 +2,7 @@
 //  Order.h
 //  Convention
 //
-//  Created by septerr on 12/27/13.
+//  Created by septerr on 12/31/13.
 //  Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 
@@ -10,7 +10,7 @@
 #import <CoreData/CoreData.h>
 #import "EditableEntity.h"
 
-@class Cart;
+@class Cart, DiscountLineItem;
 
 @interface Order : EditableEntity
 
@@ -28,28 +28,26 @@
 @property(nonatomic, retain) NSString *status;
 @property(nonatomic, retain) NSString *vendorGroup;
 @property(nonatomic, retain) NSString *vendorGroupId;
-@property(nonatomic, retain) NSOrderedSet *carts;
+@property(nonatomic, retain) NSSet *carts;
+@property(nonatomic, retain) NSSet *discountLineItems;
 @end
 
 @interface Order (CoreDataGeneratedAccessors)
-
-- (void)insertObject:(Cart *)value inCartsAtIndex:(NSUInteger)idx;
-
-- (void)removeObjectFromCartsAtIndex:(NSUInteger)idx;
-
-- (void)insertCarts:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
-
-- (void)removeCartsAtIndexes:(NSIndexSet *)indexes;
-
-- (void)replaceObjectInCartsAtIndex:(NSUInteger)idx withObject:(Cart *)value;
-
-- (void)replaceCartsAtIndexes:(NSIndexSet *)indexes withCarts:(NSArray *)values;
 
 - (void)addCartsObject:(Cart *)value;
 
 - (void)removeCartsObject:(Cart *)value;
 
-- (void)addCarts:(NSOrderedSet *)values;
+- (void)addCarts:(NSSet *)values;
 
-- (void)removeCarts:(NSOrderedSet *)values;
+- (void)removeCarts:(NSSet *)values;
+
+- (void)addDiscountLineItemsObject:(DiscountLineItem *)value;
+
+- (void)removeDiscountLineItemsObject:(DiscountLineItem *)value;
+
+- (void)addDiscountLineItems:(NSSet *)values;
+
+- (void)removeDiscountLineItems:(NSSet *)values;
+
 @end
