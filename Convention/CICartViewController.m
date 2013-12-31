@@ -44,8 +44,8 @@
 @synthesize lblShipDate1, lblShipDate2, lblShipDateCount;
 @synthesize tableHeaderPigglyWiggly, tableHeaderFarris;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+- (id)initWithOrder:(Order *)coreDataOrder {
+    self = [super initWithNibName:@"CICartViewController" bundle:nil];
     if (self) {
         showPrice = YES;
         tOffset = 0;
@@ -79,6 +79,15 @@
         textField.frame = CGRectMake(875, y, 101, heightPerField);
         y = y + heightPerField + marginBottomPerField;
     }
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self.indicator startAnimating];
+    navBar.topItem.title = self.title;
+    self.showShipDates = [[ShowConfigurations instance] shipDates];
+    self.allowPrinting = [ShowConfigurations instance].printing;
+    self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -119,15 +128,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self.indicator startAnimating];
-    navBar.topItem.title = self.title;
-    self.showShipDates = [[ShowConfigurations instance] shipDates];
-    self.allowPrinting = [ShowConfigurations instance].printing;
-    self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
-}
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
@@ -144,7 +144,7 @@
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if ([indexPath section] == 0) { //product items
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-        NSDictionary *product = [self.delegate getProduct:productId];
+        Product *product = [self.delegate getProduct:productId];
         Cart *cart = [delegate getCoreDataForProduct:productId];
         if ([kShowCorp isEqualToString:kPigglyWiggly]) {
             PWCartViewCell *cell = (PWCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
@@ -159,7 +159,7 @@
         }
     } else { //discount items
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-        NSDictionary *product = [self.delegate getProduct:productId];
+        Product *product = [self.delegate getProduct:productId];
         ALineItem *discountItem = [delegate getDiscountItemAt:[indexPath row]];
         FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
         [cell initializeForDiscountWithProduct:product quantity:discountItem.quantity price:discountItem.price tag:[indexPath row] ProductCellDelegate:self];
@@ -170,7 +170,6 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-        NSDictionary *product = [self.delegate getProduct:productId];
         Cart *cart = [delegate getCoreDataForProduct:productId];
         if (cart.errors.count > 0)
             return 44 + cart.errors.count * 42;
@@ -181,9 +180,8 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-        NSDictionary *product = [self.delegate getProduct:productId];
         Cart *cart = [delegate getCoreDataForProduct:productId];
-        [helper updateCellBackground:cell product:product cart:cart];
+        [helper updateCellBackground:cell cart:cart];
     }
 }
 
@@ -236,10 +234,9 @@
     self.netTotal.textColor = [UIColor redColor];
     [self.delegate changeQuantityTo:qty forProductId:self.productsInCart[(NSUInteger) idx]];
     NSNumber *productId = self.productsInCart[(NSUInteger) idx];
-    NSDictionary *product = [self.delegate getProduct:productId];
     Cart *cart = [self.delegate getCoreDataForProduct:productId];
     ProductCell *cell = (ProductCell *) [self.productsUITableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:(NSUInteger) idx inSection:0]];
-    [helper updateCellBackground:cell product:product cart:cart];
+    [helper updateCellBackground:cell cart:cart];
 }
 
 - (void)QtyTouchForIndex:(int)idx {

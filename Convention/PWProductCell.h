@@ -12,6 +12,7 @@
 #import "ProductCell.h"
 
 @class Cart;
+@class Product;
 
 
 @interface PWProductCell : ProductCell
@@ -33,6 +34,6 @@
 
 - (IBAction)qtyChanged:(id)sender;
 
-- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(NSDictionary *)product cart:(Cart *)cart checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(Product *)product cart:(Cart *)cart checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 
 @end

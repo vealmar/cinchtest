@@ -2,7 +2,7 @@
 //  Cart.h
 //  Convention
 //
-//  Created by septerr on 12/27/13.
+//  Created by septerr on 12/30/13.
 //  Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 
@@ -10,7 +10,7 @@
 #import <CoreData/CoreData.h>
 #import "EditableEntity.h"
 
-@class Order, ShipDate;
+@class Order, Product, ShipDate;
 
 @interface Cart : EditableEntity
 
@@ -21,27 +21,19 @@
 @property(nonatomic, retain) NSNumber *orderLineItem_id;
 @property(nonatomic, retain) Order *order;
 @property(nonatomic, retain) NSOrderedSet *shipdates;
+@property(nonatomic, retain) Product *product;
 @end
 
 @interface Cart (CoreDataGeneratedAccessors)
 
 - (void)insertObject:(ShipDate *)value inShipdatesAtIndex:(NSUInteger)idx;
-
 - (void)removeObjectFromShipdatesAtIndex:(NSUInteger)idx;
-
 - (void)insertShipdates:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
-
 - (void)removeShipdatesAtIndexes:(NSIndexSet *)indexes;
-
 - (void)replaceObjectInShipdatesAtIndex:(NSUInteger)idx withObject:(ShipDate *)value;
-
 - (void)replaceShipdatesAtIndexes:(NSIndexSet *)indexes withShipdates:(NSArray *)values;
-
 - (void)addShipdatesObject:(ShipDate *)value;
-
 - (void)removeShipdatesObject:(ShipDate *)value;
-
 - (void)addShipdates:(NSOrderedSet *)values;
-
 - (void)removeShipdates:(NSOrderedSet *)values;
 @end

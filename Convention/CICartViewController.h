@@ -13,6 +13,7 @@
 
 @class Cart;
 @class ALineItem;
+@class Product;
 
 @protocol CICartViewDelegate <NSObject>
 
@@ -22,7 +23,7 @@
 
 - (void)changeVoucherTo:(double)voucher forProductId:(NSNumber *)productId;
 
-- (NSDictionary *)getProduct:(NSNumber *)productId;
+- (Product *)getProduct:(NSNumber *)productId;
 
 //Returns array with gross total, voucher total and discount total. All items in array are NSNumbers.
 - (NSArray *)getTotals;
@@ -76,6 +77,8 @@
 @property(weak, nonatomic) IBOutlet UILabel *netTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumn;
+
+- (id)initWithOrder:(Order *)coreDataOrder;
 
 - (void)QtyChange:(int)qty forIndex:(int)idx;
 

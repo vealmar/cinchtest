@@ -24,4 +24,6 @@
 + (NSArray *)getVendors:(NSManagedObjectContext *)managedObjectContext;
 
 + (NSArray *)getBulletins:(NSManagedObjectContext *)managedObjectContext;
+
++ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSString *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 @end

@@ -14,6 +14,7 @@
 }
 static NSDecimalNumber *oneHundredDecimal = nil;
 static NSNumber *zeroNSNumber = nil;
+static NSNumberFormatter *currencyFormatter = nil;
 
 + (NSDecimalNumber *)hundredDecimal {
     if (!oneHundredDecimal)
@@ -27,6 +28,14 @@ static NSNumber *zeroNSNumber = nil;
     return zeroNSNumber;
 }
 
++ (NSNumberFormatter *)currencyFormatter {
+    if (!currencyFormatter) {
+        currencyFormatter = [[NSNumberFormatter alloc] init];
+        [currencyFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+    }
+    return currencyFormatter;
+}
+
 
 + (NSString *)formatDollarAmount:(NSNumber *)dollarAmount {
     if (dollarAmount) {
@@ -36,6 +45,13 @@ static NSNumber *zeroNSNumber = nil;
         nf.minimumFractionDigits = 2;
         nf.minimumIntegerDigits = 1;
         return [nf stringFromNumber:[NSNumber numberWithDouble:[dollarAmount doubleValue]]];
+    } else
+        return @"";
+}
+
++ (NSString *)formatCentsAsCurrency:(NSNumber *)cents {
+    if (cents) {
+        return [self.currencyFormatter stringFromNumber:@([cents intValue] / 100.0)];
     } else
         return @"";
 }

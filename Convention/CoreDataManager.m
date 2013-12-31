@@ -9,6 +9,12 @@
 #import "CoreDataManager.h"
 #import "Order.h"
 #import "Customer.h"
+#import "config.h"
+#import "SettingsManager.h"
+#import "SynchronousRequestUtil.h"
+#import "Product.h"
+#import "Product+Extensions.h"
+#import "CoreDataUtil.h"
 
 
 @implementation CoreDataManager {
@@ -96,4 +102,20 @@
     } else
         return fetchedObjects;
 }
+
++ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSString *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext {
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, authToken, kVendorGroupID, vendorGroupId];
+    NSError *error = [[NSError alloc] init];
+    NSDictionary *json = [SynchronousRequestUtil sendRequestTo:url error:&error];
+    if (json) {
+        [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
+        for (NSDictionary *productJson in json) {
+            Product *product = [[Product alloc] initWithProductFromServer:productJson context:managedObjectContext];
+            [managedObjectContext insertObject:product];
+        }
+        [[CoreDataUtil sharedManager] saveObjects];
+    }
+}
+
+
 @end

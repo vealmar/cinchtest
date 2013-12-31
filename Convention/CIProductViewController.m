@@ -8,7 +8,6 @@
 
 #import "CIProductViewController.h"
 #import "config.h"
-#import "MBProgressHUD.h"
 #import "CICalendarViewController.h"
 #import "SettingsManager.h"
 #import "CoreDataUtil.h"
@@ -30,6 +29,7 @@
 #import "Bulletin.h"
 #import "Cart+Extensions.h"
 #import "Error.h"
+#import "Product+Extensions.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -61,8 +61,7 @@
         self.viewInitialized = NO;
         currentVendor = 0;
         currentBulletin = 0;
-        self.allproductsMap = [NSMutableDictionary dictionary];
-        self.vendorProductMap = [NSMutableDictionary dictionary];
+        self.vendorProductIds = [NSMutableArray array];
         self.discountItems = [NSMutableDictionary dictionary];
         selectedIdx = [NSMutableSet set];
         self.multiStore = NO;
@@ -117,7 +116,7 @@
         currentVendor = self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
         [self loadVendors];
         [self loadBulletins];
-        [self loadAllProducts];
+        [self loadProductsForCurrentVendorAndBulletin];
     } else {
         [self.productsTableView reloadData];
         [self updateTotals];
@@ -200,70 +199,25 @@
     return coreDataOrder;
 }
 
-- (void)loadAllProducts {//i.e. all products for the logged in vendor's vendor group.
-    NSArray *products = [CoreDataManager getProducts:self.managedObjectContext];
-    if (products && products.count > 0) {//todo use AProduct objects
-        NSMutableDictionary *allProducts = [[NSMutableDictionary alloc] init];
-        for (Product *product in products) {
-            [allProducts setObject:[product asDictionary] forKey:product.productId];
-        }
-        self.allproductsMap = allProducts;
-        [self loadProductsForCurrentVendorAndBulletin];
-    } else {
-        [self reloadProducts:NO];
-    }
-}
-
-- (void)reloadProducts:(BOOL)triggeredByPull {
-    MBProgressHUD *__weak loadProductsHUD;
-    if (!triggeredByPull) {
-        loadProductsHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
-        loadProductsHUD.labelText = @"Loading products";
-        [loadProductsHUD show:NO];
-    }
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, self.authToken, kVendorGroupID, self.loggedInVendorGroupId];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFJSONRequestOperation *jsonOp = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                     success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                                                                                         self.allproductsMap = [[NSMutableDictionary alloc] init];
-                                                                                         if (JSON) {
-                                                                                             for (NSDictionary *product in (NSArray *) JSON) {
-                                                                                                 NSNumber *productId = (NSNumber *) [NilUtil nilOrObject:[product objectForKey:kProductId]];
-                                                                                                 if (productId) {
-                                                                                                     [self.allproductsMap setObject:product forKey:productId];
-                                                                                                 }
-                                                                                             }
-                                                                                         }
-                                                                                         [self loadProductsForCurrentVendorAndBulletin];
-                                                                                         if (triggeredByPull) {
-                                                                                             [pull finishedLoading];
-                                                                                         } else {
-                                                                                             [loadProductsHUD hide:NO];
-                                                                                         }
-                                                                                     } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                if (triggeredByPull) {
-                    [pull finishedLoading];
-                } else {
-                    [loadProductsHUD hide:NO];
-                }
-            }];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    [queue addOperations:@[jsonOp] waitUntilFinished:YES];
+- (void)reloadProducts {
+    [CoreDataManager reloadProducts:self.authToken vendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];
+    [pull finishedLoading];
+    [self loadProductsForCurrentVendorAndBulletin];
+    [self.productsTableView reloadData];
 }
 
 - (void)loadProductsForCurrentVendorAndBulletin {
     NSMutableArray *resultData = [[NSMutableArray alloc] init];
-    self.vendorProductMap = [[NSMutableDictionary alloc] init];
-    [[self.allproductsMap allValues] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        NSDictionary *product = (NSDictionary *) obj;
-        NSNumber *vendorId = (NSNumber *) [NilUtil nilOrObject:[product objectForKey:kProductVendorID]];
+    self.vendorProductIds = [[NSMutableArray alloc] init];
+    [[CoreDataManager getProducts:self.managedObjectContext] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        Product *product = (Product *) obj;
+        NSNumber *vendorId = (NSNumber *) product.vendor_id;
         if (currentVendor == 0 || (vendorId && [vendorId integerValue] == currentVendor)) {
-            NSNumber *productId = (NSNumber *) [NilUtil nilOrObject:[product objectForKey:kProductId]];
-            [self.vendorProductMap setObject:obj forKey:productId];
-            NSNumber *bulletinId = (NSNumber *) [NilUtil nilOrObject:[product objectForKey:kProductBulletinId]];
+            NSNumber *productId = product.productId;
+            [self.vendorProductIds addObject:productId];
+            NSNumber *bulletinId = product.bulletin_id;
             if (currentBulletin == 0 || (bulletinId && [bulletinId integerValue] == currentBulletin))
-                [resultData addObject:[obj mutableCopy]];
+                [resultData addObject:product.productId];
         }
     }];
     self.resultData = [self sortProductsByinvtId:resultData];
@@ -312,13 +266,13 @@
     self.viewInitialized = YES;
 }
 
-- (NSArray *)sortProductsByinvtId:(NSArray *)productIdsOrDictionaries {
+- (NSArray *)sortProductsByinvtId:(NSArray *)productIdsOrProducts {
     NSArray *sortedArray;
-    sortedArray = [productIdsOrDictionaries sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        NSDictionary *product1 = [a isKindOfClass:[NSDictionary class]] ? a : [self.allproductsMap objectForKey:a];
-        NSDictionary *product2 = [b isKindOfClass:[NSDictionary class]] ? b : [self.allproductsMap objectForKey:b];
-        NSString *first = (NSString *) [NilUtil nilOrObject:[product1 objectForKey:kProductInvtid]];
-        NSString *second = (NSString *) [NilUtil nilOrObject:[product2 objectForKey:kProductInvtid]];
+    sortedArray = [productIdsOrProducts sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
+        Product *product1 = [a isKindOfClass:[Product class]] ? a : [Product findProduct:a];
+        Product *product2 = [b isKindOfClass:[Product class]] ? b : [Product findProduct:b];
+        NSString *first = (NSString *) [NilUtil nilOrObject:product1.invtid];
+        NSString *second = (NSString *) [NilUtil nilOrObject:product2.invtid];
         return [first compare:second];
     }];
     return sortedArray;
@@ -391,7 +345,7 @@
     if (errors && errors.count > 0) {
         NSMutableString *bulletList = [NSMutableString stringWithCapacity:errors.count * 30];
         for (Error *error in errors) {
-            [bulletList appendFormat:@"\u2022 %@\n", error.message];
+            [bulletList appendFormat:@"%@\n", error.message];
         }
         self.errorMessageTextView.text = bulletList;
         self.errorMessageTextView.hidden = NO;
@@ -443,34 +397,34 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.productsTableView) {
-        NSMutableDictionary *product = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-        [helper updateCellBackground:cell product:product cart:[self.coreDataOrder findCartForProductId:[product objectForKey:kProductId]]];
+        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
+        [helper updateCellBackground:cell cart:[self.coreDataOrder findCartForProductId:productId]];
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
+    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
+    Product *product = [Product findProduct:productId];
     UITableViewCell *cell = [helper dequeueReusableProductCell:myTableView];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
-        BOOL rowIsSelected = [selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]] && ![[dict objectForKey:@"invtid"] isEqualToString:@"0"];
-        [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore product:dict cart:[self.coreDataOrder findCartForProductId:[dict objectForKey:kProductId]] checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
+        BOOL rowIsSelected = [selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]] && ![product.invtid isEqualToString:@"0"];
+        [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore product:product cart:[self.coreDataOrder findCartForProductId:product.productId] checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
     } else {
-        Cart *cart = [self.coreDataOrder findCartForProductId:(NSNumber *) [dict objectForKey:kProductId]];
-        NSString *errorMessage = cart.errors.count > 0 ? ((Error *) cart.errors.anyObject).message : nil;
-        [(FarrisProductCell *) cell initializeWith:dict cart:[self.coreDataOrder findCartForProductId:[dict objectForKey:kProductId]] tag:[indexPath row] ProductCellDelegate:self];
+        [(FarrisProductCell *) cell initializeWithProduct:product cart:[self.coreDataOrder findCartForProductId:product.productId] tag:[indexPath row] ProductCellDelegate:self];
     }
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (tableView == self.productsTableView) {
-        NSDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
+    if (self.showShipDates && tableView == self.productsTableView) {
+        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
+        Product *product = [Product findProduct:productId];
         if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]) {
             [selectedIdx removeObject:[NSNumber numberWithInteger:[indexPath row]]];
             [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryNone;
         } else {
             [selectedIdx addObject:[NSNumber numberWithInteger:[indexPath row]]];
-            if (![[dict objectForKey:@"invtid"] isEqualToString:@"0"] && self.showShipDates) {
+            if (![product.invtid isEqualToString:@"0"] && self.showShipDates) {
                 [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
             }
         }
@@ -479,8 +433,8 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
-        NSDictionary *product = self.resultData[(NSUInteger) indexPath.row];
-        Cart *cart = [self.coreDataOrder findCartForProductId:(NSNumber *) [product objectForKey:kProductId]];
+        NSNumber *productId = self.resultData[(NSUInteger) indexPath.row];
+        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
         if (cart.errors.count > 0)
             return 44 + cart.errors.count * 42;
     }
@@ -521,7 +475,7 @@
 
 - (void)launchCart {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kLaunchCart object:nil];
-    CICartViewController *cart = [[CICartViewController alloc] initWithNibName:@"CICartViewController" bundle:nil];
+    CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder];
     cart.delegate = self;
     cart.modalPresentationStyle = UIModalPresentationFullScreen;
     cart.customer = self.customer;
@@ -648,17 +602,18 @@
     [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
 
     for (NSNumber *idx in selectedIdx) {
-        NSDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) idx.intValue];
-        if ([[dict objectForKey:@"invtid"] isEqualToString:@"0"]) {
+        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx.intValue];
+        Product *product = [Product findProduct:productId];
+        if ([product.invtid isEqualToString:@"0"]) {
             continue;
         }
         NSDate *startDate = [[NSDate alloc] init];
         NSDate *endDate = [[NSDate alloc] init];
-        if ([dict objectForKey:kProductShipDate1] != nil && ![[dict objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]) {
-            startDate = [df dateFromString:[dict objectForKey:kProductShipDate1]];
+        if (product.shipdate1) {
+            startDate = product.shipdate1;
         }
-        if ([dict objectForKey:kProductShipDate2] != nil && ![[dict objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]) {
-            endDate = [df dateFromString:[dict objectForKey:kProductShipDate2]];
+        if (product.shipdate2) {
+            endDate = product.shipdate2;
         }
         NSMutableArray *dateList = [NSMutableArray array];
         NSCalendar *currentCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
@@ -685,9 +640,9 @@
         CICalendarViewController *strongCalView = weakCalView;
         [selectedIdx enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
             NSNumber *idx = (NSNumber *) obj;
-            NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) [idx integerValue]];
-            if ([self.productCart objectForKey:[dict objectForKey:@"id"]] != nil) {
-                [self updateShipDatesInCartWithId:[dict objectForKey:@"id"] forDates:dates];
+            NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [idx integerValue]];
+            if ([self.productCart objectForKey:productId] != nil) {
+                [self updateShipDatesInCartWithId:productId forDates:dates];
                 [self updateTotals];
                 self.unsavedChangesPresent = YES;
             }
@@ -737,28 +692,20 @@
 }
 
 - (IBAction)searchProducts:(id)sender {
-    if (self.vendorProductMap == nil|| [self.vendorProductMap isKindOfClass:[NSNull class]] || [self.vendorProductMap count] == 0) return;
+    if (self.vendorProductIds == nil|| [self.vendorProductIds isKindOfClass:[NSNull class]] || [self.vendorProductIds count] == 0) return;
     if ([self.searchText.text isEqualToString:@""]) {
-        self.resultData = [[self.vendorProductMap allValues] mutableCopy];
+        self.resultData = [self.vendorProductIds mutableCopy];
     } else {
         NSPredicate *pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *bindings) {
-            NSMutableDictionary *dict = (NSMutableDictionary *) obj;
-            NSString *invtid = nil;
-            if ([dict objectForKey:kProductInvtid] && ![[dict objectForKey:kProductInvtid] isKindOfClass:[NSNull class]]) {
-                if ([[dict objectForKey:kProductInvtid] respondsToSelector:@selector(stringValue)]) {
-                    invtid = [[dict objectForKey:kProductInvtid] stringValue];
-                } else {
-                    invtid = [dict objectForKey:kProductInvtid];
-                }
-            } else {
-                invtid = @"";
-            }
-            NSString *descrip = [dict objectForKey:kProductDescr];
-            NSString *desc2 = [dict objectForKey:kProductDescr2] ? [dict objectForKey:kProductDescr2] : @"";
+            NSNumber *productId = (NSNumber *) obj;
+            Product *product = [Product findProduct:productId];
+            NSString *invtid = [NilUtil objectOrDefaultString:product.invtid defaultObject:@""];
+            NSString *descrip = [NilUtil objectOrDefaultString:product.descr defaultObject:@""];
+            NSString *desc2 = [NilUtil objectOrDefaultString:product.descr2 defaultObject:@""];
             NSString *test = [self.searchText.text uppercaseString];
             return [[invtid uppercaseString] contains:test] || [[descrip uppercaseString] contains:test] || (desc2 != nil && ![desc2 isEqual:[NSNull null]] && [[desc2 uppercaseString] contains:test]);
         }];
-        self.resultData = [[[self.vendorProductMap allValues] filteredArrayUsingPredicate:pred] mutableCopy];
+        self.resultData = [[self.vendorProductIds filteredArrayUsingPredicate:pred] mutableCopy];
         [selectedIdx removeAllObjects];
     }
     [self.productsTableView reloadData];
@@ -921,7 +868,7 @@
     //if using ship dates, all items with non-zero quantity (except vouchers) should have ship date(s)
     if (self.showShipDates) {
         for (Cart *cart in self.coreDataOrder.carts) {
-            NSDictionary *product = [self.allproductsMap objectForKey:cart.cartId];
+            Product *product = [Product findProduct:cart.cartId];
             BOOL hasQty = [helper itemHasQuantity:cart.editableQty];
             if (hasQty && ![helper itemIsVoucher:product]) {
                 BOOL hasShipDates = [NilUtil objectOrEmptyArray:cart.shipdates].count > 0; //todo is call to nilutil needed?
@@ -938,12 +885,12 @@
 #pragma mark - ProductCellDelegate
 
 - (void)VoucherChange:(double)price forIndex:(int)idx {
-    NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) idx];
-    [self changeVoucherTo:price forProductId:[dict objectForKey:kProductId]];
+    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
+    [self changeVoucherTo:price forProductId:productId];
 }
 
 - (void)QtyChange:(int)qty forIndex:(int)idx {
-    NSNumber *productId = [[self.resultData objectAtIndex:(NSUInteger) idx] objectForKey:@"id"];
+    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
     [self changeQuantityTo:qty forProductId:productId];
     [self updateCellColorForId:(NSUInteger) idx];
     [self updateTotals];
@@ -956,8 +903,8 @@
         if (!self.storeQtysPO) {
             self.storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
         }
-        NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) idx];
-        Cart *cart = [self.coreDataOrder findCartForProductId:[dict objectForKey:kProductId]];
+        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
+        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
         self.storeQtysPO.stores = [[cart.editableQty objectFromJSONString] mutableCopy];
         self.storeQtysPO.tag = idx;
         self.storeQtysPO.delegate = self;
@@ -970,8 +917,8 @@
 
 - (void)QtyTableChange:(NSMutableDictionary *)qty forIndex:(int)idx {
     NSString *JSON = [qty JSONString];
-    NSMutableDictionary *dict = [self.resultData objectAtIndex:(NSUInteger) idx];
-    [self.coreDataOrder updateItemQuantity:JSON product:dict context:self.managedObjectContext];
+    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
+    [self.coreDataOrder updateItemQuantity:JSON productId:productId context:self.managedObjectContext];
     [self updateCellColorForId:(NSUInteger) idx];
     [self updateTotals];
     self.unsavedChangesPresent = YES;
@@ -1034,9 +981,9 @@
 }
 
 - (void)updateCellColorForId:(NSUInteger)index {
-    NSMutableDictionary *product = [self.resultData objectAtIndex:index];
+    NSNumber *productId = [self.resultData objectAtIndex:index];
     ProductCell *cell = (ProductCell *) [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-    [helper updateCellBackground:cell product:product cart:[self.coreDataOrder findCartForProductId:[product objectForKey:kProductId]]];
+    [helper updateCellBackground:cell cart:[self.coreDataOrder findCartForProductId:productId]];
 }
 
 #pragma mark - UIAlertViewDelegate
@@ -1050,7 +997,7 @@
 #pragma mark - PullToRefreshViewDeegate
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
-    [self reloadProducts:YES];
+    [self reloadProducts];
 }
 
 #pragma mark - ReachabilityDelegate
@@ -1080,8 +1027,6 @@
 #pragma CICartViewDelegate
 //Returns array with gross total, voucher total and discount total. All items in array are NSNumbers.
 - (NSArray *)getTotals {
-    //at this time order has been saved to the server. But it may be out of date due to user making changes to quantity in the cart view.
-    //so use the core data representation or use editabledict
     int grossTotal = 0;
     int voucherTotal = 0;
     int discountTotal = 0;
@@ -1109,14 +1054,12 @@
 }
 
 - (void)changeQuantityTo:(int)qty forProductId:(NSNumber *)productId {
-    NSDictionary *product = [self.allproductsMap objectForKey:productId];
-    [self.coreDataOrder updateItemQuantity:[NSString stringWithFormat:@"%i", qty] product:product context:self.managedObjectContext];
+    [self.coreDataOrder updateItemQuantity:[NSString stringWithFormat:@"%i", qty] productId:productId context:self.managedObjectContext];
     self.unsavedChangesPresent = YES;
 }
 
 - (void)changeVoucherTo:(double)voucher forProductId:(NSNumber *)productId {
-    NSMutableDictionary *product = [self.allproductsMap objectForKey:productId];
-    [self.coreDataOrder updateItemVoucher:@(voucher) product:product context:self.managedObjectContext];
+    [self.coreDataOrder updateItemVoucher:@(voucher) productId:productId context:self.managedObjectContext];
     self.unsavedChangesPresent = YES;
 }
 
@@ -1138,8 +1081,8 @@
     return [self.discountItems objectForKey:sortedKeys[(NSUInteger) index]];
 }
 
-- (NSDictionary *)getProduct:(NSNumber *)productId {
-    return (NSDictionary *) [self.allproductsMap objectForKey:productId];
+- (Product *)getProduct:(NSNumber *)productId {
+    return (Product *) [Product findProduct:productId];
 }
 
 #pragma Return

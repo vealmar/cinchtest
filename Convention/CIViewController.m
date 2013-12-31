@@ -20,6 +20,7 @@
 #import "NilUtil.h"
 #import "Vendor.h"
 #import "Bulletin.h"
+#import "Product+Extensions.h"
 
 @implementation CIViewController {
     CGRect originalBounds;
@@ -110,16 +111,16 @@
     NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:nil parameters:params];
 
     AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-            success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                                                                                 success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
 
-                [loginHud hide:NO];
-                if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
-                    authToken = [JSON objectForKey:kAuthToken];
-                    vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
-                    [self loadCustomers];
-                }
+                                                                                     [loginHud hide:NO];
+                                                                                     if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
+                                                                                         authToken = [JSON objectForKey:kAuthToken];
+                                                                                         vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
+                                                                                         [self loadCustomers];
+                                                                                     }
 
-            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *requestError, id JSON) {
+                                                                                 } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *requestError, id JSON) {
 
                 if (JSON) {
 
@@ -204,18 +205,18 @@
         NSString *url = [NSString stringWithFormat:@"%@&%@=%@", kDBGETVENDORSWithVG([vendorGroupId stringValue]), kAuthToken, self.authToken];
         NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
         AFJSONRequestOperation *jsonOp = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                    if (JSON) {
-                        NSArray *results = [NSArray arrayWithArray:JSON];
-                        NSArray *vendors = [[results objectAtIndex:0] objectForKey:@"vendors"];
-                        for (NSDictionary *vendor in vendors) {
-                            [self.managedObjectContext insertObject:[[Vendor alloc] initWithVendorFromServer:vendor context:self.managedObjectContext]];
-                        }
-                        [[CoreDataUtil sharedManager] saveObjects];
-                    }
-                    [hud hide:NO];
-                    [self loadBulletins];
-                } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
+                                                                                         success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                             if (JSON) {
+                                                                                                 NSArray *results = [NSArray arrayWithArray:JSON];
+                                                                                                 NSArray *vendors = [[results objectAtIndex:0] objectForKey:@"vendors"];
+                                                                                                 for (NSDictionary *vendor in vendors) {
+                                                                                                     [self.managedObjectContext insertObject:[[Vendor alloc] initWithVendorFromServer:vendor context:self.managedObjectContext]];
+                                                                                                 }
+                                                                                                 [[CoreDataUtil sharedManager] saveObjects];
+                                                                                             }
+                                                                                             [hud hide:NO];
+                                                                                             [self loadBulletins];
+                                                                                         } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
                     [hud hide:NO];
                     [[[UIAlertView alloc] initWithTitle:@"Error" message:[err localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                     NSLog(@"%@ Error loading vendors: %@", [self class], [err localizedDescription]);
@@ -231,17 +232,17 @@
     [[CoreDataUtil sharedManager] deleteAllObjects:@"Bulletin"];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETBULLETINS]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-            success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                NSMutableDictionary *bulls = [[NSMutableDictionary alloc] init];
-                if (JSON) {
-                    for (NSDictionary *bulletin in JSON) {
-                        [self.managedObjectContext insertObject:[[Bulletin alloc] initWithBulletinFromServer:bulletin context:self.managedObjectContext]];
-                    }
-                    [[CoreDataUtil sharedManager] saveObjects];
-                }
-                [hud hide:NO];
-                [self presentOrderViewController];
-            } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
+                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                            NSMutableDictionary *bulls = [[NSMutableDictionary alloc] init];
+                                                                                            if (JSON) {
+                                                                                                for (NSDictionary *bulletin in JSON) {
+                                                                                                    [self.managedObjectContext insertObject:[[Bulletin alloc] initWithBulletinFromServer:bulletin context:self.managedObjectContext]];
+                                                                                                }
+                                                                                                [[CoreDataUtil sharedManager] saveObjects];
+                                                                                            }
+                                                                                            [hud hide:NO];
+                                                                                            [self presentOrderViewController];
+                                                                                        } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
                 [hud hide:NO];
                 [[[UIAlertView alloc] initWithTitle:@"Error" message:[err localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                 NSLog(@"%@ Error loading bulletins: %@", [self class], [err localizedDescription]);

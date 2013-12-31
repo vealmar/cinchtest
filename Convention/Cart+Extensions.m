@@ -17,11 +17,13 @@
 #import "ShowConfigurations.h"
 #import "Error.h"
 #import "Error+Extensions.h"
+#import "Product.h"
+#import "Product+Extensions.h"
 
 @implementation Cart (Extensions)
 
 - (id)initWithLineItem:(ALineItem *)lineItem context:(NSManagedObjectContext *)context {
-    self = [self initWithQuantity:lineItem.quantity price:lineItem.price voucherPrice:lineItem.voucherPrice category:lineItem.category shipDates:lineItem.shipDates
+    self = [self initWithQuantity:lineItem.quantity priceInCents:[NumberUtil convertDollarsToCents:lineItem.price] voucherPriceInCents:[NumberUtil convertDollarsToCents:lineItem.voucherPrice] category:lineItem.category shipDates:lineItem.shipDates
                         productId:lineItem.productId context:context];
     self.orderLineItem_id = lineItem.itemId;
     for (NSString *error in [NilUtil objectOrEmptyArray:lineItem.errors]) {
@@ -31,21 +33,21 @@
     return self;
 }
 
-- (id)initWithProduct:(NSDictionary *)product context:(NSManagedObjectContext *)context {
-    self = [self initWithQuantity:@"0" price:[product objectForKey:kProductShowPrice] voucherPrice:[product objectForKey:kProductVoucher] category:@"standard" shipDates:@[]
-                        productId:[product objectForKey:kProductId] context:context];
+- (id)initWithProduct:(Product *)product context:(NSManagedObjectContext *)context {
+    self = [self initWithQuantity:@"0" priceInCents:product.showprc voucherPriceInCents:product.voucher category:@"standard" shipDates:@[]
+                        productId:product.productId context:context];
     return self;
 }
 
 
-- (id)initWithQuantity:(NSString *)quantity price:(NSNumber *)price voucherPrice:(NSNumber *)voucherPrice category:(NSString *)category shipDates:(NSArray *)shipDates
-             productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
+- (id)initWithQuantity:(NSString *)quantity priceInCents:(NSNumber *)priceInCents voucherPriceInCents:(NSNumber *)voucherPriceInCents category:(NSString *)category shipDates:(NSArray *)shipDates
+        productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
     self = [super initWithEntity:[NSEntityDescription entityForName:@"Cart" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
-
     if (self) {
+        self.product = [Product findProduct:productId];
         self.cartId = productId;
-        self.editablePrice = [NumberUtil convertDollarsToCents:price];
-        self.editableVoucher = [NumberUtil convertDollarsToCents:voucherPrice];
+        self.editablePrice = priceInCents;
+        self.editableVoucher = voucherPriceInCents;
         self.editableQty = quantity;
         if (shipDates && shipDates.count > 0) {
             NSMutableOrderedSet *coreDataShipDates = [[NSMutableOrderedSet alloc] init];
@@ -73,7 +75,6 @@
 
 - (NSDictionary *)asJsonReqParameter {
     BOOL hasQuantity = [[[CIProductViewControllerHelper alloc] init] itemHasQuantity:self.editableQty];
-    NSDictionary *proDict;
     if (hasQuantity) { //only include items that have non-zero quantity specified
         return [NSDictionary dictionaryWithObjectsAndKeys:[self.orderLineItem_id intValue] == 0 ? [NSNull null] : self.orderLineItem_id, kID,
                                                           self.cartId, kLineItemProductID,
@@ -86,6 +87,7 @@
     } else if ([self.orderLineItem_id intValue] != 0) { //if quantity is 0 and item exists on server, tell server to destroy it. if it does not exist on server, don't include it.
         return [NSDictionary dictionaryWithObjectsAndKeys:self.orderLineItem_id, kID, @(1), @"_destroy", nil];
     }
+    return nil;
 }
 
 

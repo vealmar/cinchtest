@@ -91,8 +91,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic, strong) UIPopoverController *poController;
 @property(nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 @property(nonatomic, strong) NSArray *resultData; //Array of all products displayed (filtered by search criteria, selected vendor, bulletin etc.)
-@property(nonatomic, strong) NSMutableDictionary *vendorProductMap; //key is product_id. All products for the selected vendor or foe all vendors if the selected vendor is 'Any'. This is used when performing Search, so that the search is limited to the selected vendor's products.
-@property(nonatomic, strong) NSMutableDictionary *allproductsMap; //All products for all vendors of this vendor's vendor group. key is product_id (NSNumber*).
+@property(nonatomic, strong) NSMutableArray *vendorProductIds; //key is product_id. All products for the selected vendor or foe all vendors if the selected vendor is 'Any'. This is used when performing Search, so that the search is limited to the selected vendor's products.
 @property(nonatomic, strong) NSDictionary *customer;
 @property(nonatomic, strong) NSString *authToken;
 @property(nonatomic, strong) NSString *loggedInVendorId; //vendor#id of logged in vendor

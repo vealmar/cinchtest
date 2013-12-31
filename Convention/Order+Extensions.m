@@ -16,6 +16,7 @@
 #import "Error.h"
 #import "Error+Extensions.h"
 #import "ALineItem.h"
+#import "Product+Extensions.h"
 
 @implementation Order (Extensions)
 
@@ -57,16 +58,16 @@
     return nil;
 }
 
-- (Cart *)findOrCreateCartForId:(NSDictionary *)product context:(NSManagedObjectContext *)context {
-    Cart *cart = [self findCartForProductId:[product objectForKey:kProductId]];
+- (Cart *)findOrCreateCartForId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
+    Cart *cart = [self findCartForProductId:productId];
     if (!cart)
-        cart = [[Cart alloc] initWithProduct:product context:context];
+        cart = [[Cart alloc] initWithProduct:[Product findProduct:productId] context:context];
     [self addCartsObject:cart];
     return cart;
 }
 
-- (void)updateItemQuantity:(NSString *)quantity product:(NSDictionary *)product context:(NSManagedObjectContext *)context {
-    Cart *cart = [self findOrCreateCartForId:product context:context];
+- (void)updateItemQuantity:(NSString *)quantity productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
+    Cart *cart = [self findOrCreateCartForId:productId context:context];
     cart.editableQty = quantity;
     NSError *error = nil;
     if (![context save:&error]) {
@@ -75,8 +76,8 @@
     }
 }
 
-- (void)updateItemVoucher:(NSNumber *)voucher product:(NSDictionary *)product context:(NSManagedObjectContext *)context {
-    Cart *cart = [self findOrCreateCartForId:product context:context];
+- (void)updateItemVoucher:(NSNumber *)voucher productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
+    Cart *cart = [self findOrCreateCartForId:productId context:context];
     cart.editableVoucher = [NumberUtil convertDollarsToCents:voucher];
     NSError *error = nil;
     if (![context save:&error]) {

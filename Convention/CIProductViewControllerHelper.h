@@ -11,6 +11,7 @@
 @class ProductCell;
 @class Order;
 @class Cart;
+@class Product;
 
 
 @interface CIProductViewControllerHelper : NSObject
@@ -18,9 +19,11 @@
 
 - (BOOL)itemHasQuantity:(NSString *)quantity;
 
-- (BOOL)itemIsVoucher:(NSDictionary *)product;
+- (BOOL)itemIsVoucher:(Product *)product;
 
-- (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product cart:(Cart *)cart;
+- (BOOL)isProductAVoucher:(NSNumber *)productId;
+
+- (void)updateCellBackground:(UITableViewCell *)cell cart:(Cart *)cart;
 
 - (UITableViewCell *)dequeueReusableProductCell:(UITableView *)table;
 

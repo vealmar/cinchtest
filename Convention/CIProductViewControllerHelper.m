@@ -17,6 +17,8 @@
 #import "MBProgressHUD.h"
 #import "AFJSONRequestOperation.h"
 #import "AFHTTPClient.h"
+#import "Product.h"
+#import "Product+Extensions.h"
 
 
 @implementation CIProductViewControllerHelper {
@@ -64,18 +66,22 @@
         return NO;
 }
 
-- (BOOL)itemIsVoucher:(NSDictionary *)product {
-    int idx = [[product objectForKey:kProductIdx] intValue];
-    NSString *invtId = [product objectForKey:kProductInvtid];
+- (BOOL)itemIsVoucher:(Product *)product {
+    int idx = [product.idx intValue];
+    NSString *invtId = product.invtid;
     return idx == 0 && ([invtId isEmpty] || [invtId isEqualToString:@"0"]);
 }
 
-- (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product
-                        cart:(Cart *)cart {
+- (BOOL)isProductAVoucher:(NSNumber *)productId {
+    Product *product = [Product findProduct:productId];
+    return [self itemIsVoucher:product];
+}
+
+- (void)updateCellBackground:(UITableViewCell *)cell cart:(Cart *)cart {
     if ([ShowConfigurations instance].shipDates) {
         BOOL hasQty = [self itemHasQuantity:cart.editableQty];
         BOOL hasShipDates = cart.shipdates && cart.shipdates.count > 0;
-        BOOL isVoucher = [self itemIsVoucher:product];
+        BOOL isVoucher = [self itemIsVoucher:cart.product];
         if (!isVoucher) {
             if (hasQty) {
                 if (hasShipDates) {
@@ -126,7 +132,7 @@
 - (void)saveManagedContext:(NSManagedObjectContext *)managedObjectContext {
     NSError *error = nil;
     if (![managedObjectContext save:&error]) {
-        NSString *msg = [NSString stringWithFormat:@"Error loading order: %@", [error localizedDescription]];
+        NSString *msg = [NSString stringWithFormat:@"Error saving changes: %@", [error localizedDescription]];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [alert show];
     }

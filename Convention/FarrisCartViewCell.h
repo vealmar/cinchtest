@@ -11,6 +11,7 @@
 
 @protocol ProductCellDelegate;
 @class ALineItem;
+@class Product;
 
 
 @interface FarrisCartViewCell : CartViewCell
@@ -25,7 +26,7 @@
 
 - (IBAction)quantityChanged:(id)sender;
 
-- (void)initializeWith:(NSDictionary *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeWith:(Product *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 
-- (void)initializeForDiscountWithProduct:(NSDictionary *)product quantity:(NSString *)ITEMQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeForDiscountWithProduct:(Product *)product quantity:(NSString *)ITEMQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 @end

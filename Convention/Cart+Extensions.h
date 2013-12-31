@@ -16,10 +16,10 @@
 
 - (id)initWithLineItem:(ALineItem *)lineItem context:(NSManagedObjectContext *)context;
 
-- (id)initWithQuantity:(NSString *)quantity price:(NSNumber *)price voucherPrice:(NSNumber *)voucherPrice category:(NSString *)category shipDates:(NSArray *)shipDates
+- (id)initWithQuantity:(NSString *)quantity priceInCents:(NSNumber *)priceInCents voucherPriceInCents:(NSNumber *)voucherPriceInCents category:(NSString *)category shipDates:(NSArray *)shipDates
              productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
 
-- (id)initWithProduct:(NSDictionary *)product context:(NSManagedObjectContext *)context;
+- (id)initWithProduct:(Product *)product context:(NSManagedObjectContext *)context;
 
 - (NSDictionary *)asJsonReqParameter;
 

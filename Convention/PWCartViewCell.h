@@ -11,6 +11,7 @@
 
 @protocol ProductCellDelegate;
 @class ALineItem;
+@class Product;
 
 
 @interface PWCartViewCell : CartViewCell
@@ -28,7 +29,7 @@
 
 - (IBAction)voucherDidChange:(id)sender;
 
-- (void)initializeWith:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product tag:(NSInteger)tag
+- (void)initializeWith:(BOOL)multiStore showPrice:(BOOL)showPrice product:(Product *)product tag:(NSInteger)tag
               quantity:(NSString *)quantity
                  price:(NSNumber *)price
                voucher:(NSNumber *)voucherPrice

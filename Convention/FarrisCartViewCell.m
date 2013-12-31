@@ -8,10 +8,10 @@
 
 #import "FarrisCartViewCell.h"
 #import "ProductCellDelegate.h"
-#import "config.h"
 #import "NumberUtil.h"
 #import "NilUtil.h"
 #import "Cart.h"
+#import "Product.h"
 
 
 @implementation FarrisCartViewCell {
@@ -26,12 +26,11 @@
 @synthesize regPrice;
 @synthesize showPrice;
 
-- (void)initializeForDiscountWithProduct:(NSDictionary *)product quantity:(NSString *)itemQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeForDiscountWithProduct:(Product *)product quantity:(NSString *)itemQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
     self.InvtID.text = @"Discount";
-    [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
-    NSObject *minObj = [NilUtil nilOrObject:[product objectForKey:@"min"]];
-    self.min.text = minObj != nil ? [[product objectForKey:@"min"] stringValue] : @"";
+    [self setDescription:product.descr withSubtext:product.descr2];
+    self.min.text = [NilUtil objectOrDefaultString:product.min defaultObject:@""];
     NSString *qty = itemQuantity;
     self.qtyLbl.text = qty;
     self.quantity.hidden = YES;
@@ -46,16 +45,15 @@
     [self updateErrorsView:[[NSSet alloc] init]];
 }
 
-- (void)initializeWith:(NSDictionary *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
-    self.InvtID.text = [product objectForKey:@"invtid"];
-    [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
-    NSObject *minObj = [NilUtil nilOrObject:[product objectForKey:@"min"]];
-    self.min.text = minObj != nil ? [[product objectForKey:@"min"] stringValue] : @"";
+- (void)initializeWith:(Product *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    self.InvtID.text = product.invtid;
+    [self setDescription:product.descr withSubtext:product.descr2];
+    self.min.text = [NilUtil objectOrDefaultString:product.min defaultObject:@""];
     self.quantity.text = cart.editableQty;
     self.quantity.hidden = NO;
     self.qtyLbl.hidden = YES;
-    self.regPrice.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductRegPrc]];
-    self.showPrice.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductShowPrice]];
+    self.regPrice.text = [NumberUtil formatCentsAsCurrency:product.regprc];
+    self.showPrice.text = [NumberUtil formatCentsAsCurrency:product.showprc];
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.

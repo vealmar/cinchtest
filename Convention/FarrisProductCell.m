@@ -8,10 +8,9 @@
 
 #import "FarrisProductCell.h"
 #import "StringManipulation.h"
-#import "config.h"
 #import "NumberUtil.h"
-#import "NilUtil.h"
 #import "Cart.h"
+#import "Product.h"
 
 @interface FarrisProductCell () {
     NSString *originalCellValue;
@@ -21,18 +20,25 @@
 @implementation FarrisProductCell
 
 
-- (void)initializeWith:(NSDictionary *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
-    self.InvtID.text = [product objectForKey:@"invtid"];
-    [self setDescription:[product objectForKey:kProductDescr] withSubtext:[product objectForKey:kProductDescr2]];
-    NSObject *minObj = [NilUtil nilOrObject:[product objectForKey:@"min"]];
-    self.min.text = minObj != nil ? [[product objectForKey:@"min"] stringValue] : @"";
+- (void)initializeWithProduct:(Product *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    if (product) {
+        self.InvtID.text = product.invtid;
+        [self setDescription:product.descr withSubtext:product.descr2];
+        self.min.text = product.min != nil ? [product.min stringValue] : @"";
+        self.regPrice.text = [NumberUtil formatCentsAsCurrency:product.regprc];
+        self.showPrice.text = [NumberUtil formatCentsAsCurrency:product.showprc];
+    } else {
+        self.InvtID.text = @"Product Not Found";
+        [self setDescription:@"" withSubtext:@""];
+        self.min.text = @"";
+        self.regPrice.text = @"";
+        self.showPrice.text = @"";
+    }
     if (cart != nil && cart.editableQty != nil) {
         self.quantity.text = cart.editableQty;
     } else {
         self.quantity.text = @"0";
     }
-    self.regPrice.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:[[product objectForKey:kProductRegPrc] doubleValue]]];
-    self.showPrice.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:[[product objectForKey:kProductShowPrice] doubleValue]]];
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.selectionStyle = UITableViewCellSelectionStyleNone;

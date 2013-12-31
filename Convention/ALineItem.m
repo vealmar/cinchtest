@@ -8,8 +8,6 @@
 
 #import "ALineItem.h"
 #import "NilUtil.h"
-#import "config.h"
-#import "CIProductViewControllerHelper.h"
 
 
 @implementation ALineItem {
@@ -26,7 +24,6 @@
         self.desc2 = (NSString *) [NilUtil nilOrObject:[json objectForKey:@"desc2"]];
         self.quantity = (NSString *) [NilUtil nilOrObject:[json objectForKey:@"quantity"]];
         self.shipDates = (NSArray *) [NilUtil nilOrObject:[json objectForKey:@"shipdates"]];
-        self.product = (NSDictionary *) [NilUtil nilOrObject:[json objectForKey:@"product"]];
         self.productId = (NSNumber *) [NilUtil nilOrObject:[json objectForKey:@"product_id"]];
         self.price = (NSNumber *) [NilUtil nilOrObject:[json objectForKey:@"price"]];
         self.errors = (NSArray *) [NilUtil nilOrObject:[json objectForKey:@"errors"]];
@@ -36,22 +33,6 @@
 
 - (NSArray *)shipDates {
     return _shipDates ? _shipDates : [[NSArray alloc] init];
-}
-
-- (double)getQuantity {
-    return [[[CIProductViewControllerHelper alloc] init] getQuantity:self.quantity];
-}
-
-- (double)getItemTotal {
-    return _shipDates ? [self getQuantity] * [self.price doubleValue] * [self.shipDates count] : [self getQuantity] * [self.price doubleValue];
-}
-
-- (double)getVoucherTotal {
-    return self.voucherPrice ? [self getQuantity] * [self.voucherPrice doubleValue] * (_shipDates ? [self.shipDates count] : 1) : 0;
-}
-
-- (NSNumber *)getInvtId {
-    return (NSNumber *) [NilUtil nilOrObject:[self.product objectForKey:kProductInvtid]];
 }
 
 @end

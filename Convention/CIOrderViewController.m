@@ -25,6 +25,8 @@
 #import "UIAlertViewDelegateWithBlock.h"
 #import "Customer.h"
 #import "CIProductViewControllerHelper.h"
+#import "Product.h"
+#import "Product+Extensions.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -39,7 +41,6 @@
     NSMutableArray *persistentOrders;
     BOOL unsavedChangesPresent;
     CIProductViewControllerHelper *helper;
-
     __weak IBOutlet UILabel *sdLabel;
     __weak IBOutlet UILabel *sqLabel;
     __weak IBOutlet UILabel *quantityLabel;
@@ -646,15 +647,14 @@ SG: This method gets called when you swipe on an order in the order list and tap
     if ([currentOrder.lineItems objectAtIndex:(NSUInteger) idx] == nil) {
         return;
     }
-    if (((ALineItem *) [currentOrder.lineItems objectAtIndex:(NSUInteger) idx]).product == nil) {
+    ALineItem *lineItem = ((ALineItem *) [currentOrder.lineItems objectAtIndex:(NSUInteger) idx]);
+    Product *product = [Product findProduct:lineItem.productId];
+    if (product == nil) {
         return;
     }
-    NSString *start = [((ALineItem *) [currentOrder.lineItems objectAtIndex:(NSUInteger) idx]).product objectForKey:kProductShipDate1];
-    NSString *end = [((ALineItem *) [currentOrder.lineItems objectAtIndex:(NSUInteger) idx]).product objectForKey:kProductShipDate2];
-
-    if (start && end && ![start isKindOfClass:[NSNull class]] && ![end isKindOfClass:[NSNull class]] && start.length > 0 && end.length > 0) {
-        startDate = [df dateFromString:start];
-        endDate = [df dateFromString:end];
+    if (product.shipdate1 && product.shipdate2) {
+        startDate = product.shipdate1;
+        endDate = product.shipdate2;
     } else {
         return;
     }
@@ -852,14 +852,14 @@ SG: This method gets called when you swipe on an order in the order list and tap
             NSString *str = [df stringFromDate:date];
             [strs addObject:str];
         }
-        NSDictionary *product = lineItem.product;
+        Product *product = [Product findProduct:lineItem.productId];
         [[ShowConfigurations instance] shipDates] ? strs.count > 0 : YES;
         if (![helper itemHasQuantity:qty]) {
-            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no quantity. Please specify a quantity and then save.", [product objectForKey:kProductInvtid]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no quantity. Please specify a quantity and then save.", product.invtid] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
             return;
         }
-        if (![helper itemIsVoucher:product] && [[ShowConfigurations instance] shipDates] && strs.count == 0) {
-            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no ship date. Please specify ship date(s) and then save.", [product objectForKey:kProductInvtid]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+        if (![helper isProductAVoucher:lineItem.productId] && [[ShowConfigurations instance] shipDates] && strs.count == 0) {
+            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no ship date. Please specify ship date(s) and then save.", product.invtid] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
             return;
         }
 
