@@ -131,10 +131,6 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (!self.filteredtableData) {
-        return nil;
-    }
-
     static NSString *CellIdentifier = @"CustCell";
     UITableViewCell *cell = [myTableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {

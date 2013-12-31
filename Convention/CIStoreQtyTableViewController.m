@@ -7,7 +7,6 @@
 //
 
 #import "CIStoreQtyTableViewController.h"
-#import "CIStoreQtyCell.h"
 
 @interface CIStoreQtyTableViewController () {
     NSArray *keys;
@@ -21,8 +20,7 @@
 @synthesize tag;
 @synthesize editable;
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
+- (id)initWithStyle:(UITableViewStyle)style {
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
@@ -33,7 +31,7 @@
     return self;
 }
 
--(id) initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         _stores = nil;
@@ -43,73 +41,66 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
 
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
- 
+
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
--(void)setStores:(NSMutableDictionary *)stores {
+- (void)setStores:(NSMutableDictionary *)stores {
     _stores = stores;
     keys = [stores.allKeys sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSNumber* n1 = (NSNumber*)obj1;NSNumber* n2 = (NSNumber*)obj2;
+        NSNumber *n1 = (NSNumber *) obj1;
+        NSNumber *n2 = (NSNumber *) obj2;
         return [n1 compare:n2];
     }];
     [self.tableView reloadData];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (self.stores && ([self.stores isKindOfClass:[NSMutableDictionary class]] || [self.stores isKindOfClass:[NSDictionary class]])) {
         return self.stores.allKeys.count;
     }
     return 0;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if(self.stores == nil||![self.stores isKindOfClass:[NSMutableDictionary class]])
-        return nil;
-    
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"StoreQty";
     CIStoreQtyCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
+
     if (cell == nil) {
-        NSArray* arr = [[NSBundle mainBundle] loadNibNamed:@"CIStoreQtyCell" owner:self options:nil];
-        cell = (CIStoreQtyCell*)[arr objectAtIndex:0];
+        NSArray *arr = [[NSBundle mainBundle] loadNibNamed:@"CIStoreQtyCell" owner:self options:nil];
+        cell = (CIStoreQtyCell *) [arr objectAtIndex:0];
     }
     cell.tag = indexPath.row;
-    
-    NSString* key = [keys objectAtIndex:indexPath.row];
+
+    NSString *key = [keys objectAtIndex:indexPath.row];
     cell.Key.text = key;
     cell.Qty.text = [[self.stores objectForKey:key] stringValue];
     cell.lblQty.text = cell.Qty.text;
     if (!self.editable) {
         cell.Qty.hidden = YES;
     }
-    
+
     cell.delegate = self;
     return cell;
 }
 
--(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
 //    if (indexPath.row == keys.count - 1) {
 //        float height = 0;
 //        for (int i = 0; i < [tableView numberOfSections]; i++)
@@ -124,8 +115,8 @@
 
 #pragma mark - CIStoreQtyDelegate methods
 
--(void)QtyChange:(double)qty forIndex:(int)index {
-    NSString* key = [keys objectAtIndex:index];
+- (void)QtyChange:(double)qty forIndex:(int)index {
+    NSString *key = [keys objectAtIndex:index];
     [self.stores setObject:[NSNumber numberWithDouble:qty] forKey:key];
     if (self.delegate) {
         [self.delegate QtyTableChange:self.stores forIndex:self.tag];

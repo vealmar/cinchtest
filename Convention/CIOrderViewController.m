@@ -343,23 +343,15 @@ SG: The argument 'detail' is the selected order.
 #pragma mark - UITableView Datasource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView == self.sideTable && self.filteredOrders) {
-        return [self.filteredOrders count];
+    if (tableView == self.sideTable) {
+        return self.filteredOrders ? self.filteredOrders.count : 0;
+    } else {
+        return currentOrder && currentOrder.lineItems ? currentOrder.lineItems.count : 0;
     }
-    else if (tableView == self.itemsTable && currentOrder) {
-        if (currentOrder.lineItems.count) {
-            return currentOrder.lineItems.count;
-        }
-    }
-    return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.sideTable) {
-        if (!self.filteredOrders) {
-            return nil;
-        }
-
         static NSString *CellIdentifier = @"CIOrderCell";
 
         CIOrderCell *cell = [self.sideTable dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -421,10 +413,7 @@ SG: The argument 'detail' is the selected order.
 
         return cell;
     }
-    else if (tableView == self.itemsTable) {
-        if (!currentOrder) {
-            return nil;
-        }
+    else {
 
         static NSString *cellIdentifier = @"CIItemEditCell";
 
@@ -439,17 +428,10 @@ SG: The argument 'detail' is the selected order.
         if ([ShowConfigurations instance].vouchers) {
             cell.total.hidden = YES;
         }
-
-        if (currentOrder.lineItems.count > [indexPath row]) {
             ALineItem *data = [currentOrder.lineItems objectAtIndex:(NSUInteger) [indexPath row]];
             [cell updateCellAtIndexPath:indexPath withLineItem:data quantities:self.itemsQty prices:self.itemsPrice vouchers:self.itemsVouchers shipDates:self.itemsShipDates];
             return cell;
-        } else {
-            return nil;
-        }
     }
-    else
-        return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"asdfa"];
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
