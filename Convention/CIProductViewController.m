@@ -29,6 +29,7 @@
 #import "Cart+Extensions.h"
 #import "Error.h"
 #import "Product+Extensions.h"
+#import "DiscountLineItem+Extensions.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -204,9 +205,34 @@
 
 - (void)reloadProducts {
     [CoreDataManager reloadProducts:self.authToken vendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];
-    [pull finishedLoading];
-    [self loadProductsForCurrentVendorAndBulletin];
-    [self.productsTableView reloadData];
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, self.authToken, kVendorGroupID, self.loggedInVendorGroupId];
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+    void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
+        [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
+        for (NSDictionary *productJson in json) {
+            Product *product = [[Product alloc] initWithProductFromServer:productJson context:self.managedObjectContext];
+            [self.managedObjectContext insertObject:product];
+            //re-establish connection between carts and products
+            NSArray *carts = [[CoreDataUtil sharedManager] fetchArray:@"Cart" withPredicate:[NSPredicate predicateWithFormat:@"(cartId == %@)", product.productId]];
+            if (carts) {
+                for (Cart *cart in carts) {
+                    cart.product = product;
+                }
+            }
+            //re-establish connection between discount line items and products
+            NSArray *discountLineItems = [[CoreDataUtil sharedManager] fetchArray:@"DiscountLineItem" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", product.productId]];
+            if (discountLineItems) {
+                for (DiscountLineItem *discountLineItem in discountLineItems) {
+                    discountLineItem.product = product;
+                }
+            }
+        }
+        [[CoreDataUtil sharedManager] saveObjects];
+        [self loadProductsForCurrentVendorAndBulletin];
+        [self.productsTableView reloadData];
+        [pull finishedLoading];
+    };
+    [helper sendRequest:@"GET" url:url parameters:nil successBlock:successBlock failureBlock:nil view:self.view loadingText:@"Loading Products"];
 }
 
 - (void)loadProductsForCurrentVendorAndBulletin {
