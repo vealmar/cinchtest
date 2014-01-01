@@ -59,12 +59,17 @@
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    originalCellValue = [NSString stringWithString:textField.text];
     UITableView *tableView = (UITableView *) self.superview.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
     [self.delegate setSelectedRow:indexPath];
     return YES;
 }
+
+- (BOOL)textFieldShouldClear:(UITextField *)textField {
+    originalCellValue = [NSString stringWithString:textField.text];
+    return YES;
+}
+
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
     if ([textField.text isEmpty]) {
