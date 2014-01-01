@@ -2,8 +2,8 @@
 //  DiscountLineItem.m
 //  Convention
 //
-//  Created by septerr on 12/31/13.
-//  Copyright (c) 2013 Convention Innovations. All rights reserved.
+//  Created by septerr on 1/1/14.
+//  Copyright (c) 2014 Convention Innovations. All rights reserved.
 //
 
 #import "DiscountLineItem.h"
@@ -12,10 +12,12 @@
 @implementation DiscountLineItem
 
 @dynamic lineItemId;
-@dynamic voucherPrice;
-@dynamic quantity;
 @dynamic price;
 @dynamic productId;
+@dynamic quantity;
+@dynamic voucherPrice;
+@dynamic description1;
+@dynamic description2;
 @dynamic order;
 @dynamic product;
 

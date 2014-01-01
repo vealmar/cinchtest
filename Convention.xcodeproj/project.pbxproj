@@ -215,9 +215,9 @@
 		EBBAF1AD186E30560094547E /* EditableEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1AC186E30560094547E /* EditableEntity.m */; };
 		EBBAF1B6186E30570094547E /* Error.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1B5186E30570094547E /* Error.m */; };
 		EBBAF1D7187302A20094547E /* Product.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1D6187302A20094547E /* Product.m */; };
-		EBBAF1DA187302A30094547E /* DiscountLineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1D9187302A30094547E /* DiscountLineItem.m */; };
 		EBBAF1DD187302A30094547E /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1DC187302A30094547E /* Cart.m */; };
 		EBBAF1E0187302A30094547E /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1DF187302A30094547E /* Order.m */; };
+		EBBAF1E31874B5570094547E /* DiscountLineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1E21874B5570094547E /* DiscountLineItem.m */; };
 		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
 		EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */; };
 		EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */; };
@@ -538,12 +538,12 @@
 		EBBAF1B5186E30570094547E /* Error.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Error.m; sourceTree = "<group>"; };
 		EBBAF1D5187302A20094547E /* Product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
 		EBBAF1D6187302A20094547E /* Product.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Product.m; sourceTree = "<group>"; };
-		EBBAF1D8187302A30094547E /* DiscountLineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscountLineItem.h; sourceTree = "<group>"; };
-		EBBAF1D9187302A30094547E /* DiscountLineItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscountLineItem.m; sourceTree = "<group>"; };
 		EBBAF1DB187302A30094547E /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
 		EBBAF1DC187302A30094547E /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
 		EBBAF1DE187302A30094547E /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
 		EBBAF1DF187302A30094547E /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
+		EBBAF1E11874B5570094547E /* DiscountLineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscountLineItem.h; sourceTree = "<group>"; };
+		EBBAF1E21874B5570094547E /* DiscountLineItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscountLineItem.m; sourceTree = "<group>"; };
 		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
 		EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
 		EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
@@ -862,12 +862,12 @@
 		6E7698A7153E8BD0003CF4AC /* models */ = {
 			isa = PBXGroup;
 			children = (
+				EBBAF1E11874B5570094547E /* DiscountLineItem.h */,
+				EBBAF1E21874B5570094547E /* DiscountLineItem.m */,
 				EBBAF1DE187302A30094547E /* Order.h */,
 				EBBAF1DF187302A30094547E /* Order.m */,
 				EBBAF1DB187302A30094547E /* Cart.h */,
 				EBBAF1DC187302A30094547E /* Cart.m */,
-				EBBAF1D8187302A30094547E /* DiscountLineItem.h */,
-				EBBAF1D9187302A30094547E /* DiscountLineItem.m */,
 				EBBAF1D5187302A20094547E /* Product.h */,
 				EBBAF1D6187302A20094547E /* Product.m */,
 				EBBAF1B4186E30570094547E /* Error.h */,
@@ -1494,6 +1494,7 @@
 				749833C715DDA46F00F3EB26 /* CIStoreQtyTableViewController.m in Sources */,
 				749833FE15DE3E2A00F3EB26 /* DayButton.m in Sources */,
 				749833FF15DE3E2A00F3EB26 /* DDCalendarView.m in Sources */,
+				EBBAF1E31874B5570094547E /* DiscountLineItem.m in Sources */,
 				7498340415DE3EB600F3EB26 /* CICalendarViewController.m in Sources */,
 				331AF38C165068AE00C74117 /* ReachabilityDelegation.m in Sources */,
 				C7BA948F1651DA3700E6705B /* ProductCart.xcdatamodeld in Sources */,
@@ -1524,7 +1525,6 @@
 				C76D3E6416AE322400F055F4 /* ShipDate.m in Sources */,
 				C76E63FE173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m in Sources */,
 				EBE8941817B71603005F1895 /* LaunchViewController.m in Sources */,
-				EBBAF1DA187302A30094547E /* DiscountLineItem.m in Sources */,
 				35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */,
 				EBBAF1DD187302A30094547E /* Cart.m in Sources */,
 				35F52A19F4EFCD93702E646D /* ProductCell.m in Sources */,

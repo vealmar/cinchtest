@@ -12,6 +12,8 @@
 #import "NilUtil.h"
 #import "Cart.h"
 #import "Product.h"
+#import "DiscountLineItem+Extensions.h"
+#import "Product+Extensions.h"
 
 
 @implementation FarrisCartViewCell {
@@ -26,17 +28,18 @@
 @synthesize regPrice;
 @synthesize showPrice;
 
-- (void)initializeForDiscountWithProduct:(Product *)product quantity:(NSNumber *)itemQuantity price:(NSNumber *)price tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWithDiscount:(DiscountLineItem *)discount tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
     self.InvtID.text = @"Discount";
-    [self setDescription:product.descr withSubtext:product.descr2];
-    self.min.text = [NilUtil objectOrDefaultString:product.min defaultObject:@""];
-    self.qtyLbl.text = [itemQuantity stringValue];
+    [self setDescription:discount.description1 withSubtext:discount.description2];
+    Product *product = discount.productId ? [Product findProduct:discount.productId] : nil;
+    self.min.text = product ? [NilUtil objectOrDefaultString:product.min defaultObject:@""] : @"";
+    self.qtyLbl.text = [discount.quantity stringValue];
     self.quantity.hidden = YES;
     self.qtyLbl.font = discountFont;
     self.qtyLbl.hidden = NO;
     self.regPrice.text = @"";
-    self.showPrice.text = [NumberUtil formatCentsAsCurrency:price];
+    self.showPrice.text = [NumberUtil formatCentsAsCurrency:discount.price];
     self.showPrice.font = discountFont;
     self.delegate = productCellDelegate;
     self.tag = tag;

@@ -226,7 +226,7 @@
         DiscountLineItem *discountLineItem = [self.coreDataOrder findDiscountForLineItemId:lineItemId];
         Product *product = [Product findProduct:discountLineItem.productId];
         FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-        [cell initializeForDiscountWithProduct:product quantity:discountLineItem.quantity price:discountLineItem.price tag:[indexPath row] ProductCellDelegate:self];
+        [cell initializeWithDiscount:discountLineItem tag:[indexPath row] ProductCellDelegate:self];
         return cell;
     }
 }

@@ -40,6 +40,8 @@
         <attribute name="stores" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="DiscountLineItem" representedClassName="DiscountLineItem" syncable="YES">
+        <attribute name="description1" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="description2" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lineItemId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="price" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
         <attribute name="productId" optional="YES" attributeType="Integer 32" syncable="YES"/>
@@ -157,6 +159,7 @@
         <element name="Bulletin" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Cart" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Customer" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="DiscountLineItem" positionX="0" positionY="0" width="0" height="0"/>
         <element name="EditableEntity" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Error" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Order" positionX="0" positionY="0" width="0" height="0"/>
@@ -164,6 +167,5 @@
         <element name="SetupInfo" positionX="0" positionY="0" width="0" height="0"/>
         <element name="ShipDate" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Vendor" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="DiscountLineItem" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>

@@ -17,6 +17,8 @@
         self.voucherPrice = [NumberUtil convertDollarsToCents:lineItem.voucherPrice];
         self.productId = lineItem.productId;
         self.lineItemId = lineItem.itemId;
+        self.description1 = lineItem.desc;
+        self.description2 = lineItem.desc2;
     }
     return self;
 }
