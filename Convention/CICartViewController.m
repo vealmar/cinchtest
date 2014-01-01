@@ -320,9 +320,6 @@
 }
 
 - (void)QtyChange:(int)qty forIndex:(int)idx {
-    self.grossTotal.textColor = [UIColor redColor];
-    self.discountTotal.textColor = [UIColor redColor];
-    self.netTotal.textColor = [UIColor redColor];
     NSNumber *productId = self.productsInCart[(NSUInteger) idx];
     [self.coreDataOrder updateItemQuantity:[NSString stringWithFormat:@"%i", qty] productId:productId context:self.managedObjectContext];
     self.unsavedChangesPresent = YES;
