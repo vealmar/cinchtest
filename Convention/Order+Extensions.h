@@ -9,8 +9,24 @@
 #import "Order.h"
 #import "Cart.h"
 
+@class AnOrder;
+
 @interface Order (Extensions)
 
-- (void)addCartsObject:(NSManagedObject *)value;
+- (id)initWithOrder:(AnOrder *)orderFromServer forCustomer:(NSDictionary *)customer vendorId:(NSNumber *)vendorId vendorGroup:(NSString *)vendorGroup andVendorGroupId:(NSString *)vendorGroupId context:(NSManagedObjectContext *)context;
+
+- (void)updateItemQuantity:(NSString *)quantity productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+
+- (void)updateItemVoucher:(NSNumber *)voucher productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+
+- (Cart *)findCartForProductId:(NSNumber *)productId;
+
+- (DiscountLineItem *)findDiscountForLineItemId:(NSNumber *)lineItemId;
+
+- (NSArray *)productIds;
+
+- (NSArray *)discountLineItemIds;
+
+- (NSDictionary *)asJSONReqParameter;
 
 @end

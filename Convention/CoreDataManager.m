@@ -9,6 +9,15 @@
 #import "CoreDataManager.h"
 #import "Order.h"
 #import "Customer.h"
+#import "config.h"
+#import "SettingsManager.h"
+#import "SynchronousRequestUtil.h"
+#import "Product.h"
+#import "Product+Extensions.h"
+#import "CoreDataUtil.h"
+#import "DiscountLineItem+Extensions.h"
+#import "Cart+Extensions.h"
+#import "SynchronousResponse.h"
 
 
 @implementation CoreDataManager {
@@ -96,4 +105,37 @@
     } else
         return fetchedObjects;
 }
+
++ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSString *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext {
+    NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, authToken, kVendorGroupID, vendorGroupId];
+    SynchronousResponse *response = [SynchronousRequestUtil sendRequestTo:url];
+    if (response.successful) {
+        if (response.json) {
+            [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
+            for (NSDictionary *productJson in response.json) {
+                Product *product = [[Product alloc] initWithProductFromServer:productJson context:managedObjectContext];
+                [managedObjectContext insertObject:product];
+                //re-establish connection between carts and products
+                NSArray *carts = [[CoreDataUtil sharedManager] fetchArray:@"Cart" withPredicate:[NSPredicate predicateWithFormat:@"(cartId == %@)", product.productId]];
+                if (carts) {
+                    for (Cart *cart in carts) {
+                        cart.product = product;
+                    }
+                }
+                //re-establish connection between discount line items and products
+                NSArray *discountLineItems = [[CoreDataUtil sharedManager] fetchArray:@"DiscountLineItem" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", product.productId]];
+                if (discountLineItems) {
+                    for (DiscountLineItem *discountLineItem in discountLineItems) {
+                        discountLineItem.product = product;
+                    }
+                }
+            }
+            [[CoreDataUtil sharedManager] saveObjects];
+        }
+
+    } else
+        NSLog(@"%@ Error fetching bulletins. Status Code: %d", [self class], response.statusCode);
+}
+
+
 @end

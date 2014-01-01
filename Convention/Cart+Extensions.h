@@ -8,6 +8,19 @@
 
 #import "Cart.h"
 
+@class ALineItem;
+
 @interface Cart (Extensions)
-- (void)addShipdatesObject:(ShipDate *)value;
+
+- (NSArray *)shipDatesAsStringArray;
+
+- (id)initWithLineItem:(ALineItem *)lineItem context:(NSManagedObjectContext *)context;
+
+- (id)initWithQuantity:(NSString *)quantity priceInCents:(NSNumber *)priceInCents voucherPriceInCents:(NSNumber *)voucherPriceInCents category:(NSString *)category shipDates:(NSArray *)shipDates
+             productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+
+- (id)initWithProduct:(Product *)product context:(NSManagedObjectContext *)context;
+
+- (NSDictionary *)asJsonReqParameter;
+
 @end

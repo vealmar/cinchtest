@@ -12,7 +12,7 @@
                 <key>Key</key>
                 <string>host</string>
                 <key>DefaultValue</key>
-                <string>BillHicks</string>
+                <string>Bill Hicks</string>
             </dict>
             <dict>
                 <key>Title</key>
@@ -62,7 +62,7 @@
                 <key>AutocorrectionType</key>
                 <string>No</string>
                 <key>DefaultValue</key>
-                <string>http://app.conventioninnovations.com</string>
+                <string>http://192.168.1.254</string>
                 <key>IsSecure</key>
                 <false/>
                 <key>Key</key>

@@ -8,9 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class Cart;
-
-
 @interface ALineItem : NSObject
 @property(strong, nonatomic) NSNumber *voucherPrice;
 @property(strong, nonatomic) NSNumber *orderId;
@@ -20,20 +17,11 @@
 @property(strong, nonatomic) NSString *category;
 @property(strong, nonatomic) NSString *quantity; //could be a json string with quantity by store or could be a number as a string.
 @property(strong, nonatomic) NSArray *shipDates; //array of "yyyy-MM-dd" strings.
-@property(strong, nonatomic) NSDictionary *product;
 @property(strong, nonatomic) NSNumber *productId;
 @property(strong, nonatomic) NSNumber *price;
+@property(strong, nonatomic) NSArray *errors;
 
 - (id)initWithJsonFromServer:(NSDictionary *)json;
 
-- (id)initWithCoreData:(Cart *)coreDataLineItem product:(NSDictionary *)product;
-
-- (double)getQuantity;
-
-- (double)getItemTotal;
-
-- (double)getVoucherTotal;
-
-- (NSNumber *)getInvtId;
-
+- (BOOL)isStandard;
 @end

@@ -34,23 +34,10 @@
 @synthesize delegate;
 @synthesize tableData;
 @synthesize filteredtableData;
-//@synthesize contactBeforeShipping;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-        //        self.tableData = [NSArray array];
-        //DLog(@"CI init'd");
-    }
     return self;
-}
-
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-
-    // Release any cached data, images, etc that aren't in use.
 }
 
 #pragma mark - View lifecycle
@@ -92,18 +79,15 @@
         if (!error && results != nil && [results count] > 0) {
             shipFlag = [results objectAtIndex:0];
         }
-        [contactBeforeShipping updateCheckBox:self.order && self.order.ship_flag ? self.order.ship_flag
+        [contactBeforeShipping updateCheckBox:self.order && [self.order.ship_flag boolValue] ? YES
                 : shipFlag ? [shipFlag.value isEqualToString:@"YES"] : NO];
-
     }
 }
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     originalBounds = self.view.bounds;
 }
-
 
 - (IBAction)back:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -111,7 +95,6 @@
 
 - (IBAction)submit:(id)sender {
     if (!IS_EMPTY_STRING(self.Authorizer.text)) {
-
         if (![self.Authorizer.text isEqualToString:authorizedBy.value]) {//SG: If the value specified for Authorized By last time is not same as the value specified this time, update the value in setupinfo.
             if (authorizedBy != nil) {
                 authorizedBy.value = self.Authorizer.text;
@@ -120,7 +103,6 @@
                 setup.item = @"authorizedBy";
                 setup.value = self.Authorizer.text;
             }
-
             NSError *error;
             [context save:&error];
         }

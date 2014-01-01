@@ -7,8 +7,12 @@
 
 
 #import <Foundation/Foundation.h>
+#import "AnOrder.h"
 
 @class ProductCell;
+@class Order;
+@class Cart;
+@class Product;
 
 
 @interface CIProductViewControllerHelper : NSObject
@@ -16,16 +20,41 @@
 
 - (BOOL)itemHasQuantity:(NSString *)quantity;
 
-- (NSArray *)getItemShipDatesToSendToServer:(NSDictionary *)lineItem;
++ (BOOL)itemIsVoucher:(Product *)product;
 
-- (BOOL)itemIsVoucher:(NSDictionary *)product;
+- (BOOL)isProductAVoucher:(NSNumber *)productId;
 
-- (void)updateCellBackground:(UITableViewCell *)cell product:(NSDictionary *)product
-         editableItemDetails:(NSDictionary *)editableItemDetails multiStore:(BOOL)multiStore;
+- (void)updateCellBackground:(UITableViewCell *)cell cart:(Cart *)cart;
 
 - (UITableViewCell *)dequeueReusableProductCell:(UITableView *)table;
 
 - (UITableViewCell *)dequeueReusableCartViewCell:(UITableView *)table;
 
-- (double)getQuantity:(NSString *)quantity;
++ (int)getQuantity:(NSString *)quantity;
+
+- (Order *)createCoreDataCopyOfOrder:(AnOrder *)order
+                            customer:(NSDictionary *)customer
+                    loggedInVendorId:(NSString *)loggedInVendorId
+               loggedInVendorGroupId:(NSString *)loggedInVendorGroupId
+                managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
+- (NSArray *)sortProductsByinvtId:(NSArray *)productIdsOrProducts;
+
+- (NSArray *)sortDiscountsByLineItemId:(NSArray *)lineItemIds;
+
+- (void)saveManagedContext:(NSManagedObjectContext *)managedObjectContext;
+
+- (BOOL)isOrderReadyForSubmission:(Order *)coreDataOrder;
+
+- (NSArray *)getTotals:(Order *)coreDataOrder;
+
+- (NSString *)displayNameForVendor:(NSInteger)id1 vendorDisctionaries:(NSArray *)vendorDictionaries;
+
+- (NSString *)displayNameForVendor:(NSNumber *)vendorId;
+
+- (void)sendRequest:(NSString *)httpMethod url:(NSString *)url parameters:(NSDictionary *)parameters
+       successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
+       failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock
+               view:(UIView *)view loadingText:(NSString *)loadingText;
+
 @end

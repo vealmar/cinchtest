@@ -2,55 +2,25 @@
 //  Cart.h
 //  Convention
 //
-//  Created by Kerry Sanders on 1/21/13.
-//  Copyright (c) 2013 MotionMobs. All rights reserved.
+//  Created by septerr on 12/31/13.
+//  Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "EditableEntity.h"
 
-@class Order, ShipDate;
-@class ALineItem;
+@class Order, Product, ShipDate;
 
-/**
-* Represents a line item of an order in core data. Orders present in core data are partial or pending orders.
-*/
-@interface Cart : NSManagedObject
+@interface Cart : EditableEntity
 
-@property(nonatomic) BOOL adv;
-@property(nonatomic) int32_t cartId;
-@property(nonatomic, retain) NSString *caseqty;
-@property(nonatomic, retain) NSString *category;
-@property(nonatomic, retain) NSString *company;
-@property(nonatomic, retain) NSString *created_at;
-//this product#created_at. We don't need this and any of the other product fields except product_id.
-@property(nonatomic, retain) NSString *descr;
-@property(nonatomic, retain) NSString *descr2;
-@property(nonatomic) BOOL dirship;
-@property(nonatomic) float discount;
-@property(nonatomic) float editablePrice;
+@property(nonatomic, retain) NSNumber *cartId;
+@property(nonatomic, retain) NSNumber *editablePrice;
 @property(nonatomic, retain) NSString *editableQty;
-@property(nonatomic) float editableVoucher;
-@property(nonatomic) int32_t idx;
-@property(nonatomic) int32_t import_id;
-@property(nonatomic) int32_t initial_show;
-@property(nonatomic, retain) NSString *invtid;
-@property(nonatomic, retain) NSString *linenbr;
-@property(nonatomic) BOOL new;
-@property(nonatomic) int32_t orderLineItem_id;
-@property(nonatomic, retain) NSString *partnbr;
-@property(nonatomic, retain) NSString *regprc;
-@property(nonatomic, retain) NSString *shipdate1;
-@property(nonatomic, retain) NSString *shipdate2;
-@property(nonatomic, retain) NSString *showprc;
-@property(nonatomic, retain) NSString *unique_product_id;
-@property(nonatomic, retain) NSString *uom;
-@property(nonatomic, retain) NSString *updated_at;
-//this is product#updated_at. We don't need this and any of the other product fields except product_id.
-@property(nonatomic, retain) NSString *vendid;
-@property(nonatomic) int32_t vendor_id;
-@property(nonatomic, retain) NSString *voucher;
+@property(nonatomic, retain) NSNumber *editableVoucher;
+@property(nonatomic, retain) NSNumber *orderLineItem_id;
 @property(nonatomic, retain) Order *order;
+@property(nonatomic, retain) Product *product;
 @property(nonatomic, retain) NSOrderedSet *shipdates;
 @end
 
@@ -75,6 +45,4 @@
 - (void)addShipdates:(NSOrderedSet *)values;
 
 - (void)removeShipdates:(NSOrderedSet *)values;
-
-- (id)initWithLineItem:(ALineItem *)lineItem forProduct:(NSDictionary *)product andCustomer:(NSDictionary *)customer context:(NSManagedObjectContext *)context;
 @end

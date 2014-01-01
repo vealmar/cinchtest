@@ -10,6 +10,8 @@
 #import "StringManipulation.h"
 #import "config.h"
 #import "NumberUtil.h"
+#import "Cart.h"
+#import "Product.h"
 
 @interface PWProductCell () {
     NSString *originalCellValue;
@@ -30,38 +32,31 @@
 @synthesize delegate;
 @synthesize numShipDates;
 
-- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(NSDictionary *)product item:(NSDictionary *)item checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
-    self.InvtID.text = [product objectForKey:@"invtid"];
-    self.descr.text = [product objectForKey:@"descr"];
-    if ([product objectForKey:kProductShipDate1] != nil && ![[product objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]) {
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(Product *)product cart:(Cart *)cart checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    self.InvtID.text = product.invtid;
+    self.descr.text = product.descr;
+    if (product.shipdate1) {
         NSDateFormatter *df = [[NSDateFormatter alloc] init];
         [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-        NSDate *date = [df dateFromString:[product objectForKey:kProductShipDate1]];
         [df setDateFormat:@"yyyy-MM-dd"];
-        self.shipDate1.text = [df stringFromDate:date];
+        self.shipDate1.text = [df stringFromDate:product.shipdate1];
     } else {
         self.shipDate1.text = @"";
     }
-    if ([product objectForKey:kProductShipDate2] != nil && ![[product objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]) {
+    if (product.shipdate2) {
         NSDateFormatter *df = [[NSDateFormatter alloc] init];
         [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-        NSDate *date = [df dateFromString:[product objectForKey:kProductShipDate2]];
         [df setDateFormat:@"yyyy-MM-dd"];
-        self.shipDate2.text = [df stringFromDate:date];
+        self.shipDate2.text = [df stringFromDate:product.shipdate2];
     } else {
         self.shipDate2.text = @"";
     }
 
-    self.numShipDates.text = ([[item objectForKey:kLineItemShipDates] isKindOfClass:[NSArray class]]
-            ? [NSString stringWithFormat:@"%d", ((NSArray *) [item objectForKey:kLineItemShipDates]).count] : @"0");
-    if (!multiStore && item != nil && [item objectForKey:kEditableQty] != nil) {
-        self.quantity.text = [item objectForKey:kEditableQty];
-    }
-    else
-        self.quantity.text = @"0";
+    self.numShipDates.text = [NSString stringWithFormat:@"%d", cart.shipdates ? cart.shipdates.count : 0];
+    self.quantity.text = !multiStore && cart.editableQty != nil? cart.editableQty : @"0";
 
-    if ([product objectForKey:@"caseqty"] != nil && ![[product objectForKey:@"caseqty"] isKindOfClass:[NSNull class]])
-        self.CaseQty.text = [product objectForKey:@"caseqty"];
+    if (product.caseqty)
+        self.CaseQty.text = product.caseqty;
     else
         self.CaseQty.text = @"";
     if ([[customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [customer objectForKey:kStores]) count] > 0) {
@@ -69,19 +64,16 @@
         self.qtyLbl.hidden = YES;
         self.quantity.hidden = YES;
     }
-//    if (item != nil && [item objectForKey:kEditableVoucher] != nil) {
-//        self.voucherLbl.text = [NumberUtil formatDollarAmount:[item objectForKey:kEditableVoucher]];
-//    } else
-    if ([product objectForKey:kProductVoucher] != nil) {
-        self.voucherLbl.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductVoucher]];
+    if (product.voucher != nil) {
+        self.voucherLbl.text = [NumberUtil formatCentsAsCurrency:product.voucher];
     } else {
         self.voucherLbl.text = @"0.00";
     }
 
-    if (item != nil && [item objectForKey:kEditablePrice] != nil) {
-        self.priceLbl.text = [NumberUtil formatDollarAmount:[item objectForKey:kEditablePrice]];
-    } else if ([product objectForKey:kProductShowPrice] != nil) {
-        self.priceLbl.text = [NumberUtil formatDollarAmount:[product objectForKey:kProductShowPrice]];
+    if (cart.editablePrice != nil) {
+        self.priceLbl.text = [NumberUtil formatCentsAsCurrency:cart.editablePrice];
+    } else if (product.showprc) {
+        self.priceLbl.text = [NumberUtil formatCentsAsCurrency:product.showprc];
     } else {
         self.priceLbl.text = @"0.00";
     }
@@ -99,7 +91,7 @@
 - (IBAction)qtyChanged:(id)sender {
     self.qtyLbl.text = self.quantity.text;
     if (self.delegate) {
-        [self.delegate QtyChange:[self.quantity.text doubleValue] forIndex:self.tag];
+        [self.delegate QtyChange:[self.quantity.text intValue] forIndex:self.tag];
     }
 }
 
@@ -111,10 +103,14 @@
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    originalCellValue = [NSString stringWithString:textField.text];
     UITableView *tableView = (UITableView *) self.superview.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
-    [self.delegate setSelectedRow:(NSUInteger) [indexPath row]];
+    [self.delegate setSelectedRow:indexPath];
+    return YES;
+}
+
+- (BOOL)textFieldShouldClear:(UITextField *)textField {//todo does this work for voucher field?
+    originalCellValue = [NSString stringWithString:textField.text];
     return YES;
 }
 

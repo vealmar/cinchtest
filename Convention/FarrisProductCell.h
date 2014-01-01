@@ -10,6 +10,9 @@
 #import "ProductCellDelegate.h"
 #import "ProductCell.h"
 
+@class Cart;
+@class Product;
+
 @interface FarrisProductCell : ProductCell
 
 @property(weak, nonatomic) IBOutlet UILabel *itemNumber;
@@ -28,6 +31,6 @@
 
 - (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2;
 
-- (void)initializeWith:(NSDictionary *)product item:(NSDictionary *)item tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeWithProduct:(Product *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 
 @end

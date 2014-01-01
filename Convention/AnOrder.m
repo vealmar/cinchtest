@@ -10,9 +10,9 @@
 #import "ALineItem.h"
 #import "Order.h"
 #import "config.h"
-#import "JSONKit.h"
 #import "Cart.h"
 #import "NilUtil.h"
+#import "CIProductViewControllerHelper.h"
 
 
 @implementation AnOrder {
@@ -33,6 +33,7 @@
         NSNumber *shipFlagInt = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"ship_flag"]];
         self.shipFlag = (BOOL *) (shipFlagInt && [shipFlagInt intValue] == 1);//boolean
         self.customer = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
+        self.errors = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"errors"]];
         NSMutableArray *lineItems = [[NSMutableArray alloc] init];
         NSArray *jsonLIneItems = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"line_items"]];
         if (jsonLIneItems != nil) {
@@ -49,7 +50,7 @@
     self = [super init];
     if (self) {
         self.customerId = [NSNumber numberWithInt:[order.customer_id intValue]];
-        self.orderId = [NSNumber numberWithInt:order.orderId];
+        self.orderId = order.orderId;
         self.notes = @"";
         self.voucherTotal = [NSNumber numberWithInt:0]; //todo: voucher total not stored or evaluated for core data?
         self.shipNotes = @"";
@@ -61,23 +62,16 @@
         self.customer = customer;
         self.authorized = @"";
         self.coreDataOrder = order;
-        // TODO: setup line items
-        double itemTotal = 0.f;
-        for (int i = 0; i < order.carts.count; i++) {
-            Cart *lineItem = (Cart *) [order.carts objectAtIndex:(NSUInteger) i];
-            __autoreleasing NSError *err = nil;
-            NSMutableDictionary *dict = [lineItem.editableQty objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-            double itemQty = 0;
-            if (err) { //SG: if the item quantity is not a json/hash like string.
-                itemQty = [lineItem.editableQty doubleValue];
-            } else { //SG: if item quantity is a json/hash like string i.e. there is more than one quantity for this item. This will happen when the customer has multiple stores.
-                for (NSString *key in dict.allKeys) {
-                    itemQty += [[dict objectForKey:key] doubleValue];
-                }
+        int itemTotal = 0;
+        int voucherTotal = 0;
+        for (Cart *cart in order.carts) {
+            int itemQty = [CIProductViewControllerHelper getQuantity:cart.editableQty];
+            itemTotal += itemQty * [cart.editablePrice intValue] * cart.shipdates.count;
+            if (cart.product && [CIProductViewControllerHelper itemIsVoucher:cart.product]) {
+                voucherTotal += itemQty * [cart.editableVoucher intValue] * cart.shipdates.count;
             }
-            itemTotal += itemQty * lineItem.editablePrice; //todo: is this correct? doesn't account for ship dates.
         };
-        self.total = [NSNumber numberWithDouble:itemTotal];
+        self.total = @(itemTotal / 100.0);
     }
     return self;
 }

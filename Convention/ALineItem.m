@@ -7,12 +7,7 @@
 
 
 #import "ALineItem.h"
-#import "Cart.h"
 #import "NilUtil.h"
-#import "config.h"
-#import "ShipDate.h"
-#import "DateUtil.h"
-#import "CIProductViewControllerHelper.h"
 
 
 @implementation ALineItem {
@@ -29,29 +24,9 @@
         self.desc2 = (NSString *) [NilUtil nilOrObject:[json objectForKey:@"desc2"]];
         self.quantity = (NSString *) [NilUtil nilOrObject:[json objectForKey:@"quantity"]];
         self.shipDates = (NSArray *) [NilUtil nilOrObject:[json objectForKey:@"shipdates"]];
-        self.product = (NSDictionary *) [NilUtil nilOrObject:[json objectForKey:@"product"]];
         self.productId = (NSNumber *) [NilUtil nilOrObject:[json objectForKey:@"product_id"]];
         self.price = (NSNumber *) [NilUtil nilOrObject:[json objectForKey:@"price"]];
-    }
-    return self;
-}
-
-- (id)initWithCoreData:(Cart *)coreDataLineItem product:(NSDictionary *)product {
-    self = [super init];
-    if (self) {
-        if (coreDataLineItem.orderLineItem_id > 0) self.itemId = [NSNumber numberWithInt:coreDataLineItem.orderLineItem_id];
-        self.productId = (NSNumber *) [product objectForKey:kProductId];
-        self.product = product;
-        self.price = [NSNumber numberWithFloat:coreDataLineItem.editablePrice];
-        self.quantity = coreDataLineItem.editableQty;
-        self.voucherPrice = [NSNumber numberWithFloat:coreDataLineItem.editableVoucher];
-        NSMutableArray *shipDates = [[NSMutableArray alloc] init];
-        if ([coreDataLineItem.shipdates count] > 0) {
-            for (ShipDate *sd in coreDataLineItem.shipdates) {
-                [shipDates addObject:[DateUtil convertDateToYyyymmdd:sd.shipdate]];
-            }
-        }
-        self.shipDates = shipDates;
+        self.errors = (NSArray *) [NilUtil nilOrObject:[json objectForKey:@"errors"]];
     }
     return self;
 }
@@ -60,20 +35,7 @@
     return _shipDates ? _shipDates : [[NSArray alloc] init];
 }
 
-- (double)getQuantity {
-    return [[[CIProductViewControllerHelper alloc] init] getQuantity:self.quantity];
+- (BOOL)isStandard {
+    return self.category && [self.category isEqualToString:@"standard"];
 }
-
-- (double)getItemTotal {
-    return _shipDates ? [self getQuantity] * [self.price doubleValue] * [self.shipDates count] : [self getQuantity] * [self.price doubleValue];
-}
-
-- (double)getVoucherTotal {
-    return self.voucherPrice ? [self getQuantity] * [self.voucherPrice doubleValue] * (_shipDates ? [self.shipDates count] : 1) : 0;
-}
-
-- (NSNumber *)getInvtId {
-    return (NSNumber *) [NilUtil nilOrObject:[self.product objectForKey:kProductInvtid]];
-}
-
 @end

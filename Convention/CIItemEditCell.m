@@ -10,8 +10,10 @@
 #import "JSONKit.h"
 #import "ALineItem.h"
 #import "ShowConfigurations.h"
-#import "config.h"
 #import "StringManipulation.h"
+#import "Error.h"
+#import "Product.h"
+#import "Product+Extensions.h"
 
 @implementation CIItemEditCell
 @synthesize desc;
@@ -25,6 +27,26 @@
 @synthesize delegate;
 @synthesize qtyBtn;
 @synthesize priceLbl;
+
+- (void)updateErrorsView:(NSArray *)errors {
+    if (errors && errors.count > 0) {
+        NSMutableString *bulletList = [NSMutableString stringWithCapacity:errors.count * 30];
+        for (Error *error in errors) {
+            [bulletList appendFormat:@"%@\n", error];
+        }
+        self.errorMessageView.text = bulletList;
+        self.errorMessageView.hidden = NO;
+        self.errorMessageHeightConstraint.constant = 59.0f;
+        CGFloat contentHeight = self.errorMessageView.contentSize.height;
+        if (contentHeight < 59.0f) {
+            CGSize sizeThatShouldFitTheContent = [self.errorMessageView sizeThatFits:self.errorMessageView.frame.size];
+            self.errorMessageHeightConstraint.constant = sizeThatShouldFitTheContent.height;
+        }
+    } else {
+        self.errorMessageView.text = @"";
+        self.errorMessageView.hidden = YES;
+    }
+}
 
 - (void)UpdateTotal {
     __autoreleasing NSError *err = nil;
@@ -105,11 +127,13 @@
     }
 
 }
-
 - (void)updateCellAtIndexPath:(NSIndexPath *)indexPath withLineItem:(ALineItem *)data quantities:(NSArray *)itemsQty prices:(NSArray *)itemsPrice vouchers:(NSArray *)itemsVouchers shipDates:(NSArray *)itemsShipDates {
+    Product *product = [Product findProduct:data.productId];
     BOOL isDiscount = [data.category isEqualToString:@"discount"];
-    if (data.product) {
-        NSString *invtid = isDiscount ? @"Discount" : [data.product objectForKey:@"invtid"];
+    if (isDiscount) {
+        self.invtid.text = @"Discount";
+    } else if (data.productId) {
+        NSString *invtid = product ? product.invtid : @"Product Not Found";
         self.invtid.text = invtid;
     }
     [self setDescription:data.desc withSubtext:data.desc2];
@@ -161,9 +185,9 @@
     }
 
     int nd = 1;
-    if ([[ShowConfigurations instance] shipDates]) {
-        int idx = [[data.product objectForKey:kProductIdx] intValue];
-        NSString *invtId = [data.product objectForKey:kProductInvtid];
+    if ([[ShowConfigurations instance] shipDates] && product) {
+        int idx = [product.idx intValue];
+        NSString *invtId = product.invtid;
         BOOL isVoucher = idx == 0 && ([invtId isEmpty] || [invtId isEqualToString:@"0"]);
         if (isVoucher) {
             self.btnShipdates.enabled = NO;
@@ -202,6 +226,7 @@
         self.total.text = @"$0.00";
     }
     self.tag = indexPath.row;
+    [self updateErrorsView:data.errors];
 }
 
 @end

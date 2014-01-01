@@ -8,9 +8,9 @@
 
 #import "PWCartViewCell.h"
 #import "ProductCellDelegate.h"
-#import "config.h"
 #import "NumberUtil.h"
-#import "ALineItem.h"
+#import "Product.h"
+#import "NilUtil.h"
 
 
 @implementation PWCartViewCell {
@@ -34,41 +34,37 @@
     return self;
 }
 
-- (void)initializeWith:(BOOL)multiStore showPrice:(BOOL)showPrice product:(NSDictionary *)product item:(ALineItem *)item tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
-    self.InvtID.text = [product objectForKey:@"invtid"];
-    self.descr.text = [product objectForKey:@"descr"];
-    if ([product objectForKey:kProductShipDate1] != nil && ![[product objectForKey:kProductShipDate1] isKindOfClass:[NSNull class]]) {
+- (void)initializeWith:(BOOL)multiStore showPrice:(BOOL)showPrice product:(Product *)product tag:(NSInteger)tag
+              quantity:(NSString *)quantity
+                 price:(NSNumber *)price
+               voucher:(NSNumber *)voucherPrice
+             shipDates:(int)numOfShipDates
+   productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    self.InvtID.text = product.invtid;
+    self.descr.text = product.descr;
+    if (product.shipdate1) {
         NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-        NSDate *date = [df dateFromString:[product objectForKey:kProductShipDate1]];
-        [df setDateFormat:@"yyyy-MM-dd"];
-        self.shipDate1.text = [df stringFromDate:date];
+        self.shipDate1.text = [df stringFromDate:product.shipdate1];
     } else {
         self.shipDate1.text = @"";
     }
-    if ([product objectForKey:kProductShipDate2] != nil && ![[product objectForKey:kProductShipDate2] isKindOfClass:[NSNull class]]) {
+    if (product.shipdate2) {
         NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-        NSDate *date = [df dateFromString:[product objectForKey:kProductShipDate2]];
-        [df setDateFormat:@"yyyy-MM-dd"];
-        self.shipDate2.text = [df stringFromDate:date];
+        self.shipDate2.text = [df stringFromDate:product.shipdate2];
     } else {
         self.shipDate2.text = @"";
     }
-    self.numShipDates.text = [NSString stringWithFormat:@"%d", item.shipDates.count];
-    if ([product objectForKey:@"caseqty"] != nil && ![[product objectForKey:@"caseqty"] isKindOfClass:[NSNull class]])
-        self.CaseQty.text = [product objectForKey:@"caseqty"];
-    else
-        self.CaseQty.text = @"";
+    self.numShipDates.text = [NSString stringWithFormat:@"%d", numOfShipDates];
+    self.CaseQty.text = [NilUtil objectOrDefaultString:product.caseqty defaultObject:@""];
 
-    self.qtyLbl.text = item.quantity;
+    self.qtyLbl.text = quantity;
     self.qtyLbl.hidden = multiStore;
     self.qtyBtn.hidden = !multiStore;
 
-    self.voucher.text = item.voucherPrice ? [NumberUtil formatDollarAmount:item.voucherPrice] : @"0.00";
+    self.voucher.text = voucherPrice ? [NumberUtil formatDollarAmount:voucherPrice] : @"0.00"; //todo: is the check needed?
 
     if (showPrice) {
-        self.priceLbl.text = [NumberUtil formatDollarAmount:item.price];
+        self.priceLbl.text = [NumberUtil formatDollarAmount:price];
     }
     self.delegate = productCellDelegate;
     self.tag = tag;

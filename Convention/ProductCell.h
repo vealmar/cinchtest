@@ -11,4 +11,8 @@
 
 @interface ProductCell : UITableViewCell <UITextFieldDelegate>
 @property(unsafe_unretained, nonatomic) IBOutlet UILabel *InvtID;
+@property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
+@property(weak, nonatomic) IBOutlet UITextView *errorMessageView;
+
+- (void)updateErrorsView:(NSSet *)errors;
 @end

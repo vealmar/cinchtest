@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 }
 
-@property(nonatomic, strong) IBOutlet UITableView *products;
+@property(nonatomic, strong) IBOutlet UITableView *productsTableView;
 @property(nonatomic, strong) IBOutlet UIImageView *ciLogo;
 @property(nonatomic, strong) IBOutlet UITextField *hiddenTxt;
 @property(weak, nonatomic) IBOutlet UITextField *searchText;
@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 //SG: This is the Bulletins drop down.
 @property(strong, nonatomic) IBOutlet UIButton *dismissVendor;
 @property(strong, nonatomic) IBOutlet UILabel *customerLabel;
-@property(strong, nonatomic) IBOutlet UILabel *vendorLabel;
+@property(strong, nonatomic) IBOutlet UILabel *vendorLabel; //todo: this does not seem to be associated to any ui element
 @property(weak, nonatomic) IBOutlet UIButton *vendorDropdown;
 @property(weak, nonatomic) IBOutlet UILabel *lblShipDate1;
 @property(weak, nonatomic) IBOutlet UILabel *lblShipDate2;
@@ -73,15 +73,11 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 - (IBAction)submit:(id)sender;
 
-- (IBAction)finishOrder:(id)sender;
-
 - (IBAction)reviewCart:(id)sender;
 
 - (IBAction)vendorTouch:(id)sender;
 
 - (IBAction)dismissVendorTouched:(id)sender;
-
-- (IBAction)calcOrder:(id)sender;
 
 - (IBAction)searchProducts:(id)sender;
 
@@ -92,38 +88,36 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic, assign) id <CIProductViewDelegate> delegate;
 @property(nonatomic, strong) UIPopoverController *poController;
 @property(nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
-@property(nonatomic, strong) NSArray *resultData; //list of all products displayed (filtered by search criteria, selected vendor, bulletin etc.)
-@property(nonatomic, strong) NSMutableDictionary *vendorProductMap; //key is product_id.
-@property(nonatomic, strong) NSMutableDictionary *allproductsMap; //key is product_id.
+@property(nonatomic, strong) NSArray *resultData; //Array of all products displayed (filtered by search criteria, selected vendor, bulletin etc.)
+@property(nonatomic, strong) NSMutableArray *vendorProductIds; //key is product_id. All products for the selected vendor or foe all vendors if the selected vendor is 'Any'. This is used when performing Search, so that the search is limited to the selected vendor's products.
 @property(nonatomic, strong) NSDictionary *customer;
 @property(nonatomic, strong) NSString *authToken;
 @property(nonatomic, strong) NSString *loggedInVendorId; //vendor#id of logged in vendor
 @property(nonatomic, strong) NSString *loggedInVendorGroupId;
 //vendor#vendorgroup_id of logged in vendor
-@property(nonatomic, strong) NSMutableDictionary *productCart; //key is product_id. Contains order's items.
+@property(nonatomic, strong) NSMutableDictionary *productCart; //key is product_id. Value is ALineItem. Line items get added or removed from the cart when quantity changes. They are added or removed irrespective of ship dates.
 @property(nonatomic, strong) NSMutableDictionary *discountItems;
 @property(nonatomic) BOOL viewInitialized;
 @property(nonatomic) BOOL orderSubmitted;
 @property(nonatomic) BOOL multiStore;
 @property(nonatomic) NSInteger orderId;
-@property(nonatomic) int printStationId;
+@property(nonatomic) int selectedPrintStationId;
 @property(nonatomic, strong) NSDictionary *availablePrinters;
 @property(nonatomic) BOOL allowPrinting;
 @property(nonatomic) BOOL showShipDates;
 @property(nonatomic, strong) NSManagedObjectContext *managedObjectContext;
-@property(nonatomic, strong) AnOrder *selectedOrder;
 //Order selected in the order view controller
-@property(nonatomic, strong) Order *coreDataOrder;
-//Working copy of selected or new order
+@property(nonatomic, strong) AnOrder *selectedOrder;
 @property(nonatomic) BOOL newOrder;
-@property(nonatomic) BOOL unsavedChangesPresent;
+@property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
 
-- (void)QtyChange:(double)qty forIndex:(int)idx;
+@property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
+
+- (void)QtyChange:(int)qty forIndex:(int)idx;
 
 - (void)setVendor:(NSInteger)vendorId;
 
 - (void)setBulletin:(NSInteger)bulletinId;
 
 - (void)dismissVendorPopover;
-
 @end

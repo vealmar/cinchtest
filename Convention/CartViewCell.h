@@ -8,10 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+@class Cart;
+
 @protocol ProductCellDelegate;
 
 
 @interface CartViewCell : UITableViewCell <UITextFieldDelegate>
 @property(weak, nonatomic) IBOutlet UILabel *InvtID;
 @property(nonatomic, assign) id <ProductCellDelegate> delegate;
+@property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
+@property(weak, nonatomic) IBOutlet UITextView *errorMessageView;
+
+- (void)updateErrorsView:(NSSet *)errors;
 @end

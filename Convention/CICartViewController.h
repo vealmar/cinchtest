@@ -11,25 +11,23 @@
 #import "PWProductCell.h"
 #import "CIStoreQtyTableViewController.h"
 
+@class Cart;
+@class ALineItem;
+@class Product;
+@class Order;
+@class AnOrder;
+
 @protocol CICartViewDelegate <NSObject>
 
-- (void)setProductCart:(NSMutableDictionary *)cart;
+- (void)cartViewDismissedWith:(Order *)coreDataOrder savedOrder:(AnOrder *)savedOrder unsavedChangesPresent:(BOOL)unsavedChangesPresent orderCompleted:(BOOL)orderCompleted;
 
-- (void)setOrderSubmitted:(BOOL)yes;
-
-- (void)QtyChange:(double)qty forIndex:(int)idx;
-
-- (NSDictionary *)getProduct:(NSNumber *)productId;
 @end
 
 @interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate>
 
-@property(nonatomic, strong) IBOutlet UITableView *products;
-@property(nonatomic, strong) NSMutableDictionary *productData;
+@property(nonatomic, strong) IBOutlet UITableView *productsUITableView;
 @property(nonatomic, strong) NSDictionary *customer;
 @property(nonatomic, strong) NSString *authToken;
-@property(nonatomic, strong) NSMutableDictionary *productCart;
-@property(nonatomic, strong) NSMutableDictionary *discountItems;
 @property(nonatomic) BOOL showPrice;
 @property(nonatomic) BOOL multiStore;
 @property(nonatomic) int tOffset;
@@ -64,7 +62,11 @@
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumn;
 
-- (void)QtyChange:(double)qty forIndex:(int)idx;
+@property(weak, nonatomic) IBOutlet UILabel *vendorLabel;
+
+- (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token selectedVendorId:(NSNumber *)selectedVendorId loggedInVendorId:(NSString *)loggedInVendorId loggedInVendorGroupId:(NSString *)loggedInVendorGroupId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+
+- (void)QtyChange:(int)qty forIndex:(int)idx;
 
 - (void)VoucherChange:(double)voucherPrice forIndex:(int)idx;
 
@@ -76,4 +78,5 @@
 
 - (IBAction)clearVouchers:(id)sender;
 
+- (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 @end
