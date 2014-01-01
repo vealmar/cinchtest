@@ -630,12 +630,22 @@
     [self.productsTableView reloadData];
 }
 
+//User is in middle of editing a quantity (so the keyboard is visible), then taps somewhere else on the screen - the keyboard should disappear.
 - (IBAction)handleTap:(UITapGestureRecognizer *)recognizer {
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        for (PWProductCell *cell in self.productsTableView.visibleCells) {
-            if ([cell.quantity isFirstResponder]) {
-                [cell.quantity resignFirstResponder];
-                break;
+        if ([kShowCorp isEqualToString:kPigglyWiggly]) {
+            for (PWProductCell *cell in self.productsTableView.visibleCells) {
+                if ([cell.quantity isFirstResponder]) {
+                    [cell.quantity resignFirstResponder];//so the keyboard will hide
+                    break;
+                }
+            }
+        } else {
+            for (FarrisProductCell *cell in self.productsTableView.visibleCells) {
+                if ([cell.quantity isFirstResponder]) {
+                    [cell.quantity resignFirstResponder];//so the keyboard will hide
+                    break;
+                }
             }
         }
     }

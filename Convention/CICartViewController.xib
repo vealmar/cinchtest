@@ -342,8 +342,17 @@
                 </imageView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <gestureRecognizers/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
+            <connections>
+                <outletCollection property="gestureRecognizers" destination="yVl-Ka-OMm" appends="YES" id="C3r-72-zVf"/>
+            </connections>
         </view>
+        <tapGestureRecognizer id="yVl-Ka-OMm">
+            <connections>
+                <action selector="handleTap:" destination="-1" id="5QX-VT-gOz"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="Zerobuttonout.png" width="194" height="73"/>

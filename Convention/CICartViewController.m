@@ -300,6 +300,19 @@
     }
 }
 
+- (IBAction)handleTap:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        if (![kShowCorp isEqualToString:kPigglyWiggly]) {
+            for (FarrisCartViewCell *cell in self.productsUITableView.visibleCells) {
+                if ([cell.quantity isFirstResponder]) {
+                    [cell.quantity resignFirstResponder];//so the keyboard will hide
+                    break;
+                }
+            }
+        }
+    }
+}
+
 - (void)VoucherChange:(double)voucherPrice forIndex:(int)idx {
     NSNumber *productId = self.productsInCart[(NSUInteger) idx];
     [self.coreDataOrder updateItemVoucher:@(voucherPrice) productId:productId context:self.managedObjectContext];

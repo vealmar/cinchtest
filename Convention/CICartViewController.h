@@ -76,4 +76,5 @@
 
 - (IBAction)clearVouchers:(id)sender;
 
+- (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 @end
