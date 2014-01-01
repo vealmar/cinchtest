@@ -575,7 +575,9 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (IBAction)editOrder:(UIButton *)sender {
+    [sender setSelected:YES];
     [self getCustomerOfCurrentOrderAndLoadProductView];
+    [sender setSelected:NO];
 }
 
 - (void)setVoucher:(NSString *)voucher atIndex:(int)idx {
@@ -807,7 +809,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (IBAction)Save:(id)sender {
-
+    [sender setSelected:YES];
     if (currentOrder == nil) {
         return;
     }
@@ -867,25 +869,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSDictionary *order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustomerID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
     NSDictionary *final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDEREDITS([currentOrder.orderId intValue]), kAuthToken, self.authToken];
-
-    AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
-    [client setParameterEncoding:AFJSONParameterEncoding];
-    NSMutableURLRequest *request = [client requestWithMethod:@"PUT" path:nil parameters:final];
-
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+    void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
         unsavedChangesPresent = NO;
         AnOrder *savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
         [self persistentOrderUpdated:savedOrder];
-    }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        [sender setSelected:NO];
+    };
+    void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
         if (JSON) {
             AnOrder *savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
             [self persistentOrderUpdated:savedOrder];
+            [sender setSelected:NO];
         }
-        NSString *errorMsg = [NSString stringWithFormat:@"There was an error submitting the order. %@", error.localizedDescription];
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-    }];
-
-    [operation start];
+    };
+    [helper sendRequest:@"PUT" url:url parameters:final successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Saving order"];
 }
 
 - (IBAction)Refresh:(id)sender {

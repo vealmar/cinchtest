@@ -197,10 +197,20 @@
                 [submit hide:NO];
                 if (failureBlock) failureBlock(req, response, error, json);
                 NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-                NSString *alertMessage = statusCode == 422 ? @"There was an error processing this request. Please correct the errors indicated on the screen and try again." : [NSString stringWithFormat:@"There was an error submitting this request. Status Code: %d", statusCode];
+                NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
+                if (statusCode == 422) {
+                    NSArray *validationErrors = json ? [((NSDictionary *) json) objectForKey:kErrors] : nil;
+                    if (validationErrors && validationErrors.count > 0) {
+                        alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
+                    }
+                }
                 [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
             }];
     [operation start];
+}
+
+- (void)alert:(NSString *)title message:(NSString *)message {
+    [[[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 }
 
 - (Order *)createCoreDataCopyOfOrder:(AnOrder *)order
