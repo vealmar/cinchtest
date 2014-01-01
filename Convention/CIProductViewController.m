@@ -52,7 +52,6 @@
 
 #pragma mark - constructor
 
-#define kLaunchCart @"LaunchCart"
 #define OrderRecoverySelectionYes  1
 #define OrderRecoverySelectionNo  0
 #define OrderRecoverySelectionNone  -1
@@ -289,21 +288,7 @@
     NSMutableString *labelText = [NSMutableString string];
     if (currentVendor) {
         if (vendorsData) {
-            for (NSDictionary *vendor in vendorsData) {
-                NSNumber *vendorId = (NSNumber *) [NilUtil nilOrObject:[vendor objectForKey:kVendorID]];
-                if (vendorId && [vendorId integerValue] == currentVendor) {
-                    NSString *vendId = (NSString *) [NilUtil nilOrObject:[vendor objectForKey:kVendorVendID]];
-                    NSString *vendorName = (NSString *) [NilUtil nilOrObject:[vendor objectForKey:kVendorName]];
-                    [labelText appendString:vendId ? vendId : @""];
-                    if (vendorName) {
-                        if (labelText.length > 0) {
-                            [labelText appendString:@" - "];
-                        }
-                        [labelText appendString:vendorName];
-                    }
-                    break;
-                }
-            }
+            [labelText appendString:[helper displayNameForVendor:currentVendor vendorDisctionaries:vendorsData]];
         }
     }
     if (currentBulletin) {
@@ -508,8 +493,7 @@
 * SG: This method is called when user taps the cart button.
 */
 - (IBAction)reviewCart:(id)sender {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kLaunchCart object:nil];
-    CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder customer:self.customer authToken:self.authToken loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId andManagedObjectContext:self.managedObjectContext];
+    CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder customer:self.customer authToken:self.authToken selectedVendorId:[NSNumber numberWithInt:currentVendor] loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId andManagedObjectContext:self.managedObjectContext];
     cart.delegate = self;
     cart.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:cart animated:YES completion:nil];

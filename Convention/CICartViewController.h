@@ -62,7 +62,9 @@
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumn;
 
-- (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token loggedInVendorId:(NSString *)loggedInVendorId loggedInVendorGroupId:(NSString *)loggedInVendorGroupId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
+@property(weak, nonatomic) IBOutlet UILabel *vendorLabel;
+
+- (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token selectedVendorId:(NSNumber *)selectedVendorId loggedInVendorId:(NSString *)loggedInVendorId loggedInVendorGroupId:(NSString *)loggedInVendorGroupId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 - (void)QtyChange:(int)qty forIndex:(int)idx;
 

@@ -24,6 +24,7 @@
 @interface CICartViewController ()
 @property(strong, nonatomic) Order *coreDataOrder;
 @property(nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+@property(nonatomic, strong) NSNumber *selectedVendorId;
 @property(strong, nonatomic) NSString *loggedInVendorId;
 @property(strong, nonatomic) NSString *loggedInVendorGroupId;
 @property(strong, nonatomic) AnOrder *savedOrder;
@@ -55,7 +56,7 @@
 @synthesize lblShipDate1, lblShipDate2, lblShipDateCount;
 @synthesize tableHeaderPigglyWiggly, tableHeaderFarris;
 
-- (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token loggedInVendorId:(NSString *)loggedInVendorId loggedInVendorGroupId:(NSString *)loggedInVendorGroupId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
+- (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token selectedVendorId:(NSNumber *)selectedVendorId loggedInVendorId:(NSString *)loggedInVendorId loggedInVendorGroupId:(NSString *)loggedInVendorGroupId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
     self = [super initWithNibName:@"CICartViewController" bundle:nil];
     if (self) {
         showPrice = YES;
@@ -67,6 +68,7 @@
         self.managedObjectContext = managedObjectContext;
         self.customer = customerDictionary;
         self.authToken = token;
+        self.selectedVendorId = selectedVendorId;
         self.loggedInVendorId = loggedInVendorId;
         self.loggedInVendorGroupId = loggedInVendorGroupId;
     }
@@ -124,6 +126,7 @@
     customerInfoLabel.text = customer != nil &&
             customer[kBillName] != nil &&
             ![customer[kBillName] isKindOfClass:[NSNull class]] ? customer[kBillName] : @"";
+    self.vendorLabel.text = [helper displayNameForVendor:self.selectedVendorId];
     self.unsavedChangesPresent = NO;
 }
 

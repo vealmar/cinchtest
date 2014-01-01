@@ -48,6 +48,10 @@
 
 - (NSArray *)getTotals:(Order *)coreDataOrder;
 
+- (NSString *)displayNameForVendor:(NSInteger)id1 vendorDisctionaries:(NSArray *)vendorDictionaries;
+
+- (NSString *)displayNameForVendor:(NSNumber *)vendorId;
+
 - (void)sendRequest:(NSString *)httpMethod url:(NSString *)url parameters:(NSDictionary *)parameters
        successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
        failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock

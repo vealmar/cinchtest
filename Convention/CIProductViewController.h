@@ -54,7 +54,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 //SG: This is the Bulletins drop down.
 @property(strong, nonatomic) IBOutlet UIButton *dismissVendor;
 @property(strong, nonatomic) IBOutlet UILabel *customerLabel;
-@property(strong, nonatomic) IBOutlet UILabel *vendorLabel;
+@property(strong, nonatomic) IBOutlet UILabel *vendorLabel; //todo: this does not seem to be associated to any ui element
 @property(weak, nonatomic) IBOutlet UIButton *vendorDropdown;
 @property(weak, nonatomic) IBOutlet UILabel *lblShipDate1;
 @property(weak, nonatomic) IBOutlet UILabel *lblShipDate2;

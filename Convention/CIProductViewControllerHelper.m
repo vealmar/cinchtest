@@ -22,6 +22,8 @@
 #import "NilUtil.h"
 #import "Order+Extensions.h"
 #import "DiscountLineItem.h"
+#import "CoreDataUtil.h"
+#import "Vendor.h"
 
 
 @implementation CIProductViewControllerHelper {
@@ -269,4 +271,32 @@
     }
     return @[@(grossTotal / 100.0), @(voucherTotal / 100.0), @(discountTotal / 100.0)];
 }
+
+- (NSString *)displayNameForVendor:(NSInteger)id vendorDisctionaries:(NSArray *)vendorDictionaries {
+    NSMutableString *displayName = [NSMutableString string];
+    for (NSDictionary *vendor in vendorDictionaries) {
+        NSNumber *vendorId = (NSNumber *) [NilUtil nilOrObject:[vendor objectForKey:kVendorID]];
+        if ([NilUtil nilOrObject:[vendor objectForKey:kVendorID]] && [vendorId integerValue] == id) {
+            NSString *vendId = (NSString *) [NilUtil nilOrObject:[vendor objectForKey:kVendorVendID]];
+            NSString *vendorName = (NSString *) [NilUtil nilOrObject:[vendor objectForKey:kVendorName]];
+            [displayName appendString:vendId ? vendId : @""];
+            if (vendorName) {
+                if (displayName.length > 0) {
+                    [displayName appendString:@" - "];
+                }
+                [displayName appendString:vendorName];
+            }
+            break;
+        }
+    }
+    return displayName;
+}
+
+- (NSString *)displayNameForVendor:(NSNumber *)vendorId {
+    Vendor *vendor = (Vendor *) [[CoreDataUtil sharedManager] fetchObject:@"Vendor" withPredicate:[NSPredicate predicateWithFormat:@"(vendorId == %@)", vendorId]];
+    NSString *vendId = [NilUtil objectOrDefaultString:vendor.vendid defaultObject:@""];
+    NSString *vendorName = [NilUtil objectOrDefaultString:vendor.name defaultObject:@""];
+    return vendorName.length > 0 ? [NSString stringWithFormat:@"%@ - %@", vendId, vendorName] : vendorName;
+}
+
 @end
