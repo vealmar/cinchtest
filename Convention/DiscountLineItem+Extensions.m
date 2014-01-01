@@ -10,7 +10,7 @@
 
 @implementation DiscountLineItem (Extensions)
 - (id)initWithLineItem:(ALineItem *)lineItem context:(NSManagedObjectContext *)context {
-    self = [super initWithEntity:[NSEntityDescription entityForName:@"Cart" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
+    self = [super initWithEntity:[NSEntityDescription entityForName:@"DiscountLineItem" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
     if (self) {
         self.quantity = [NSNumber numberWithInt:[lineItem.quantity intValue]];
         self.price = [NumberUtil convertDollarsToCents:lineItem.price];

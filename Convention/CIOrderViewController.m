@@ -818,47 +818,49 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
     for (NSInteger i = 0; i < data.count; i++) {
         ALineItem *lineItem = [data objectAtIndex:(NSUInteger) i];
-        NSString *productID = [lineItem.productId stringValue];
+        if ([lineItem isStandard]) {
+            NSString *productID = [lineItem.productId stringValue];
 
-        NSString *qty = [self.itemsQty objectAtIndex:(NSUInteger) i];
-        NSString *price = [self.itemsPrice objectAtIndex:(NSUInteger) i];
-        NSString *voucher = [self.itemsVouchers objectAtIndex:(NSUInteger) i];
+            NSString *qty = [self.itemsQty objectAtIndex:(NSUInteger) i];
+            NSString *price = [self.itemsPrice objectAtIndex:(NSUInteger) i];
+            NSString *voucher = [self.itemsVouchers objectAtIndex:(NSUInteger) i];
 
-        if (self.itemsQty.count > i) {
-            qty = [self.itemsQty objectAtIndex:(NSUInteger) i];
+            if (self.itemsQty.count > i) {
+                qty = [self.itemsQty objectAtIndex:(NSUInteger) i];
+            }
+
+            NSArray *dates = [self.itemsShipDates objectAtIndex:(NSUInteger) i];
+            NSMutableArray *strs = [NSMutableArray array];
+            NSDateFormatter *df = [[NSDateFormatter alloc] init];
+            [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
+            for (NSDate *date in dates) {
+                NSString *str = [df stringFromDate:date];
+                [strs addObject:str];
+            }
+            Product *product = [Product findProduct:lineItem.productId];
+            [[ShowConfigurations instance] shipDates] ? strs.count > 0 : YES;
+            if (![helper itemHasQuantity:qty]) {
+                [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no quantity. Please specify a quantity and then save.", product.invtid] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+                return;
+            }
+            if (![helper isProductAVoucher:lineItem.productId] && [[ShowConfigurations instance] shipDates] && strs.count == 0) {
+                [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no ship date. Please specify ship date(s) and then save.", product.invtid] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+                return;
+            }
+
+            NSString *myId = [lineItem.itemId stringValue];
+
+            NSDictionary *proDict = @{
+                    kLineItemProductID : productID,
+                    kLineItemId : myId,
+                    kLineItemQuantity : qty,
+                    kLineItemPRICE : price,
+                    kLineItemVoucher : voucher,
+                    kLineItemShipDates : strs
+            };
+
+            [arr addObject:(id) proDict];
         }
-
-        NSArray *dates = [self.itemsShipDates objectAtIndex:(NSUInteger) i];
-        NSMutableArray *strs = [NSMutableArray array];
-        NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-        for (NSDate *date in dates) {
-            NSString *str = [df stringFromDate:date];
-            [strs addObject:str];
-        }
-        Product *product = [Product findProduct:lineItem.productId];
-        [[ShowConfigurations instance] shipDates] ? strs.count > 0 : YES;
-        if (![helper itemHasQuantity:qty]) {
-            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no quantity. Please specify a quantity and then save.", product.invtid] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-            return;
-        }
-        if (![helper isProductAVoucher:lineItem.productId] && [[ShowConfigurations instance] shipDates] && strs.count == 0) {
-            [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no ship date. Please specify ship date(s) and then save.", product.invtid] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-            return;
-        }
-
-        NSString *myId = [lineItem.itemId stringValue];
-
-        NSDictionary *proDict = @{
-                kLineItemProductID : productID,
-                kLineItemId : myId,
-                kLineItemQuantity : qty,
-                kLineItemPRICE : price,
-                kLineItemVoucher : voucher,
-                kLineItemShipDates : strs
-        };
-
-        [arr addObject:(id) proDict];
     }
 
     [arr removeObjectIdenticalTo:nil];

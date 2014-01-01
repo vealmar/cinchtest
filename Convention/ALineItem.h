@@ -22,4 +22,6 @@
 @property(strong, nonatomic) NSArray *errors;
 
 - (id)initWithJsonFromServer:(NSDictionary *)json;
+
+- (BOOL)isStandard;
 @end

@@ -35,4 +35,7 @@
     return _shipDates ? _shipDates : [[NSArray alloc] init];
 }
 
+- (BOOL)isStandard {
+    return self.category && [self.category isEqualToString:@"standard"];
+}
 @end
