@@ -250,26 +250,26 @@
 
 //Returns array with gross total, voucher total and discount total. All items in array are NSNumbers.
 - (NSArray *)getTotals:(Order *)coreDataOrder {
-    int grossTotal = 0;
-    int voucherTotal = 0;
-    int discountTotal = 0;
+    double grossTotal = 0.0;
+    double voucherTotal = 0.0;
+    double discountTotal = 0.0;
     if (coreDataOrder) {
         for (Cart *cart in coreDataOrder.carts) {
             int qty = [CIProductViewControllerHelper getQuantity:cart.editableQty]; //takes care of resolving quantities for multi stores
             int numOfShipDates = cart.shipdates.count;
             int price = [cart.editablePrice intValue];//todo switchto using product#showprice
-            grossTotal += qty * price * (numOfShipDates == 0 ? 1 : numOfShipDates);
+            grossTotal += qty * price / 100.0 * (numOfShipDates == 0 ? 1 : numOfShipDates);
             if ([cart.editableVoucher intValue] != 0) {//cart.editableVoucher will never be null. all number fields have a default value of 0 in core data. you can change the default if you want .
-                voucherTotal += qty * [cart.editableVoucher intValue] * (numOfShipDates == 0 ? 1 : numOfShipDates);
+                voucherTotal += qty * [cart.editableVoucher intValue] / 100.0 * (numOfShipDates == 0 ? 1 : numOfShipDates);
             }
         }
         for (DiscountLineItem *discountLineItem in coreDataOrder.discountLineItems) {
             int price = [discountLineItem.price intValue];
             int qty = [discountLineItem.quantity intValue];
-            discountTotal += price * qty;
+            discountTotal += price / 100.0 * qty;
         }
     }
-    return @[@(grossTotal / 100.0), @(voucherTotal / 100.0), @(discountTotal / 100.0)];
+    return @[[NSNumber numberWithDouble:grossTotal], [NSNumber numberWithDouble:voucherTotal], [NSNumber numberWithDouble:discountTotal]];
 }
 
 - (NSString *)displayNameForVendor:(NSInteger)id vendorDisctionaries:(NSArray *)vendorDictionaries {

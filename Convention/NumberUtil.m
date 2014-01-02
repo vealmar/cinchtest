@@ -31,7 +31,10 @@ static NSNumberFormatter *currencyFormatter = nil;
 + (NSNumberFormatter *)currencyFormatter {
     if (!currencyFormatter) {
         currencyFormatter = [[NSNumberFormatter alloc] init];
-        [currencyFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+        currencyFormatter.formatterBehavior = NSNumberFormatterBehavior10_4;
+        currencyFormatter.maximumFractionDigits = 2;
+        currencyFormatter.minimumFractionDigits = 2;
+        currencyFormatter.minimumIntegerDigits = 1;
     }
     return currencyFormatter;
 }
@@ -39,19 +42,14 @@ static NSNumberFormatter *currencyFormatter = nil;
 
 + (NSString *)formatDollarAmount:(NSNumber *)dollarAmount {
     if (dollarAmount) {
-        NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
-        nf.formatterBehavior = NSNumberFormatterBehavior10_4;
-        nf.maximumFractionDigits = 2;
-        nf.minimumFractionDigits = 2;
-        nf.minimumIntegerDigits = 1;
-        return [nf stringFromNumber:[NSNumber numberWithDouble:[dollarAmount doubleValue]]];
+        return [NSNumberFormatter localizedStringFromNumber:dollarAmount numberStyle:NSNumberFormatterCurrencyStyle];
     } else
         return @"";
 }
 
 + (NSString *)formatCentsAsCurrency:(NSNumber *)cents {
     if (cents) {
-        return [self.currencyFormatter stringFromNumber:@([cents intValue] / 100.0)];
+        return [self formatDollarAmount:[NSNumber numberWithDouble:[cents intValue] / 100.0]];
     } else
         return @"";
 }

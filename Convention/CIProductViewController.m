@@ -729,7 +729,7 @@
     self.coreDataOrder.notes = [info objectForKey:kNotes];
     self.coreDataOrder.authorized = [info objectForKey:kAuthorizedBy];
     if (!([kShowCorp isEqualToString:kPigglyWiggly])) {
-        self.coreDataOrder.authorized = [info objectForKey:kShipFlag];
+        self.coreDataOrder.ship_flag = [[info objectForKey:kShipFlag] isEqualToString:@"true"] ? @(1) : @(0);
     }
 }
 
