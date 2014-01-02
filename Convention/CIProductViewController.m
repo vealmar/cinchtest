@@ -498,10 +498,12 @@
 * SG: This method is called when user taps the cart button.
 */
 - (IBAction)reviewCart:(id)sender {
-    CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder customer:self.customer authToken:self.authToken selectedVendorId:[NSNumber numberWithInt:currentVendor] loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId andManagedObjectContext:self.managedObjectContext];
-    cart.delegate = self;
-    cart.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:cart animated:YES completion:nil];
+    if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
+        CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder customer:self.customer authToken:self.authToken selectedVendorId:[NSNumber numberWithInt:currentVendor] loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId andManagedObjectContext:self.managedObjectContext];
+        cart.delegate = self;
+        cart.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:cart animated:YES completion:nil];
+    }
 }
 
 - (BOOL)findAndResignFirstResponder:(UIView *)view {
