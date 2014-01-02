@@ -27,7 +27,6 @@
 #import "CIProductViewControllerHelper.h"
 #import "Product.h"
 #import "Product+Extensions.h"
-#import "HudUtil.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -319,7 +318,6 @@ SG: The argument 'detail' is the selected order.
 #pragma mark - Load Product View Conroller
 
 - (void)loadProductView:(BOOL)newOrder customer:(NSDictionary *)customer {
-    [HudUtil showGlobalProgressHUDWithTitle:@"Loading"];
     productView = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
     productView.authToken = self.authToken;
     productView.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
@@ -430,9 +428,9 @@ SG: The argument 'detail' is the selected order.
         if ([ShowConfigurations instance].vouchers) {
             cell.total.hidden = YES;
         }
-            ALineItem *data = [currentOrder.lineItems objectAtIndex:(NSUInteger) [indexPath row]];
-            [cell updateCellAtIndexPath:indexPath withLineItem:data quantities:self.itemsQty prices:self.itemsPrice vouchers:self.itemsVouchers shipDates:self.itemsShipDates];
-            return cell;
+        ALineItem *data = [currentOrder.lineItems objectAtIndex:(NSUInteger) [indexPath row]];
+        [cell updateCellAtIndexPath:indexPath withLineItem:data quantities:self.itemsQty prices:self.itemsPrice vouchers:self.itemsVouchers shipDates:self.itemsShipDates];
+        return cell;
     }
 }
 

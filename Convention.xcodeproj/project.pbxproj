@@ -24,7 +24,6 @@
 		35F522E235D6365963A9F1B2 /* SynchronousRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52CB070F4E7055F001511 /* SynchronousRequestUtil.m */; };
 		35F52565AD01794E5970974F /* ALineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52C47A71D4C79AE68083C /* ALineItem.m */; };
 		35F5263C1F6068DD7F84A564 /* SynchronousResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5268AF5940CE7CE1517AE /* SynchronousResponse.m */; };
-		35F5269D66EBDECD3AE5364F /* HudUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F522FBE9CB20C4FD749DB6 /* HudUtil.m */; };
 		35F527C6D5A71434688ABEC2 /* FarrisBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */; };
 		35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5271B9DC09F494AE33569 /* ShowConfigurations.m */; };
 		35F527ED52FF1F2798544129 /* CoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */; };
@@ -256,7 +255,6 @@
 		35F52168A588B29C511220B5 /* DiscountLineItem+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DiscountLineItem+Extensions.h"; sourceTree = "<group>"; };
 		35F5224B1B84CB4E7EC646E7 /* PWCartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWCartViewCell.h; sourceTree = "<group>"; };
 		35F522AD3FB35CB710C8F62B /* CartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CartViewCell.m; sourceTree = "<group>"; };
-		35F522FBE9CB20C4FD749DB6 /* HudUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HudUtil.m; sourceTree = "<group>"; };
 		35F5234C615180F131627137 /* FarrisCartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FarrisCartViewCell.m; sourceTree = "<group>"; };
 		35F5234FFAA50499097031CC /* CIProductViewControllerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIProductViewControllerHelper.h; sourceTree = "<group>"; };
 		35F5245F94A98A6ACF4C2C81 /* DiscountLineItem+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DiscountLineItem+Extensions.m"; sourceTree = "<group>"; };
@@ -269,7 +267,6 @@
 		35F5271B9DC09F494AE33569 /* ShowConfigurations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowConfigurations.m; sourceTree = "<group>"; };
 		35F5277AF839A0412C8441F3 /* ALineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ALineItem.h; sourceTree = "<group>"; };
 		35F527D44E4AE1FC93210B28 /* SynchronousResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronousResponse.h; sourceTree = "<group>"; };
-		35F5281CA1AEF8677A2863B8 /* HudUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HudUtil.h; sourceTree = "<group>"; };
 		35F52842A8307AABB72E16F8 /* CartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CartViewCell.h; sourceTree = "<group>"; };
 		35F528C981F800396D59FC9C /* save2in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = save2in.png; sourceTree = "<group>"; };
 		35F5292319057213F1E3522E /* AProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AProduct.h; sourceTree = "<group>"; };
@@ -606,8 +603,6 @@
 				35F524EF83F7D46C93A26CF9 /* SynchronousRequestUtil.h */,
 				35F5268AF5940CE7CE1517AE /* SynchronousResponse.m */,
 				35F527D44E4AE1FC93210B28 /* SynchronousResponse.h */,
-				35F522FBE9CB20C4FD749DB6 /* HudUtil.m */,
-				35F5281CA1AEF8677A2863B8 /* HudUtil.h */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -1562,7 +1557,6 @@
 				35F5263C1F6068DD7F84A564 /* SynchronousResponse.m in Sources */,
 				35F5283D1578BBD6EB034918 /* DiscountLineItem+Extensions.m in Sources */,
 				35F5295CF38EFEB3F0DB36D1 /* AProduct.m in Sources */,
-				35F5269D66EBDECD3AE5364F /* HudUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

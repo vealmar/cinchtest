@@ -149,6 +149,8 @@
 
 - (void)saveOrderOnFirstLoad {
     if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
+        self.coreDataOrder.status = @"pending";
+        [[CoreDataUtil sharedManager] saveObjects];
         NSDictionary *parameters = [self.coreDataOrder asJSONReqParameter];
         //todo should we keep completed orders, complete? Or should we update status to pending if they go to cart view, even if they did not make any changes?
         NSString *method = [self.coreDataOrder.orderId intValue] > 0 ? @"PUT" : @"POST";

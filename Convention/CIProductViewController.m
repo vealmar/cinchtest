@@ -30,7 +30,6 @@
 #import "Error.h"
 #import "Product+Extensions.h"
 #import "DiscountLineItem+Extensions.h"
-#import "HudUtil.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -142,7 +141,6 @@
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    [HudUtil dismissGlobalHUD];
     if (self.orderSubmitted) {
         [super viewDidAppear:animated];
         [self loadNotesForm];
