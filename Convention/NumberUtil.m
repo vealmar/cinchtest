@@ -13,6 +13,7 @@
 
 }
 static NSDecimalNumber *oneHundredDecimal = nil;
+static NSDecimalNumber *zeroDecimal = nil;
 static NSNumber *zeroNSNumber = nil;
 static NSNumberFormatter *currencyFormatter = nil;
 
@@ -20,6 +21,13 @@ static NSNumberFormatter *currencyFormatter = nil;
     if (!oneHundredDecimal)
         oneHundredDecimal = [NSDecimalNumber decimalNumberWithString:@"100"];
     return oneHundredDecimal;
+}
+
++ (NSDecimalNumber *)zeroDecimal {
+    if (!zeroDecimal)
+        zeroDecimal = [NSDecimalNumber decimalNumberWithString:@"0"];
+    return zeroDecimal;
+
 }
 
 + (NSNumber *)zeroIntNSNumber {
