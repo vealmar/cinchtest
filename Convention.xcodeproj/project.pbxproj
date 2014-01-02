@@ -31,6 +31,7 @@
 		35F5283D1578BBD6EB034918 /* DiscountLineItem+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5245F94A98A6ACF4C2C81 /* DiscountLineItem+Extensions.m */; };
 		35F528723DB04DAA575BA603 /* app_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52BC2B08AE38F365E81EB /* app_bg.png */; };
 		35F5287D59BBEFD3CD4C4BC0 /* Product+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F529A33F7F381915688AB6 /* Product+Extensions.m */; };
+		35F5295CF38EFEB3F0DB36D1 /* AProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52B12F27616E0F71C5A98 /* AProduct.m */; };
 		35F52A19F4EFCD93702E646D /* ProductCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52A62C4F3539476C1736F /* ProductCell.m */; };
 		35F52AF2E661528B3EDAABF5 /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52E02103987C5239CB07D /* NumberUtil.m */; };
 		35F52B7D65E8F84C2681BE43 /* AnOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F520072428E6A11A140BBE /* AnOrder.m */; };
@@ -268,12 +269,14 @@
 		35F527D44E4AE1FC93210B28 /* SynchronousResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronousResponse.h; sourceTree = "<group>"; };
 		35F52842A8307AABB72E16F8 /* CartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CartViewCell.h; sourceTree = "<group>"; };
 		35F528C981F800396D59FC9C /* save2in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = save2in.png; sourceTree = "<group>"; };
+		35F5292319057213F1E3522E /* AProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AProduct.h; sourceTree = "<group>"; };
 		35F529A33F7F381915688AB6 /* Product+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Product+Extensions.m"; sourceTree = "<group>"; };
 		35F529A69976E731F9A16513 /* PWCartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PWCartViewCell.m; sourceTree = "<group>"; };
 		35F529D066D6985A1FC1BF88 /* Product+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Product+Extensions.h"; sourceTree = "<group>"; };
 		35F529F48A8F22BE54DACF71 /* Error+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Error+Extensions.h"; sourceTree = "<group>"; };
 		35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBG.png; sourceTree = "<group>"; };
 		35F52A62C4F3539476C1736F /* ProductCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductCell.m; sourceTree = "<group>"; };
+		35F52B12F27616E0F71C5A98 /* AProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AProduct.m; sourceTree = "<group>"; };
 		35F52B3C8A568456497B76FC /* ProductCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductCell.h; sourceTree = "<group>"; };
 		35F52B621DB88316913EF3A1 /* AnOrder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnOrder.h; sourceTree = "<group>"; };
 		35F52BABED1C4FFB96E78BD9 /* MyOrders.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MyOrders.png; sourceTree = "<group>"; };
@@ -902,6 +905,8 @@
 				35F529D066D6985A1FC1BF88 /* Product+Extensions.h */,
 				35F5245F94A98A6ACF4C2C81 /* DiscountLineItem+Extensions.m */,
 				35F52168A588B29C511220B5 /* DiscountLineItem+Extensions.h */,
+				35F52B12F27616E0F71C5A98 /* AProduct.m */,
+				35F5292319057213F1E3522E /* AProduct.h */,
 			);
 			name = models;
 			sourceTree = "<group>";
@@ -1551,6 +1556,7 @@
 				35F522E235D6365963A9F1B2 /* SynchronousRequestUtil.m in Sources */,
 				35F5263C1F6068DD7F84A564 /* SynchronousResponse.m in Sources */,
 				35F5283D1578BBD6EB034918 /* DiscountLineItem+Extensions.m in Sources */,
+				35F5295CF38EFEB3F0DB36D1 /* AProduct.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
