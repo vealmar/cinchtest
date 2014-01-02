@@ -27,6 +27,7 @@
 #import "CIProductViewControllerHelper.h"
 #import "Product.h"
 #import "Product+Extensions.h"
+#import "HudUtil.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -318,6 +319,7 @@ SG: The argument 'detail' is the selected order.
 #pragma mark - Load Product View Conroller
 
 - (void)loadProductView:(BOOL)newOrder customer:(NSDictionary *)customer {
+    [HudUtil showGlobalProgressHUDWithTitle:@"Loading"];
     productView = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
     productView.authToken = self.authToken;
     productView.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
