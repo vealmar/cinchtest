@@ -235,7 +235,7 @@
 }
 
 - (void)loadProductsForCurrentVendorAndBulletin {
-    NSMutableArray *resultData = [[NSMutableArray alloc] init];
+    NSMutableArray *products = [[NSMutableArray alloc] init];
     self.vendorProductIds = [[NSMutableArray alloc] init];
     [[CoreDataManager getProducts:self.managedObjectContext] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Product *product = (Product *) obj;
@@ -245,10 +245,15 @@
             [self.vendorProductIds addObject:productId];
             NSNumber *bulletinId = product.bulletin_id;
             if (currentBulletin == 0 || (bulletinId && [bulletinId integerValue] == currentBulletin))
-                [resultData addObject:product.productId];
+                [products addObject:product];
         }
     }];
-    self.resultData = [helper sortProductsByinvtId:resultData];
+    NSArray *sortedProducts = [helper sortProductsByinvtId:products];
+    NSMutableArray *sortedProductIds = [NSMutableArray array];
+    for (Product *product in sortedProducts) {
+        [sortedProductIds addObject:product.productId];
+    }
+    self.resultData = sortedProductIds;
     [self updateVendorAndBulletinLabel];
 }
 
