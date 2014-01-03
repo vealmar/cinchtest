@@ -206,6 +206,8 @@
                     if (validationErrors && validationErrors.count > 0) {
                         alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
                     }
+                } else if (statusCode == 0) {
+                    alertMessage = @"Request timed out.";
                 }
                 [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
             }];
