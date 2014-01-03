@@ -122,4 +122,15 @@
         [textField resignFirstResponder];
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    NSInteger numberOfMatches = 0;
+    if (textField == self.quantity && string.length != 0) {
+        NSError *error;
+        NSRegularExpression *numbersOnly = [NSRegularExpression regularExpressionWithPattern:@"[0-9]+" options:NSRegularExpressionCaseInsensitive error:&error];
+        numberOfMatches = [numbersOnly numberOfMatchesInString:string options:0 range:NSMakeRange(0, string.length)];
+        return numberOfMatches != 1 ? NO : YES;
+    } else
+        return YES;
+}
+
 @end
