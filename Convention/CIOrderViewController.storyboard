@@ -120,7 +120,7 @@
                                         <rect key="frame" x="203" y="69" width="474" height="53"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
                                         <connections>
                                             <outlet property="delegate" destination="L2z-Wh-GlW" id="v3g-dZ-zmt"/>
                                         </connections>
@@ -329,7 +329,7 @@
                                 </connections>
                             </tableView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" fixedFrame="YES" image="CI-Logo.png" translatesAutoresizingMaskIntoConstraints="NO" id="PhE-85-yWW">
-                                <rect key="frame" x="412" y="27" width="200" height="84"/>
+                                <rect key="frame" x="402" y="27" width="220" height="84"/>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0gA-x1-hgd">
                                 <rect key="frame" x="247" y="8" width="93" height="37"/>
