@@ -12,7 +12,6 @@
 #import "Cart+Extensions.h"
 #import "AnOrder.h"
 #import "NilUtil.h"
-#import "CIProductViewControllerHelper.h"
 #import "Error.h"
 #import "Error+Extensions.h"
 #import "ALineItem.h"
@@ -122,7 +121,6 @@
 - (NSDictionary *)asJSONReqParameter {
     NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:self.carts.count];
     for (Cart *cart in self.carts) {
-        BOOL hasQuantity = [[[CIProductViewControllerHelper alloc] init] itemHasQuantity:cart.editableQty];
         NSDictionary *proDict = [cart asJsonReqParameter];
         if (proDict) [arr addObject:(id) proDict];
     }
