@@ -634,6 +634,13 @@
 			path = Farris;
 			sourceTree = "<group>";
 		};
+		35F528D3730923029B5084CD /* widgets */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = widgets;
+			sourceTree = "<group>";
+		};
 		35F529F346D1B44928BDE35D /* Home */ = {
 			isa = PBXGroup;
 			children = (
@@ -712,6 +719,7 @@
 				EBE8941917B7161C005F1895 /* LaunchViewController.storyboard */,
 				35F5271B9DC09F494AE33569 /* ShowConfigurations.m */,
 				35F5260573F670DC82AEFEFF /* ShowConfigurations.h */,
+				35F528D3730923029B5084CD /* widgets */,
 			);
 			path = Convention;
 			sourceTree = "<group>";

@@ -22,23 +22,28 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        if (self.availablePrinters.count > 0) {
+            selectedPrinter = 0;//by default select first printer
+        }
     }
     return self;
 }
 
 -(void)viewDidLoad {
     [super viewDidLoad];
-    //    [self.navigationController setTitle:@"Available Printers"];
-    selectedPrinter = -1;
+//    if(self.availablePrinters.count > 0){
+//        selectedPrinter = 0;//by default select first printer
+//    }else
+    selectedPrinter = -1; //the pop is called only when printers are available, so this should never happen
     self.contentSizeForViewInPopover = self.view.frame.size;
     UIBarButtonItem *flex = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     btnDone = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(selectPrinter:)];
-    btnDone.enabled = NO;
+    btnDone.enabled = self.availablePrinters.count > 0;
     NSArray *items = [NSArray arrayWithObjects:flex, btnDone, nil];
     self.navigationController.toolbarHidden = NO;
     self.toolbarItems = items;
 }
+
 
 -(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
     return 1;
@@ -49,17 +54,17 @@
 }
 
 -(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    return [_availablePrinters objectAtIndex:row];
+    return [_availablePrinters objectAtIndex:(NSUInteger) row];
 }
 
 -(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     selectedPrinter = row;
-    btnDone.enabled = YES;
 }
 
+
 -(IBAction)selectPrinter:(id)sender {
-    if (self.delegate) {
-        [self.delegate setSelectedPrinter:[_availablePrinters objectAtIndex:selectedPrinter]];
+    if (self.delegate && selectedPrinter >= 0) {
+        [self.delegate setSelectedPrinter:[_availablePrinters objectAtIndex:(NSUInteger) selectedPrinter]];
     }
 }
 

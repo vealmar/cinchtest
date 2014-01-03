@@ -1155,6 +1155,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)setSelectedPrinter:(NSString *)printer {
     currentPrinter = printer;
     [[SettingsManager sharedManager] saveSetting:@"printer" value:printer];
+    [self.poController dismissPopoverAnimated:YES];
     [self printOrder];
 }
 
