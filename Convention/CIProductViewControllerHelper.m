@@ -24,6 +24,7 @@
 #import "DiscountLineItem.h"
 #import "CoreDataUtil.h"
 #import "Vendor.h"
+#import "NumberUtil.h"
 
 
 @implementation CIProductViewControllerHelper {
@@ -205,6 +206,8 @@
                     if (validationErrors && validationErrors.count > 0) {
                         alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
                     }
+                } else if (statusCode == 0) {
+                    alertMessage = @"Request timed out.";
                 }
                 [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
             }];
@@ -250,26 +253,36 @@
 
 //Returns array with gross total, voucher total and discount total. All items in array are NSNumbers.
 - (NSArray *)getTotals:(Order *)coreDataOrder {
-    int grossTotal = 0;
-    int voucherTotal = 0;
-    int discountTotal = 0;
+    NSDecimalNumber *grossTotal = [NumberUtil zeroDecimal];
+    NSDecimalNumber *voucherTotal = [NumberUtil zeroDecimal];
+    NSDecimalNumber *discountTotal = [NumberUtil zeroDecimal];
     if (coreDataOrder) {
         for (Cart *cart in coreDataOrder.carts) {
-            int qty = [CIProductViewControllerHelper getQuantity:cart.editableQty]; //takes care of resolving quantities for multi stores
-            int numOfShipDates = cart.shipdates.count;
-            int price = [cart.editablePrice intValue];//todo switchto using product#showprice
-            grossTotal += qty * price * (numOfShipDates == 0 ? 1 : numOfShipDates);
+            NSNumber *qtyNumber = [NSNumber numberWithInt:[CIProductViewControllerHelper getQuantity:cart.editableQty]];//takes care of resolving quantities for multi stores
+            NSDecimalNumber *qty = [NSDecimalNumber decimalNumberWithString:[qtyNumber stringValue]];
+            NSNumber *shipDatesNumber = [NSNumber numberWithInt:cart.shipdates.count];
+            NSDecimalNumber *shipDates = cart.shipdates.count == 0 ? [NSDecimalNumber decimalNumberWithString:@"1"] : [NSDecimalNumber decimalNumberWithString:[shipDatesNumber stringValue]];
+            NSNumber *priceNumber = [NSNumber numberWithDouble:[cart.editablePrice intValue] / 100.0];
+            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[priceNumber stringValue]];//todo switch to using product#showprice
+            grossTotal = [grossTotal decimalNumberByAdding:[[qty decimalNumberByMultiplyingBy:price] decimalNumberByMultiplyingBy:shipDates]];
             if ([cart.editableVoucher intValue] != 0) {//cart.editableVoucher will never be null. all number fields have a default value of 0 in core data. you can change the default if you want .
-                voucherTotal += qty * [cart.editableVoucher intValue] * (numOfShipDates == 0 ? 1 : numOfShipDates);
+                NSNumber *voucherNumber = [NSNumber numberWithDouble:[cart.editableVoucher intValue] / 100.0];
+                NSDecimalNumber *voucher = [NSDecimalNumber decimalNumberWithString:[voucherNumber stringValue]];
+                NSDecimalNumber *intermediate = [[qty decimalNumberByMultiplyingBy:voucher] decimalNumberByMultiplyingBy:shipDates];
+                voucherTotal = [voucherTotal decimalNumberByAdding:intermediate];
             }
         }
         for (DiscountLineItem *discountLineItem in coreDataOrder.discountLineItems) {
-            int price = [discountLineItem.price intValue];
-            int qty = [discountLineItem.quantity intValue];
-            discountTotal += price * qty;
+            NSNumber *priceNumber = [NSNumber numberWithDouble:[discountLineItem.price intValue] / 100.0];
+            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[priceNumber stringValue]];
+            NSDecimalNumber *qty = [NSDecimalNumber decimalNumberWithString:[discountLineItem.quantity stringValue]];
+            discountTotal = [discountTotal decimalNumberByAdding:[price decimalNumberByMultiplyingBy:qty]];
         }
     }
-    return @[@(grossTotal / 100.0), @(voucherTotal / 100.0), @(discountTotal / 100.0)];
+    grossTotal = grossTotal == nil? [NumberUtil zeroDecimal] : grossTotal;
+    voucherTotal = voucherTotal == nil? [NumberUtil zeroDecimal] : voucherTotal;
+    discountTotal = discountTotal == nil? [NumberUtil zeroDecimal] : discountTotal;
+    return @[grossTotal, voucherTotal, discountTotal];
 }
 
 - (NSString *)displayNameForVendor:(NSInteger)id vendorDisctionaries:(NSArray *)vendorDictionaries {

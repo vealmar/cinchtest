@@ -428,9 +428,9 @@ SG: The argument 'detail' is the selected order.
         if ([ShowConfigurations instance].vouchers) {
             cell.total.hidden = YES;
         }
-            ALineItem *data = [currentOrder.lineItems objectAtIndex:(NSUInteger) [indexPath row]];
-            [cell updateCellAtIndexPath:indexPath withLineItem:data quantities:self.itemsQty prices:self.itemsPrice vouchers:self.itemsVouchers shipDates:self.itemsShipDates];
-            return cell;
+        ALineItem *data = [currentOrder.lineItems objectAtIndex:(NSUInteger) [indexPath row]];
+        [cell updateCellAtIndexPath:indexPath withLineItem:data quantities:self.itemsQty prices:self.itemsPrice vouchers:self.itemsVouchers shipDates:self.itemsShipDates];
+        return cell;
     }
 }
 
@@ -1155,6 +1155,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)setSelectedPrinter:(NSString *)printer {
     currentPrinter = printer;
     [[SettingsManager sharedManager] saveSetting:@"printer" value:printer];
+    [self.poController dismissPopoverAnimated:YES];
     [self printOrder];
 }
 

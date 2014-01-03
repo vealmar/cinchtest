@@ -235,7 +235,7 @@
 }
 
 - (void)loadProductsForCurrentVendorAndBulletin {
-    NSMutableArray *resultData = [[NSMutableArray alloc] init];
+    NSMutableArray *products = [[NSMutableArray alloc] init];
     self.vendorProductIds = [[NSMutableArray alloc] init];
     [[CoreDataManager getProducts:self.managedObjectContext] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Product *product = (Product *) obj;
@@ -245,10 +245,15 @@
             [self.vendorProductIds addObject:productId];
             NSNumber *bulletinId = product.bulletin_id;
             if (currentBulletin == 0 || (bulletinId && [bulletinId integerValue] == currentBulletin))
-                [resultData addObject:product.productId];
+                [products addObject:product];
         }
     }];
-    self.resultData = [helper sortProductsByinvtId:resultData];
+    NSArray *sortedProducts = [helper sortProductsByinvtId:products];
+    NSMutableArray *sortedProductIds = [NSMutableArray array];
+    for (Product *product in sortedProducts) {
+        [sortedProductIds addObject:product.productId];
+    }
+    self.resultData = sortedProductIds;
     [self updateVendorAndBulletinLabel];
 }
 
@@ -493,10 +498,12 @@
 * SG: This method is called when user taps the cart button.
 */
 - (IBAction)reviewCart:(id)sender {
-    CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder customer:self.customer authToken:self.authToken selectedVendorId:[NSNumber numberWithInt:currentVendor] loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId andManagedObjectContext:self.managedObjectContext];
-    cart.delegate = self;
-    cart.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:cart animated:YES completion:nil];
+    if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
+        CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder customer:self.customer authToken:self.authToken selectedVendorId:[NSNumber numberWithInt:currentVendor] loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId andManagedObjectContext:self.managedObjectContext];
+        cart.delegate = self;
+        cart.modalPresentationStyle = UIModalPresentationFullScreen;
+        [self presentViewController:cart animated:YES completion:nil];
+    }
 }
 
 - (BOOL)findAndResignFirstResponder:(UIView *)view {
@@ -729,7 +736,7 @@
     self.coreDataOrder.notes = [info objectForKey:kNotes];
     self.coreDataOrder.authorized = [info objectForKey:kAuthorizedBy];
     if (!([kShowCorp isEqualToString:kPigglyWiggly])) {
-        self.coreDataOrder.authorized = [info objectForKey:kShipFlag];
+        self.coreDataOrder.ship_flag = [[info objectForKey:kShipFlag] isEqualToString:@"true"] ? @(1) : @(0);
     }
 }
 
