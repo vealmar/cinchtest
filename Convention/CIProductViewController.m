@@ -255,6 +255,7 @@
     }
     self.resultData = sortedProductIds;
     [self updateVendorAndBulletinLabel];
+    [self.productsTableView reloadData];
 }
 
 - (void)createNewOrder {
