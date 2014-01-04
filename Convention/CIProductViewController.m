@@ -698,6 +698,9 @@
     [UIView setAnimationDuration:0.3f];
     frame.size.height += 300;
     self.productsTableView.frame = frame;
+    CGRect tbFrame = [self.productsTableView frame];
+    tbFrame.size.height = 501;
+    [self.productsTableView setFrame:tbFrame];
     keyboardUp = NO;
     [UIView commitAnimations];
 }
