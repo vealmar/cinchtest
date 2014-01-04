@@ -145,6 +145,9 @@
     if (!self.initialized) {
         [self saveOrderOnFirstLoad];
     }
+    CGRect tbFrame = [self.productsUITableView frame];
+    tbFrame.size.height = 459;
+    [self.productsUITableView setFrame:tbFrame];
 }
 
 - (void)saveOrderOnFirstLoad {
@@ -166,6 +169,7 @@
         };
         [helper sendRequest:method url:url parameters:parameters successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Submitting order"];
     }
+    self.initialized = YES;
 }
 
 - (AnOrder *)loadJson:(id)json {
