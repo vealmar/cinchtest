@@ -26,7 +26,7 @@
                 <key>AutocorrectionType</key>
                 <string>No</string>
                 <key>DefaultValue</key>
-                <string>bhc-8</string>
+                <string></string>
                 <key>IsSecure</key>
                 <false/>
                 <key>Key</key>
@@ -44,7 +44,7 @@
                 <key>AutocorrectionType</key>
                 <string>No</string>
                 <key>DefaultValue</key>
-                <string>bhc-8</string>
+                <string></string>
                 <key>IsSecure</key>
                 <true/>
                 <key>Key</key>
