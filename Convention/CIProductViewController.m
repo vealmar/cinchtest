@@ -633,16 +633,23 @@
     if ([self.searchText.text isEqualToString:@""]) {
         self.resultData = [self.vendorProductIds mutableCopy];
     } else {
-        NSPredicate *pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *bindings) {
-            NSNumber *productId = (NSNumber *) obj;
-            Product *product = [Product findProduct:productId];
+        NSArray *productsToSearch = [NSArray array];
+        if (currentVendor && currentVendor != 0)
+            productsToSearch = [[CoreDataUtil sharedManager] fetchArray:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(vendor_id == %d)", currentVendor]];
+        else
+            productsToSearch = [[CoreDataUtil sharedManager] fetchObjects:@"Product" sortField:@"invtid"];
+
+        NSMutableArray *matchingProductIds = [[NSMutableArray alloc] init];
+        for (Product *product in productsToSearch) {
             NSString *invtid = [NilUtil objectOrDefaultString:product.invtid defaultObject:@""];
             NSString *descrip = [NilUtil objectOrDefaultString:product.descr defaultObject:@""];
             NSString *desc2 = [NilUtil objectOrDefaultString:product.descr2 defaultObject:@""];
             NSString *test = [self.searchText.text uppercaseString];
-            return [[invtid uppercaseString] contains:test] || [[descrip uppercaseString] contains:test] || (desc2 != nil && ![desc2 isEqual:[NSNull null]] && [[desc2 uppercaseString] contains:test]);
-        }];
-        self.resultData = [[self.vendorProductIds filteredArrayUsingPredicate:pred] mutableCopy];
+            if ([[invtid uppercaseString] contains:test] || [[descrip uppercaseString] contains:test] || (desc2 != nil && ![desc2 isEqual:[NSNull null]] && [[desc2 uppercaseString] contains:test])) {
+                [matchingProductIds addObject:product.productId];
+            }
+        }
+        self.resultData = matchingProductIds;
         [selectedIdx removeAllObjects];
     }
     [self.productsTableView reloadData];
