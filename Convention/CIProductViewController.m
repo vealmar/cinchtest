@@ -30,6 +30,7 @@
 #import "Error.h"
 #import "Product+Extensions.h"
 #import "DiscountLineItem+Extensions.h"
+#import "AProduct.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -63,6 +64,7 @@
         currentVendor = 0;
         currentBulletin = 0;
         self.vendorProductIds = [NSMutableArray array];
+        self.vendorProducts = [NSMutableArray array];
         selectedIdx = [NSMutableSet set];
         self.multiStore = NO;
         self.orderSubmitted = NO;
@@ -237,12 +239,14 @@
 - (void)loadProductsForCurrentVendorAndBulletin {
     NSMutableArray *products = [[NSMutableArray alloc] init];
     self.vendorProductIds = [[NSMutableArray alloc] init];
+    self.vendorProducts = [[NSMutableArray alloc] init];
     [[CoreDataManager getProducts:self.managedObjectContext] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Product *product = (Product *) obj;
         NSNumber *vendorId = product.vendor_id;
         if (currentVendor == 0 || (vendorId && [vendorId integerValue] == currentVendor)) {
             NSNumber *productId = product.productId;
             [self.vendorProductIds addObject:productId];
+            [self.vendorProducts addObject:[[AProduct alloc] initWithCoreDataProduct:product]];
             NSNumber *bulletinId = product.bulletin_id;
             if (currentBulletin == 0 || (bulletinId && [bulletinId integerValue] == currentBulletin))
                 [products addObject:product];
@@ -629,18 +633,12 @@
 }
 
 - (IBAction)searchProducts:(id)sender {
-    if (self.vendorProductIds == nil|| [self.vendorProductIds isKindOfClass:[NSNull class]] || [self.vendorProductIds count] == 0) return;
+    if (self.vendorProducts == nil|| [self.vendorProducts isKindOfClass:[NSNull class]] || [self.vendorProducts count] == 0) return;
     if ([self.searchText.text isEqualToString:@""]) {
         self.resultData = [self.vendorProductIds mutableCopy];
     } else {
-        NSArray *productsToSearch = [NSArray array];
-        if (currentVendor && currentVendor != 0)
-            productsToSearch = [[CoreDataUtil sharedManager] fetchArray:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(vendor_id == %d)", currentVendor]];
-        else
-            productsToSearch = [[CoreDataUtil sharedManager] fetchObjects:@"Product" sortField:@"invtid"];
-
         NSMutableArray *matchingProductIds = [[NSMutableArray alloc] init];
-        for (Product *product in productsToSearch) {
+        for (AProduct *product in self.vendorProducts) {
             NSString *invtid = [NilUtil objectOrDefaultString:product.invtid defaultObject:@""];
             NSString *descrip = [NilUtil objectOrDefaultString:product.descr defaultObject:@""];
             NSString *desc2 = [NilUtil objectOrDefaultString:product.descr2 defaultObject:@""];

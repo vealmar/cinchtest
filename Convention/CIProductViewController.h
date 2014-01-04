@@ -90,6 +90,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 @property(nonatomic, strong) NSArray *resultData; //Array of all products displayed (filtered by search criteria, selected vendor, bulletin etc.)
 @property(nonatomic, strong) NSMutableArray *vendorProductIds; //key is product_id. All products for the selected vendor or foe all vendors if the selected vendor is 'Any'. This is used when performing Search, so that the search is limited to the selected vendor's products.
+@property(nonatomic, strong) NSMutableArray *vendorProducts; //AProducts
 @property(nonatomic, strong) NSDictionary *customer;
 @property(nonatomic, strong) NSString *authToken;
 @property(nonatomic, strong) NSString *loggedInVendorId; //vendor#id of logged in vendor
