@@ -147,6 +147,9 @@
         [super viewDidAppear:animated];
         [self loadNotesForm];
     }
+    CGRect tbFrame = [self.productsTableView frame];
+    tbFrame.size.height = 501;
+    [self.productsTableView setFrame:tbFrame];
 }
 
 
