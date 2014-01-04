@@ -382,6 +382,9 @@
     [UIView setAnimationDuration:0.3f];
     frame.size.height += 300;
     self.productsUITableView.frame = frame;
+    CGRect tbFrame = [self.productsUITableView frame];
+    tbFrame.size.height = 459;
+    [self.productsUITableView setFrame:tbFrame];
     [UIView commitAnimations];
 }
 @end
