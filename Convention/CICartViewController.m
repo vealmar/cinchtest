@@ -39,6 +39,8 @@
     __weak IBOutlet UIImageView *logo;
     NSIndexPath *selectedItemRowIndexPath;
     CIProductViewControllerHelper *helper;
+    BOOL keyboardUp;
+    float keyboardHeight;
 }
 @synthesize productsUITableView;
 @synthesize authToken;
@@ -71,6 +73,7 @@
         self.selectedVendorId = selectedVendorId;
         self.loggedInVendorId = loggedInVendorId;
         self.loggedInVendorGroupId = loggedInVendorGroupId;
+        keyboardUp = NO;
     }
     return self;
 }
@@ -134,9 +137,15 @@
     [self refreshView];
     [self.indicator stopAnimating];
     self.indicator.hidden = YES;
+    if (keyboardUp) {
+        //if the frame size was decreased to accomodate the keyboard right before cart was launched,
+        //when the view reappears, the keyboard would have been hidden (without keyboard hide notification being sent out it seems)
+        //so it is important to undo the frame resize at this point.
+        [self keyboardDidHide];
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:)
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
                                                  name:UIKeyboardDidHideNotification object:nil];
 }
 
@@ -145,9 +154,6 @@
     if (!self.initialized) {
         [self saveOrderOnFirstLoad];
     }
-    CGRect tbFrame = [self.productsUITableView frame];
-    tbFrame.size.height = 459;
-    [self.productsUITableView setFrame:tbFrame];
 }
 
 - (void)saveOrderOnFirstLoad {
@@ -184,8 +190,15 @@
 - (void)refreshView {
     self.productsInCart = [helper sortProductsByinvtId:[self.coreDataOrder productIds]];
     self.discountsInCart = [helper sortDiscountsByLineItemId:[self.coreDataOrder discountLineItemIds]];
-    [self.productsUITableView reloadData];
+    [self reloadTable];
     [self updateTotals];
+}
+
+- (void)reloadTable {
+    [self.productsUITableView reloadData];
+    if (keyboardUp) {
+        [self addInsetToTable:keyboardHeight - 95];//width because landscape. 69 is height of the view that contains totals at the end of the table.
+    }
 }
 
 - (void)updateTotals {
@@ -303,7 +316,7 @@
                     [self.coreDataOrder updateItemVoucher:@(0) productId:productId context:self.managedObjectContext];
                     self.unsavedChangesPresent = YES;
                 }
-                [self.productsUITableView reloadData];
+                [self reloadTable];
             }
         }];
     }
@@ -365,26 +378,50 @@
 - (void)keyboardWillShow:(NSNotification *)note {
     // Reducing the frame height by 300 causes it to end above the keyboard, so the keyboard cannot overlap any content. 300 is the height occupied by the keyboard.
     // In addition scroll the selected row into view.
-    CGRect frame = self.productsUITableView.frame;
+    NSDictionary *info = [note userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+//    CGRect frame = self.productsUITableView.frame;
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationBeginsFromCurrentState:YES];
+//    [UIView setAnimationDuration:0.3f];
+//    frame.size.height -= (kbSize.width - 95); //width because landscape. 95 is height of the view that contains totals at the end of the table.
+//    self.productsUITableView.frame = frame;
+//    [self.productsUITableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+//    [UIView commitAnimations];
+//todo: can be moved to helper method and reused
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
-    frame.size.height -= 300;
-    self.productsUITableView.frame = frame;
+    [self addInsetToTable:kbSize.width - 95]; //width because landscape. 95 is height of the view that contains totals at the end of the table.
     [self.productsUITableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    keyboardUp = YES;
+    keyboardHeight = kbSize.width;
     [UIView commitAnimations];
 }
 
-- (void)keyboardDidHide:(NSNotification *)note {
-    CGRect frame = self.productsUITableView.frame;
+- (void)addInsetToTable:(float)insetHeight {
+    UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, insetHeight, 0.0); //width because landscape. 69 is height of the view that contains totals at the end of the table.
+    self.productsUITableView.contentInset = contentInsets;
+    self.productsUITableView.scrollIndicatorInsets = contentInsets;
+}
+
+- (void)keyboardDidHide {
+//    CGRect frame = self.productsUITableView.frame;
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationBeginsFromCurrentState:YES];
+//    [UIView setAnimationDuration:0.3f];
+//    CGRect tbFrame = [self.productsUITableView frame];
+//    tbFrame.size.height = 459;
+//    [self.productsUITableView setFrame:tbFrame];
+//    [UIView commitAnimations];
+
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
-    frame.size.height += 300;
-    self.productsUITableView.frame = frame;
-    CGRect tbFrame = [self.productsUITableView frame];
-    tbFrame.size.height = 459;
-    [self.productsUITableView setFrame:tbFrame];
+    UIEdgeInsets contentInsets = UIEdgeInsetsZero;
+    self.productsUITableView.contentInset = contentInsets;
+    self.productsUITableView.scrollIndicatorInsets = contentInsets;
+    keyboardUp = NO;
     [UIView commitAnimations];
 }
 @end

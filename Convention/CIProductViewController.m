@@ -42,6 +42,7 @@
     CIProductViewControllerHelper *helper;
     PullToRefreshView *pull;
     BOOL keyboardUp;
+    float keyboardHeight;
 }
 @property(strong, nonatomic) AnOrder *savedOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
@@ -133,8 +134,8 @@
         //so it is important to undo the frame resize at this point.
         [self keyboardDidHide];
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow)
-                                                 name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
                                                  name:UIKeyboardDidHideNotification object:nil];
     self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
@@ -147,9 +148,6 @@
         [super viewDidAppear:animated];
         [self loadNotesForm];
     }
-    CGRect tbFrame = [self.productsTableView frame];
-    tbFrame.size.height = 501;
-    [self.productsTableView setFrame:tbFrame];
 }
 
 
@@ -233,7 +231,7 @@
         }
         [[CoreDataUtil sharedManager] saveObjects];
         [self loadProductsForCurrentVendorAndBulletin];
-        [self.productsTableView reloadData];
+        [self reloadTable];
         [pull finishedLoading];
     };
     [helper sendRequest:@"GET" url:url parameters:nil successBlock:successBlock failureBlock:nil view:self.view loadingText:@"Loading Products"];
@@ -262,7 +260,7 @@
     }
     self.resultData = sortedProductIds;
     [self updateVendorAndBulletinLabel];
-    [self.productsTableView reloadData];
+    [self reloadTable];
 }
 
 - (void)createNewOrder {
@@ -293,7 +291,7 @@
 }
 
 - (void)deserializeOrder {
-    [self.productsTableView reloadData];
+    [self reloadTable];
     [self updateTotals];
 }
 
@@ -593,7 +591,7 @@
             [self updateCellColorForId:(NSUInteger) [idx integerValue]];
         }];
         [selectedIdx removeAllObjects];
-        [self.productsTableView reloadData];
+        [self reloadTable];
         [strongCalView dismissViewControllerAnimated:NO completion:nil];
     };
     __block NSMutableArray *selectedArr = [NSMutableArray array];
@@ -653,7 +651,7 @@
         self.resultData = matchingProductIds;
         [selectedIdx removeAllObjects];
     }
-    [self.productsTableView reloadData];
+    [self reloadTable];
 }
 
 //User is in middle of editing a quantity (so the keyboard is visible), then taps somewhere else on the screen - the keyboard should disappear.
@@ -677,34 +675,57 @@
     }
 }
 
-- (void)keyboardWillShow {
+- (void)keyboardWillShow:(NSNotification *)note {
     // Reducing the frame height by 300 causes it to end above the keyboard, so the keyboard cannot overlap any content. 300 is the height occupied by the keyboard.
     // In addition scroll the selected row into view.
-    CGRect frame = self.productsTableView.frame;
+    NSDictionary *info = [note userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+//    CGRect frame = self.productsTableView.frame;
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationBeginsFromCurrentState:YES];
+//    [UIView setAnimationDuration:0.3f];
+//    frame.size.height -= (kbSize.width - 69); //width because landscape. 69 is height of the view that contains totals at the end of the table.
+//    self.productsTableView.frame = frame;
+//    [self.productsTableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+//    keyboardUp = YES;
+//    [UIView commitAnimations];
+    //todo maybe we should be scrolling the parent view of the table (put table and totals view inside a view and that will be the parent we scroll?)
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
-    frame.size.height -= 300;
-    self.productsTableView.frame = frame;
+    [self addInsetToTable:kbSize.width - 69];//width because landscape. 69 is height of the view that contains totals at the end of the table.
     [self.productsTableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
     keyboardUp = YES;
+    keyboardHeight = kbSize.width;
     [UIView commitAnimations];
+}
+
+- (void)addInsetToTable:(float)insetHeight {
+    UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, insetHeight, 0.0); //width because landscape. 69 is height of the view that contains totals at the end of the table.
+    self.productsTableView.contentInset = contentInsets;
+    self.productsTableView.scrollIndicatorInsets = contentInsets;
 }
 
 - (void)keyboardDidHide {
-    CGRect frame = self.productsTableView.frame;
+//    CGRect frame = self.productsTableView.frame;
+//    [UIView beginAnimations:nil context:NULL];
+//    [UIView setAnimationBeginsFromCurrentState:YES];
+//    [UIView setAnimationDuration:0.3f];
+//    CGRect tbFrame = [self.productsTableView frame];
+//    tbFrame.size.height = 501;
+//    [self.productsTableView setFrame:tbFrame];
+//    keyboardUp = NO;
+//    [UIView commitAnimations];
+
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
-    frame.size.height += 300;
-    self.productsTableView.frame = frame;
-    CGRect tbFrame = [self.productsTableView frame];
-    tbFrame.size.height = 501;
-    [self.productsTableView setFrame:tbFrame];
+    UIEdgeInsets contentInsets = UIEdgeInsetsZero;
+    self.productsTableView.contentInset = contentInsets;
+    self.productsTableView.scrollIndicatorInsets = contentInsets;
     keyboardUp = NO;
     [UIView commitAnimations];
 }
-
 - (void)sendOrderToServer:(BOOL)printThisOrder {
     if (![helper isOrderReadyForSubmission:self.coreDataOrder]) {return;}
     self.coreDataOrder.status = @"complete";
@@ -730,10 +751,17 @@
     [self.managedObjectContext deleteObject:self.coreDataOrder];//delete existing core data representation
     self.coreDataOrder = [helper createCoreDataCopyOfOrder:anOrder customer:self.customer loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];//create fresh new core data representation
     [[CoreDataUtil sharedManager] saveObjects];
-    [self.productsTableView reloadData];
+    [self reloadTable];
     [self updateTotals];
     [self updateErrorsView];
     return anOrder;
+}
+
+- (void)reloadTable {
+    [self.productsTableView reloadData];
+    if (keyboardUp) {
+        [self addInsetToTable:keyboardHeight - 69];//width because landscape. 69 is height of the view that contains totals at the end of the table.
+    }
 }
 
 - (void)updateTotals {
@@ -956,7 +984,6 @@
 
 #pragma Return
 - (void)Return {
-    BOOL orderWasSaved = self.savedOrder != nil;
     enum OrderUpdateStatus status = [self.selectedOrder.status isEqualToString:@"partial"] && self.savedOrder == nil? PartialOrderCancelled
             : [self.selectedOrder.status isEqualToString:@"partial"] && self.savedOrder != nil? PartialOrderSaved
                     : [self.selectedOrder.orderId intValue] != 0 && self.savedOrder == nil? PersistentOrderUnchanged
