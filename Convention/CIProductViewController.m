@@ -95,6 +95,8 @@
     [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
     self.showShipDates = [[ShowConfigurations instance] shipDates];
     self.allowPrinting = [ShowConfigurations instance].printing;
+    self.contactBeforeShipping = [ShowConfigurations instance].contactBeforeShipping;
+    self.cancelOrderConfig = [ShowConfigurations instance].cancelOrder;
     self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.productsTableView];
     [pull setDelegate:self];
@@ -491,7 +493,7 @@
 
 - (void)loadNotesForm {
     if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
-        CIFinalCustomerInfoViewController *ci = [[CIFinalCustomerInfoViewController alloc] initWithNibName:@"CIFinalCustomerInfoViewController" bundle:nil];
+        CIFinalCustomerInfoViewController *ci = [[CIFinalCustomerInfoViewController alloc] init];
         ci.order = self.coreDataOrder;
         ci.modalPresentationStyle = UIModalPresentationFormSheet;
         ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -726,6 +728,7 @@
     keyboardUp = NO;
     [UIView commitAnimations];
 }
+
 - (void)sendOrderToServer:(BOOL)printThisOrder {
     if (![helper isOrderReadyForSubmission:self.coreDataOrder]) {return;}
     self.coreDataOrder.status = @"complete";
@@ -775,8 +778,11 @@
     self.coreDataOrder.ship_notes = [info objectForKey:kShipNotes];
     self.coreDataOrder.notes = [info objectForKey:kNotes];
     self.coreDataOrder.authorized = [info objectForKey:kAuthorizedBy];
-    if (!([kShowCorp isEqualToString:kPigglyWiggly])) {
+    if (self.contactBeforeShipping) {
         self.coreDataOrder.ship_flag = [[info objectForKey:kShipFlag] isEqualToString:@"true"] ? @(1) : @(0);
+    }
+    if (self.cancelOrderConfig && [info objectForKey:kCancelByDays]) {
+        self.coreDataOrder.cancelByDays = [info objectForKey:kCancelByDays];
     }
 }
 

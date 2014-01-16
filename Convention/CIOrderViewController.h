@@ -56,6 +56,8 @@
 @property(weak, nonatomic) IBOutlet UILabel *discountTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotal;
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
+@property(weak, nonatomic) IBOutlet UISegmentedControl *cancelDaysControl;
+@property(weak, nonatomic) IBOutlet UIView *cancelDaysView;
 
 @property(weak, nonatomic) IBOutlet UIImageView *logoImage;
 
@@ -74,6 +76,8 @@
 - (IBAction)Delete:(id)sender;
 
 - (IBAction)searchOrders:(id)sender;
+
+- (IBAction)cancelByDaysChanged:(UISegmentedControl *)sender;
 
 
 - (void)setSelectedPrinter:(NSString *)printer;

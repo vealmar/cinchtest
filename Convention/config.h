@@ -94,6 +94,7 @@
 
 #define kAuthorizedBy @"authorized"
 #define kShipFlag @"ship_flag"
+#define kCancelByDays @"cancel_by_days"
 
 //purchased Items keys:
 #define kOrderItems @"line_items_attributes"

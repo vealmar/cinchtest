@@ -21,6 +21,7 @@
 @property(strong, nonatomic) NSString *status;
 @property(strong, nonatomic) NSString *authorized;
 @property(strong, nonatomic) NSDictionary *customer;
+@property(strong, nonatomic) NSNumber *cancelByDays;
 @property(strong, nonatomic) Order *coreDataOrder;
 @property(nonatomic) BOOL *shipFlag;
 @property(strong, nonatomic) NSArray *errors;
