@@ -13,7 +13,7 @@
 
 - (NSArray *)displayStrings;
 
-- (NSUInteger)numberOfOptios;
+- (NSUInteger)numberOfOptions;
 
 - (NSUInteger)indexForDays:(NSNumber *)days;
 @end

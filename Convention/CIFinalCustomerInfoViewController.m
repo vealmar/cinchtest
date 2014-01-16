@@ -28,9 +28,7 @@
 
 @property(strong, nonatomic) UITextField *authorizedByTextField;
 @property(strong, nonatomic) UITextView *notesTextView;
-@property(strong, nonatomic) UITextView *shipNotesTextView;
 @property(strong, nonatomic) MICheckBox *contactBeforeShippingCB;
-@property(strong, nonatomic) UIPickerView *cancelBeforeDaysPicker;
 @property(strong, nonatomic) UISegmentedControl *cancelDaysControl;
 @property BOOL contactBeforeShippingConfig;
 @property BOOL cancelConfig;
@@ -59,8 +57,7 @@
     [self defaultAuthorizedbyText];
     [self defaultShippingFields];
     self.notesTextView.text = self.order && self.order.notes ? self.order.notes : @"";
-    self.shipNotesTextView.text = self.order && self.order.ship_notes ? self.order.ship_notes : @"";
-    if (self.cancelConfig && self.order.cancelByDays && [self.order.cancelByDays intValue] > 0) {
+    if (self.cancelConfig) {
         [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForDays:self.order.cancelByDays]];
     }
     self.view.superview.bounds = originalBounds;
@@ -107,7 +104,7 @@
     CGFloat leftX = 30.0;
     CGFloat elementWidth = 480.0;
     CGFloat currentY = 0.0;
-    CGFloat verticalMargin = 8.0;
+    CGFloat verticalMargin = 12.0;
     UIFont *labelFont = [UIFont fontWithName:@"Futura-MediumItalic" size:24.0f];
     UILabel *authorizedByLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + (verticalMargin * 2), 300.0, 35.0)];
     authorizedByLabel.font = labelFont;
@@ -124,14 +121,7 @@
     [self.view addSubview:notesLabel];
     self.notesTextView = [[UITextView alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(notesLabel.frame) + verticalMargin, elementWidth, 80.0)];
     [self.view addSubview:self.notesTextView];
-    UILabel *shipNotesLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(self.notesTextView.frame) + verticalMargin, 300.0, 35.0)];
-    shipNotesLabel.font = labelFont;
-    shipNotesLabel.textColor = [UIColor whiteColor];
-    shipNotesLabel.text = @"SHIP NOTES";
-    [self.view addSubview:shipNotesLabel];
-    self.shipNotesTextView = [[UITextView alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(shipNotesLabel.frame) + verticalMargin, elementWidth, 50.0)];
-    [self.view addSubview:self.shipNotesTextView];
-    currentY = CGRectGetMaxY(self.shipNotesTextView.frame);
+    currentY = CGRectGetMaxY(self.notesTextView.frame);
     if (self.contactBeforeShippingConfig) {
         UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 350.0, 35.0)];
         contactLabel.font = labelFont;
@@ -175,13 +165,6 @@
     originalBounds = self.view.bounds;
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-//    [self.cancelBeforeDaysPicker selectRow:0 inComponent:0 animated:YES];
-    [self.cancelBeforeDaysPicker reloadComponent:0];
-}
-
-
 - (void)back:(id)sender {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -218,9 +201,7 @@
             if (dict == nil) {
                 return;
             }
-
-            [dict setObject:self.shipNotesTextView.text forKey:kShipNotes];
-            [dict setObject:self.notesTextView.text forKey:kNotes ];
+            [dict setObject:self.notesTextView.text forKey:kNotes];
             [dict setObject:self.authorizedByTextField.text forKey:kAuthorizedBy];
             if (self.contactBeforeShippingConfig) {
                 [dict setObject:(self.contactBeforeShippingCB.isChecked ? @"true" : @"false") forKey:kShipFlag];
@@ -240,30 +221,6 @@
     }
 }
 
-- (void)setViewMovedUp:(BOOL)movedUp {
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.3]; // if you want to slide up the view
-
-    CGRect rect = self.view.bounds;
-    if (movedUp) {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
-        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += kOFFSET_FOR_KEYBOARD + 40;
-        //rect.size.height -= keyboardOffset; // kOFFSET_FOR_KEYBOARD;
-        self.view.bounds = rect;
-    }
-    else {
-        // revert back to the normal state.
-        //rect.origin.y = 0; //-= keyboardOffset; // kOFFSET_FOR_KEYBOARD;
-        //rect.size.height += keyboardOffset; // kOFFSET_FOR_KEYBOARD;
-        //rect = originalBounds;
-
-        self.view.bounds = originalBounds;
-    }
-
-    [UIView commitAnimations];
-}
-
 - (void)setViewMovedUpDouble:(BOOL)movedUp {
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.3]; // if you want to slide up the view
@@ -272,14 +229,11 @@
     if (movedUp) {
         // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
         // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += kOFFSET_FOR_KEYBOARD + 70;//was -
-        //rect.size.height += kOFFSET_FOR_KEYBOARD;
+        rect.origin.y += kOFFSET_FOR_KEYBOARD + 70;
         self.view.bounds = rect;
     }
     else {
         // revert back to the normal state.
-        //rect.origin.y = 0;//-= (kOFFSET_FOR_KEYBOARD-7);//was +
-        //rect.size.height -= kOFFSET_FOR_KEYBOARD;
         self.view.bounds = originalBounds;
     }
 
@@ -301,12 +255,6 @@
 }
 
 - (void)textViewDidBeginEditing:(UITextView *)sender {
-    if ([sender isEqual:self.shipNotesTextView]) {
-        //move the main view, so that the keyboard does not hide it.
-        if (self.view.frame.origin.y >= 0) {
-            [self setViewMovedUp:YES];
-        }
-    }
     if ([sender isEqual:self.notesTextView]) {
         //move the main view, so that the keyboard does not hide it.
         if (self.view.frame.origin.y >= 0) {
@@ -316,12 +264,6 @@
 }
 
 - (void)textViewDidEndEditing:(UITextView *)sender {
-    if ([sender isEqual:self.shipNotesTextView]) {
-        //move the main view, so that the keyboard does not hide it.
-        if (self.view.frame.origin.y >= 0) {
-            [self setViewMovedUp:NO];
-        }
-    }
     if ([sender isEqual:self.notesTextView]) {
         //move the main view, so that the keyboard does not hide it.
         if (self.view.frame.origin.y >= 0) {

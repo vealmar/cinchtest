@@ -87,7 +87,6 @@
 #define kOrderCustomerID @"customer_id"
 #define kStores @"stores"
 
-#define kShipNotes @"ship_notes"
 #define kNotes @"notes"
 
 #define kBillName @"billname"

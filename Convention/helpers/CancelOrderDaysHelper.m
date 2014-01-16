@@ -32,10 +32,10 @@
 }
 
 - (NSNumber *)numberAtIndex:(NSInteger)index {
-    if (index >= 0 && index < self.dayNumbers.count)
-        return self.dayNumbers[(NSUInteger) index];
+    if (index < 0 || index > self.dayNumbers.count)
+        return self.dayNumbers[0];
     else
-        return nil;
+        return self.dayNumbers[(NSUInteger) index];
 }
 
 
@@ -46,7 +46,7 @@
         return self.dayStrings[0];
 }
 
-- (NSUInteger)numberOfOptios {
+- (NSUInteger)numberOfOptions {
     return self.dayNumbers.count;
 }
 

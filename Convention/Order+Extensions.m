@@ -127,7 +127,6 @@
     }
     NSMutableDictionary *newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNNull:self.customer_id], kOrderCustomerID,
                                                                                       [NilUtil objectOrNNull:self.notes], kNotes,
-                                                                                      [NilUtil objectOrNNull:self.ship_notes], kShipNotes,
                                                                                       [NilUtil objectOrNNull:self.authorized], kAuthorizedBy,
                                                                                       [self.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
                                                                                       [NilUtil objectOrNNull:self.cancelByDays], kCancelByDays,

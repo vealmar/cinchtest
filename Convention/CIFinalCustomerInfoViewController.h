@@ -28,7 +28,4 @@
 @interface CIFinalCustomerInfoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate>
 @property(nonatomic, assign) id <CIFinalCustomerDelegate> delegate;
 @property Order *order;
-
-- (IBAction)submit:(id)sender;
-
 @end

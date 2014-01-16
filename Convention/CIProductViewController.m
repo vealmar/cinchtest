@@ -775,7 +775,6 @@
 #pragma mark - CIFinalCustomerDelegate
 
 - (void)setAuthorizedByInfo:(NSDictionary *)info {
-    self.coreDataOrder.ship_notes = [info objectForKey:kShipNotes];
     self.coreDataOrder.notes = [info objectForKey:kNotes];
     self.coreDataOrder.authorized = [info objectForKey:kAuthorizedBy];
     if (self.contactBeforeShipping) {
