@@ -104,8 +104,8 @@
     CGFloat leftX = 30.0;
     CGFloat elementWidth = 480.0;
     CGFloat currentY = 0.0;
-    CGFloat verticalMargin = 12.0;
-    UIFont *labelFont = [UIFont fontWithName:@"Futura-MediumItalic" size:24.0f];
+    CGFloat verticalMargin = 20.0;
+    UIFont *labelFont = [UIFont fontWithName:@"Futura-MediumItalic" size:22.0f];
     UILabel *authorizedByLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + (verticalMargin * 2), 300.0, 35.0)];
     authorizedByLabel.font = labelFont;
     authorizedByLabel.textColor = [UIColor whiteColor];
@@ -148,12 +148,12 @@
     [cancelButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchDown];
     [cancelButton setBackgroundImage:[UIImage imageNamed:@"cart-cancelout.png"] forState:UIControlStateNormal];
     [cancelButton setBackgroundImage:[UIImage imageNamed:@"cart-cancelin.png"] forState:UIControlStateHighlighted];
-    cancelButton.frame = CGRectMake(leftX - 1.0, currentY + verticalMargin, 162.0, 56.0);
+    cancelButton.frame = CGRectMake(leftX + 10.0, currentY + verticalMargin, 162.0, 56.0);
     UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [submitButton addTarget:self action:@selector(submit:) forControlEvents:UIControlEventTouchDown];
     [submitButton setBackgroundImage:[UIImage imageNamed:@"submitorderout.png"] forState:UIControlStateNormal];
     [submitButton setBackgroundImage:[UIImage imageNamed:@"submitorderin.png"] forState:UIControlStateSelected];
-    submitButton.frame = CGRectMake(250.0, cancelButton.frame.origin.y, 260.0, 56.0);
+    submitButton.frame = CGRectMake(240.0, cancelButton.frame.origin.y, 260.0, 56.0);
     currentY = CGRectGetMaxY(submitButton.frame);
     [self.view addSubview:cancelButton];
     [self.view addSubview:submitButton];
