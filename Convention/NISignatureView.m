@@ -152,7 +152,7 @@ NISignaturePoint previousVertex;
 
 - (void)erase {
     length = 0;
-
+    self.drawnSignature = false;
     [self setNeedsDisplay];
 }
 
