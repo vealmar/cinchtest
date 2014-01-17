@@ -13,6 +13,7 @@
 @property BOOL discounts;
 @property BOOL shipDates;
 @property BOOL printing;
+@property BOOL captureSignature;
 @property BOOL vouchers;
 @property BOOL contracts;
 @property BOOL contactBeforeShipping;

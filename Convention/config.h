@@ -24,6 +24,7 @@
 #define kDBGETCUSTOMER(customerId) [NSString stringWithFormat:@"%@/vendor/shows/%@/customers/%@.json?",kBASEURL,ShowID, customerId]
 #define kDBORDER [NSString stringWithFormat:@"%@/vendor/shows/%@/orders.json",kBASEURL,ShowID]
 #define kDBORDEREDITS(ID) [NSString stringWithFormat:@"%@/vendor/shows/%@/orders/%d.json",kBASEURL,ShowID,ID]
+#define kDBCAPTURESIG(ID)[NSString stringWithFormat:@"%@/vendor/orders/%d/signature.json",kBASEURL,ID]
 
 //delete line item from given order
 #define kDBOrderLineItemDelete(ID) [NSString stringWithFormat:@"%@/vendor/line_items/%d.json", kBASEURL, ID]

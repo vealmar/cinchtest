@@ -28,6 +28,7 @@
 @property(strong, nonatomic) NSString *loggedInVendorId;
 @property(strong, nonatomic) NSString *loggedInVendorGroupId;
 @property(strong, nonatomic) AnOrder *savedOrder;
+@property(strong, nonatomic) CISignatureViewController *signatureViewController;
 @property(nonatomic) BOOL unsavedChangesPresent;
 @property(nonatomic, strong) NSArray *productsInCart;
 @property(nonatomic, strong) NSArray *discountsInCart;
@@ -110,6 +111,7 @@
     navBar.topItem.title = self.title;
     self.showShipDates = [[ShowConfigurations instance] shipDates];
     self.allowPrinting = [ShowConfigurations instance].printing;
+    self.allowSignature = [ShowConfigurations instance].captureSignature;
     self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
     logo.image = [ShowConfigurations instance].logo;
     self.discountTotal.hidden = self.discountTotalLabel.hidden = ![ShowConfigurations instance].discounts;
@@ -211,6 +213,12 @@
 
 }
 
+- (void)dismissSelf {
+    [self.indicator startAnimating];
+    [self.delegate cartViewDismissedWith:self.coreDataOrder savedOrder:self.savedOrder unsavedChangesPresent:self.unsavedChangesPresent orderCompleted:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -293,9 +301,11 @@
             self.coreDataOrder = [helper createCoreDataCopyOfOrder:self.savedOrder customer:self.customer loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];
             self.indicator.hidden = NO;
             self.unsavedChangesPresent = NO;
-            [self.indicator startAnimating];
-            [self.delegate cartViewDismissedWith:self.coreDataOrder savedOrder:self.savedOrder unsavedChangesPresent:self.unsavedChangesPresent orderCompleted:YES];
-            [self dismissViewControllerAnimated:YES completion:nil];
+            if (self.allowSignature) {
+                [self displaySignatureScreen];
+            } else {
+                [self dismissSelf];
+            }
         };
         void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
             if (json) {
@@ -369,6 +379,22 @@
         [popoverController presentPopoverFromRect:frame inView:self.productsUITableView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
 }
+
+#pragma signature
+
+- (void)displaySignatureScreen {
+    NSArray *totals = [helper getTotals:self.coreDataOrder];
+    double netTotal = [(NSNumber *) totals[0] doubleValue] + [(NSNumber *) totals[2] doubleValue];
+    self.signatureViewController = [[CISignatureViewController alloc] initWithTotal:[NSNumber numberWithDouble:netTotal] authToken:self.authToken orderId:self.coreDataOrder.orderId andDelegate:(id <SignatureDelegate>) self];
+    self.signatureViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:self.signatureViewController animated:YES completion:nil];
+
+}
+
+- (void)signatureViewDismissed {
+    [self dismissSelf];
+}
+
 #pragma Keyboard
 
 - (void)setSelectedRow:(NSIndexPath *)index {

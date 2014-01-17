@@ -17,12 +17,15 @@
 		33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FD164D743E007B872A /* ErrorHandler.m */; };
 		33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FF164D743E007B872A /* SettingsManager.m */; };
 		33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F6164D740A007B872A /* GroupedObject.m */; };
+		35F5206FFC8C6A51336A10D6 /* signature-area.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F521BA81102E568B5457FC /* signature-area.png */; };
+		35F52096056B326E5BD1ECDF /* clear-button-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52E655DE2917031C78A08 /* clear-button-out.png */; };
 		35F520A4A89A2A79DE9CB392 /* Error+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F524A5199E6B8079AE5D89 /* Error+Extensions.m */; };
 		35F521774853EA59DB5E6754 /* CartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F522AD3FB35CB710C8F62B /* CartViewCell.m */; };
 		35F521BE40815F698E85FF9E /* CIProductViewControllerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */; };
 		35F5220802E678E6EC146A37 /* PWCartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F529A69976E731F9A16513 /* PWCartViewCell.m */; };
 		35F522E235D6365963A9F1B2 /* SynchronousRequestUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52CB070F4E7055F001511 /* SynchronousRequestUtil.m */; };
 		35F52565AD01794E5970974F /* ALineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52C47A71D4C79AE68083C /* ALineItem.m */; };
+		35F52586B04A7B974C97AC31 /* clear-button-in.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F524B699AFD10A2D4EAE87 /* clear-button-in.png */; };
 		35F525B67308FF3F244DB79D /* CancelOrderDaysHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5279FCE98C192DDD1BFB4 /* CancelOrderDaysHelper.m */; };
 		35F5263C1F6068DD7F84A564 /* SynchronousResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5268AF5940CE7CE1517AE /* SynchronousResponse.m */; };
 		35F527C6D5A71434688ABEC2 /* FarrisBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */; };
@@ -35,13 +38,17 @@
 		35F5287D59BBEFD3CD4C4BC0 /* Product+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F529A33F7F381915688AB6 /* Product+Extensions.m */; };
 		35F5295CF38EFEB3F0DB36D1 /* AProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52B12F27616E0F71C5A98 /* AProduct.m */; };
 		35F52A19F4EFCD93702E646D /* ProductCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52A62C4F3539476C1736F /* ProductCell.m */; };
+		35F52A25B60B502E3DF218A5 /* NISignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5222D1F70C9214C658BC9 /* NISignatureView.m */; };
 		35F52A5825DDE6D3AD746040 /* SaveButton-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F526632CD99103C51C7B00 /* SaveButton-out.png */; };
 		35F52AF2E661528B3EDAABF5 /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52E02103987C5239CB07D /* NumberUtil.m */; };
 		35F52B7D65E8F84C2681BE43 /* AnOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F520072428E6A11A140BBE /* AnOrder.m */; };
 		35F52C2CA8DB70FA8DF0B840 /* save2in.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F528C981F800396D59FC9C /* save2in.png */; };
 		35F52D6A787D58805C6CB5D1 /* EditButton-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F526801357E15378251B04 /* EditButton-out.png */; };
+		35F52DB7A66E564A37972B3C /* submit-button-out-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5247F0ABA7083C162CA58 /* submit-button-out-green.png */; };
+		35F52DC05197C7D90195FCFB /* submit-button-in-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5216AD37BC89DD32025AB /* submit-button-in-green.png */; };
 		35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52CF25ABF1AF16A369494 /* NilUtil.m */; };
 		35F52E7C36B02E6EBA801A1B /* MyOrders.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52BABED1C4FFB96E78BD9 /* MyOrders.png */; };
+		35F52ED9FA6DD44651607AD8 /* overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52D51B287F531BAD31F9B /* overlay.png */; };
 		35F52F4B833B78BCED458609 /* SaveButton-in.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52FB5EB455BBF057DAC6C /* SaveButton-in.png */; };
 		35F52FC5C5E61BAC2A7CD197 /* save2out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5256E54BCD292CF9ED322 /* save2out.png */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
@@ -209,6 +216,12 @@
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
 		EB0C7FE91760194B0038A3AD /* FarrisOrderDetail.png in Resources */ = {isa = PBXBuildFile; fileRef = EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */; };
 		EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5A0A9B175EF2C200246C24 /* FBLogin.png */; };
+		EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD10188851810004ABB6 /* GLKit.framework */; };
+		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
+		EB5BBD20188858050004ABB6 /* CISignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5BBD1E188858050004ABB6 /* CISignatureViewController.m */; };
+		EB5BBD21188858050004ABB6 /* CISignatureViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB5BBD1F188858050004ABB6 /* CISignatureViewController.xib */; };
+		EB5BBD25188891380004ABB6 /* CISigOverlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5BBD23188891380004ABB6 /* CISigOverlayViewController.m */; };
+		EB5BBD26188891380004ABB6 /* CISigOverlayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB5BBD24188891380004ABB6 /* CISigOverlayViewController.xib */; };
 		EB652B23176022E400287961 /* Futura Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB652B22176022E400287961 /* Futura Medium.ttf */; };
 		EB7D8FD617D620FA00F2FB8C /* blue-textbox.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */; };
 		EB7D8FDC17DA61E100F2FB8C /* Customer.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FDB17DA61E100F2FB8C /* Customer.m */; };
@@ -258,12 +271,17 @@
 		35F520072428E6A11A140BBE /* AnOrder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnOrder.m; sourceTree = "<group>"; };
 		35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductViewControllerHelper.m; sourceTree = "<group>"; };
 		35F52168A588B29C511220B5 /* DiscountLineItem+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DiscountLineItem+Extensions.h"; sourceTree = "<group>"; };
+		35F5216AD37BC89DD32025AB /* submit-button-in-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "submit-button-in-green.png"; sourceTree = "<group>"; };
+		35F521BA81102E568B5457FC /* signature-area.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signature-area.png"; sourceTree = "<group>"; };
+		35F5222D1F70C9214C658BC9 /* NISignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NISignatureView.m; sourceTree = "<group>"; };
 		35F5224B1B84CB4E7EC646E7 /* PWCartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PWCartViewCell.h; sourceTree = "<group>"; };
 		35F522AD3FB35CB710C8F62B /* CartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CartViewCell.m; sourceTree = "<group>"; };
 		35F5234C615180F131627137 /* FarrisCartViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FarrisCartViewCell.m; sourceTree = "<group>"; };
 		35F5234FFAA50499097031CC /* CIProductViewControllerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIProductViewControllerHelper.h; sourceTree = "<group>"; };
 		35F5245F94A98A6ACF4C2C81 /* DiscountLineItem+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DiscountLineItem+Extensions.m"; sourceTree = "<group>"; };
+		35F5247F0ABA7083C162CA58 /* submit-button-out-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "submit-button-out-green.png"; sourceTree = "<group>"; };
 		35F524A5199E6B8079AE5D89 /* Error+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Error+Extensions.m"; sourceTree = "<group>"; };
+		35F524B699AFD10A2D4EAE87 /* clear-button-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clear-button-in.png"; sourceTree = "<group>"; };
 		35F524EF83F7D46C93A26CF9 /* SynchronousRequestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronousRequestUtil.h; sourceTree = "<group>"; };
 		35F5256E54BCD292CF9ED322 /* save2out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = save2out.png; sourceTree = "<group>"; };
 		35F5260573F670DC82AEFEFF /* ShowConfigurations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowConfigurations.h; sourceTree = "<group>"; };
@@ -284,6 +302,7 @@
 		35F529F48A8F22BE54DACF71 /* Error+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Error+Extensions.h"; sourceTree = "<group>"; };
 		35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBG.png; sourceTree = "<group>"; };
 		35F52A62C4F3539476C1736F /* ProductCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductCell.m; sourceTree = "<group>"; };
+		35F52A64DD2EF721B2325A86 /* NISignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NISignatureView.h; sourceTree = "<group>"; };
 		35F52B12F27616E0F71C5A98 /* AProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AProduct.m; sourceTree = "<group>"; };
 		35F52B2D2043856F6E5DD285 /* CancelOrderDaysHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CancelOrderDaysHelper.h; sourceTree = "<group>"; };
 		35F52B3C8A568456497B76FC /* ProductCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductCell.h; sourceTree = "<group>"; };
@@ -296,8 +315,10 @@
 		35F52CB070F4E7055F001511 /* SynchronousRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronousRequestUtil.m; sourceTree = "<group>"; };
 		35F52CE4A77F64FBC2BA5559 /* NilUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NilUtil.h; sourceTree = "<group>"; };
 		35F52CF25ABF1AF16A369494 /* NilUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NilUtil.m; sourceTree = "<group>"; };
+		35F52D51B287F531BAD31F9B /* overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = overlay.png; sourceTree = "<group>"; };
 		35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
 		35F52E02103987C5239CB07D /* NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberUtil.m; sourceTree = "<group>"; };
+		35F52E655DE2917031C78A08 /* clear-button-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clear-button-out.png"; sourceTree = "<group>"; };
 		35F52E74AD542ECB69B97735 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		35F52FB5EB455BBF057DAC6C /* SaveButton-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SaveButton-in.png"; sourceTree = "<group>"; };
 		6414A6E91496AE960088586B /* orangebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangebutton.png; sourceTree = "<group>"; };
@@ -534,6 +555,14 @@
 		C7EB25E71665CA8D00B1CD4F /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
 		EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisOrderDetail.png; sourceTree = "<group>"; };
 		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
+		EB5BBD10188851810004ABB6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		EB5BBD121888518E0004ABB6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		EB5BBD1D188858050004ABB6 /* CISignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISignatureViewController.h; sourceTree = "<group>"; };
+		EB5BBD1E188858050004ABB6 /* CISignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISignatureViewController.m; sourceTree = "<group>"; };
+		EB5BBD1F188858050004ABB6 /* CISignatureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CISignatureViewController.xib; sourceTree = "<group>"; };
+		EB5BBD22188891370004ABB6 /* CISigOverlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISigOverlayViewController.h; sourceTree = "<group>"; };
+		EB5BBD23188891380004ABB6 /* CISigOverlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISigOverlayViewController.m; sourceTree = "<group>"; };
+		EB5BBD24188891380004ABB6 /* CISigOverlayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CISigOverlayViewController.xib; sourceTree = "<group>"; };
 		EB652B22176022E400287961 /* Futura Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Futura Medium.ttf"; sourceTree = "<group>"; };
 		EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-textbox.png"; sourceTree = "<group>"; };
 		EB7D8FDA17DA61E100F2FB8C /* Customer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Customer.h; sourceTree = "<group>"; };
@@ -578,6 +607,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */,
+				EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */,
 				C713AFAC1656E45100E151EA /* QuartzCore.framework in Frameworks */,
 				335A42F3164D7306007B872A /* CoreData.framework in Frameworks */,
 				6E118605145F2FB100568ED1 /* CFNetwork.framework in Frameworks */,
@@ -690,6 +721,8 @@
 		6E118564145F2F2200568ED1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EB5BBD121888518E0004ABB6 /* OpenGLES.framework */,
+				EB5BBD10188851810004ABB6 /* GLKit.framework */,
 				C713AFAB1656E45100E151EA /* QuartzCore.framework */,
 				335A42F2164D7306007B872A /* CoreData.framework */,
 				6E118601145F2FB100568ED1 /* CFNetwork.framework */,
@@ -797,6 +830,12 @@
 				35F526801357E15378251B04 /* EditButton-out.png */,
 				35F52FB5EB455BBF057DAC6C /* SaveButton-in.png */,
 				35F526632CD99103C51C7B00 /* SaveButton-out.png */,
+				35F524B699AFD10A2D4EAE87 /* clear-button-in.png */,
+				35F52E655DE2917031C78A08 /* clear-button-out.png */,
+				35F52D51B287F531BAD31F9B /* overlay.png */,
+				35F521BA81102E568B5457FC /* signature-area.png */,
+				35F5216AD37BC89DD32025AB /* submit-button-in-green.png */,
+				35F5247F0ABA7083C162CA58 /* submit-button-out-green.png */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1021,6 +1060,14 @@
 				35F5267D5CECDEA4EC54146F /* FarrisCartViewCell.h */,
 				EBFC477817D5745D0009CAD7 /* PWCartViewCell.xib */,
 				EBFC477A17D574740009CAD7 /* FarrisCartViewCell.xib */,
+				EB5BBD1D188858050004ABB6 /* CISignatureViewController.h */,
+				EB5BBD1E188858050004ABB6 /* CISignatureViewController.m */,
+				EB5BBD1F188858050004ABB6 /* CISignatureViewController.xib */,
+				35F5222D1F70C9214C658BC9 /* NISignatureView.m */,
+				35F52A64DD2EF721B2325A86 /* NISignatureView.h */,
+				EB5BBD22188891370004ABB6 /* CISigOverlayViewController.h */,
+				EB5BBD23188891380004ABB6 /* CISigOverlayViewController.m */,
+				EB5BBD24188891380004ABB6 /* CISigOverlayViewController.xib */,
 			);
 			name = Cart;
 			sourceTree = "<group>";
@@ -1363,6 +1410,7 @@
 				6E21EF2615487B30002CF4B7 /* CIFinalCustomerInfoViewController.xib in Resources */,
 				6E21EF291548A2AB002CF4B7 /* customerlistNOBACKGROUND.png in Resources */,
 				6E21EF2B1548AB57002CF4B7 /* popupadjustitemNEW.png in Resources */,
+				EB5BBD26188891380004ABB6 /* CISigOverlayViewController.xib in Resources */,
 				6E21EF321548E8AA002CF4B7 /* cancelbutton.png in Resources */,
 				6EDBF906154EFD6100D4A0E7 /* CI_144logo.png in Resources */,
 				6EDBF909154EFD8000D4A0E7 /* CI_72logo.png in Resources */,
@@ -1404,6 +1452,7 @@
 				C7DCDF0916A297FE00F66C52 /* BulletinViewController.xib in Resources */,
 				C7CF070716AC55A0001DADED /* checkbox_not_ticked.png in Resources */,
 				C7CF070816AC55A0001DADED /* checkbox_ticked.png in Resources */,
+				EB5BBD21188858050004ABB6 /* CISignatureViewController.xib in Resources */,
 				C75D61B816ACA6C300441B63 /* FarrisProductCell.xib in Resources */,
 				C78B269C16ADC55B005AD6AB /* total_button.png in Resources */,
 				C75EF9811730D1A90086EC52 /* cartBG.png in Resources */,
@@ -1472,6 +1521,12 @@
 				35F52D6A787D58805C6CB5D1 /* EditButton-out.png in Resources */,
 				35F52F4B833B78BCED458609 /* SaveButton-in.png in Resources */,
 				35F52A5825DDE6D3AD746040 /* SaveButton-out.png in Resources */,
+				35F52586B04A7B974C97AC31 /* clear-button-in.png in Resources */,
+				35F52096056B326E5BD1ECDF /* clear-button-out.png in Resources */,
+				35F52ED9FA6DD44651607AD8 /* overlay.png in Resources */,
+				35F5206FFC8C6A51336A10D6 /* signature-area.png in Resources */,
+				35F52DC05197C7D90195FCFB /* submit-button-in-green.png in Resources */,
+				35F52DB7A66E564A37972B3C /* submit-button-out-green.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1506,6 +1561,7 @@
 				33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */,
 				6E118572145F2F2200568ED1 /* main.m in Sources */,
 				6E118576145F2F2200568ED1 /* CIAppDelegate.m in Sources */,
+				EB5BBD20188858050004ABB6 /* CISignatureViewController.m in Sources */,
 				6E118579145F2F2200568ED1 /* CIViewController.m in Sources */,
 				6EAFF9EC145FABA400491B42 /* JSONKit.m in Sources */,
 				6EAFF9F1145FB04800491B42 /* CIProductViewController.m in Sources */,
@@ -1552,6 +1608,7 @@
 				C73E2FDE165C810B00FE8DE9 /* ProductCart.xcmappingmodel in Sources */,
 				C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */,
 				C75A1B6816691E770008A466 /* UIAlertViewDelegateWithBlock.m in Sources */,
+				EB5BBD25188891380004ABB6 /* CISigOverlayViewController.m in Sources */,
 				C730D9CF16705F330013B87B /* Cart+Extensions.m in Sources */,
 				C71653A81671173900F65D02 /* SetupInfo.m in Sources */,
 				C727F6901671A2AC00F2847D /* CoreDataUtil.m in Sources */,
@@ -1587,6 +1644,7 @@
 				EBB8B0F818872D0E002080D8 /* Order.m in Sources */,
 				35F5295CF38EFEB3F0DB36D1 /* AProduct.m in Sources */,
 				35F525B67308FF3F244DB79D /* CancelOrderDaysHelper.m in Sources */,
+				35F52A25B60B502E3DF218A5 /* NISignatureView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -29,6 +29,7 @@ static ShowConfigurations *showConfigurations = nil;
         showConfigurations.contracts = [[json objectForKey:@"contracts"] boolValue];
         showConfigurations.contactBeforeShipping = [[json objectForKey:@"contactBeforeShipping"] boolValue];
         showConfigurations.cancelOrder = [[json objectForKey:@"cancelOrder"] boolValue];
+        showConfigurations.captureSignature = [[json objectForKey:@"signatureCapture"] boolValue];
         NSString *loginScreenUrl = ((NSString *) [json objectForKey:@"iosLoginScreen"]);
         showConfigurations.loginScreen = [ShowConfigurations imageFromUrl:loginScreenUrl defaultImage:@"loginBG.png"];
         NSString *logoUrl = ((NSString *) [json objectForKey:@"iosLogo"]);
