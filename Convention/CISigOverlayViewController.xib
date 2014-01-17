@@ -22,8 +22,8 @@
                         <outletCollection property="gestureRecognizers" destination="rgi-I1-OEP" appends="YES" id="NtN-dL-bvH"/>
                     </connections>
                 </imageView>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EJS-lJ-PRd">
-                    <rect key="frame" x="9" y="28" width="222" height="32"/>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EJS-lJ-PRd">
+                    <rect key="frame" x="67" y="28" width="222" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="29"/>
                     <state key="normal" title="Ci"/>
