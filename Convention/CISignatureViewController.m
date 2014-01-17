@@ -39,14 +39,22 @@
 
 
 - (IBAction)submit:(UIButton *)sender {
-    UIImage *signatureImage = [self.signatureView getSignatureImage];
-    if (signatureImage) {
-        void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+    @try {
+        UIImage *signatureImage = [self.signatureView getSignatureImage];
+        if (signatureImage) {
+            void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                [self signatureCaptured];
+            };
+            [self.helper sendSignature:signatureImage orderId:self.orderId authToken:self.authToken successBlock:successBlock failureBlock:nil view:self.view];
+        } else {
             [self signatureCaptured];
-        };
-        [self.helper sendSignature:signatureImage orderId:self.orderId authToken:self.authToken successBlock:successBlock failureBlock:nil view:self.view];
-    } else {
-        [self signatureCaptured];
+        }
+    }
+    @catch (NSException *exception) {
+        NSLog(@"Exception occurred: %@, %@", exception, [exception userInfo]);
+        NSString *msg = [NSString stringWithFormat:@"There was an error capturing the signature. Please try again. \nError: %@", [exception name]];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
     }
 }
 
