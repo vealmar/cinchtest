@@ -215,7 +215,7 @@
 }
 
 - (void)sendSignature:(UIImage *)signature total:(NSNumber *)total orderId:(NSNumber *)orderId authToken:(NSString *)authToken successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock view:(UIView *)view {
-    NSData *imageData = UIImageJPEGRepresentation(signature, 0.5);
+    NSData *imageData = UIImagePNGRepresentation(signature);
     MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
     submit.labelText = @"Saving";
     [submit show:NO];
