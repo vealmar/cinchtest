@@ -6,7 +6,6 @@
 #import "CISignatureViewController.h"
 #import "ShowConfigurations.h"
 #import "NISignatureView.h"
-#import "AFHTTPRequestOperation.h"
 #import "CIProductViewControllerHelper.h"
 #import "NumberUtil.h"
 
@@ -60,19 +59,15 @@
 }
 
 - (void)signatureCaptured {
-    [self displayOverlayScreen];
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self.delegate displayOverlayScreen];
+    }];
 }
 
 - (void)displayOverlayScreen {
     self.ciSigOverlayViewController = [[CISigOverlayViewController alloc] initWithDelegate:(id <SignatureOverlayDelegate>) self];
     self.ciSigOverlayViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:self.ciSigOverlayViewController animated:YES completion:nil];
-}
-
-- (void)signatureOverlayDismissed {
-    [self dismissViewControllerAnimated:YES completion:^{
-        [self.delegate signatureViewDismissed];
-    }];
 }
 
 

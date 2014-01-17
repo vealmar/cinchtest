@@ -35,9 +35,5 @@
     return self;
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-}
-
 
 @end

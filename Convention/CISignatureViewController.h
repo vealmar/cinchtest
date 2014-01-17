@@ -10,7 +10,7 @@
 
 @protocol SignatureDelegate <NSObject>
 @required
-- (void)signatureViewDismissed;
+- (void)displayOverlayScreen;
 @end
 
 @interface CISignatureViewController : UIViewController <SignatureOverlayDelegate>
