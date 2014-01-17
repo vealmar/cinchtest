@@ -86,17 +86,23 @@
 
 #pragma mark - View lifecycle
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self adjustTotals];
+}
+
+
 - (void)adjustTotals {
     NSMutableArray *visibleTotalFields = [[NSMutableArray alloc] init];
     if (!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label" : self.grossTotalLabel}];
     if (!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label" : self.discountTotalLabel}];
     if (!self.voucherTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.voucherTotal, @"label" : self.voucherTotalLabel}];
     if (!self.netTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.netTotal, @"label" : self.netTotalLabel}];
-    int availableHeight = 84;
+    int availableHeight = 85;
     int heightPerField = availableHeight / visibleTotalFields.count;
     int marginBottomPerField = 2;
     heightPerField = heightPerField - marginBottomPerField;
-    int y = 4;
+    int y = 10;
     for (NSDictionary *totalField in visibleTotalFields) {
         ((UILabel *) [totalField objectForKey:@"label"]).frame = CGRectMake(766, y, 129, heightPerField);
         UITextField *textField = ((UITextField *) [totalField objectForKey:@"field"]);
@@ -119,7 +125,6 @@
     self.netTotal.hidden = self.netTotalLabel.hidden = ![ShowConfigurations instance].discounts;
     self.voucherTotal.hidden = self.voucherTotalLabel.hidden = ![ShowConfigurations instance].vouchers;
     self.grossTotalLabel.text = [ShowConfigurations instance].discounts ? @"Gross Total" : @"Total";
-    [self adjustTotals];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         tableHeaderPigglyWiggly.hidden = NO;
         tableHeaderFarris.hidden = YES;
