@@ -45,7 +45,7 @@
             void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
                 [self signatureCaptured];
             };
-            [self.helper sendSignature:signatureImage orderId:self.orderId authToken:self.authToken successBlock:successBlock failureBlock:nil view:self.view];
+            [self.helper sendSignature:signatureImage total:self.total orderId:self.orderId authToken:self.authToken successBlock:successBlock failureBlock:nil view:self.view];
         } else {
             [self signatureCaptured];
         }

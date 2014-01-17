@@ -57,5 +57,5 @@
        failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock
                view:(UIView *)view loadingText:(NSString *)loadingText;
 
-- (void)sendSignature:(UIImage *)signature orderId:(NSNumber *)orderId authToken:(NSString *)authToken successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock view:(UIView *)view;
+- (void)sendSignature:(UIImage *)signature total:(NSNumber *)total orderId:(NSNumber *)orderId authToken:(NSString *)authToken successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock view:(UIView *)view;
 @end

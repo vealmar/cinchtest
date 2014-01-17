@@ -214,10 +214,7 @@
     [operation start];
 }
 
-- (void)sendSignature:(UIImage *)signature orderId:(NSNumber *)orderId authToken:(NSString *)authToken
-         successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
-         failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock
-                 view:(UIView *)view {
+- (void)sendSignature:(UIImage *)signature total:(NSNumber *)total orderId:(NSNumber *)orderId authToken:(NSString *)authToken successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock view:(UIView *)view {
     NSData *imageData = UIImageJPEGRepresentation(signature, 0.5);
     MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
     submit.labelText = @"Saving";
@@ -225,7 +222,8 @@
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBCAPTURESIG([orderId intValue])], kAuthToken, authToken];
     AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
     [client setParameterEncoding:AFJSONParameterEncoding];
-    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:@"" parameters:nil constructingBodyWithBlock:^(id <AFMultipartFormData> formData) {
+    NSDictionary *parameters = @{@"total" : total};
+    NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:@"" parameters:parameters constructingBodyWithBlock:^(id <AFMultipartFormData> formData) {
         [formData appendPartWithFileData:imageData name:@"signature" fileName:@"signature" mimeType:@"image/png"];
     }];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
