@@ -227,6 +227,8 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.signatureViewController = nil;
+    self.ciSigOverlayViewController = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -461,4 +463,5 @@
     keyboardUp = NO;
     [UIView commitAnimations];
 }
+
 @end

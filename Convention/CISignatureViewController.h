@@ -13,7 +13,7 @@
 - (void)displayOverlayScreen;
 @end
 
-@interface CISignatureViewController : UIViewController <SignatureOverlayDelegate>
+@interface CISignatureViewController : UIViewController
 @property(weak, nonatomic) IBOutlet UILabel *totalLabel;
 
 - (IBAction)back:(UIButton *)sender;

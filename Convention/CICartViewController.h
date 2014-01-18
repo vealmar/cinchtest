@@ -25,7 +25,7 @@
 
 @end
 
-@interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate, SignatureDelegate>
+@interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate, SignatureDelegate, SignatureOverlayDelegate>
 
 @property(nonatomic, strong) IBOutlet UITableView *productsUITableView;
 @property(nonatomic, strong) NSDictionary *customer;
