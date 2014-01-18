@@ -28,8 +28,6 @@
 @property(strong, nonatomic) NSString *loggedInVendorId;
 @property(strong, nonatomic) NSString *loggedInVendorGroupId;
 @property(strong, nonatomic) AnOrder *savedOrder;
-@property(strong, nonatomic) CISignatureViewController *signatureViewController;
-@property(nonatomic, strong) CISigOverlayViewController *ciSigOverlayViewController;
 @property(nonatomic) BOOL unsavedChangesPresent;
 @property(nonatomic, strong) NSArray *productsInCart;
 @property(nonatomic, strong) NSArray *discountsInCart;
@@ -227,8 +225,6 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    self.signatureViewController = nil;
-    self.ciSigOverlayViewController = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -393,15 +389,15 @@
 - (void)displaySignatureScreen {
     NSArray *totals = [helper getTotals:self.coreDataOrder];
     double netTotal = [(NSNumber *) totals[0] doubleValue] + [(NSNumber *) totals[2] doubleValue];
-    self.signatureViewController = [[CISignatureViewController alloc] initWithTotal:[NSNumber numberWithDouble:netTotal] authToken:self.authToken orderId:self.coreDataOrder.orderId andDelegate:(id <SignatureDelegate>) self];
-    self.signatureViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:self.signatureViewController animated:YES completion:nil];
+    CISignatureViewController *signatureViewController = [[CISignatureViewController alloc] initWithTotal:[NSNumber numberWithDouble:netTotal] authToken:self.authToken orderId:self.coreDataOrder.orderId andDelegate:(id <SignatureDelegate>) self];
+    signatureViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:signatureViewController animated:YES completion:nil];
 }
 
 - (void)displayOverlayScreen {
-    self.ciSigOverlayViewController = [[CISigOverlayViewController alloc] initWithDelegate:(id <SignatureOverlayDelegate>) self];
-    self.ciSigOverlayViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:self.ciSigOverlayViewController animated:YES completion:nil];
+    CISigOverlayViewController *ciSigOverlayViewController = [[CISigOverlayViewController alloc] initWithDelegate:(id <SignatureOverlayDelegate>) self];
+    ciSigOverlayViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:ciSigOverlayViewController animated:YES completion:nil];
 }
 
 - (void)signatureOverlayDismissed {
