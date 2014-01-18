@@ -15,4 +15,5 @@
 
 - (UIImage *)getSignatureImage;
 
+- (void)releaseMemory;
 @end

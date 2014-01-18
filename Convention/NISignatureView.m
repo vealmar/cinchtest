@@ -66,6 +66,11 @@ static GLKVector3 perpendicular(NISignaturePoint p1, NISignaturePoint p2) {
 @interface NISignatureView ()
 
 @property(assign, nonatomic) BOOL drawnSignature;
+@property(nonatomic) CGImageRef imageRef;
+@property(nonatomic) CGColorSpaceRef colorSpaceRef;
+@property(nonatomic) CGDataProviderRef provider;
+@property(nonatomic) GLubyte *buffer;
+@property(nonatomic) GLubyte *buffer2;
 
 @end
 
@@ -346,43 +351,45 @@ NISignaturePoint previousVertex;
     NSInteger myDataLength = width * height * 4;
 
     // allocate array and read pixels into it.
-    GLubyte *buffer = (GLubyte *) malloc(myDataLength);
-    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+    self.buffer = (GLubyte *) malloc(myDataLength);
+    glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, self.buffer);
 
     // gl renders "upside down" so swap top to bottom into new array.
     // there's gotta be a better way, but this works.
-    GLubyte *buffer2 = (GLubyte *) malloc(myDataLength);
+    self.buffer2 = (GLubyte *) malloc(myDataLength);
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width * 4; x++) {
-            buffer2[(((int) height - 1) - y) * (int) width * 4 + x] = buffer[y * 4 * (int) width + x];
+            self.buffer2[(((int) height - 1) - y) * (int) width * 4 + x] = self.buffer[y * 4 * (int) width + x];
         }
     }
 
     // make data provider with data.
-    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, buffer2, myDataLength, NULL);
+    self.provider = CGDataProviderCreateWithData(NULL, self.buffer2, myDataLength, NULL);
 
     // prep the ingredients
     int bitsPerComponent = 8;
     int bitsPerPixel = 32;
     int bytesPerRow = 4 * width;
-    CGColorSpaceRef colorSpaceRef = CGColorSpaceCreateDeviceRGB();
+    self.colorSpaceRef = CGColorSpaceCreateDeviceRGB();
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
 
     // make the cgimage
-    CGImageRef imageRef = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
+    self.imageRef = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, self.colorSpaceRef, bitmapInfo, self.provider, NULL, NO, renderingIntent);
 
     // then make the uiimage from that
-    UIImage *myImage = [[UIImage alloc] initWithCGImage:imageRef];
-
-    // release memory
-    CGImageRelease(imageRef);
-    CGColorSpaceRelease(colorSpaceRef);
-    CGDataProviderRelease(provider);
-    free(buffer);
-    free(buffer2);
+    UIImage *myImage = [[UIImage alloc] initWithCGImage:self.imageRef];
 
     return myImage;
+}
+
+- (void)releaseMemory {
+    // release memory
+    CGImageRelease(self.imageRef);
+    CGColorSpaceRelease(self.colorSpaceRef);
+    CGDataProviderRelease(self.provider);
+    free(self.buffer);
+    free(self.buffer2);
 }
 
 @end
