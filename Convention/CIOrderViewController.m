@@ -27,6 +27,8 @@
 #import "CIProductViewControllerHelper.h"
 #import "Product.h"
 #import "Product+Extensions.h"
+#import "CancelOrderDaysHelper.h"
+#import "NilUtil.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -41,6 +43,8 @@
     NSMutableArray *persistentOrders;
     BOOL unsavedChangesPresent;
     CIProductViewControllerHelper *helper;
+    CancelOrderDaysHelper *cancelDaysHelper;
+    ShowConfigurations *showConfig;
     __weak IBOutlet UILabel *sdLabel;
     __weak IBOutlet UILabel *sqLabel;
     __weak IBOutlet UILabel *quantityLabel;
@@ -61,7 +65,7 @@ CIOrderViewController
     self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];
 
-    ShowConfigurations *showConfig = [ShowConfigurations instance];
+    showConfig = [ShowConfigurations instance];
     self.logoImage.image = [showConfig logo];
     if (showConfig.shipDates) {
         quantityLabel.hidden = YES;
@@ -86,6 +90,7 @@ CIOrderViewController
         self.total.hidden = YES;
     }
     self.printButton.hidden = !showConfig.printing;
+    self.cancelDaysView.hidden = !showConfig.cancelOrder;
     unsavedChangesPresent = NO;
     [self adjustTotals];
     self.OrderDetailScroll.hidden = YES;
@@ -96,6 +101,7 @@ CIOrderViewController
     [self.sideTable addSubview:pull];
     [self loadOrders:YES highlightOrder:nil];
     helper = [[CIProductViewControllerHelper alloc] init];
+    cancelDaysHelper = [[CancelOrderDaysHelper alloc] init];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -250,6 +256,9 @@ SG: The argument 'detail' is the selected order.
     [self.itemsTable reloadData];
     self.customer.text = [detail getCustomerDisplayName];
     self.authorizer.text = detail.authorized != nil? detail.authorized : @"";
+    if (showConfig.cancelOrder) {
+        [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForDays:detail.cancelByDays]];
+    }
     currentOrder = detail;
     if (detail) {
         NSArray *arr = detail.lineItems;
@@ -867,8 +876,11 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSString *custid = [currentOrder.customerId stringValue];
     NSString *authorizedBy = self.authorizer.text == nil? @"" : self.authorizer.text;
     NSString *notesText = self.notes.text == nil || [self.notes.text isKindOfClass:[NSNull class]] ? @"" : self.notes.text;
-
-    NSDictionary *order = [NSDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustomerID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
+    NSMutableDictionary *order = [NSMutableDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustomerID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
+    if (showConfig.cancelOrder) {
+        NSNumber *cancelByDays = [cancelDaysHelper numberAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
+        [order setObject:[NilUtil objectOrNNull:cancelByDays] forKey:kCancelByDays];
+    }
     NSDictionary *final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDEREDITS([currentOrder.orderId intValue]), kAuthToken, self.authToken];
     void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
@@ -1194,6 +1206,10 @@ SG: This method gets called when you swipe on an order in the order list and tap
         self.filteredOrders = [[self.allorders filteredArrayUsingPredicate:pred] mutableCopy];
     }
     [self.sideTable reloadData];
+}
+
+- (IBAction)cancelByDaysChanged:(UISegmentedControl *)sender {
+    unsavedChangesPresent = YES;
 }
 
 #pragma mark - UITextFieldDelegate

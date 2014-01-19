@@ -2,8 +2,8 @@
 //  Order.m
 //  Convention
 //
-//  Created by septerr on 12/31/13.
-//  Copyright (c) 2013 Convention Innovations. All rights reserved.
+//  Created by septerr on 1/15/14.
+//  Copyright (c) 2014 Convention Innovations. All rights reserved.
 //
 
 #import "Order.h"
@@ -25,6 +25,7 @@
 @dynamic status;
 @dynamic vendorGroup;
 @dynamic vendorGroupId;
+@dynamic cancelByDays;
 @dynamic carts;
 @dynamic discountLineItems;
 

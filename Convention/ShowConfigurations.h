@@ -13,12 +13,17 @@
 @property BOOL discounts;
 @property BOOL shipDates;
 @property BOOL printing;
+@property BOOL captureSignature;
 @property BOOL vouchers;
 @property BOOL contracts;
+@property BOOL contactBeforeShipping;
+@property BOOL cancelOrder;
 @property NSDate *boothPaymentsDate;
 @property UIImage *loginScreen;
 @property UIImage *logo;
+
 + (ShowConfigurations *)instance;
-+ (void) createInstanceFromJson:(NSDictionary *)json;
+
++ (void)createInstanceFromJson:(NSDictionary *)json;
 
 @end

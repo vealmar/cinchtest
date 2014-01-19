@@ -2,8 +2,8 @@
 //  Order.h
 //  Convention
 //
-//  Created by septerr on 12/31/13.
-//  Copyright (c) 2013 Convention Innovations. All rights reserved.
+//  Created by septerr on 1/15/14.
+//  Copyright (c) 2014 Convention Innovations. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -28,6 +28,7 @@
 @property(nonatomic, retain) NSString *status;
 @property(nonatomic, retain) NSString *vendorGroup;
 @property(nonatomic, retain) NSString *vendorGroupId;
+@property(nonatomic, retain) NSNumber *cancelByDays;
 @property(nonatomic, retain) NSSet *carts;
 @property(nonatomic, retain) NSSet *discountLineItems;
 @end

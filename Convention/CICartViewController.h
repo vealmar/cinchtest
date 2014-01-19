@@ -10,12 +10,14 @@
 #import "CICustomerInfoViewController.h"
 #import "PWProductCell.h"
 #import "CIStoreQtyTableViewController.h"
+#import "CISignatureViewController.h"
 
 @class Cart;
 @class ALineItem;
 @class Product;
 @class Order;
 @class AnOrder;
+@class CISignatureViewController;
 
 @protocol CICartViewDelegate <NSObject>
 
@@ -23,7 +25,7 @@
 
 @end
 
-@interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate>
+@interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate, SignatureDelegate, SignatureOverlayDelegate>
 
 @property(nonatomic, strong) IBOutlet UITableView *productsUITableView;
 @property(nonatomic, strong) NSDictionary *customer;
@@ -49,6 +51,7 @@
 
 @property(nonatomic) BOOL allowPrinting;
 @property(nonatomic) BOOL showShipDates;
+@property(nonatomic) BOOL allowSignature;
 
 @property(weak, nonatomic) IBOutlet UILabel *grossTotal;
 @property(weak, nonatomic) IBOutlet UILabel *discountTotal;

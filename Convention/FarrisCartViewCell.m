@@ -43,7 +43,7 @@
     self.showPrice.font = discountFont;
     self.delegate = productCellDelegate;
     self.tag = tag;
-    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+//    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     self.backgroundColor = [UIColor whiteColor];//since we are using same cell for products and discounts, if a product cell is being reused, it might have a green/red background. We display discounts with white background always.
     [self updateErrorsView:[[NSSet alloc] init]];
 }
@@ -51,7 +51,8 @@
 - (void)initializeWithCart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     self.InvtID.text = cart.product.invtid;
     [self setDescription:cart.product.descr withSubtext:cart.product.descr2];
-    self.min.text = [NilUtil objectOrDefaultString:cart.product.min defaultObject:@""];
+    NSNumber *minNumber = (NSNumber *) [NilUtil nilOrObject:cart.product.min];
+    self.min.text = minNumber ? [minNumber stringValue] : @"";
     self.quantity.text = cart.editableQty;
     self.quantity.hidden = NO;
     self.qtyLbl.hidden = YES;
@@ -59,22 +60,25 @@
     self.showPrice.text = [NumberUtil formatCentsAsCurrency:cart.product.showprc];
     self.delegate = productCellDelegate;
     self.tag = tag;
-    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+//    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     [self updateErrorsView:cart.errors];
 }
 
 - (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {
-    if (description2 == nil || [description2 isKindOfClass:[NSNull class]]) {
+    NSString *d1 = description1 && ![description1 isKindOfClass:[NSNull class]] ? [description1 stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] : @"";
+    NSString *d2 = description2 && ![description2 isKindOfClass:[NSNull class]] ? [description2 stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] : nil;
+
+    if (d2 == nil || d2.length == 0) {
         self.descr.hidden = FALSE;
         self.descr1.hidden = TRUE;
         self.descr2.hidden = TRUE;
-        self.descr.text = description1;
+        self.descr.text = d1;
     } else {
         self.descr.hidden = TRUE;
         self.descr1.hidden = FALSE;
         self.descr2.hidden = FALSE;
-        self.descr1.text = description1;
-        self.descr2.text = description2;
+        self.descr1.text = d1;
+        self.descr2.text = d2;
     }
 }
 

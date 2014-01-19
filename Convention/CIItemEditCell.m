@@ -113,17 +113,19 @@
 }
 
 - (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {
-    if (description2 == nil) {
+    NSString *d1 = description1 && ![description1 isKindOfClass:[NSNull class]] ? [description1 stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] : @"";
+    NSString *d2 = description2 && ![description2 isKindOfClass:[NSNull class]] ? [description2 stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] : nil;
+    if (d2 == nil || [d2 length] == 0) {
         self.desc.hidden = FALSE;
         self.desc1.hidden = TRUE;
         self.desc2.hidden = TRUE;
-        self.desc.text = description1;
+        self.desc.text = d1;
     } else {
         self.desc.hidden = TRUE;
         self.desc1.hidden = FALSE;
         self.desc2.hidden = FALSE;
-        self.desc1.text = description1;
-        self.desc2.text = description2;
+        self.desc1.text = d1;
+        self.desc2.text = d2;
     }
 
 }

@@ -105,19 +105,19 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsHorizontalScrollIndicator="NO" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OAh-14-pqJ">
-                                        <rect key="frame" x="203" y="5" width="474" height="53"/>
+                                        <rect key="frame" x="203" y="5" width="474" height="40"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="AUTHORIZED" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TfV-SC-0eD">
-                                        <rect key="frame" x="10" y="72" width="177" height="35"/>
+                                        <rect key="frame" x="10" y="60" width="177" height="35"/>
                                         <fontDescription key="fontDescription" name="Futura-MediumItalic" family="Futura" pointSize="27.110000610351562"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qjp-YV-apI">
-                                        <rect key="frame" x="203" y="69" width="474" height="53"/>
+                                        <rect key="frame" x="203" y="57" width="474" height="40"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="words"/>
@@ -126,19 +126,13 @@
                                         </connections>
                                     </textView>
                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="NOTES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="S0g-5b-zkI">
-                                        <rect key="frame" x="10" y="141" width="177" height="35"/>
+                                        <rect key="frame" x="11" y="124" width="177" height="35"/>
                                         <fontDescription key="fontDescription" name="Futura-MediumItalic" family="Futura" pointSize="27.110000610351562"/>
                                         <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kye-AH-8EW">
-                                        <rect key="frame" x="205" y="138" width="474" height="81"/>
-                                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                    </textView>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ebo-It-Kp3">
-                                        <rect key="frame" x="203" y="138" width="474" height="81"/>
+                                        <rect key="frame" x="203" y="109" width="474" height="66"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -258,15 +252,15 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" fixedFrame="YES" restorationIdentifier="" translatesAutoresizingMaskIntoConstraints="NO" id="G6R-9c-xNY">
-                                        <rect key="frame" x="195" y="5" width="9" height="53"/>
+                                        <rect key="frame" x="195" y="5" width="9" height="40"/>
                                         <color key="backgroundColor" red="0.93333333330000001" green="0.55294117649999996" blue="0.13725490200000001" alpha="1" colorSpace="calibratedRGB"/>
                                     </view>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kkK-wn-tvq">
-                                        <rect key="frame" x="195" y="69" width="9" height="53"/>
+                                        <rect key="frame" x="195" y="57" width="9" height="40"/>
                                         <color key="backgroundColor" red="0.93333333330000001" green="0.55294117649999996" blue="0.13725490200000001" alpha="1" colorSpace="calibratedRGB"/>
                                     </view>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E73-fg-ICC">
-                                        <rect key="frame" x="195" y="138" width="9" height="81"/>
+                                        <rect key="frame" x="195" y="109" width="9" height="66"/>
                                         <color key="backgroundColor" red="0.93333333330000001" green="0.55294117649999996" blue="0.13725490200000001" alpha="1" colorSpace="calibratedRGB"/>
                                     </view>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tJI-qx-vqc">
@@ -301,6 +295,34 @@
                                             <action selector="Delete:" destination="L2z-Wh-GlW" eventType="touchUpInside" id="0PC-pa-ECs"/>
                                         </connections>
                                     </button>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OUV-vt-FoJ">
+                                        <rect key="frame" x="11" y="182" width="673" height="42"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="CANCEL BY" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JXT-Bg-YUo">
+                                                <rect key="frame" x="0.0" y="6" width="177" height="36"/>
+                                                <fontDescription key="fontDescription" name="Futura-MediumItalic" family="Futura" pointSize="27.110000610351562"/>
+                                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="bga-Cf-hO4">
+                                                <rect key="frame" x="183" y="9" width="484" height="29"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <segments>
+                                                    <segment title="Do Not Cancel"/>
+                                                    <segment title="90 Days"/>
+                                                    <segment title="120 Days"/>
+                                                    <segment title="150 Days"/>
+                                                    <segment title="180 Days"/>
+                                                </segments>
+                                                <color key="tintColor" red="1" green="0.56468513239999996" blue="0.2275234364" alpha="1" colorSpace="calibratedRGB"/>
+                                                <connections>
+                                                    <action selector="cancelByDaysChanged:" destination="L2z-Wh-GlW" eventType="valueChanged" id="1dk-g4-PEX"/>
+                                                </connections>
+                                            </segmentedControl>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                             </scrollView>
@@ -359,6 +381,8 @@
                         <outlet property="NoOrdersLabel" destination="u65-FR-JzO" id="3t2-3N-mm1"/>
                         <outlet property="OrderDetailScroll" destination="vUw-Un-NnS" id="R84-Gy-jm3"/>
                         <outlet property="authorizer" destination="qjp-YV-apI" id="ggz-TH-nGa"/>
+                        <outlet property="cancelDaysControl" destination="bga-Cf-hO4" id="G1Z-Dz-SMu"/>
+                        <outlet property="cancelDaysView" destination="OUV-vt-FoJ" id="QYW-Wl-95R"/>
                         <outlet property="customer" destination="OAh-14-pqJ" id="TXr-k5-dpa"/>
                         <outlet property="discountTotal" destination="H3G-mD-5dA" id="maN-sR-EZT"/>
                         <outlet property="discountTotalLabel" destination="k0F-ay-7wX" id="Cmx-kX-2VG"/>

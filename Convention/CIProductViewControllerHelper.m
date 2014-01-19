@@ -214,6 +214,39 @@
     [operation start];
 }
 
+- (void)sendSignature:(UIImage *)signature total:(NSNumber *)total orderId:(NSNumber *)orderId authToken:(NSString *)authToken successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock view:(UIView *)view {
+    NSData *imageData = nil;
+//    @autoreleasepool {
+    imageData = UIImagePNGRepresentation(signature);
+//    }
+    if (imageData) {
+        MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
+        submit.labelText = @"Saving";
+        [submit show:NO];
+        NSString *url = [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBCAPTURESIG([orderId intValue])], kAuthToken, authToken];
+        AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
+        [client setParameterEncoding:AFJSONParameterEncoding];
+        NSDictionary *parameters = @{@"total" : total};
+        NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:@"" parameters:parameters constructingBodyWithBlock:^(id <AFMultipartFormData> formData) {
+            [formData appendPartWithFileData:imageData name:@"signature" fileName:@"signature" mimeType:@"image/png"];
+        }];
+        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
+                                                                                            success:^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
+                                                                                                [submit hide:NO];
+                                                                                                if (successBlock) successBlock(req, response, json);
+                                                                                            } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
+                    [submit hide:NO];
+                    if (failureBlock) failureBlock(req, response, error, json);
+                    NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+                    NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
+                    [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                }];
+        [operation start];
+    } else {
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"There was an error in capturing your signature. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }
+}
+
 - (void)alert:(NSString *)title message:(NSString *)message {
     [[[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
 }

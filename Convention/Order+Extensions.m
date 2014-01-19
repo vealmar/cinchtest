@@ -35,6 +35,7 @@
         self.notes = orderFromServer.notes;
         self.ship_notes = orderFromServer.shipNotes;
         self.ship_flag = [NSNumber numberWithBool:(BOOL) orderFromServer.shipFlag];
+        self.cancelByDays = orderFromServer.cancelByDays;
         for (NSString *error in [NilUtil objectOrEmptyArray:orderFromServer.errors]) {
             Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
             [self addErrorsObject:lineItemrError];
@@ -126,9 +127,9 @@
     }
     NSMutableDictionary *newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNNull:self.customer_id], kOrderCustomerID,
                                                                                       [NilUtil objectOrNNull:self.notes], kNotes,
-                                                                                      [NilUtil objectOrNNull:self.ship_notes], kShipNotes,
                                                                                       [NilUtil objectOrNNull:self.authorized], kAuthorizedBy,
                                                                                       [self.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
+                                                                                      [NilUtil objectOrNNull:self.cancelByDays], kCancelByDays,
                                                                                       [NilUtil objectOrNNull:self.status], kOrderStatus,
                                                                                       arr, kOrderItems,
                                                                                       [self.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,

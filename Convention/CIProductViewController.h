@@ -106,6 +106,8 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic, strong) NSDictionary *availablePrinters;
 @property(nonatomic) BOOL allowPrinting;
 @property(nonatomic) BOOL showShipDates;
+@property(nonatomic) BOOL contactBeforeShipping;
+@property(nonatomic) BOOL cancelOrderConfig;
 @property(nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 //Order selected in the order view controller
 @property(nonatomic, strong) AnOrder *selectedOrder;
@@ -113,6 +115,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
 
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
+
 
 - (void)QtyChange:(int)qty forIndex:(int)idx;
 

@@ -32,6 +32,7 @@
         self.authorized = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"authorized"]];
         NSNumber *shipFlagInt = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"ship_flag"]];
         self.shipFlag = (BOOL *) (shipFlagInt && [shipFlagInt intValue] == 1);//boolean
+        self.cancelByDays = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"cancel_by_days"]];
         self.customer = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
         self.errors = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"errors"]];
         NSMutableArray *lineItems = [[NSMutableArray alloc] init];
@@ -61,6 +62,7 @@
         [customer setObject:[NSString stringWithFormat:@"%@", order.customer_id] forKey:@"id"];
         self.customer = customer;
         self.authorized = @"";
+        self.cancelByDays = order.cancelByDays;
         self.coreDataOrder = order;
         int itemTotal = 0;
         int voucherTotal = 0;

@@ -84,17 +84,23 @@
 
 #pragma mark - View lifecycle
 
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+    [self adjustTotals];
+}
+
+
 - (void)adjustTotals {
     NSMutableArray *visibleTotalFields = [[NSMutableArray alloc] init];
     if (!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label" : self.grossTotalLabel}];
     if (!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label" : self.discountTotalLabel}];
     if (!self.voucherTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.voucherTotal, @"label" : self.voucherTotalLabel}];
     if (!self.netTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.netTotal, @"label" : self.netTotalLabel}];
-    int availableHeight = 84;
+    int availableHeight = 85;
     int heightPerField = availableHeight / visibleTotalFields.count;
     int marginBottomPerField = 2;
     heightPerField = heightPerField - marginBottomPerField;
-    int y = 4;
+    int y = 10;
     for (NSDictionary *totalField in visibleTotalFields) {
         ((UILabel *) [totalField objectForKey:@"label"]).frame = CGRectMake(766, y, 129, heightPerField);
         UITextField *textField = ((UITextField *) [totalField objectForKey:@"field"]);
@@ -110,13 +116,13 @@
     navBar.topItem.title = self.title;
     self.showShipDates = [[ShowConfigurations instance] shipDates];
     self.allowPrinting = [ShowConfigurations instance].printing;
+    self.allowSignature = [ShowConfigurations instance].captureSignature;
     self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
     logo.image = [ShowConfigurations instance].logo;
     self.discountTotal.hidden = self.discountTotalLabel.hidden = ![ShowConfigurations instance].discounts;
     self.netTotal.hidden = self.netTotalLabel.hidden = ![ShowConfigurations instance].discounts;
     self.voucherTotal.hidden = self.voucherTotalLabel.hidden = ![ShowConfigurations instance].vouchers;
     self.grossTotalLabel.text = [ShowConfigurations instance].discounts ? @"Gross Total" : @"Total";
-    [self adjustTotals];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         tableHeaderPigglyWiggly.hidden = NO;
         tableHeaderFarris.hidden = YES;
@@ -124,7 +130,7 @@
         tableHeaderPigglyWiggly.hidden = YES;
         tableHeaderFarris.hidden = NO;
         self.zeroVouchers.hidden = YES;
-        self.tableHeaderMinColumn.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+//        self.tableHeaderMinColumn.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     }
     customerInfoLabel.text = customer != nil &&
             customer[kBillName] != nil &&
@@ -211,6 +217,12 @@
 
 }
 
+- (void)dismissSelf {
+    [self.indicator startAnimating];
+    [self.delegate cartViewDismissedWith:self.coreDataOrder savedOrder:self.savedOrder unsavedChangesPresent:self.unsavedChangesPresent orderCompleted:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -293,9 +305,11 @@
             self.coreDataOrder = [helper createCoreDataCopyOfOrder:self.savedOrder customer:self.customer loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];
             self.indicator.hidden = NO;
             self.unsavedChangesPresent = NO;
-            [self.indicator startAnimating];
-            [self.delegate cartViewDismissedWith:self.coreDataOrder savedOrder:self.savedOrder unsavedChangesPresent:self.unsavedChangesPresent orderCompleted:YES];
-            [self dismissViewControllerAnimated:YES completion:nil];
+            if (self.allowSignature) {
+                [self displaySignatureScreen];
+            } else {
+                [self dismissSelf];
+            }
         };
         void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
             if (json) {
@@ -369,6 +383,27 @@
         [popoverController presentPopoverFromRect:frame inView:self.productsUITableView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
     }
 }
+
+#pragma signature
+
+- (void)displaySignatureScreen {
+    NSArray *totals = [helper getTotals:self.coreDataOrder];
+    double netTotal = [(NSNumber *) totals[0] doubleValue] + [(NSNumber *) totals[2] doubleValue];
+    CISignatureViewController *signatureViewController = [[CISignatureViewController alloc] initWithTotal:[NSNumber numberWithDouble:netTotal] authToken:self.authToken orderId:self.coreDataOrder.orderId andDelegate:(id <SignatureDelegate>) self];
+    signatureViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:signatureViewController animated:YES completion:nil];
+}
+
+- (void)displayOverlayScreen {
+    CISigOverlayViewController *ciSigOverlayViewController = [[CISigOverlayViewController alloc] initWithDelegate:(id <SignatureOverlayDelegate>) self];
+    ciSigOverlayViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    [self presentViewController:ciSigOverlayViewController animated:YES completion:nil];
+}
+
+- (void)signatureOverlayDismissed {
+    [self dismissSelf];
+}
+
 #pragma Keyboard
 
 - (void)setSelectedRow:(NSIndexPath *)index {
@@ -424,4 +459,5 @@
     keyboardUp = NO;
     [UIView commitAnimations];
 }
+
 @end

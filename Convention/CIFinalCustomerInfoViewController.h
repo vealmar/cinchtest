@@ -26,17 +26,6 @@
 @end
 
 @interface CIFinalCustomerInfoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate>
-@property(unsafe_unretained, nonatomic) IBOutlet UITextView *shippingNotes;
-@property(unsafe_unretained, nonatomic) IBOutlet UITextView *Notes;
-@property(unsafe_unretained, nonatomic) IBOutlet UITextField *Authorizer;
-@property(strong, nonatomic) IBOutlet UIScrollView *scroll;
-
-@property(nonatomic, strong) NSArray *tableData;
-@property(nonatomic, strong) NSMutableArray *filteredtableData;
-
 @property(nonatomic, assign) id <CIFinalCustomerDelegate> delegate;
 @property Order *order;
-
-- (IBAction)submit:(id)sender;
-
 @end

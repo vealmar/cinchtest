@@ -14,18 +14,22 @@ static ShowConfigurations *showConfigurations = nil;
 
 @implementation ShowConfigurations
 
-+ (ShowConfigurations *) instance {
++ (ShowConfigurations *)instance {
     if (nil == showConfigurations) [NSException raise:NSGenericException format:@"Configuration object has not been created."];
     return showConfigurations;
 }
-+ (void) createInstanceFromJson:(NSDictionary *)json{
+
++ (void)createInstanceFromJson:(NSDictionary *)json {
     showConfigurations = [[[self class] alloc] init];
-    if(showConfigurations){
+    if (showConfigurations) {
         showConfigurations.discounts = [[json objectForKey:@"discounts"] boolValue];
         showConfigurations.shipDates = [[json objectForKey:@"shipdates"] boolValue];
         showConfigurations.printing = [[json objectForKey:@"printing"] boolValue];
         showConfigurations.vouchers = [[json objectForKey:@"vouchers"] boolValue];
         showConfigurations.contracts = [[json objectForKey:@"contracts"] boolValue];
+        showConfigurations.contactBeforeShipping = [[json objectForKey:@"contactBeforeShipping"] boolValue];
+        showConfigurations.cancelOrder = [[json objectForKey:@"cancelOrder"] boolValue];
+        showConfigurations.captureSignature = [[json objectForKey:@"signatureCapture"] boolValue];
         NSString *loginScreenUrl = ((NSString *) [json objectForKey:@"iosLoginScreen"]);
         showConfigurations.loginScreen = [ShowConfigurations imageFromUrl:loginScreenUrl defaultImage:@"loginBG.png"];
         NSString *logoUrl = ((NSString *) [json objectForKey:@"iosLogo"]);
@@ -38,7 +42,7 @@ static ShowConfigurations *showConfigurations = nil;
             [dateFormatter setDateFormat:dateFormat];
             NSError *error = nil;
             [dateFormatter getObjectValue:&date forString:dateString range:nil error:&error];
-            if(error != nil){
+            if (error != nil) {
                 NSLog(@"Could not parse Booth Payments Date '%@'. Expected Format: '%@'.", dateString, dateFormat);
             }
         }
@@ -46,15 +50,15 @@ static ShowConfigurations *showConfigurations = nil;
     }
 }
 
-+ (UIImage *) imageFromUrl: (NSString *)url defaultImage: (NSString *)imageName{
++ (UIImage *)imageFromUrl:(NSString *)url defaultImage:(NSString *)imageName {
     UIImage *image = nil;
-    if(![url isKindOfClass:[NSNull class]] && [url length] > 0){
-        @try{
-        NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", kBASEURL, url]];
-        NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
-        image = [UIImage imageWithData:imageData];
+    if (![url isKindOfClass:[NSNull class]] && [url length] > 0) {
+        @try {
+            NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", kBASEURL, url]];
+            NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
+            image = [UIImage imageWithData:imageData];
         }
-        @catch (NSException *e){
+        @catch (NSException *e) {
             NSLog(@"Could Not Load Image: %@. Exception: %@", url, e);
 
         }
