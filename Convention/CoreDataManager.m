@@ -19,6 +19,7 @@
 #import "SynchronousResponse.h"
 #import "AFJSONRequestOperation.h"
 #import "CIAppDelegate.h"
+#import "ProductCache.h"
 
 
 @implementation CoreDataManager {
@@ -201,11 +202,59 @@
     return count;
 }
 
-+ (NSArray *)getProductIdsMatchingQueryString:(NSString *)queryString sortDescriptors:(NSArray *)sortDescriptors limit:(NSUInteger)limit managedObjectContext:(NSManagedObjectContext *)managedObjectContext vendor:(NSInteger)vendor bulletin:(NSInteger)bulletin {
++ (NSArray *)getProductIdsMatchingQueryString:(NSString *)queryString sortDescriptors:(NSArray *)sortDescriptors limit:(NSUInteger)limit
+                         managedObjectContext:(NSManagedObjectContext *)managedObjectContext vendor:(NSInteger)vendor bulletin:(NSInteger)bulletin {
+    //if it is a limited search, fetch all product attributes and add them to the cache. They will probably be needed soon.
+    if (limit > 0) {
+        NSMutableArray *productIds = [NSMutableArray array];
+        NSArray *products = [self getProductsMatchingQueryString:queryString sortDescriptors:sortDescriptors limit:limit managedObjectContext:managedObjectContext vendor:vendor bulletin:bulletin addToCache:YES];
+        if (products) {
+            [products enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                [productIds addObject:((Product *) obj).productId];
+            }];
+        }
+        return productIds;
+    } else {
+        //if it is an unlimited search, just query the ids and return them.
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+        [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:managedObjectContext]];
+        [fetchRequest setPropertiesToFetch:[NSArray arrayWithObjects:@"productId", nil]];
+        [fetchRequest setResultType:NSDictionaryResultType];
+        [fetchRequest setIncludesSubentities:NO];
+        if (limit > 0) {
+            [fetchRequest setFetchLimit:limit];
+        }
+        if (sortDescriptors) {
+            fetchRequest.sortDescriptors = sortDescriptors;
+        }
+        NSMutableArray *predicates = [NSMutableArray arrayWithCapacity:3];
+        if (vendor > 0) {
+            [predicates addObject:[NSPredicate predicateWithFormat:@"vendor_id = %d", vendor]];
+        }
+        if (bulletin > 0) {
+            [predicates addObject:[NSPredicate predicateWithFormat:@"bulletin_id = %d", bulletin]];
+        }
+        [predicates addObject:[NSPredicate predicateWithFormat:@"invtid CONTAINS[cd] %@ or descr CONTAINS[cd] %@ or descr2 CONTAINS[cd] %@", queryString, queryString, queryString]];
+        fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
+        NSError *error = nil;
+        NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+        if (error) {
+            NSLog(@"%@ Error fetching products matching query string '%@'. %@", [self class], queryString, [error localizedDescription]);
+            return [NSArray array];
+        } else {
+            NSMutableArray *productIds = [NSMutableArray array];
+            [fetchedObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {  //todo this iterating over the results should be avoided. there is an NSResultType of ObjectId, if we can modify product view to work off of object id, we can avoid this iteration.
+                [productIds addObject:[((NSDictionary *) obj) objectForKey:@"productId"]];
+            }];
+            return productIds;
+        }
+    }
+}
+
++ (NSArray *)getProductsMatchingQueryString:(NSString *)queryString sortDescriptors:(NSArray *)sortDescriptors limit:(NSUInteger)limit managedObjectContext:(NSManagedObjectContext *)managedObjectContext vendor:(NSInteger)vendor bulletin:(NSInteger)bulletin addToCache:(BOOL)addToCache {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:managedObjectContext]];
-    [fetchRequest setPropertiesToFetch:[NSArray arrayWithObjects:@"productId", nil]];
-    [fetchRequest setResultType:NSDictionaryResultType];
+//    [fetchRequest setResultType:NSDictionaryResultType];
     [fetchRequest setIncludesSubentities:NO];
     if (limit > 0) {
         [fetchRequest setFetchLimit:limit];
@@ -228,11 +277,9 @@
         NSLog(@"%@ Error fetching products matching query string '%@'. %@", [self class], queryString, [error localizedDescription]);
         return [NSArray array];
     } else {
-        NSMutableArray *productIds = [NSMutableArray array];
-        [fetchedObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            [productIds addObject:[((NSDictionary *) obj) objectForKey:@"productId"]];
-        }];
-        return productIds;
+        if (addToCache)
+            [[ProductCache sharedCache] addRecentlyQueriedProducts:fetchedObjects];
+        return fetchedObjects;
     }
 }
 

@@ -10,7 +10,7 @@
 #import "StringManipulation.h"
 #import "NumberUtil.h"
 #import "Cart.h"
-#import "Product.h"
+#import "AProduct.h"
 
 @interface FarrisProductCell () {
     NSString *originalCellValue;
@@ -20,7 +20,7 @@
 @implementation FarrisProductCell
 
 
-- (void)initializeWithProduct:(Product *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWithAProduct:(AProduct *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     if (product) {
         self.InvtID.text = product.invtid;
         [self setDescription:product.descr withSubtext:product.descr2];

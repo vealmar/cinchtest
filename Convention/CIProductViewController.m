@@ -30,6 +30,7 @@
 #import "Product+Extensions.h"
 #import "AProduct.h"
 #import "MBProgressHUD.h"
+#import "ProductCache.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -395,13 +396,13 @@
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-    Product *product = [Product findProduct:productId];
+    AProduct *product = [[ProductCache sharedCache] getProduct:productId];
     UITableViewCell *cell = [helper dequeueReusableProductCell:myTableView];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         BOOL rowIsSelected = [selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]] && ![product.invtid isEqualToString:@"0"];
-        [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore product:product cart:[self.coreDataOrder findCartForProductId:product.productId] checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
+        [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore aProduct:product cart:[self.coreDataOrder findCartForProductId:product.productId] checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
     } else {
-        [(FarrisProductCell *) cell initializeWithProduct:product cart:[self.coreDataOrder findCartForProductId:product.productId] tag:[indexPath row] ProductCellDelegate:self];
+        [(FarrisProductCell *) cell initializeWithAProduct:product cart:[self.coreDataOrder findCartForProductId:product.productId] tag:[indexPath row] ProductCellDelegate:self];
     }
     return cell;
 }
@@ -654,6 +655,8 @@
         self.resultData = [self.vendorProductIds mutableCopy];
     } else {
         NSUInteger limit = searchIsActive ? 50 : 0; //0 indicates no limit
+        //if search is active i.e. we are doing limited search, query all product attributes and add them to the cahce since they will be needed when table is reloaded.
+        //if search is not active, query only product ids since the result might include a large number of products and the table reload will only show 10-20 cells.
         self.resultData = [CoreDataManager getProductIdsMatchingQueryString:queryString sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]] limit:limit managedObjectContext:self.managedObjectContext vendor:currentVendor bulletin:currentBulletin];
         [selectedIdx removeAllObjects];
     }

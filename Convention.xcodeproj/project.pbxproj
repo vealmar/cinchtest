@@ -20,6 +20,7 @@
 		35F5206FFC8C6A51336A10D6 /* signature-area.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F521BA81102E568B5457FC /* signature-area.png */; };
 		35F52096056B326E5BD1ECDF /* clear-button-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52E655DE2917031C78A08 /* clear-button-out.png */; };
 		35F520A4A89A2A79DE9CB392 /* Error+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F524A5199E6B8079AE5D89 /* Error+Extensions.m */; };
+		35F521043C4DB6FC65076B61 /* ProductCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52DB7AF7C6B01AB801D0A /* ProductCache.m */; };
 		35F521774853EA59DB5E6754 /* CartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F522AD3FB35CB710C8F62B /* CartViewCell.m */; };
 		35F521BE40815F698E85FF9E /* CIProductViewControllerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */; };
 		35F5220802E678E6EC146A37 /* PWCartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F529A69976E731F9A16513 /* PWCartViewCell.m */; };
@@ -282,6 +283,7 @@
 		35F5247F0ABA7083C162CA58 /* submit-button-out-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "submit-button-out-green.png"; sourceTree = "<group>"; };
 		35F524A5199E6B8079AE5D89 /* Error+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Error+Extensions.m"; sourceTree = "<group>"; };
 		35F524B699AFD10A2D4EAE87 /* clear-button-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clear-button-in.png"; sourceTree = "<group>"; };
+		35F524E013A7B2C0A4B9D15C /* ProductCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductCache.h; sourceTree = "<group>"; };
 		35F524EF83F7D46C93A26CF9 /* SynchronousRequestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronousRequestUtil.h; sourceTree = "<group>"; };
 		35F5256E54BCD292CF9ED322 /* save2out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = save2out.png; sourceTree = "<group>"; };
 		35F5260573F670DC82AEFEFF /* ShowConfigurations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowConfigurations.h; sourceTree = "<group>"; };
@@ -317,6 +319,7 @@
 		35F52CF25ABF1AF16A369494 /* NilUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NilUtil.m; sourceTree = "<group>"; };
 		35F52D51B287F531BAD31F9B /* overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = overlay.png; sourceTree = "<group>"; };
 		35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
+		35F52DB7AF7C6B01AB801D0A /* ProductCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductCache.m; sourceTree = "<group>"; };
 		35F52E02103987C5239CB07D /* NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberUtil.m; sourceTree = "<group>"; };
 		35F52E655DE2917031C78A08 /* clear-button-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clear-button-out.png"; sourceTree = "<group>"; };
 		35F52E74AD542ECB69B97735 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
@@ -696,6 +699,15 @@
 			path = helpers;
 			sourceTree = "<group>";
 		};
+		35F52F7994ED07673D7F4A7C /* Caches */ = {
+			isa = PBXGroup;
+			children = (
+				35F52DB7AF7C6B01AB801D0A /* ProductCache.m */,
+				35F524E013A7B2C0A4B9D15C /* ProductCache.h */,
+			);
+			path = Caches;
+			sourceTree = "<group>";
+		};
 		6E118556145F2F2100568ED1 = {
 			isa = PBXGroup;
 			children = (
@@ -758,6 +770,7 @@
 				35F5271B9DC09F494AE33569 /* ShowConfigurations.m */,
 				35F5260573F670DC82AEFEFF /* ShowConfigurations.h */,
 				35F52DA3C4334B0CFED70C47 /* helpers */,
+				35F52F7994ED07673D7F4A7C /* Caches */,
 			);
 			path = Convention;
 			sourceTree = "<group>";
@@ -1645,6 +1658,7 @@
 				35F5295CF38EFEB3F0DB36D1 /* AProduct.m in Sources */,
 				35F525B67308FF3F244DB79D /* CancelOrderDaysHelper.m in Sources */,
 				35F52A25B60B502E3DF218A5 /* NISignatureView.m in Sources */,
+				35F521043C4DB6FC65076B61 /* ProductCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

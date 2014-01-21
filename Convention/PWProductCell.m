@@ -11,7 +11,7 @@
 #import "config.h"
 #import "NumberUtil.h"
 #import "Cart.h"
-#import "Product.h"
+#import "AProduct.h"
 
 @interface PWProductCell () {
     NSString *originalCellValue;
@@ -32,7 +32,7 @@
 @synthesize delegate;
 @synthesize numShipDates;
 
-- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(Product *)product cart:(Cart *)cart checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore aProduct:(AProduct *)product cart:(Cart *)cart checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     self.InvtID.text = product.invtid;
     self.descr.text = product.descr;
     if (product.shipdate1) {

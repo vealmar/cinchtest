@@ -12,6 +12,7 @@
 
 @class Cart;
 @class Product;
+@class AProduct;
 
 @interface FarrisProductCell : ProductCell
 
@@ -31,6 +32,5 @@
 
 - (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2;
 
-- (void)initializeWithProduct:(Product *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
-
+- (void)initializeWithAProduct:(AProduct *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 @end

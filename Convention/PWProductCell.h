@@ -13,6 +13,7 @@
 
 @class Cart;
 @class Product;
+@class AProduct;
 
 
 @interface PWProductCell : ProductCell
@@ -34,6 +35,5 @@
 
 - (IBAction)qtyChanged:(id)sender;
 
-- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore product:(Product *)product cart:(Cart *)cart checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
-
+- (void)initializeWith:(NSDictionary *)customer multiStore:(BOOL)multiStore aProduct:(AProduct *)product cart:(Cart *)cart checkmarked:(BOOL)checkmarked tag:(NSInteger)tag productCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 @end
