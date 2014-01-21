@@ -376,8 +376,12 @@
                     <rect key="frame" x="376" y="40" width="297" height="47"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" name="Helvetica-Bold" family="Helvetica" pointSize="26"/>
-                    <textInputTraits key="textInputTraits"/>
+                    <textInputTraits key="textInputTraits" returnKeyType="search"/>
                     <connections>
+                        <action selector="searchDidBeginEditing:" destination="-1" eventType="editingDidBegin" id="Z9x-4F-FMR"/>
+                        <action selector="searchDidChangeEditing:" destination="-1" eventType="editingChanged" id="6G3-wu-KDm"/>
+                        <action selector="searchDidEndEditing:" destination="-1" eventType="editingDidEnd" id="WSs-Wa-2yN"/>
+                        <action selector="searchDidReturnKey:" destination="-1" eventType="editingDidEndOnExit" id="iih-s1-B4v"/>
                         <outlet property="delegate" destination="-1" id="414"/>
                     </connections>
                 </textField>
@@ -388,7 +392,7 @@
                         <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                     </state>
                     <connections>
-                        <action selector="searchProducts:" destination="-1" eventType="touchUpInside" id="420"/>
+                        <action selector="searchButtonPressed:" destination="-1" eventType="touchUpInside" id="IXR-sA-Pgp"/>
                     </connections>
                 </button>
                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="427">

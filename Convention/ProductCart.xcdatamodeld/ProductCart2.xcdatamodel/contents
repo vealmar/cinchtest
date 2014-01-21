@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="2" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="2" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0"
+       lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic"
+       iOSVersion="Automatic">
     <entity name="Bulletin" representedClassName="Bulletin" syncable="YES">
         <attribute name="bulletinId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -17,11 +19,16 @@
         <attribute name="cartId" attributeType="Integer 32" syncable="YES"/>
         <attribute name="editablePrice" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
         <attribute name="editableQty" attributeType="String" defaultValueString="0" syncable="YES"/>
-        <attribute name="editableVoucher" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="orderLineItem_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="order" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Order" inverseName="carts" inverseEntity="Order" syncable="YES"/>
-        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product" inverseName="carts" inverseEntity="Product" syncable="YES"/>
-        <relationship name="shipdates" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ShipDate" inverseName="cart" inverseEntity="ShipDate" syncable="YES"/>
+        <attribute name="editableVoucher" optional="YES" attributeType="Integer 32" defaultValueString="0.0"
+                   syncable="YES"/>
+        <attribute name="orderLineItem_id" optional="YES" attributeType="Integer 32" defaultValueString="0"
+                   syncable="YES"/>
+        <relationship name="order" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Order"
+                      inverseName="carts" inverseEntity="Order" syncable="YES"/>
+        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product"
+                      inverseName="carts" inverseEntity="Product" syncable="YES"/>
+        <relationship name="shipdates" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES"
+                      destinationEntity="ShipDate" inverseName="cart" inverseEntity="ShipDate" syncable="YES"/>
     </entity>
     <entity name="Customer" representedClassName="Customer" syncable="YES">
         <attribute name="billname" optional="YES" attributeType="String" syncable="YES"/>
@@ -39,16 +46,22 @@
         <attribute name="price" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
         <attribute name="productId" optional="YES" attributeType="Integer 32" syncable="YES"/>
         <attribute name="quantity" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="voucherPrice" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
-        <relationship name="order" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Order" inverseName="discountLineItems" inverseEntity="Order" syncable="YES"/>
-        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product" inverseName="discountLineItems" inverseEntity="Product" syncable="YES"/>
+        <attribute name="voucherPrice" optional="YES" attributeType="Integer 32" defaultValueString="0.0"
+                   syncable="YES"/>
+        <relationship name="order" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Order"
+                      inverseName="discountLineItems" inverseEntity="Order" syncable="YES"/>
+        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product"
+                      inverseName="discountLineItems" inverseEntity="Product" syncable="YES"/>
     </entity>
     <entity name="EditableEntity" representedClassName="EditableEntity" isAbstract="YES" syncable="YES">
-        <relationship name="errors" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Error" inverseName="editableEntity" inverseEntity="Error" syncable="YES"/>
+        <relationship name="errors" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Error"
+                      inverseName="editableEntity" inverseEntity="Error" syncable="YES"/>
     </entity>
     <entity name="Error" representedClassName="Error" syncable="YES">
         <attribute name="message" attributeType="String" syncable="YES"/>
-        <relationship name="editableEntity" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="EditableEntity" inverseName="errors" inverseEntity="EditableEntity" syncable="YES"/>
+        <relationship name="editableEntity" optional="YES" maxCount="1" deletionRule="Nullify"
+                      destinationEntity="EditableEntity" inverseName="errors" inverseEntity="EditableEntity"
+                      syncable="YES"/>
     </entity>
     <entity name="Order" representedClassName="Order" parentEntity="EditableEntity" syncable="YES">
         <attribute name="authorized" optional="YES" attributeType="String" syncable="YES"/>
@@ -66,8 +79,11 @@
         <attribute name="status" attributeType="String" defaultValueString="pending" syncable="YES"/>
         <attribute name="vendorGroup" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendorGroupId" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Cart" inverseName="order" inverseEntity="Cart" syncable="YES"/>
-        <relationship name="discountLineItems" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DiscountLineItem" inverseName="order" inverseEntity="DiscountLineItem" syncable="YES"/>
+        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Cart"
+                      inverseName="order" inverseEntity="Cart" syncable="YES"/>
+        <relationship name="discountLineItems" optional="YES" toMany="YES" deletionRule="Cascade"
+                      destinationEntity="DiscountLineItem" inverseName="order" inverseEntity="DiscountLineItem"
+                      syncable="YES"/>
     </entity>
     <entity name="Product" representedClassName="Product" syncable="YES">
         <attribute name="adv" optional="YES" attributeType="Boolean" syncable="YES"/>
@@ -99,8 +115,19 @@
         <attribute name="vendid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendor_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="voucher" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Cart" inverseName="product" inverseEntity="Cart" syncable="YES"/>
-        <relationship name="discountLineItems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DiscountLineItem" inverseName="product" inverseEntity="DiscountLineItem" syncable="YES"/>
+        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Cart"
+                      inverseName="product" inverseEntity="Cart" syncable="YES"/>
+        <relationship name="discountLineItems" optional="YES" toMany="YES" deletionRule="Nullify"
+                      destinationEntity="DiscountLineItem" inverseName="product" inverseEntity="DiscountLineItem"
+                      syncable="YES"/>
+        <compoundIndexes>
+            <compoundIndex>
+                <index value="productId"/>
+            </compoundIndex>
+            <compoundIndex>
+                <index value="invtid"/>
+            </compoundIndex>
+        </compoundIndexes>
     </entity>
     <entity name="SetupInfo" representedClassName="SetupInfo" syncable="YES">
         <attribute name="item" attributeType="String" syncable="YES"/>
@@ -108,7 +135,8 @@
     </entity>
     <entity name="ShipDate" representedClassName="ShipDate" syncable="YES">
         <attribute name="shipdate" attributeType="Date" syncable="YES"/>
-        <relationship name="cart" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Cart" inverseName="shipdates" inverseEntity="Cart" syncable="YES"/>
+        <relationship name="cart" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Cart"
+                      inverseName="shipdates" inverseEntity="Cart" syncable="YES"/>
     </entity>
     <entity name="Vendor" representedClassName="Vendor" syncable="YES">
         <attribute name="booth" optional="YES" attributeType="String" syncable="YES"/>
@@ -131,7 +159,8 @@
         <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendid" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="vendorgroup_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="vendorgroup_id" optional="YES" attributeType="Integer 32" defaultValueString="0"
+                   syncable="YES"/>
         <attribute name="vendorId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
     </entity>
     <fetchRequest name="getSetupItem" entity="SetupInfo" predicateString="item == $ITEMNAME"/>

@@ -30,4 +30,6 @@
         onFailure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock;
 
 + (NSUInteger)getProductCount;
+
++ (NSArray *)getProductIdsMatchingQueryString:(NSString *)queryString sortDescriptors:(NSArray *)sortDescriptors limit:(NSUInteger)limit managedObjectContext:(NSManagedObjectContext *)managedObjectContext vendor:(NSInteger)vendor bulletin:(NSInteger)bulletin;
 @end

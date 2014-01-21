@@ -79,8 +79,6 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 - (IBAction)dismissVendorTouched:(id)sender;
 
-- (IBAction)searchProducts:(id)sender;
-
 - (IBAction)handleTap:(UITapGestureRecognizer *)recognizer;
 
 - (IBAction)shipdatesTouched:(id)sender;
@@ -89,6 +87,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic, strong) UIPopoverController *poController;
 @property(nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 @property(nonatomic, strong) NSArray *resultData; //Array of all products displayed (filtered by search criteria, selected vendor, bulletin etc.)
+@property(nonatomic, strong) NSArray *resultProducts; //Array of products (AProduct *) displayed during search.
 @property(nonatomic, strong) NSMutableArray *vendorProductIds; //key is product_id. All products for the selected vendor or foe all vendors if the selected vendor is 'Any'. This is used when performing Search, so that the search is limited to the selected vendor's products.
 @property(nonatomic, strong) NSMutableArray *vendorProducts; //AProducts
 @property(nonatomic, strong) NSDictionary *customer;
@@ -114,10 +113,18 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic) BOOL newOrder;
 @property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
 
+- (IBAction)searchDidEndEditing:(UITextField *)sender;
+
+- (IBAction)searchButtonPressed:(UIButton *)sender;
+
+- (IBAction)searchDidBeginEditing:(UITextField *)sender;
+
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
-
-
 - (void)QtyChange:(int)qty forIndex:(int)idx;
+
+- (IBAction)searchDidChangeEditing:(UITextField *)sender;
+
+- (IBAction)searchDidReturnKey:(id)sender;
 
 - (void)setVendor:(NSInteger)vendorId;
 

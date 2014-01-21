@@ -201,4 +201,40 @@
     return count;
 }
 
++ (NSArray *)getProductIdsMatchingQueryString:(NSString *)queryString sortDescriptors:(NSArray *)sortDescriptors limit:(NSUInteger)limit managedObjectContext:(NSManagedObjectContext *)managedObjectContext vendor:(NSInteger)vendor bulletin:(NSInteger)bulletin {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:managedObjectContext]];
+    [fetchRequest setPropertiesToFetch:[NSArray arrayWithObjects:@"productId", nil]];
+    [fetchRequest setResultType:NSDictionaryResultType];
+    [fetchRequest setIncludesSubentities:NO];
+    if (limit > 0) {
+        [fetchRequest setFetchLimit:limit];
+    }
+    if (sortDescriptors) {
+        fetchRequest.sortDescriptors = sortDescriptors;
+    }
+    NSMutableArray *predicates = [NSMutableArray arrayWithCapacity:3];
+    if (vendor > 0) {
+        [predicates addObject:[NSPredicate predicateWithFormat:@"vendor_id = %d", vendor]];
+    }
+    if (bulletin > 0) {
+        [predicates addObject:[NSPredicate predicateWithFormat:@"bulletin_id = %d", bulletin]];
+    }
+    [predicates addObject:[NSPredicate predicateWithFormat:@"invtid CONTAINS[cd] %@ or descr CONTAINS[cd] %@ or descr2 CONTAINS[cd] %@", queryString, queryString, queryString]];
+    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
+    NSError *error = nil;
+    NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if (error) {
+        NSLog(@"%@ Error fetching products matching query string '%@'. %@", [self class], queryString, [error localizedDescription]);
+        return [NSArray array];
+    } else {
+        NSMutableArray *productIds = [NSMutableArray array];
+        [fetchedObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [productIds addObject:[((NSDictionary *) obj) objectForKey:@"productId"]];
+        }];
+        return productIds;
+    }
+}
+
+
 @end

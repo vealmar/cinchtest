@@ -13,7 +13,6 @@
 #import "CoreDataUtil.h"
 #import "ShipDate.h"
 #import "Order+Extensions.h"
-#import "StringManipulation.h"
 #import "AFJSONRequestOperation.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "FarrisProductCell.h"
@@ -92,7 +91,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
     self.showShipDates = [[ShowConfigurations instance] shipDates];
     self.allowPrinting = [ShowConfigurations instance].printing;
     self.contactBeforeShipping = [ShowConfigurations instance].contactBeforeShipping;
@@ -166,9 +164,7 @@
         for (Vendor *vendor in vendors) {
             [vendorDataMutable addObject:[vendor asDictionary]];
         }
-        if ([CoreDataManager getProductCount] < 5000) {
-            [vendorDataMutable insertObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil] atIndex:0];
-        }
+        [vendorDataMutable insertObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil] atIndex:0];
         vendorsData = vendorDataMutable;
     } else {
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Problem loading vendors! If this problem persists please notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -626,26 +622,39 @@
     }
 }
 
-- (void)searchTextUpdated:(UITextField *)textField {
-    [self searchProducts:textField];
+- (IBAction)searchDidBeginEditing:(UITextField *)sender {
+    NSLog(@"Search began");
 }
 
-- (IBAction)searchProducts:(id)sender {
+- (IBAction)searchDidChangeEditing:(UITextField *)sender {
+    NSLog(@"Search changed");
+    [self searchProducts:sender.text searchIsActive:YES];
+}
+
+- (IBAction)searchDidReturnKey:(id)sender {
+    NSLog(@"Search return key pressed or tapped outside");
+    [self searchProducts:((UITextField *) sender).text searchIsActive:NO];
+}
+
+- (IBAction)searchDidEndEditing:(UITextField *)sender {
+    NSLog(@"Search ended");
+    [self searchProducts:sender.text searchIsActive:NO];
+}
+
+- (IBAction)searchButtonPressed:(UIButton *)sender {
+    NSLog(@"Search button pressed");
+    [self searchProducts:self.searchText.text searchIsActive:NO];
+}
+
+
+- (void)searchProducts:(NSString *)queryString searchIsActive:(BOOL)searchIsActive {
     if (self.vendorProducts == nil|| [self.vendorProducts isKindOfClass:[NSNull class]] || [self.vendorProducts count] == 0) return;
-    if ([self.searchText.text isEqualToString:@""]) {
+    queryString = [queryString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (queryString.length == 0) {
         self.resultData = [self.vendorProductIds mutableCopy];
     } else {
-        NSMutableArray *matchingProductIds = [[NSMutableArray alloc] init];
-        for (AProduct *product in self.vendorProducts) {
-            NSString *invtid = [NilUtil objectOrDefaultString:product.invtid defaultObject:@""];
-            NSString *descrip = [NilUtil objectOrDefaultString:product.descr defaultObject:@""];
-            NSString *desc2 = [NilUtil objectOrDefaultString:product.descr2 defaultObject:@""];
-            NSString *test = [self.searchText.text uppercaseString];
-            if ([[invtid uppercaseString] contains:test] || [[descrip uppercaseString] contains:test] || (desc2 != nil && ![desc2 isEqual:[NSNull null]] && [[desc2 uppercaseString] contains:test])) {
-                [matchingProductIds addObject:product.productId];
-            }
-        }
-        self.resultData = matchingProductIds;
+        NSUInteger limit = searchIsActive ? 50 : 0; //0 indicates no limit
+        self.resultData = [CoreDataManager getProductIdsMatchingQueryString:queryString sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]] limit:limit managedObjectContext:self.managedObjectContext vendor:currentVendor bulletin:currentBulletin];
         [selectedIdx removeAllObjects];
     }
     [self reloadTable];
@@ -831,6 +840,7 @@
 }
 
 #pragma mark - ProductCellDelegate
+
 
 - (void)QtyChange:(int)qty forIndex:(int)idx {
     NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
