@@ -84,32 +84,6 @@
 
 #pragma mark - View lifecycle
 
-- (void)viewDidLayoutSubviews {
-    [super viewDidLayoutSubviews];
-    [self adjustTotals];
-}
-
-
-- (void)adjustTotals {
-    NSMutableArray *visibleTotalFields = [[NSMutableArray alloc] init];
-    if (!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label" : self.grossTotalLabel}];
-    if (!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label" : self.discountTotalLabel}];
-    if (!self.voucherTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.voucherTotal, @"label" : self.voucherTotalLabel}];
-    if (!self.netTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.netTotal, @"label" : self.netTotalLabel}];
-    int availableHeight = 85;
-    int heightPerField = availableHeight / visibleTotalFields.count;
-    int marginBottomPerField = 2;
-    heightPerField = heightPerField - marginBottomPerField;
-    int y = 10;
-    for (NSDictionary *totalField in visibleTotalFields) {
-        ((UILabel *) [totalField objectForKey:@"label"]).frame = CGRectMake(766, y, 129, heightPerField);
-        UITextField *textField = ((UITextField *) [totalField objectForKey:@"field"]);
-        textField.text = @"0";
-        textField.frame = CGRectMake(875, y, 101, heightPerField);
-        y = y + heightPerField + marginBottomPerField;
-    }
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.indicator startAnimating];
