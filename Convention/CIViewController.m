@@ -16,13 +16,9 @@
 #import "ShowConfigurations.h"
 #import "Customer.h"
 #import "CoreDataUtil.h"
-#import "Product.h"
 #import "NilUtil.h"
 #import "Vendor.h"
 #import "Bulletin.h"
-#import "Product+Extensions.h"
-#import "Cart.h"
-#import "DiscountLineItem.h"
 #import "CoreDataManager.h"
 
 @implementation CIViewController {

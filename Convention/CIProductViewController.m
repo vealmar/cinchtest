@@ -29,7 +29,6 @@
 #import "Cart+Extensions.h"
 #import "Error.h"
 #import "Product+Extensions.h"
-#import "DiscountLineItem+Extensions.h"
 #import "AProduct.h"
 #import "MBProgressHUD.h"
 
