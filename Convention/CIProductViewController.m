@@ -74,7 +74,6 @@
         helper = [[CIProductViewControllerHelper alloc] init];
         keyboardUp = NO;
     }
-    reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
     return self;
 }
 
@@ -959,14 +958,6 @@
     [self reloadProducts];
 }
 
-#pragma mark - ReachabilityDelegate
-
-- (void)networkLost {
-}
-
-- (void)networkRestored {
-}
-
 #pragma mark - VendorViewDelegate
 
 - (void)setVendor:(NSInteger)vendorId {
@@ -1011,6 +1002,5 @@
         }
     }];
 }
-
 
 @end

@@ -35,7 +35,6 @@
     BOOL isLoadingOrders;
     UITextField *activeField;
     PullToRefreshView *pull;
-    CIProductViewController *productView;
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
     NSIndexPath *selectedItemRowIndexPath;
@@ -327,7 +326,7 @@ SG: The argument 'detail' is the selected order.
 #pragma mark - Load Product View Conroller
 
 - (void)loadProductView:(BOOL)newOrder customer:(NSDictionary *)customer {
-    productView = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
+    CIProductViewController *productView = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
     productView.authToken = self.authToken;
     productView.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
     productView.loggedInVendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];
