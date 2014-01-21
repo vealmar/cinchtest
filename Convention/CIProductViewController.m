@@ -166,7 +166,9 @@
         for (Vendor *vendor in vendors) {
             [vendorDataMutable addObject:[vendor asDictionary]];
         }
-        [vendorDataMutable insertObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil] atIndex:0];
+        if ([CoreDataManager getProductCount] < 5000) {
+            [vendorDataMutable insertObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil] atIndex:0];
+        }
         vendorsData = vendorDataMutable;
     } else {
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Problem loading vendors! If this problem persists please notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];

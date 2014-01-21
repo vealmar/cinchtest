@@ -18,6 +18,7 @@
 #import "DiscountLineItem+Extensions.h"
 #import "Cart+Extensions.h"
 #import "SynchronousResponse.h"
+#import "CIAppDelegate.h"
 
 
 @implementation CoreDataManager {
@@ -137,5 +138,19 @@
         NSLog(@"%@ Error fetching bulletins. Status Code: %d", [self class], response.statusCode);
 }
 
++ (NSUInteger)getProductCount {
+    CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
+    NSManagedObjectContext *context = delegate.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:context]];
+    [request setIncludesSubentities:NO];
+    NSError *err;
+    NSUInteger count = [context countForFetchRequest:request error:&err];
+    if (count == NSNotFound) {
+        NSLog([NSString stringWithFormat:@"An error occurred when fetching product count. %@", err == nil? @"" : [err localizedDescription]]);
+        return 0; //todo: handle error
+    }
+    return count;
+}
 
 @end
