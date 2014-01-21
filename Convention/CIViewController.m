@@ -23,6 +23,7 @@
 #import "Product+Extensions.h"
 #import "Cart.h"
 #import "DiscountLineItem.h"
+#import "CoreDataManager.h"
 
 @implementation CIViewController {
     CGRect originalBounds;
@@ -171,45 +172,24 @@
 }
 
 - (void)loadProducts {
-    MBProgressHUD *__weak hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Loading products";
     [hud show:NO];
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, self.authToken, kVendorGroupID, [[self.vendorInfo objectForKey:kVendorGroupID] stringValue]];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                                                                                            if (JSON && ([(NSArray *) JSON count] > 0)) {
-                                                                                                [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
-                                                                                                NSArray *products = (NSArray *) JSON;
-                                                                                                for (NSDictionary *productJson in products) {
-                                                                                                    Product *product = [[Product alloc] initWithProductFromServer:productJson context:self.managedObjectContext];
-                                                                                                    [self.managedObjectContext insertObject:product];
-                                                                                                    //re-establish connection between carts and products
-                                                                                                    NSArray *carts = [[CoreDataUtil sharedManager] fetchArray:@"Cart" withPredicate:[NSPredicate predicateWithFormat:@"(cartId == %@)", product.productId]];
-                                                                                                    if (carts) {
-                                                                                                        for (Cart *cart in carts) {
-                                                                                                            cart.product = product;
-                                                                                                        }
-                                                                                                    }
-                                                                                                    //re-establish connection between discount line items and products
-                                                                                                    NSArray *discountLineItems = [[CoreDataUtil sharedManager] fetchArray:@"DiscountLineItem" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", product.productId]];
-                                                                                                    if (discountLineItems) {
-                                                                                                        for (DiscountLineItem *discountLineItem in discountLineItems) {
-                                                                                                            discountLineItem.product = product;
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                                [[CoreDataUtil sharedManager] saveObjects];
-                                                                                            }
-                                                                                            [hud hide:NO];
-                                                                                            [self loadVendors];
-                                                                                        }
-                                                                                        failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
-                                                                                            [hud hide:NO];
-                                                                                            [[[UIAlertView alloc] initWithTitle:@"Error" message:[err localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                                                                                            NSLog(@"%@ Error loading products: %@", [self class], [err localizedDescription]);
-                                                                                        }];
-    [operation start];
+
+    void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
+        [hud hide:NO];
+        [self loadVendors];
+    };
+
+    void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
+        [hud hide:NO];
+    };
+
+    [CoreDataManager reloadProducts:self.authToken
+                      vendorGroupId:[[self.vendorInfo objectForKey:kVendorGroupID] stringValue]
+               managedObjectContext:self.managedObjectContext
+                          onSuccess:successBlock
+                          onFailure:failureBlock];
 }
 
 - (void)loadVendors {
