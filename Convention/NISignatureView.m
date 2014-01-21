@@ -65,7 +65,6 @@ static GLKVector3 perpendicular(NISignaturePoint p1, NISignaturePoint p2) {
 
 @interface NISignatureView ()
 
-@property(assign, nonatomic) BOOL drawnSignature;
 @property(nonatomic) CGImageRef imageRef;
 @property(nonatomic) CGColorSpaceRef colorSpaceRef;
 @property(nonatomic) CGDataProviderRef provider;

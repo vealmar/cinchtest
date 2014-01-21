@@ -40,8 +40,8 @@
 
 - (IBAction)submit:(UIButton *)sender {
     @try {
-        UIImage *signatureImage = [self.signatureView snapshot];
-        if (signatureImage) {
+        if (self.signatureView.drawnSignature) {
+            UIImage *signatureImage = [self.signatureView snapshot];
             void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
                 [self signatureCaptured];
             };
