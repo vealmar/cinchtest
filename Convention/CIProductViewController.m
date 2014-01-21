@@ -624,26 +624,22 @@
 }
 
 - (IBAction)searchDidBeginEditing:(UITextField *)sender {
-    NSLog(@"Search began");
+
 }
 
 - (IBAction)searchDidChangeEditing:(UITextField *)sender {
-    NSLog(@"Search changed");
     [self searchProducts:sender.text searchIsActive:YES];
 }
 
 - (IBAction)searchDidReturnKey:(id)sender {
-    NSLog(@"Search return key pressed or tapped outside");
     [self searchProducts:((UITextField *) sender).text searchIsActive:NO];
 }
 
 - (IBAction)searchDidEndEditing:(UITextField *)sender {
-    NSLog(@"Search ended");
     [self searchProducts:sender.text searchIsActive:NO];
 }
 
 - (IBAction)searchButtonPressed:(UIButton *)sender {
-    NSLog(@"Search button pressed");
     [self searchProducts:self.searchText.text searchIsActive:NO];
 }
 
