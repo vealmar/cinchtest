@@ -33,7 +33,7 @@
     self.InvtID.text = @"Discount";
     [self setDescription:discount.description1 withSubtext:discount.description2];
     Product *product = discount.productId ? [Product findProduct:discount.productId] : nil;
-    self.min.text = product ? [NilUtil objectOrDefaultString:product.min defaultObject:@""] : @"";
+    self.min.text = product && product.min != nil ? [product.min stringValue] : @"";
     self.qtyLbl.text = [discount.quantity stringValue];
     self.quantity.hidden = YES;
     self.qtyLbl.font = discountFont;
