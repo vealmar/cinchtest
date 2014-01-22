@@ -654,6 +654,7 @@
         //if search is not active, query only product ids since the result might include a large number of products and the table reload will only show 10-20 cells.
         self.resultData = [CoreDataManager getProductIdsMatchingQueryString:queryString sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]] limit:limit managedObjectContext:self.managedObjectContext vendor:currentVendor bulletin:currentBulletin];
         [selectedIdx removeAllObjects];
+        selectedItemRowIndexPath = nil;
     }
     [self reloadTable];
 }
@@ -698,7 +699,8 @@
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
     [self addInsetToTable:kbSize.width - 69];//width because landscape. 69 is height of the view that contains totals at the end of the table.
-    [self.productsTableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+    if (selectedItemRowIndexPath && [self.resultData count] > [selectedItemRowIndexPath row]) //while you are editing quantity and typing in search field fast, you can reach a situation where selectedItemRowIndexPath is no longer valid.
+        [self.productsTableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
     keyboardUp = YES;
     keyboardHeight = kbSize.width;
     [UIView commitAnimations];
