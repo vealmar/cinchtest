@@ -846,12 +846,11 @@ SG: This method gets called when you swipe on an order in the order list and tap
                 [strs addObject:str];
             }
             Product *product = [Product findProduct:lineItem.productId];
-            [[ShowConfigurations instance] shipDates] ? strs.count > 0 : YES;
             if (![helper itemHasQuantity:qty]) {
                 [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no quantity. Please specify a quantity and then save.", product.invtid] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
                 return;
             }
-            if (![helper isProductAVoucher:lineItem.productId] && [[ShowConfigurations instance] shipDates] && strs.count == 0) {
+            if (![helper isProductAVoucher:lineItem.productId] && [[ShowConfigurations instance] shipDatesRequired] && strs.count == 0) {
                 [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no ship date. Please specify ship date(s) and then save.", product.invtid] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
                 return;
             }
@@ -878,7 +877,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSMutableDictionary *order = [NSMutableDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustomerID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
     if (showConfig.cancelOrder) {
         NSNumber *cancelByDays = [cancelDaysHelper numberAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
-        [order setObject:[NilUtil objectOrNNull:cancelByDays] forKey:kCancelByDays];
+        [order setObject:[NilUtil objectOrNSNull:cancelByDays] forKey:kCancelByDays];
     }
     NSDictionary *final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDEREDITS([currentOrder.orderId intValue]), kAuthToken, self.authToken];

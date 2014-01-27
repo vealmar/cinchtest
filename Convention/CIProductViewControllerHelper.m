@@ -84,7 +84,7 @@
 }
 
 - (void)updateCellBackground:(UITableViewCell *)cell cart:(Cart *)cart {
-    if ([ShowConfigurations instance].shipDates) {
+    if ([ShowConfigurations instance].shipDatesRequired) {
         BOOL hasQty = [self itemHasQuantity:cart.editableQty];
         BOOL hasShipDates = cart.shipdates && cart.shipdates.count > 0;
         BOOL isVoucher = [CIProductViewControllerHelper itemIsVoucher:cart.product];
@@ -165,7 +165,7 @@
     }
 
     //if using ship dates, all items with non-zero quantity (except vouchers) should have ship date(s)
-    if ([[ShowConfigurations instance] shipDates]) {
+    if ([ShowConfigurations instance].shipDatesRequired) {
         for (Cart *cart in coreDataOrder.carts) {
             Product *product = [Product findProduct:cart.cartId];
             BOOL hasQty = [self itemHasQuantity:cart.editableQty];

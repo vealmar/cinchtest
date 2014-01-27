@@ -208,7 +208,7 @@
             }
             if (self.cancelConfig) {
                 NSNumber *cancelByDays = [cancelDaysHelper numberAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
-                [dict setObject:[NilUtil objectOrNNull:cancelByDays] forKey:kCancelByDays];
+                [dict setObject:[NilUtil objectOrNSNull:cancelByDays] forKey:kCancelByDays];
             }
             [self.delegate setAuthorizedByInfo:[dict copy]];
             [self.delegate submit:nil];

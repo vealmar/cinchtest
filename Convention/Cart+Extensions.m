@@ -78,7 +78,7 @@
     if (hasQuantity) { //only include items that have non-zero quantity specified
         return [NSDictionary dictionaryWithObjectsAndKeys:[self.orderLineItem_id intValue] == 0 ? [NSNull null] : self.orderLineItem_id, kID,
                                                           self.cartId, kLineItemProductID,
-                                                          [NilUtil objectOrNNull:self.editableQty], kLineItemQuantity,
+                                                          [NilUtil objectOrNSNull:self.editableQty], kLineItemQuantity,
                                                           @([self.editablePrice intValue] / 100.0), kLineItemPrice,
                                                           @([self.editableVoucher intValue] / 100.0), kLineItemVoucherPrice,
                                                           [ShowConfigurations instance].shipDates ? self.shipDatesAsStringArray : @[], kLineItemShipDates,

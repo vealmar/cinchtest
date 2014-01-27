@@ -19,11 +19,15 @@
     return (NSString *) [NilUtil objectOrDefault:object defaultObject:defaultString];
 }
 
++ (NSString *)objectOrEmptyString:(NSObject *)object {
+    return (NSString *) [NilUtil objectOrDefault:object defaultObject:@""];
+}
+
 + (NSArray *)objectOrEmptyArray:(NSObject *)object {
     return (NSArray *) [NilUtil objectOrDefault:object defaultObject:[[NSArray alloc] init]];
 }
 
-+ (NSObject *)objectOrNNull:(NSObject *)object {
++ (NSObject *)objectOrNSNull:(NSObject *)object {
     return [NilUtil objectOrDefault:object defaultObject:[NSNull null]];
 
 }
