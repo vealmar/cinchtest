@@ -576,11 +576,9 @@
         [selectedIdx enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
             NSNumber *idx = (NSNumber *) obj;
             NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [idx integerValue]];
-            if ([self.productCart objectForKey:productId] != nil) {
-                [self updateShipDatesInCartWithId:productId forDates:dates];
-                [self updateTotals];
-                self.unsavedChangesPresent = YES;
-            }
+            [self updateShipDatesInCartWithId:productId forDates:dates];
+            [self updateTotals];
+            self.unsavedChangesPresent = YES;
             [self updateCellColorForId:(NSUInteger) [idx integerValue]];
         }];
         [selectedIdx removeAllObjects];
@@ -590,7 +588,7 @@
     __block NSMutableArray *selectedArr = [NSMutableArray array];
     for (Cart *cart in self.coreDataOrder.carts) {
         if (cart.shipdates && cart.shipdates.count > 0) {
-            [selectedArr addObjectsFromArray:[cart shipDatesAsStringArray]];
+            [selectedArr addObjectsFromArray:[cart shipDatesAsDatesArray]];
         }
     }
     NSArray *selectedDates = [[[NSOrderedSet orderedSetWithArray:selectedArr] array] copy];
@@ -893,7 +891,8 @@
 - (void)updateShipDatesInCartWithId:(NSNumber *)cartId forDates:(NSArray *)dates {
     if (dates && [dates count] > 0) {
         Cart *cart = [self.coreDataOrder findCartForProductId:cartId];
-        [self updateShipDates:dates inCart:cart];
+        if (cart)
+            [self updateShipDates:dates inCart:cart];
     }
 }
 

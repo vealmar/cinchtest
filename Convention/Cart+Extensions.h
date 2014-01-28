@@ -21,6 +21,8 @@
 
 - (id)initWithProduct:(Product *)product context:(NSManagedObjectContext *)context;
 
+- (NSArray *)shipDatesAsDatesArray;
+
 - (NSDictionary *)asJsonReqParameter;
 
 @end
