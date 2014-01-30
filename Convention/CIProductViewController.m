@@ -107,7 +107,7 @@
     } else {
         self.tableHeaderPigglyWiggly.hidden = YES;
         self.tableHeaderFarris.hidden = NO;
-//        self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+        self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     }
     if (!self.showShipDates) self.btnSelectShipDates.hidden = YES;
 }
@@ -576,11 +576,9 @@
         [selectedIdx enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
             NSNumber *idx = (NSNumber *) obj;
             NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [idx integerValue]];
-            if ([self.productCart objectForKey:productId] != nil) {
-                [self updateShipDatesInCartWithId:productId forDates:dates];
-                [self updateTotals];
-                self.unsavedChangesPresent = YES;
-            }
+            [self updateShipDatesInCartWithId:productId forDates:dates];
+            [self updateTotals];
+            self.unsavedChangesPresent = YES;
             [self updateCellColorForId:(NSUInteger) [idx integerValue]];
         }];
         [selectedIdx removeAllObjects];
@@ -588,11 +586,13 @@
         [strongCalView dismissViewControllerAnimated:NO completion:nil];
     };
     __block NSMutableArray *selectedArr = [NSMutableArray array];
-    for (Cart *cart in self.coreDataOrder.carts) {
-        if (cart.shipdates && cart.shipdates.count > 0) {
-            [selectedArr addObjectsFromArray:[cart shipDatesAsStringArray]];
-        }
-    }
+    [selectedIdx enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+        NSNumber *idx = (NSNumber *) obj;
+        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [idx integerValue]];
+        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
+        [selectedArr addObjectsFromArray:[cart shipDatesAsDatesArray]];
+    }];
+
     NSArray *selectedDates = [[[NSOrderedSet orderedSetWithArray:selectedArr] array] copy];
     if (ranges.count > 1) {
         NSMutableSet *final = [NSMutableSet setWithArray:[ranges objectAtIndex:0]];
@@ -893,7 +893,8 @@
 - (void)updateShipDatesInCartWithId:(NSNumber *)cartId forDates:(NSArray *)dates {
     if (dates && [dates count] > 0) {
         Cart *cart = [self.coreDataOrder findCartForProductId:cartId];
-        [self updateShipDates:dates inCart:cart];
+        if (cart)
+            [self updateShipDates:dates inCart:cart];
     }
 }
 

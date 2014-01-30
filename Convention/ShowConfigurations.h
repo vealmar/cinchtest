@@ -12,6 +12,7 @@
 @interface ShowConfigurations : NSObject
 @property BOOL discounts;
 @property BOOL shipDates;
+@property BOOL shipDatesRequired;
 @property BOOL printing;
 @property BOOL captureSignature;
 @property BOOL vouchers;

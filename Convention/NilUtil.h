@@ -14,9 +14,11 @@
 
 + (NSString *)objectOrDefaultString:(NSObject *)object defaultObject:(NSString *)defaultString;
 
++ (NSString *)objectOrEmptyString:(NSObject *)object;
+
 + (NSArray *)objectOrEmptyArray:(NSObject *)object;
 
-+ (NSObject *)objectOrNNull:(NSObject *)object;
++ (NSObject *)objectOrNSNull:(NSObject *)object;
 
 + (NSObject *)objectOrDefault:(NSObject *)object defaultObject:(NSObject *)defaultObject;
 @end

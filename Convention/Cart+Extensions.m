@@ -73,12 +73,22 @@
     return shipDates;
 }
 
+- (NSArray *)shipDatesAsDatesArray {
+    NSMutableArray *shipDates = [[NSMutableArray alloc] init];
+    if ([self.shipdates count] > 0) {
+        for (ShipDate *sd in self.shipdates) {
+            [shipDates addObject:sd.shipdate];
+        }
+    }
+    return shipDates;
+}
+
 - (NSDictionary *)asJsonReqParameter {
     BOOL hasQuantity = [[[CIProductViewControllerHelper alloc] init] itemHasQuantity:self.editableQty];
     if (hasQuantity) { //only include items that have non-zero quantity specified
         return [NSDictionary dictionaryWithObjectsAndKeys:[self.orderLineItem_id intValue] == 0 ? [NSNull null] : self.orderLineItem_id, kID,
                                                           self.cartId, kLineItemProductID,
-                                                          [NilUtil objectOrNNull:self.editableQty], kLineItemQuantity,
+                                                          [NilUtil objectOrNSNull:self.editableQty], kLineItemQuantity,
                                                           @([self.editablePrice intValue] / 100.0), kLineItemPrice,
                                                           @([self.editableVoucher intValue] / 100.0), kLineItemVoucherPrice,
                                                           [ShowConfigurations instance].shipDates ? self.shipDatesAsStringArray : @[], kLineItemShipDates,

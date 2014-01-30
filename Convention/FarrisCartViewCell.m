@@ -43,8 +43,9 @@
     self.showPrice.font = discountFont;
     self.delegate = productCellDelegate;
     self.tag = tag;
-//    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     self.backgroundColor = [UIColor whiteColor];//since we are using same cell for products and discounts, if a product cell is being reused, it might have a green/red background. We display discounts with white background always.
+    self.numOfShipDates.text = @"";
     [self updateErrorsView:[[NSSet alloc] init]];
 }
 
@@ -60,7 +61,8 @@
     self.showPrice.text = [NumberUtil formatCentsAsCurrency:cart.product.showprc];
     self.delegate = productCellDelegate;
     self.tag = tag;
-//    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+    self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+    self.numOfShipDates.text = cart.shipdates && cart.shipdates.count > 0 ? [NSString stringWithFormat:@"%d", cart.shipdates.count] : @"";
     [self updateErrorsView:cart.errors];
 }
 

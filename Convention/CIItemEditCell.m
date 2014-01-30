@@ -15,6 +15,10 @@
 #import "Product.h"
 #import "Product+Extensions.h"
 
+@interface CIItemEditCell ()
+@property NSUInteger numOfShipDates;
+@end
+
 @implementation CIItemEditCell
 @synthesize desc;
 @synthesize desc1;
@@ -63,7 +67,7 @@
 
     double p = [self.priceLbl.text doubleValue];
 
-    self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(q * p)] numberStyle:NSNumberFormatterCurrencyStyle];
+    self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(q * p * self.numOfShipDates)] numberStyle:NSNumberFormatterCurrencyStyle];
 }
 
 - (IBAction)voucherEdit:(id)sender {
@@ -206,6 +210,7 @@
     } else {
         self.btnShipdates.hidden = YES;
     }
+    self.numOfShipDates = (NSUInteger) nd;
 
     if ([itemsPrice objectAtIndex:indexPath.row] && ![[itemsPrice objectAtIndex:indexPath.row] isKindOfClass:[NSNull class]]) {
         NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];

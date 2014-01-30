@@ -9,6 +9,7 @@
 #import "ShowConfigurations.h"
 #import "config.h"
 #import "SettingsManager.h"
+#import "NilUtil.h"
 
 static ShowConfigurations *showConfigurations = nil;
 
@@ -23,7 +24,9 @@ static ShowConfigurations *showConfigurations = nil;
     showConfigurations = [[[self class] alloc] init];
     if (showConfigurations) {
         showConfigurations.discounts = [[json objectForKey:@"discounts"] boolValue];
-        showConfigurations.shipDates = [[json objectForKey:@"shipdates"] boolValue];
+        NSString *shipdatesValue = [NilUtil objectOrEmptyString:[json objectForKey:@"shipdates"]];
+        showConfigurations.shipDates = [shipdatesValue isEqualToString:@"required"] || [shipdatesValue isEqualToString:@"optional"];
+        showConfigurations.shipDatesRequired = [shipdatesValue isEqualToString:@"required"];
         showConfigurations.printing = [[json objectForKey:@"printing"] boolValue];
         showConfigurations.vouchers = [[json objectForKey:@"vouchers"] boolValue];
         showConfigurations.contracts = [[json objectForKey:@"contracts"] boolValue];

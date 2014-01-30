@@ -125,15 +125,15 @@
         NSDictionary *proDict = [cart asJsonReqParameter];
         if (proDict) [arr addObject:(id) proDict];
     }
-    NSMutableDictionary *newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNNull:self.customer_id], kOrderCustomerID,
-                                                                                      [NilUtil objectOrNNull:self.notes], kNotes,
-                                                                                      [NilUtil objectOrNNull:self.authorized], kAuthorizedBy,
+    NSMutableDictionary *newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNSNull:self.customer_id], kOrderCustomerID,
+                                                                                      [NilUtil objectOrNSNull:self.notes], kNotes,
+                                                                                      [NilUtil objectOrNSNull:self.authorized], kAuthorizedBy,
                                                                                       [self.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
-                                                                                      [NilUtil objectOrNNull:self.cancelByDays], kCancelByDays,
-                                                                                      [NilUtil objectOrNNull:self.status], kOrderStatus,
+                                                                                      [NilUtil objectOrNSNull:self.cancelByDays], kCancelByDays,
+                                                                                      [NilUtil objectOrNSNull:self.status], kOrderStatus,
                                                                                       arr, kOrderItems,
                                                                                       [self.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,
-                                                                                      [NilUtil objectOrNNull:self.printer], kOrderPrinter , nil];
+                                                                                      [NilUtil objectOrNSNull:self.printer], kOrderPrinter , nil];
     return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
 }
 
