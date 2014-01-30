@@ -33,17 +33,23 @@
         self.min.text = @"";
         self.regPrice.text = @"";
         self.showPrice.text = @"";
+        self.numOfShipDates.text = @"";
     }
     if (cart != nil && cart.editableQty != nil) {
         self.quantity.text = cart.editableQty;
+        if (product)
+            self.numOfShipDates.text = cart.shipdates && cart.shipdates.count > 0 ? [NSString stringWithFormat:@"%d", cart.shipdates.count] : @"";
+
     } else {
         self.quantity.text = @"0";
+        self.numOfShipDates.text = @"";
     }
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.accessoryType = UITableViewCellAccessoryNone;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+
     [self updateErrorsView:cart.errors];
 }
 

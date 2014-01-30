@@ -91,6 +91,12 @@
                         <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                     </textView>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="dates" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="U5X-GI-fgN">
+                        <rect key="frame" x="938" y="11" width="40" height="21"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <nil key="highlightedColor"/>
+                    </label>
                 </subviews>
             </tableViewCellContentView>
             <color key="tintColor" red="1" green="0.56468513239999996" blue="0.2275234364" alpha="1" colorSpace="calibratedRGB"/>
@@ -102,6 +108,7 @@
                 <outlet property="errorMessageHeightConstraint" destination="h7F-iv-i0r" id="UjI-rs-BzD"/>
                 <outlet property="errorMessageView" destination="2Uy-co-vhQ" id="1pm-oP-JWK"/>
                 <outlet property="min" destination="12" id="43"/>
+                <outlet property="numOfShipDates" destination="U5X-GI-fgN" id="sh9-4E-H5I"/>
                 <outlet property="qtyLbl" destination="31" id="32"/>
                 <outlet property="quantity" destination="13" id="20"/>
                 <outlet property="regPrice" destination="14" id="21"/>
