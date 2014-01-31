@@ -96,6 +96,7 @@
     self.contactBeforeShipping = [ShowConfigurations instance].contactBeforeShipping;
     self.cancelOrderConfig = [ShowConfigurations instance].cancelOrder;
     self.poNumberConfig = [ShowConfigurations instance].poNumber;
+    self.paymentTermsConfig = [ShowConfigurations instance].paymentTerms;
     self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.productsTableView];
     [pull setDelegate:self];
@@ -790,6 +791,9 @@
     }
     if (self.cancelOrderConfig && [info objectForKey:kCancelByDays]) {
         self.coreDataOrder.cancelByDays = [info objectForKey:kCancelByDays];
+    }
+    if (self.paymentTermsConfig && [info objectForKey:kOrderPaymentTerms]) {
+        self.coreDataOrder.payment_terms = [info objectForKey:kOrderPaymentTerms];
     }
 }
 

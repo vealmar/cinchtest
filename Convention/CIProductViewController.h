@@ -107,6 +107,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic) BOOL contactBeforeShipping;
 @property(nonatomic) BOOL cancelOrderConfig;
 @property(nonatomic) BOOL poNumberConfig;
+@property(nonatomic) BOOL paymentTermsConfig;
 @property(nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 //Order selected in the order view controller
 @property(nonatomic, strong) AnOrder *selectedOrder;

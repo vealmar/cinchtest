@@ -27,7 +27,7 @@
 #import "CIProductViewControllerHelper.h"
 #import "Product.h"
 #import "Product+Extensions.h"
-#import "CancelOrderDaysHelper.h"
+#import "SegmentedControlHelper.h"
 #import "NilUtil.h"
 
 @interface CIOrderViewController () {
@@ -42,7 +42,7 @@
     NSMutableArray *persistentOrders;
     BOOL unsavedChangesPresent;
     CIProductViewControllerHelper *helper;
-    CancelOrderDaysHelper *cancelDaysHelper;
+    SegmentedControlHelper *cancelDaysHelper;
     ShowConfigurations *showConfig;
     __weak IBOutlet UILabel *sdLabel;
     __weak IBOutlet UILabel *sqLabel;
@@ -100,7 +100,7 @@ CIOrderViewController
     [self.sideTable addSubview:pull];
     [self loadOrders:YES highlightOrder:nil];
     helper = [[CIProductViewControllerHelper alloc] init];
-    cancelDaysHelper = [[CancelOrderDaysHelper alloc] init];
+    cancelDaysHelper = [[SegmentedControlHelper alloc] initForCancelByDays];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -256,7 +256,7 @@ SG: The argument 'detail' is the selected order.
     self.customer.text = [detail getCustomerDisplayName];
     self.authorizer.text = detail.authorized != nil? detail.authorized : @"";
     if (showConfig.cancelOrder) {
-        [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForDays:detail.cancelByDays]];
+        [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForValue:detail.cancelByDays]];
     }
     currentOrder = detail;
     if (detail) {

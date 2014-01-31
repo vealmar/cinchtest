@@ -19,6 +19,7 @@
 @dynamic customer_id;
 @dynamic notes;
 @dynamic orderId;
+@dynamic po_number;
 @dynamic print;
 @dynamic printer;
 @dynamic ship_flag;
@@ -26,7 +27,7 @@
 @dynamic status;
 @dynamic vendorGroup;
 @dynamic vendorGroupId;
-@dynamic po_number;
+@dynamic payment_terms;
 @dynamic carts;
 @dynamic discountLineItems;
 

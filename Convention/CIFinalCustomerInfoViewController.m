@@ -15,7 +15,7 @@
 #import "Order.h"
 #import "ShowConfigurations.h"
 #import "UIColor+Boost.h"
-#import "CancelOrderDaysHelper.h"
+#import "SegmentedControlHelper.h"
 #import "NilUtil.h"
 #import "CoreDataManager.h"
 
@@ -24,7 +24,8 @@
     SetupInfo *shipFlag;
     NSManagedObjectContext *context;
     CGRect originalBounds;
-    CancelOrderDaysHelper *cancelDaysHelper;
+    SegmentedControlHelper *cancelDaysHelper;
+    SegmentedControlHelper *paymentTermsHelper;
 }
 
 @property(strong, nonatomic) UITextField *authorizedByTextField;
@@ -32,9 +33,11 @@
 @property(strong, nonatomic) UITextView *notesTextView;
 @property(strong, nonatomic) MICheckBox *contactBeforeShippingCB;
 @property(strong, nonatomic) UISegmentedControl *cancelDaysControl;
+@property(strong, nonatomic) UISegmentedControl *paymentTermsControl;
 @property BOOL contactBeforeShippingConfig;
 @property BOOL cancelConfig;
 @property BOOL poNumberConfig;
+@property BOOL paymentTermsConfig;
 
 @end
 
@@ -46,7 +49,9 @@
         self.contactBeforeShippingConfig = configurations.contactBeforeShipping;
         self.cancelConfig = configurations.cancelOrder;
         self.poNumberConfig = configurations.poNumber;
-        cancelDaysHelper = [[CancelOrderDaysHelper alloc] init];
+        self.paymentTermsConfig = configurations.paymentTerms;
+        cancelDaysHelper = [[SegmentedControlHelper alloc] initForCancelByDays];
+        paymentTermsHelper = [[SegmentedControlHelper alloc] initForPaymentTerms];
     }
     return self;
 }
@@ -63,10 +68,13 @@
         [self defaultShippingFields];
     self.notesTextView.text = self.order && self.order.notes ? self.order.notes : @"";
     if (self.cancelConfig) {
-        [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForDays:self.order.cancelByDays]];
+        [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForValue:self.order.cancelByDays]];
     }
     if (self.poNumberConfig) {
         self.poNumberTextField.text = self.order && self.order.po_number ? self.order.po_number : @"";
+    }
+    if (self.paymentTermsConfig) {
+        [self.paymentTermsControl setSelectedSegmentIndex:[paymentTermsHelper indexForValue:self.order.payment_terms]];
     }
     self.view.superview.bounds = originalBounds;
 }
@@ -145,8 +153,19 @@
         [self.view addSubview:self.cancelDaysControl];
         currentY = CGRectGetMaxY(self.cancelDaysControl.frame);
     }
-
-
+    if (self.paymentTermsConfig) {
+        UILabel *paymentTermsLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
+        paymentTermsLabel.font = labelFont;
+        paymentTermsLabel.textColor = [UIColor whiteColor];
+        paymentTermsLabel.text = @"PAYMENT TERMS";
+        [self.view addSubview:paymentTermsLabel];
+        UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:[paymentTermsHelper displayStrings]];
+        self.paymentTermsControl = segmentedControl;
+        self.paymentTermsControl.frame = CGRectMake(leftX, CGRectGetMaxY(paymentTermsLabel.frame) + 10, elementWidth, 35.0);
+        self.paymentTermsControl.tintColor = [UIColor colorWith256Red:255 green:144 blue:58];
+        [self.view addSubview:self.paymentTermsControl];
+        currentY = CGRectGetMaxY(self.paymentTermsControl.frame);
+    }
     UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cancelButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchDown];
     [cancelButton setBackgroundImage:[UIImage imageNamed:@"cart-cancelout.png"] forState:UIControlStateNormal];
@@ -208,6 +227,10 @@
         if (self.cancelConfig) {
             NSNumber *cancelByDays = [cancelDaysHelper numberAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
             [dict setObject:[NilUtil objectOrNSNull:cancelByDays] forKey:kCancelByDays];
+        }
+        if (self.paymentTermsConfig) {
+            NSNumber *paymentTerms = [paymentTermsHelper numberAtIndex:[self.paymentTermsControl selectedSegmentIndex]];
+            [dict setObject:[NilUtil objectOrNSNull:paymentTerms] forKey:kOrderPaymentTerms];
         }
         [self.delegate setAuthorizedByInfo:[dict copy]];
         [self.delegate submit:nil];

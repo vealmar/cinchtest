@@ -23,6 +23,7 @@
 @property(strong, nonatomic) NSDictionary *customer;
 @property(strong, nonatomic) NSNumber *cancelByDays;
 @property(strong, nonatomic) NSString *poNumber;
+@property(strong, nonatomic) NSNumber *paymentTerms;
 @property(strong, nonatomic) Order *coreDataOrder;
 @property(nonatomic) BOOL *shipFlag;
 @property(strong, nonatomic) NSArray *errors;

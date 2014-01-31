@@ -22,6 +22,7 @@
 @property(nonatomic, retain) NSString *customer_id;
 @property(nonatomic, retain) NSString *notes;
 @property(nonatomic, retain) NSNumber *orderId;
+@property(nonatomic, retain) NSString *po_number;
 @property(nonatomic, retain) NSNumber *print;
 @property(nonatomic, retain) NSNumber *printer;
 @property(nonatomic, retain) NSNumber *ship_flag;
@@ -29,7 +30,7 @@
 @property(nonatomic, retain) NSString *status;
 @property(nonatomic, retain) NSString *vendorGroup;
 @property(nonatomic, retain) NSString *vendorGroupId;
-@property(nonatomic, retain) NSString *po_number;
+@property(nonatomic, retain) NSNumber *payment_terms;
 @property(nonatomic, retain) NSSet *carts;
 @property(nonatomic, retain) NSSet *discountLineItems;
 @end
@@ -37,19 +38,13 @@
 @interface Order (CoreDataGeneratedAccessors)
 
 - (void)addCartsObject:(Cart *)value;
-
 - (void)removeCartsObject:(Cart *)value;
-
 - (void)addCarts:(NSSet *)values;
-
 - (void)removeCarts:(NSSet *)values;
 
 - (void)addDiscountLineItemsObject:(DiscountLineItem *)value;
-
 - (void)removeDiscountLineItemsObject:(DiscountLineItem *)value;
-
 - (void)addDiscountLineItems:(NSSet *)values;
-
 - (void)removeDiscountLineItems:(NSSet *)values;
 
 @end
