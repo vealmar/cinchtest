@@ -103,7 +103,7 @@
 
     //DLog(@"%@", [self managedObjectModel]);
 
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart2.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart3.sqlite"];
 //    [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
 
     NSError *error = nil;

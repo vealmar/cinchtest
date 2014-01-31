@@ -36,6 +36,7 @@
         self.ship_notes = orderFromServer.shipNotes;
         self.ship_flag = [NSNumber numberWithBool:(BOOL) orderFromServer.shipFlag];
         self.cancelByDays = orderFromServer.cancelByDays;
+        self.po_number = orderFromServer.poNumber;
         for (NSString *error in [NilUtil objectOrEmptyArray:orderFromServer.errors]) {
             Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
             [self addErrorsObject:lineItemrError];
@@ -133,7 +134,9 @@
                                                                                       [NilUtil objectOrNSNull:self.status], kOrderStatus,
                                                                                       arr, kOrderItems,
                                                                                       [self.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,
-                                                                                      [NilUtil objectOrNSNull:self.printer], kOrderPrinter , nil];
+                                                                                      [NilUtil objectOrNSNull:self.printer], kOrderPrinter,
+                                                                                      [NilUtil objectOrNSNull:self.po_number], kOrderPoNumber,
+                                                                                      nil];
     return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
 }
 

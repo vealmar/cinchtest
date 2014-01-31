@@ -17,6 +17,7 @@
 #import "UIColor+Boost.h"
 #import "CancelOrderDaysHelper.h"
 #import "NilUtil.h"
+#import "CoreDataManager.h"
 
 @interface CIFinalCustomerInfoViewController () {
     SetupInfo *authorizedBy;
@@ -27,11 +28,13 @@
 }
 
 @property(strong, nonatomic) UITextField *authorizedByTextField;
+@property(strong, nonatomic) UITextField *poNumberTextField;
 @property(strong, nonatomic) UITextView *notesTextView;
 @property(strong, nonatomic) MICheckBox *contactBeforeShippingCB;
 @property(strong, nonatomic) UISegmentedControl *cancelDaysControl;
 @property BOOL contactBeforeShippingConfig;
 @property BOOL cancelConfig;
+@property BOOL poNumberConfig;
 
 @end
 
@@ -42,6 +45,7 @@
         ShowConfigurations *configurations = [ShowConfigurations instance];
         self.contactBeforeShippingConfig = configurations.contactBeforeShipping;
         self.cancelConfig = configurations.cancelOrder;
+        self.poNumberConfig = configurations.poNumber;
         cancelDaysHelper = [[CancelOrderDaysHelper alloc] init];
     }
     return self;
@@ -55,45 +59,26 @@
     [super viewWillAppear:animated];
     context = ((CIAppDelegate *) [[UIApplication sharedApplication] delegate]).managedObjectContext;
     [self defaultAuthorizedbyText];
-    [self defaultShippingFields];
+    if (self.contactBeforeShippingConfig)
+        [self defaultShippingFields];
     self.notesTextView.text = self.order && self.order.notes ? self.order.notes : @"";
     if (self.cancelConfig) {
         [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForDays:self.order.cancelByDays]];
+    }
+    if (self.poNumberConfig) {
+        self.poNumberTextField.text = self.order && self.order.po_number ? self.order.po_number : @"";
     }
     self.view.superview.bounds = originalBounds;
 }
 
 - (void)defaultAuthorizedbyText {
-    NSDictionary *subs = [NSDictionary dictionaryWithObject:@"authorizedBy" forKey:@"ITEMNAME"];
-    CIAppDelegate *appDelegate = (CIAppDelegate *) [[UIApplication sharedApplication] delegate];
-    NSManagedObjectModel *model = appDelegate.managedObjectModel;
-    NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs];
-    NSError *error = nil;
-    NSArray *results = [context executeFetchRequest:req error:&error];
-    if (!error && results != nil && [results count] > 0) {
-        authorizedBy = [results objectAtIndex:0];
-    }
-    self.authorizedByTextField.text = self.order && self.order.authorized ? self.order.authorized
-            : authorizedBy ? authorizedBy.value : @"";
+    authorizedBy = [CoreDataManager getSetupInfo:@"authorizedBy"];
+    self.authorizedByTextField.text = self.order && self.order.authorized ? self.order.authorized : authorizedBy ? authorizedBy.value : @"";
 }
 
 - (void)defaultShippingFields {
-    {
-        if (self.contactBeforeShippingConfig) {
-            NSDictionary *subs = [NSDictionary dictionaryWithObject:@"ship_flag" forKey:@"ITEMNAME"];
-            CIAppDelegate *appDelegate = (CIAppDelegate *) [[UIApplication sharedApplication] delegate];
-            NSManagedObjectModel *model = appDelegate.managedObjectModel;
-            NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs];
-            NSError *error = nil;
-            NSArray *results = [context executeFetchRequest:req error:&error];
-            if (!error && results != nil && [results count] > 0) {
-                shipFlag = [results objectAtIndex:0];
-            }
-            [self.contactBeforeShippingCB updateCheckBox:self.order && [self.order.ship_flag boolValue] ? YES
-                    : shipFlag ? [shipFlag.value isEqualToString:@"YES"] : NO];
-        }
-
-    }
+    shipFlag = [CoreDataManager getSetupInfo:@"ship_flag"];
+    [self.contactBeforeShippingCB updateCheckBox:self.order && [self.order.ship_flag boolValue] ? YES : shipFlag ? [shipFlag.value isEqualToString:@"YES"] : NO];
 }
 
 - (void)loadView {
@@ -111,7 +96,8 @@
     authorizedByLabel.textColor = [UIColor whiteColor];
     authorizedByLabel.text = @"AUTHORIZED BY";
     [self.view addSubview:authorizedByLabel];
-    self.authorizedByTextField = [[UITextField alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(authorizedByLabel.frame) + verticalMargin, elementWidth, 44.0)];
+    UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(authorizedByLabel.frame) + 10, elementWidth, 44.0)];
+    self.authorizedByTextField = textField;
     self.authorizedByTextField.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.authorizedByTextField];
     UILabel *notesLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(self.authorizedByTextField.frame) + verticalMargin, 300.0, 35.0)];
@@ -119,16 +105,30 @@
     notesLabel.textColor = [UIColor whiteColor];
     notesLabel.text = @"NOTES";
     [self.view addSubview:notesLabel];
-    self.notesTextView = [[UITextView alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(notesLabel.frame) + verticalMargin, elementWidth, 80.0)];
+    UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(notesLabel.frame) + 10, elementWidth, 80.0)];;
+    self.notesTextView = textView;
     [self.view addSubview:self.notesTextView];
     currentY = CGRectGetMaxY(self.notesTextView.frame);
+    if (self.poNumberConfig) {
+        UILabel *poLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
+        poLabel.font = labelFont;
+        poLabel.textColor = [UIColor whiteColor];
+        poLabel.text = @"PO NUMBER";
+        [self.view addSubview:poLabel];
+        textField = [[UITextField alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(poLabel.frame) + 10, elementWidth, 44.0)];
+        self.poNumberTextField = textField;
+        self.poNumberTextField.backgroundColor = [UIColor whiteColor];
+        [self.view addSubview:self.poNumberTextField];
+        currentY = CGRectGetMaxY(self.poNumberTextField.frame);
+    }
     if (self.contactBeforeShippingConfig) {
         UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 350.0, 35.0)];
         contactLabel.font = labelFont;
         contactLabel.textColor = [UIColor whiteColor];
         contactLabel.text = @"CONTACT BEFORE SHIPPING?";
         [self.view addSubview:contactLabel];
-        self.contactBeforeShippingCB = [[MICheckBox alloc] initWithFrame:CGRectMake(470.0, contactLabel.frame.origin.y, 40.0, 40.0)];
+        MICheckBox *checkBox = [[MICheckBox alloc] initWithFrame:CGRectMake(470.0, contactLabel.frame.origin.y, 40.0, 40.0)];;
+        self.contactBeforeShippingCB = checkBox;
         [self.view addSubview:self.contactBeforeShippingCB];
         currentY = CGRectGetMaxY(self.contactBeforeShippingCB.frame);
     }
@@ -136,14 +136,17 @@
         UILabel *cancelLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY, 420.0, 35.0)];
         cancelLabel.font = labelFont;
         cancelLabel.textColor = [UIColor whiteColor];
-        cancelLabel.text = @"CANCEL IF NOT SHIPPED WITHIN -";
+        cancelLabel.text = @"CANCEL IF NOT SHIPPED WITHIN:";
         [self.view addSubview:cancelLabel];
-        self.cancelDaysControl = [[UISegmentedControl alloc] initWithItems:[cancelDaysHelper displayStrings]];
-        self.cancelDaysControl.frame = CGRectMake(leftX, CGRectGetMaxY(cancelLabel.frame) + verticalMargin, elementWidth, 35.0);
+        UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:[cancelDaysHelper displayStrings]];
+        self.cancelDaysControl = segmentedControl;
+        self.cancelDaysControl.frame = CGRectMake(leftX, CGRectGetMaxY(cancelLabel.frame) + 10, elementWidth, 35.0);
         self.cancelDaysControl.tintColor = [UIColor colorWith256Red:255 green:144 blue:58];
         [self.view addSubview:self.cancelDaysControl];
         currentY = CGRectGetMaxY(self.cancelDaysControl.frame);
     }
+
+
     UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cancelButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchDown];
     [cancelButton setBackgroundImage:[UIImage imageNamed:@"cart-cancelout.png"] forState:UIControlStateNormal];
@@ -169,55 +172,46 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)submit:(id)sender {
-    if (!IS_EMPTY_STRING(self.authorizedByTextField.text)) {
-        if (![self.authorizedByTextField.text isEqualToString:authorizedBy.value]) {//SG: If the value specified for Authorized By last time is not same as the value specified this time, update the value in setupinfo.
-            if (authorizedBy != nil) {
-                authorizedBy.value = self.authorizedByTextField.text;
-            } else {
-                SetupInfo *setup = (SetupInfo *) [[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
-                setup.item = @"authorizedBy";
-                setup.value = self.authorizedByTextField.text;
-            }
+
+- (void)updateSetting:(NSString *)itemName newValue:(NSString *)newValue setupInfo:(SetupInfo *)setupInfo {
+    if ([newValue length] > 0) {
+        if (setupInfo == nil) {
+            setupInfo = (SetupInfo *) [[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
+            setupInfo.item = itemName;
+        }
+        if (!setupInfo.value || ![setupInfo.value isEqualToString:newValue]) {
+            setupInfo.value = newValue;
             NSError *error;
             [context save:&error];
         }
-        if (self.contactBeforeShippingConfig) {
-            NSError *error;
-            if (shipFlag == nil) {   //SG: If the value specified for Contact Before Shipping last time is not same as the value specified this time, update the value in setupinfo.
-                SetupInfo *setup = (SetupInfo *) [[CoreDataUtil sharedManager] createNewEntity:@"SetupInfo"];
-                setup.item = @"ship_flag";
-                setup.value = self.contactBeforeShippingCB.isChecked ? @"YES" : @"NO";
-                [context save:&error];
-            } else if ((self.contactBeforeShippingCB.isChecked && [shipFlag.value isEqualToString:@"NO"])
-                    || (!self.contactBeforeShippingCB.isChecked && [shipFlag.value isEqualToString:@"YES"])) {
-                shipFlag.value = self.contactBeforeShippingCB.isChecked ? @"YES" : @"NO";
-                [context save:&error];
-            }
-        }
-
-        if (self.delegate) {
-            NSMutableDictionary *dict = [[self.delegate getCustomerInfo] mutableCopy];
-            if (dict == nil) {
-                return;
-            }
-            [dict setObject:self.notesTextView.text forKey:kNotes];
-            [dict setObject:self.authorizedByTextField.text forKey:kAuthorizedBy];
-            if (self.contactBeforeShippingConfig) {
-                [dict setObject:(self.contactBeforeShippingCB.isChecked ? @"true" : @"false") forKey:kShipFlag];
-            }
-            if (self.cancelConfig) {
-                NSNumber *cancelByDays = [cancelDaysHelper numberAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
-                [dict setObject:[NilUtil objectOrNSNull:cancelByDays] forKey:kCancelByDays];
-            }
-            [self.delegate setAuthorizedByInfo:[dict copy]];
-            [self.delegate submit:nil];
-            [self dismissViewControllerAnimated:NO completion:nil];
-        }
     }
-    else {
+}
+
+- (void)submit:(id)sender {
+    if (IS_EMPTY_STRING(self.authorizedByTextField.text)) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Authorized By Required!" message:@"Please fill out Authorized By field before submitting!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
+        return;
+    } else {
+        [self updateSetting:@"authorizedBy" newValue:self.authorizedByTextField.text setupInfo:authorizedBy];
+        if (self.contactBeforeShippingConfig) {
+            [self updateSetting:@"ship_flag" newValue:self.contactBeforeShippingCB.isChecked ? @"YES" : @"NO" setupInfo:shipFlag];
+        }
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        [dict setObject:self.authorizedByTextField.text forKey:kAuthorizedBy];
+        [dict setObject:self.notesTextView.text forKey:kNotes];
+        if (self.poNumberConfig)
+            [dict setObject:self.poNumberTextField.text forKey:kOrderPoNumber];
+        if (self.contactBeforeShippingConfig) {
+            [dict setObject:(self.contactBeforeShippingCB.isChecked ? @"true" : @"false") forKey:kShipFlag];
+        }
+        if (self.cancelConfig) {
+            NSNumber *cancelByDays = [cancelDaysHelper numberAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
+            [dict setObject:[NilUtil objectOrNSNull:cancelByDays] forKey:kCancelByDays];
+        }
+        [self.delegate setAuthorizedByInfo:[dict copy]];
+        [self.delegate submit:nil];
+        [self dismissViewControllerAnimated:NO completion:nil];
     }
 }
 

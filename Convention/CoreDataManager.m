@@ -20,6 +20,7 @@
 #import "AFJSONRequestOperation.h"
 #import "CIAppDelegate.h"
 #import "ProductCache.h"
+#import "SetupInfo.h"
 
 
 @implementation CoreDataManager {
@@ -109,8 +110,8 @@
 }
 
 + (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSString *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext
-        onSuccess:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
-        onFailure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock {
+             onSuccess:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
+             onFailure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock {
 
     NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, authToken, kVendorGroupID, vendorGroupId];
 
@@ -281,6 +282,16 @@
             [[ProductCache sharedCache] addRecentlyQueriedProducts:fetchedObjects];
         return fetchedObjects;
     }
+}
+
++ (SetupInfo *)getSetupInfo:(NSString *)itemName {
+    NSDictionary *subs = [NSDictionary dictionaryWithObject:itemName forKey:@"ITEMNAME"];
+    CIAppDelegate *appDelegate = (CIAppDelegate *) [[UIApplication sharedApplication] delegate];
+    NSManagedObjectModel *model = appDelegate.managedObjectModel;
+    NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs]; //todo: this code looks nasty
+    NSError *error = nil;
+    NSArray *results = [appDelegate.managedObjectContext executeFetchRequest:req error:&error];
+    return (!error && results != nil && [results count] > 0) ? [results objectAtIndex:0] : nil;
 }
 
 
