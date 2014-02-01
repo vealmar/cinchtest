@@ -33,6 +33,8 @@
         NSNumber *shipFlagInt = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"ship_flag"]];
         self.shipFlag = (BOOL *) (shipFlagInt && [shipFlagInt intValue] == 1);//boolean
         self.cancelByDays = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"cancel_by_days"]];
+        self.poNumber = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"po_number"]];
+        self.paymentTerms = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"payment_terms"]];
         self.customer = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
         self.errors = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"errors"]];
         NSMutableArray *lineItems = [[NSMutableArray alloc] init];
@@ -63,6 +65,8 @@
         self.customer = customer;
         self.authorized = @"";
         self.cancelByDays = order.cancelByDays;
+        self.poNumber = order.po_number;
+        self.paymentTerms = order.payment_terms;
         self.coreDataOrder = order;
         int itemTotal = 0;
         int voucherTotal = 0;

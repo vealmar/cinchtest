@@ -10,6 +10,7 @@
 
 @class Order;
 @class Customer;
+@class SetupInfo;
 
 
 @interface CoreDataManager : NSObject
@@ -34,4 +35,6 @@
 + (NSArray *)getProductIdsMatchingQueryString:(NSString *)queryString sortDescriptors:(NSArray *)sortDescriptors limit:(NSUInteger)limit managedObjectContext:(NSManagedObjectContext *)managedObjectContext vendor:(NSInteger)vendor bulletin:(NSInteger)bulletin;
 
 + (NSArray *)getProductsMatchingQueryString:(NSString *)queryString sortDescriptors:(NSArray *)sortDescriptors limit:(NSUInteger)limit managedObjectContext:(NSManagedObjectContext *)managedObjectContext vendor:(NSInteger)vendor bulletin:(NSInteger)bulletin addToCache:(BOOL)addToCache;
+
++ (SetupInfo *)getSetupInfo:(NSString *)itemName;
 @end

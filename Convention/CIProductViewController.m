@@ -95,6 +95,8 @@
     self.allowPrinting = [ShowConfigurations instance].printing;
     self.contactBeforeShipping = [ShowConfigurations instance].contactBeforeShipping;
     self.cancelOrderConfig = [ShowConfigurations instance].cancelOrder;
+    self.poNumberConfig = [ShowConfigurations instance].poNumber;
+    self.paymentTermsConfig = [ShowConfigurations instance].paymentTerms;
     self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.productsTableView];
     [pull setDelegate:self];
@@ -781,11 +783,17 @@
 - (void)setAuthorizedByInfo:(NSDictionary *)info {
     self.coreDataOrder.notes = [info objectForKey:kNotes];
     self.coreDataOrder.authorized = [info objectForKey:kAuthorizedBy];
+    if (self.poNumberConfig) {
+        self.coreDataOrder.po_number = [info objectForKey:kOrderPoNumber];
+    }
     if (self.contactBeforeShipping) {
         self.coreDataOrder.ship_flag = [[info objectForKey:kShipFlag] isEqualToString:@"true"] ? @(1) : @(0);
     }
     if (self.cancelOrderConfig && [info objectForKey:kCancelByDays]) {
         self.coreDataOrder.cancelByDays = [info objectForKey:kCancelByDays];
+    }
+    if (self.paymentTermsConfig && [info objectForKey:kOrderPaymentTerms]) {
+        self.coreDataOrder.payment_terms = [info objectForKey:kOrderPaymentTerms];
     }
 }
 

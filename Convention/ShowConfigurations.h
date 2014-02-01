@@ -22,6 +22,8 @@
 @property NSDate *boothPaymentsDate;
 @property UIImage *loginScreen;
 @property UIImage *logo;
+@property BOOL poNumber;
+@property BOOL paymentTerms;
 
 + (ShowConfigurations *)instance;
 

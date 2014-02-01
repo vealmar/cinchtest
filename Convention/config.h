@@ -82,6 +82,9 @@
 #define kOrder @"order"
 #define kOrderPrint @"print"
 #define kOrderPrinter @"printer"
+#define kOrderPoNumber @"po_number"
+#define kOrderPaymentTerms @"payment_terms"
+
 
 //Customer Info keys:
 #define kCustID @"custid"

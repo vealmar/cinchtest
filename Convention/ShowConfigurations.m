@@ -51,6 +51,8 @@ static ShowConfigurations *showConfigurations = nil;
         }
         showConfigurations.boothPaymentsDate = date;
     }
+    showConfigurations.poNumber = [[json objectForKey:@"poNumber"] boolValue];
+    showConfigurations.paymentTerms = [[json objectForKey:@"paymentTerms"] boolValue];
 }
 
 + (UIImage *)imageFromUrl:(NSString *)url defaultImage:(NSString *)imageName {
