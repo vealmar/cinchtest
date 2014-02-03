@@ -551,7 +551,7 @@
 		C7EB25E61665CA8D00B1CD4F /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = Reachability/Reachability.h; sourceTree = SOURCE_ROOT; };
 		C7EB25E71665CA8D00B1CD4F /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
 		EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisOrderDetail.png; sourceTree = "<group>"; };
-		EB20BA26189C57DD00F9EFA2 /* ProductCart4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = file; path = ProductCart4.xcdatamodel; sourceTree = "<group>"; };
+		EB20BA26189C57DD00F9EFA2 /* ProductCart4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart4.xcdatamodel; sourceTree = "<group>"; };
 		EB20BA27189C585D00F9EFA2 /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
 		EB20BA28189C585D00F9EFA2 /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
@@ -1060,9 +1060,9 @@
 				35F52842A8307AABB72E16F8 /* CartViewCell.h */,
 				35F529A69976E731F9A16513 /* PWCartViewCell.m */,
 				35F5224B1B84CB4E7EC646E7 /* PWCartViewCell.h */,
+				EBFC477817D5745D0009CAD7 /* PWCartViewCell.xib */,
 				35F5234C615180F131627137 /* FarrisCartViewCell.m */,
 				35F5267D5CECDEA4EC54146F /* FarrisCartViewCell.h */,
-				EBFC477817D5745D0009CAD7 /* PWCartViewCell.xib */,
 				EBFC477A17D574740009CAD7 /* FarrisCartViewCell.xib */,
 				EB5BBD1D188858050004ABB6 /* CISignatureViewController.h */,
 				EB5BBD1E188858050004ABB6 /* CISignatureViewController.m */,
