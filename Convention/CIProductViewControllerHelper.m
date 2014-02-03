@@ -221,7 +221,7 @@
 //    }
     if (imageData) {
         MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
-        submit.labelText = @"Saving";
+        submit.labelText = @"Saving signature";
         [submit show:NO];
         NSString *url = [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBCAPTURESIG([orderId intValue])], kAuthToken, authToken];
         AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];

@@ -153,7 +153,7 @@
                 [self loadJson:json];
             }
         };
-        [helper sendRequest:method url:url parameters:parameters successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Submitting order"];
+        [helper sendRequest:method url:url parameters:parameters successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Saving order"];
     }
     self.initialized = YES;
 }
@@ -188,7 +188,6 @@
     double netTotal = [(NSNumber *) totals[0] doubleValue] + [(NSNumber *) totals[2] doubleValue];
     self.netTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:netTotal]];
     self.voucherTotal.text = [NumberUtil formatDollarAmount:totals[1]];
-
 }
 
 - (void)dismissSelf {
@@ -368,13 +367,7 @@
     [self presentViewController:signatureViewController animated:YES completion:nil];
 }
 
-- (void)displayOverlayScreen {
-    CISigOverlayViewController *ciSigOverlayViewController = [[CISigOverlayViewController alloc] initWithDelegate:(id <SignatureOverlayDelegate>) self];
-    ciSigOverlayViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:ciSigOverlayViewController animated:YES completion:nil];
-}
-
-- (void)signatureOverlayDismissed {
+- (void)signatureViewDismissed {
     [self dismissSelf];
 }
 

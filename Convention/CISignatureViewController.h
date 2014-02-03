@@ -4,13 +4,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CISigOverlayViewController.h"
 
 @class NISignatureView;
 
 @protocol SignatureDelegate <NSObject>
 @required
-- (void)displayOverlayScreen;
+- (void)signatureViewDismissed;
 @end
 
 @interface CISignatureViewController : UIViewController

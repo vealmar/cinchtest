@@ -222,8 +222,6 @@
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
 		EB5BBD20188858050004ABB6 /* CISignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5BBD1E188858050004ABB6 /* CISignatureViewController.m */; };
 		EB5BBD21188858050004ABB6 /* CISignatureViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB5BBD1F188858050004ABB6 /* CISignatureViewController.xib */; };
-		EB5BBD25188891380004ABB6 /* CISigOverlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5BBD23188891380004ABB6 /* CISigOverlayViewController.m */; };
-		EB5BBD26188891380004ABB6 /* CISigOverlayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB5BBD24188891380004ABB6 /* CISigOverlayViewController.xib */; };
 		EB652B23176022E400287961 /* Futura Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB652B22176022E400287961 /* Futura Medium.ttf */; };
 		EB7D8FD617D620FA00F2FB8C /* blue-textbox.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */; };
 		EB7D8FDC17DA61E100F2FB8C /* Customer.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FDB17DA61E100F2FB8C /* Customer.m */; };
@@ -566,9 +564,6 @@
 		EB5BBD1D188858050004ABB6 /* CISignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISignatureViewController.h; sourceTree = "<group>"; };
 		EB5BBD1E188858050004ABB6 /* CISignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISignatureViewController.m; sourceTree = "<group>"; };
 		EB5BBD1F188858050004ABB6 /* CISignatureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CISignatureViewController.xib; sourceTree = "<group>"; };
-		EB5BBD22188891370004ABB6 /* CISigOverlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISigOverlayViewController.h; sourceTree = "<group>"; };
-		EB5BBD23188891380004ABB6 /* CISigOverlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISigOverlayViewController.m; sourceTree = "<group>"; };
-		EB5BBD24188891380004ABB6 /* CISigOverlayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CISigOverlayViewController.xib; sourceTree = "<group>"; };
 		EB652B22176022E400287961 /* Futura Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Futura Medium.ttf"; sourceTree = "<group>"; };
 		EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-textbox.png"; sourceTree = "<group>"; };
 		EB7D8FDA17DA61E100F2FB8C /* Customer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Customer.h; sourceTree = "<group>"; };
@@ -1080,9 +1075,6 @@
 				EB5BBD1F188858050004ABB6 /* CISignatureViewController.xib */,
 				35F5222D1F70C9214C658BC9 /* NISignatureView.m */,
 				35F52A64DD2EF721B2325A86 /* NISignatureView.h */,
-				EB5BBD22188891370004ABB6 /* CISigOverlayViewController.h */,
-				EB5BBD23188891380004ABB6 /* CISigOverlayViewController.m */,
-				EB5BBD24188891380004ABB6 /* CISigOverlayViewController.xib */,
 			);
 			name = Cart;
 			sourceTree = "<group>";
@@ -1425,7 +1417,6 @@
 				6E21EF2615487B30002CF4B7 /* CIFinalCustomerInfoViewController.xib in Resources */,
 				6E21EF291548A2AB002CF4B7 /* customerlistNOBACKGROUND.png in Resources */,
 				6E21EF2B1548AB57002CF4B7 /* popupadjustitemNEW.png in Resources */,
-				EB5BBD26188891380004ABB6 /* CISigOverlayViewController.xib in Resources */,
 				6E21EF321548E8AA002CF4B7 /* cancelbutton.png in Resources */,
 				6EDBF906154EFD6100D4A0E7 /* CI_144logo.png in Resources */,
 				6EDBF909154EFD8000D4A0E7 /* CI_72logo.png in Resources */,
@@ -1624,7 +1615,6 @@
 				C73E2FDE165C810B00FE8DE9 /* ProductCart.xcmappingmodel in Sources */,
 				C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */,
 				C75A1B6816691E770008A466 /* UIAlertViewDelegateWithBlock.m in Sources */,
-				EB5BBD25188891380004ABB6 /* CISigOverlayViewController.m in Sources */,
 				C730D9CF16705F330013B87B /* Cart+Extensions.m in Sources */,
 				C71653A81671173900F65D02 /* SetupInfo.m in Sources */,
 				C727F6901671A2AC00F2847D /* CoreDataUtil.m in Sources */,
