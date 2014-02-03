@@ -49,7 +49,6 @@
 		35F52DC05197C7D90195FCFB /* submit-button-in-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5216AD37BC89DD32025AB /* submit-button-in-green.png */; };
 		35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52CF25ABF1AF16A369494 /* NilUtil.m */; };
 		35F52E7C36B02E6EBA801A1B /* MyOrders.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52BABED1C4FFB96E78BD9 /* MyOrders.png */; };
-		35F52ED9FA6DD44651607AD8 /* overlay.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52D51B287F531BAD31F9B /* overlay.png */; };
 		35F52F4B833B78BCED458609 /* SaveButton-in.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52FB5EB455BBF057DAC6C /* SaveButton-in.png */; };
 		35F52FC5C5E61BAC2A7CD197 /* save2out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5256E54BCD292CF9ED322 /* save2out.png */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
@@ -77,7 +76,6 @@
 		6E21EF321548E8AA002CF4B7 /* cancelbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6E21EF311548E8AA002CF4B7 /* cancelbutton.png */; };
 		6E3BEC871490556E00BF8E15 /* white_plaster.png in Resources */ = {isa = PBXBuildFile; fileRef = 6E3BEC861490556E00BF8E15 /* white_plaster.png */; };
 		6E3BEC9E1491905D00BF8E15 /* CIOrderViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E3BEC9C1491905D00BF8E15 /* CIOrderViewController.m */; };
-		6E3BEC9F1491905D00BF8E15 /* CIOrderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6E3BEC9D1491905D00BF8E15 /* CIOrderViewController.xib */; };
 		6E3BECDC1491B07700BF8E15 /* CIProductViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6E3BECDB1491B07700BF8E15 /* CIProductViewController.xib */; };
 		6E3BECDE1491B47E00BF8E15 /* PWProductCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6E3BECDD1491B47E00BF8E15 /* PWProductCell.xib */; };
 		6E3BECE11491EFD700BF8E15 /* CIOrderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E3BECE01491EFD600BF8E15 /* CIOrderCell.m */; };
@@ -222,8 +220,6 @@
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
 		EB5BBD20188858050004ABB6 /* CISignatureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5BBD1E188858050004ABB6 /* CISignatureViewController.m */; };
 		EB5BBD21188858050004ABB6 /* CISignatureViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB5BBD1F188858050004ABB6 /* CISignatureViewController.xib */; };
-		EB5BBD25188891380004ABB6 /* CISigOverlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EB5BBD23188891380004ABB6 /* CISigOverlayViewController.m */; };
-		EB5BBD26188891380004ABB6 /* CISigOverlayViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB5BBD24188891380004ABB6 /* CISigOverlayViewController.xib */; };
 		EB652B23176022E400287961 /* Futura Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EB652B22176022E400287961 /* Futura Medium.ttf */; };
 		EB7D8FD617D620FA00F2FB8C /* blue-textbox.png in Resources */ = {isa = PBXBuildFile; fileRef = EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */; };
 		EB7D8FDC17DA61E100F2FB8C /* Customer.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7D8FDB17DA61E100F2FB8C /* Customer.m */; };
@@ -317,7 +313,6 @@
 		35F52CB070F4E7055F001511 /* SynchronousRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronousRequestUtil.m; sourceTree = "<group>"; };
 		35F52CE4A77F64FBC2BA5559 /* NilUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NilUtil.h; sourceTree = "<group>"; };
 		35F52CF25ABF1AF16A369494 /* NilUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NilUtil.m; sourceTree = "<group>"; };
-		35F52D51B287F531BAD31F9B /* overlay.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = overlay.png; sourceTree = "<group>"; };
 		35F52D58AFA6EA85BDD0EE76 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
 		35F52DB7AF7C6B01AB801D0A /* ProductCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductCache.m; sourceTree = "<group>"; };
 		35F52E02103987C5239CB07D /* NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberUtil.m; sourceTree = "<group>"; };
@@ -358,7 +353,6 @@
 		6E3BEC861490556E00BF8E15 /* white_plaster.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = white_plaster.png; sourceTree = "<group>"; };
 		6E3BEC9B1491905D00BF8E15 /* CIOrderViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIOrderViewController.h; sourceTree = "<group>"; };
 		6E3BEC9C1491905D00BF8E15 /* CIOrderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIOrderViewController.m; sourceTree = "<group>"; };
-		6E3BEC9D1491905D00BF8E15 /* CIOrderViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CIOrderViewController.xib; sourceTree = "<group>"; };
 		6E3BECDB1491B07700BF8E15 /* CIProductViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CIProductViewController.xib; sourceTree = "<group>"; };
 		6E3BECDD1491B47E00BF8E15 /* PWProductCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PWProductCell.xib; sourceTree = "<group>"; };
 		6E3BECDF1491EFD600BF8E15 /* CIOrderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIOrderCell.h; sourceTree = "<group>"; };
@@ -566,9 +560,6 @@
 		EB5BBD1D188858050004ABB6 /* CISignatureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISignatureViewController.h; sourceTree = "<group>"; };
 		EB5BBD1E188858050004ABB6 /* CISignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISignatureViewController.m; sourceTree = "<group>"; };
 		EB5BBD1F188858050004ABB6 /* CISignatureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CISignatureViewController.xib; sourceTree = "<group>"; };
-		EB5BBD22188891370004ABB6 /* CISigOverlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISigOverlayViewController.h; sourceTree = "<group>"; };
-		EB5BBD23188891380004ABB6 /* CISigOverlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISigOverlayViewController.m; sourceTree = "<group>"; };
-		EB5BBD24188891380004ABB6 /* CISigOverlayViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CISigOverlayViewController.xib; sourceTree = "<group>"; };
 		EB652B22176022E400287961 /* Futura Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Futura Medium.ttf"; sourceTree = "<group>"; };
 		EB7D8FD517D620FA00F2FB8C /* blue-textbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-textbox.png"; sourceTree = "<group>"; };
 		EB7D8FDA17DA61E100F2FB8C /* Customer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Customer.h; sourceTree = "<group>"; };
@@ -847,7 +838,6 @@
 				35F526632CD99103C51C7B00 /* SaveButton-out.png */,
 				35F524B699AFD10A2D4EAE87 /* clear-button-in.png */,
 				35F52E655DE2917031C78A08 /* clear-button-out.png */,
-				35F52D51B287F531BAD31F9B /* overlay.png */,
 				35F521BA81102E568B5457FC /* signature-area.png */,
 				35F5216AD37BC89DD32025AB /* submit-button-in-green.png */,
 				35F5247F0ABA7083C162CA58 /* submit-button-out-green.png */,
@@ -924,7 +914,6 @@
 			children = (
 				6E3BEC9B1491905D00BF8E15 /* CIOrderViewController.h */,
 				6E3BEC9C1491905D00BF8E15 /* CIOrderViewController.m */,
-				6E3BEC9D1491905D00BF8E15 /* CIOrderViewController.xib */,
 				6E3BECDF1491EFD600BF8E15 /* CIOrderCell.h */,
 				6E3BECE01491EFD600BF8E15 /* CIOrderCell.m */,
 				6E3BECE21491F02000BF8E15 /* CIOrderCell.xib */,
@@ -1080,9 +1069,6 @@
 				EB5BBD1F188858050004ABB6 /* CISignatureViewController.xib */,
 				35F5222D1F70C9214C658BC9 /* NISignatureView.m */,
 				35F52A64DD2EF721B2325A86 /* NISignatureView.h */,
-				EB5BBD22188891370004ABB6 /* CISigOverlayViewController.h */,
-				EB5BBD23188891380004ABB6 /* CISigOverlayViewController.m */,
-				EB5BBD24188891380004ABB6 /* CISigOverlayViewController.xib */,
 			);
 			name = Cart;
 			sourceTree = "<group>";
@@ -1409,7 +1395,6 @@
 				6E11857F145F2F2200568ED1 /* CIViewController_iPad.xib in Resources */,
 				6E07A3901461D26E0043C22B /* CICustomerInfoViewController.xib in Resources */,
 				6E3BEC871490556E00BF8E15 /* white_plaster.png in Resources */,
-				6E3BEC9F1491905D00BF8E15 /* CIOrderViewController.xib in Resources */,
 				6E3BECDC1491B07700BF8E15 /* CIProductViewController.xib in Resources */,
 				6E3BECDE1491B47E00BF8E15 /* PWProductCell.xib in Resources */,
 				6E3BECE31491F02000BF8E15 /* CIOrderCell.xib in Resources */,
@@ -1425,7 +1410,6 @@
 				6E21EF2615487B30002CF4B7 /* CIFinalCustomerInfoViewController.xib in Resources */,
 				6E21EF291548A2AB002CF4B7 /* customerlistNOBACKGROUND.png in Resources */,
 				6E21EF2B1548AB57002CF4B7 /* popupadjustitemNEW.png in Resources */,
-				EB5BBD26188891380004ABB6 /* CISigOverlayViewController.xib in Resources */,
 				6E21EF321548E8AA002CF4B7 /* cancelbutton.png in Resources */,
 				6EDBF906154EFD6100D4A0E7 /* CI_144logo.png in Resources */,
 				6EDBF909154EFD8000D4A0E7 /* CI_72logo.png in Resources */,
@@ -1538,7 +1522,6 @@
 				35F52A5825DDE6D3AD746040 /* SaveButton-out.png in Resources */,
 				35F52586B04A7B974C97AC31 /* clear-button-in.png in Resources */,
 				35F52096056B326E5BD1ECDF /* clear-button-out.png in Resources */,
-				35F52ED9FA6DD44651607AD8 /* overlay.png in Resources */,
 				35F5206FFC8C6A51336A10D6 /* signature-area.png in Resources */,
 				35F52DC05197C7D90195FCFB /* submit-button-in-green.png in Resources */,
 				35F52DB7A66E564A37972B3C /* submit-button-out-green.png in Resources */,
@@ -1624,7 +1607,6 @@
 				C73E2FDE165C810B00FE8DE9 /* ProductCart.xcmappingmodel in Sources */,
 				C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */,
 				C75A1B6816691E770008A466 /* UIAlertViewDelegateWithBlock.m in Sources */,
-				EB5BBD25188891380004ABB6 /* CISigOverlayViewController.m in Sources */,
 				C730D9CF16705F330013B87B /* Cart+Extensions.m in Sources */,
 				C71653A81671173900F65D02 /* SetupInfo.m in Sources */,
 				C727F6901671A2AC00F2847D /* CoreDataUtil.m in Sources */,

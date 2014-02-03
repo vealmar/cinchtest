@@ -13,7 +13,6 @@
 @property(nonatomic, strong) NSNumber *orderId;
 @property(nonatomic, strong) NSString *authToken;
 @property(nonatomic, strong) CIProductViewControllerHelper *helper;
-@property(nonatomic, strong) CISigOverlayViewController *ciSigOverlayViewController;
 @end
 
 @implementation CISignatureViewController {
@@ -69,15 +68,8 @@
 - (void)signatureCaptured {
     [self.signatureView releaseMemory];
     [self dismissViewControllerAnimated:YES completion:^{
-        [self.delegate displayOverlayScreen];
+        [self.delegate signatureViewDismissed];
     }];
 }
-
-- (void)displayOverlayScreen {
-    self.ciSigOverlayViewController = [[CISigOverlayViewController alloc] initWithDelegate:(id <SignatureOverlayDelegate>) self];
-    self.ciSigOverlayViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    [self presentViewController:self.ciSigOverlayViewController animated:YES completion:nil];
-}
-
 
 @end
