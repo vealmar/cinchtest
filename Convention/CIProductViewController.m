@@ -214,13 +214,14 @@
     [submit show:NO];
 
     void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
-        [self loadProductsForCurrentVendorAndBulletin];
-        [self reloadTable];
+        [self loadProductsForCurrentVendorAndBulletin];//this method includes a call to reloadtable
         [pull finishedLoading];
+        [self adjustTableInset]; //pull.finishedLoading resets the content offsets
         [submit hide:NO];
     };
     void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
         [pull finishedLoading];
+        [self adjustTableInset]; //pull.finishedLoading resets the content offsets
         [submit hide:NO];
     };
 
@@ -768,6 +769,10 @@
 
 - (void)reloadTable {
     [self.productsTableView reloadData];
+    [self adjustTableInset];
+}
+
+- (void)adjustTableInset {
     if (keyboardUp) {
         [self addInsetToTable:keyboardHeight - 69];//width because landscape. 69 is height of the view that contains totals at the end of the table.
     }
