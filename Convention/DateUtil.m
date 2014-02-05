@@ -93,10 +93,12 @@ static DateUtil *sharedInstance;
 }
 
 + (NSDate *)convertYyyymmddToDate:(NSString *)jsonDate {
-    NSMutableOrderedSet *dates = [[NSMutableOrderedSet alloc] init];
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setDateFormat:@"yyyy-MM-dd"];
-    return [df dateFromString:jsonDate];
+    if (jsonDate.length > 0) {
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        [df setDateFormat:@"yyyy-MM-dd"];
+        return [df dateFromString:jsonDate];
+    } else
+        return nil;
 }
 
 + (NSDate *)convertYyyymmddthhmmsszToDate:(NSString *)jsonDate {
@@ -107,9 +109,23 @@ static DateUtil *sharedInstance;
 }
 
 + (NSString *)convertDateToYyyymmdd:(NSDate *)nsDate {
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setDateFormat:@"yyyy-MM-dd"];
-    return [df stringFromDate:nsDate];
+    if (nsDate) {
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        [df setDateFormat:@"yyyy-MM-dd"];
+        return [df stringFromDate:nsDate];
+    } else
+        return nil;
+
+}
+
++ (NSString *)convertDateToMmddyyyy:(NSDate *)nsDate {
+    if (nsDate) {
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        [df setDateFormat:@"MM-dd-yyyy"];
+        return [df stringFromDate:nsDate];
+    } else
+        return nil;
+
 }
 
 + (NSString *)convertDateToYyyymmddthhmmssz:(NSDate *)nsDate {

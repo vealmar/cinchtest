@@ -18,6 +18,7 @@
 #import "SegmentedControlHelper.h"
 #import "NilUtil.h"
 #import "CoreDataManager.h"
+#import "DateUtil.h"
 
 @interface CIFinalCustomerInfoViewController () {
     SetupInfo *authorizedBy;
@@ -30,6 +31,8 @@
 
 @property(strong, nonatomic) UITextField *authorizedByTextField;
 @property(strong, nonatomic) UITextField *poNumberTextField;
+@property(strong, nonatomic) UITextField *shipDateTextField;
+@property(strong, nonatomic) UIDatePicker *shipDatePicker;
 @property(strong, nonatomic) UITextView *notesTextView;
 @property(strong, nonatomic) MICheckBox *contactBeforeShippingCB;
 @property(strong, nonatomic) UISegmentedControl *cancelDaysControl;
@@ -38,6 +41,7 @@
 @property BOOL cancelConfig;
 @property BOOL poNumberConfig;
 @property BOOL paymentTermsConfig;
+@property BOOL orderShipdateConfig;
 
 @end
 
@@ -50,6 +54,7 @@
         self.cancelConfig = configurations.cancelOrder;
         self.poNumberConfig = configurations.poNumber;
         self.paymentTermsConfig = configurations.paymentTerms;
+        self.orderShipdateConfig = configurations.orderShipDate;
         cancelDaysHelper = [[SegmentedControlHelper alloc] initForCancelByDays];
         paymentTermsHelper = [[SegmentedControlHelper alloc] initForPaymentTerms];
     }
@@ -75,6 +80,10 @@
     }
     if (self.paymentTermsConfig) {
         [self.paymentTermsControl setSelectedSegmentIndex:[paymentTermsHelper indexForValue:self.order.payment_terms]];
+    }
+    if (self.orderShipdateConfig) {
+        self.shipDatePicker.date = self.order && self.order.ship_date ? self.order.ship_date : [NSDate date];
+        [self updateShipDateTextField];
     }
     self.view.superview.bounds = originalBounds;
 }
@@ -129,6 +138,26 @@
         [self.view addSubview:self.poNumberTextField];
         currentY = CGRectGetMaxY(self.poNumberTextField.frame);
     }
+    if (self.orderShipdateConfig) {
+        UILabel *shipDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
+        shipDateLabel.font = labelFont;
+        shipDateLabel.textColor = [UIColor whiteColor];
+        shipDateLabel.text = @"SHIP DATE";
+        [self.view addSubview:shipDateLabel];
+        textField = [[UITextField alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(shipDateLabel.frame) + 10, elementWidth, 44.0)];
+        self.shipDateTextField = textField;
+        self.shipDateTextField.backgroundColor = [UIColor whiteColor];
+        UIDatePicker *datePicker = [[UIDatePicker alloc] init];
+        [datePicker addTarget:self action:@selector(updateShipDateTextField) forControlEvents:UIControlEventValueChanged];
+        datePicker.datePickerMode = UIDatePickerModeDate;
+        self.shipDatePicker = datePicker;
+        [self.shipDateTextField setInputView:datePicker];
+        [self.view addSubview:self.shipDateTextField];
+        currentY = CGRectGetMaxY(self.shipDateTextField.frame);
+        UITapGestureRecognizer *tapGestureRecognize = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissDate:)];
+        tapGestureRecognize.numberOfTapsRequired = 1;
+        [self.view addGestureRecognizer:tapGestureRecognize];
+    }
     if (self.contactBeforeShippingConfig) {
         UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 350.0, 35.0)];
         contactLabel.font = labelFont;
@@ -182,6 +211,20 @@
     self.view.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, 540, currentY + (verticalMargin * 2));
 }
 
+- (void)dismissDate:(id)dismissDate {
+    if (self.orderShipdateConfig && [self.shipDateTextField isFirstResponder]) {
+        [self.shipDateTextField resignFirstResponder];
+    }
+}
+
+- (BOOL)disablesAutomaticKeyboardDismissal {
+    return NO;  //Without this keyboard and datepickerview do not disappear even if the text or picker field resigns first responder status.
+}
+
+- (void)updateShipDateTextField {
+    self.shipDateTextField.text = [DateUtil convertDateToMmddyyyy:self.shipDatePicker.date];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     originalBounds = self.view.bounds;
@@ -231,6 +274,9 @@
         if (self.paymentTermsConfig) {
             NSNumber *paymentTerms = [paymentTermsHelper numberAtIndex:[self.paymentTermsControl selectedSegmentIndex]];
             [dict setObject:[NilUtil objectOrNSNull:paymentTerms] forKey:kOrderPaymentTerms];
+        }
+        if (self.orderShipdateConfig) {
+            [dict setObject:[NilUtil objectOrNSNull:self.shipDatePicker.date] forKey:kOrderShipDate];
         }
         [self.delegate setAuthorizedByInfo:[dict copy]];
         [self.delegate submit:nil];
