@@ -214,7 +214,7 @@
 		C7DCDF0916A297FE00F66C52 /* BulletinViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DCDF0716A297FD00F66C52 /* BulletinViewController.xib */; };
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
 		EB0C7FE91760194B0038A3AD /* FarrisOrderDetail.png in Resources */ = {isa = PBXBuildFile; fileRef = EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */; };
-		EB20BA29189C585D00F9EFA2 /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = EB20BA28189C585D00F9EFA2 /* Order.m */; };
+		EB20FB6818A200D8000D785B /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = EB20FB6718A200D8000D785B /* Order.m */; };
 		EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5A0A9B175EF2C200246C24 /* FBLogin.png */; };
 		EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD10188851810004ABB6 /* GLKit.framework */; };
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
@@ -552,8 +552,8 @@
 		C7EB25E71665CA8D00B1CD4F /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
 		EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisOrderDetail.png; sourceTree = "<group>"; };
 		EB20BA26189C57DD00F9EFA2 /* ProductCart4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart4.xcdatamodel; sourceTree = "<group>"; };
-		EB20BA27189C585D00F9EFA2 /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
-		EB20BA28189C585D00F9EFA2 /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
+		EB20FB6618A200D8000D785B /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
+		EB20FB6718A200D8000D785B /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
 		EB5BBD10188851810004ABB6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		EB5BBD121888518E0004ABB6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -572,6 +572,7 @@
 		EB7D8FEB17DDD4E300F2FB8C /* Vendor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vendor.m; sourceTree = "<group>"; };
 		EB7D8FED17DDD60100F2FB8C /* Bulletin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bulletin.h; sourceTree = "<group>"; };
 		EB7D8FEE17DDD60100F2FB8C /* Bulletin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bulletin.m; sourceTree = "<group>"; };
+		EBB8A1E518A1FF7A009B7B57 /* ProductCart5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart5.xcdatamodel; sourceTree = "<group>"; };
 		EBBAF1AB186E30560094547E /* EditableEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableEntity.h; sourceTree = "<group>"; };
 		EBBAF1AC186E30560094547E /* EditableEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableEntity.m; sourceTree = "<group>"; };
 		EBBAF1B4186E30570094547E /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
@@ -955,9 +956,9 @@
 				C730D9CE16705F330013B87B /* Cart+Extensions.m */,
 				C7BA94F71653462B00E6705B /* Order+Extensions.h */,
 				C7BA94F81653462C00E6705B /* Order+Extensions.m */,
+				EB20FB6618A200D8000D785B /* Order.h */,
+				EB20FB6718A200D8000D785B /* Order.m */,
 				C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */,
-				EB20BA27189C585D00F9EFA2 /* Order.h */,
-				EB20BA28189C585D00F9EFA2 /* Order.m */,
 				EB7D8FEA17DDD4E300F2FB8C /* Vendor.h */,
 				EB7D8FEB17DDD4E300F2FB8C /* Vendor.m */,
 				C76D3E6216AE322400F055F4 /* ShipDate.h */,
@@ -1561,6 +1562,7 @@
 				6E118576145F2F2200568ED1 /* CIAppDelegate.m in Sources */,
 				EB5BBD20188858050004ABB6 /* CISignatureViewController.m in Sources */,
 				6E118579145F2F2200568ED1 /* CIViewController.m in Sources */,
+				EB20FB6818A200D8000D785B /* Order.m in Sources */,
 				6EAFF9EC145FABA400491B42 /* JSONKit.m in Sources */,
 				6EAFF9F1145FB04800491B42 /* CIProductViewController.m in Sources */,
 				6EAFFB5E145FB0FB00491B42 /* CGContext+Boost.m in Sources */,
@@ -1569,7 +1571,6 @@
 				6EAFFB62145FB0FB00491B42 /* NSMutableArray+Boost.m in Sources */,
 				6EAFFB63145FB0FB00491B42 /* NSNumber+Boost.m in Sources */,
 				6EAFFB64145FB0FB00491B42 /* NSObject+Boost.m in Sources */,
-				EB20BA29189C585D00F9EFA2 /* Order.m in Sources */,
 				6EAFFB65145FB0FB00491B42 /* NSString+Boost.m in Sources */,
 				6EAFFB66145FB0FB00491B42 /* UIColor+Boost.m in Sources */,
 				6EAFFB67145FB0FB00491B42 /* UIImage+Boost.m in Sources */,
@@ -1796,12 +1797,13 @@
 		C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				EBB8A1E518A1FF7A009B7B57 /* ProductCart5.xcdatamodel */,
 				EB20BA26189C57DD00F9EFA2 /* ProductCart4.xcdatamodel */,
 				C73E2FDB165C7FB600FE8DE9 /* ProductCart2.xcdatamodel */,
 				EBFABF02189C38250089F79A /* ProductCart3.xcdatamodel */,
 				C7BA948E1651DA3700E6705B /* ProductCart.xcdatamodel */,
 			);
-			currentVersion = EB20BA26189C57DD00F9EFA2 /* ProductCart4.xcdatamodel */;
+			currentVersion = EBB8A1E518A1FF7A009B7B57 /* ProductCart5.xcdatamodel */;
 			path = ProductCart.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

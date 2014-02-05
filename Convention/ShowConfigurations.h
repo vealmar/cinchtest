@@ -24,6 +24,7 @@
 @property UIImage *logo;
 @property BOOL poNumber;
 @property BOOL paymentTerms;
+@property BOOL orderShipDate;
 
 + (ShowConfigurations *)instance;
 

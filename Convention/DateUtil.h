@@ -55,5 +55,7 @@
 
 + (NSDate *)convertYyyymmddthhmmsszToDate:(NSString *)jsonDate;
 
++ (NSString *)convertDateToMmddyyyy:(NSDate *)nsDate;
+
 + (NSString *)convertDateToYyyymmddthhmmssz:(NSDate *)nsDate;
 @end

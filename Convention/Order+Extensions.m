@@ -18,6 +18,7 @@
 #import "Product+Extensions.h"
 #import "DiscountLineItem.h"
 #import "DiscountLineItem+Extensions.h"
+#import "DateUtil.h"
 
 @implementation Order (Extensions)
 
@@ -38,6 +39,7 @@
         self.cancelByDays = orderFromServer.cancelByDays;
         self.po_number = orderFromServer.poNumber;
         self.payment_terms = orderFromServer.paymentTerms;
+        self.ship_date = [DateUtil convertYyyymmddToDate:orderFromServer.shipDate];
         for (NSString *error in [NilUtil objectOrEmptyArray:orderFromServer.errors]) {
             Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
             [self addErrorsObject:lineItemrError];
@@ -138,6 +140,7 @@
                                                                                       [NilUtil objectOrNSNull:self.printer], kOrderPrinter,
                                                                                       [NilUtil objectOrNSNull:self.po_number], kOrderPoNumber,
                                                                                       [NilUtil objectOrNSNull:self.payment_terms], kOrderPaymentTerms,
+                                                                                      [NilUtil objectOrNSNull:[DateUtil convertDateToYyyymmdd:self.ship_date]], kOrderShipDate,
                                                                                       nil];
     return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
 }
