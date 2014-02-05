@@ -19,6 +19,9 @@
 #import "NilUtil.h"
 #import "CoreDataManager.h"
 #import "DateUtil.h"
+#import "CKCalendarView.h"
+#import "OrderShipDateViewController.h"
+#import "UIView+Boost.h"
 
 @interface CIFinalCustomerInfoViewController () {
     SetupInfo *authorizedBy;
@@ -27,12 +30,14 @@
     CGRect originalBounds;
     SegmentedControlHelper *cancelDaysHelper;
     SegmentedControlHelper *paymentTermsHelper;
+    UIPopoverController *shipDatePopoverController;
 }
 
 @property(strong, nonatomic) UITextField *authorizedByTextField;
 @property(strong, nonatomic) UITextField *poNumberTextField;
 @property(strong, nonatomic) UITextField *shipDateTextField;
-@property(strong, nonatomic) UIDatePicker *shipDatePicker;
+@property(strong, nonatomic) OrderShipDateViewController *shipDateViewController;
+@property(strong, nonatomic) NSDate *selectedShipDate;
 @property(strong, nonatomic) UITextView *notesTextView;
 @property(strong, nonatomic) MICheckBox *contactBeforeShippingCB;
 @property(strong, nonatomic) UISegmentedControl *cancelDaysControl;
@@ -82,9 +87,9 @@
         [self.paymentTermsControl setSelectedSegmentIndex:[paymentTermsHelper indexForValue:self.order.payment_terms]];
     }
     if (self.orderShipdateConfig) {
-        self.shipDatePicker.date = self.order && self.order.ship_date ? self.order.ship_date : [NSDate date];
-        [self updateShipDateTextField];
+        [self selectShipDate:self.order.ship_date];
     }
+
     self.view.superview.bounds = originalBounds;
 }
 
@@ -147,16 +152,15 @@
         textField = [[UITextField alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(shipDateLabel.frame) + 10, elementWidth, 44.0)];
         self.shipDateTextField = textField;
         self.shipDateTextField.backgroundColor = [UIColor whiteColor];
-        UIDatePicker *datePicker = [[UIDatePicker alloc] init];
-        [datePicker addTarget:self action:@selector(updateShipDateTextField) forControlEvents:UIControlEventValueChanged];
-        datePicker.datePickerMode = UIDatePickerModeDate;
-        self.shipDatePicker = datePicker;
-        [self.shipDateTextField setInputView:datePicker];
+        self.shipDateTextField.delegate = self;
+        self.shipDateViewController = [[OrderShipDateViewController alloc] initWithDateDoneBlock:^(NSDate *date) {
+            [self selectShipDate:date];
+            [shipDatePopoverController dismissPopoverAnimated:YES];
+        }                                                                            cancelBlock:^{
+            [shipDatePopoverController dismissPopoverAnimated:YES];
+        }];
         [self.view addSubview:self.shipDateTextField];
         currentY = CGRectGetMaxY(self.shipDateTextField.frame);
-        UITapGestureRecognizer *tapGestureRecognize = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissDate:)];
-        tapGestureRecognize.numberOfTapsRequired = 1;
-        [self.view addGestureRecognizer:tapGestureRecognize];
     }
     if (self.contactBeforeShippingConfig) {
         UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 350.0, 35.0)];
@@ -211,18 +215,17 @@
     self.view.frame = CGRectMake(self.view.frame.origin.x, self.view.frame.origin.y, 540, currentY + (verticalMargin * 2));
 }
 
-- (void)dismissDate:(id)dismissDate {
-    if (self.orderShipdateConfig && [self.shipDateTextField isFirstResponder]) {
-        [self.shipDateTextField resignFirstResponder];
-    }
-}
-
 - (BOOL)disablesAutomaticKeyboardDismissal {
     return NO;  //Without this keyboard and datepickerview do not disappear even if the text or picker field resigns first responder status.
 }
 
 - (void)updateShipDateTextField {
-    self.shipDateTextField.text = [DateUtil convertDateToMmddyyyy:self.shipDatePicker.date];
+    self.shipDateTextField.text = self.selectedShipDate ? [DateUtil convertDateToMmddyyyy:self.selectedShipDate] : @"";
+}
+
+- (void)selectShipDate:(NSDate *)date {
+    self.selectedShipDate = date;
+    [self updateShipDateTextField];
 }
 
 - (void)viewDidLoad {
@@ -276,7 +279,7 @@
             [dict setObject:[NilUtil objectOrNSNull:paymentTerms] forKey:kOrderPaymentTerms];
         }
         if (self.orderShipdateConfig) {
-            [dict setObject:[NilUtil objectOrNSNull:self.shipDatePicker.date] forKey:kOrderShipDate];
+            [dict setObject:[NilUtil objectOrNSNull:self.selectedShipDate] forKey:kOrderShipDate];
         }
         [self.delegate setAuthorizedByInfo:[dict copy]];
         [self.delegate submit:nil];
@@ -303,6 +306,7 @@
     [UIView commitAnimations];
 }
 
+//Todo I don't think any of these text delegate methods except (shouldBeginEditing for ship dates) are called since the textfields' delegate is not being set.
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     return YES;
 }
@@ -334,5 +338,19 @@
         }
     }
 }
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
+    if ([textField isEqual:self.shipDateTextField]) {
+        if (shipDatePopoverController == nil) {
+            shipDatePopoverController = [[UIPopoverController alloc] initWithContentViewController:self.shipDateViewController];
+            [shipDatePopoverController setPopoverContentSize:CGSizeMake(self.shipDateViewController.view.width, self.shipDateViewController.view.height)];
+        }
+        self.shipDateViewController.selectedDate = self.selectedShipDate;
+        [shipDatePopoverController presentPopoverFromRect:self.shipDateTextField.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        return NO;
+    } else
+        return YES;
+}
+
 
 @end
