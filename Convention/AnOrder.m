@@ -35,7 +35,7 @@
         self.shipFlag = (BOOL *) (shipFlagInt && [shipFlagInt intValue] == 1);//boolean
         self.cancelByDays = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"cancel_by_days"]];
         self.poNumber = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"po_number"]];
-        self.paymentTerms = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"payment_terms"]];
+        self.paymentTerms = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"payment_terms"]];
         self.shipDate = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"ship_date"]];
         self.customer = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
         self.errors = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"errors"]];

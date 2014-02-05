@@ -803,7 +803,7 @@
         self.coreDataOrder.cancelByDays = (NSNumber *) [NilUtil nilOrObject:[info objectForKey:kCancelByDays]];
     }
     if (self.paymentTermsConfig && [info objectForKey:kOrderPaymentTerms]) {
-        self.coreDataOrder.payment_terms = (NSNumber *) [NilUtil nilOrObject:[info objectForKey:kOrderPaymentTerms]];
+        self.coreDataOrder.payment_terms = (NSString *) [NilUtil nilOrObject:[info objectForKey:kOrderPaymentTerms]];
     }
     if (self.orderShipdateConfig && [info objectForKey:kOrderShipDate]) {
         self.coreDataOrder.ship_date = (NSDate *) [NilUtil nilOrObject:[info objectForKey:kOrderShipDate]];

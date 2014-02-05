@@ -11,9 +11,9 @@
 
 - (id)initForPaymentTerms;
 
-- (NSNumber *)numberAtIndex:(NSInteger)index;
+- (id)valueAtIndex:(NSInteger)index;
 
 - (NSArray *)displayStrings;
 
-- (NSUInteger)indexForValue:(NSNumber *)value;
+- (NSUInteger)indexForValue:(id)value;
 @end
