@@ -17,6 +17,8 @@
 		33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FD164D743E007B872A /* ErrorHandler.m */; };
 		33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42FF164D743E007B872A /* SettingsManager.m */; };
 		33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 335A42F6164D740A007B872A /* GroupedObject.m */; };
+		35F5204C879FE5994D97BC21 /* left_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5208623283F3F176888E9 /* left_arrow@2x.png */; };
+		35F5206D3F602AF954BBC083 /* CKCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52ABF3EBACDE10341D9A9 /* CKCalendarView.m */; };
 		35F5206FFC8C6A51336A10D6 /* signature-area.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F521BA81102E568B5457FC /* signature-area.png */; };
 		35F52096056B326E5BD1ECDF /* clear-button-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52E655DE2917031C78A08 /* clear-button-out.png */; };
 		35F520A4A89A2A79DE9CB392 /* Error+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F524A5199E6B8079AE5D89 /* Error+Extensions.m */; };
@@ -28,6 +30,7 @@
 		35F52565AD01794E5970974F /* ALineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52C47A71D4C79AE68083C /* ALineItem.m */; };
 		35F52586B04A7B974C97AC31 /* clear-button-in.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F524B699AFD10A2D4EAE87 /* clear-button-in.png */; };
 		35F525B67308FF3F244DB79D /* SegmentedControlHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5279FCE98C192DDD1BFB4 /* SegmentedControlHelper.m */; };
+		35F525E51F7A4DEF55FD190C /* right_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5213C6E7D0F96A34279D9 /* right_arrow.png */; };
 		35F5263C1F6068DD7F84A564 /* SynchronousResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5268AF5940CE7CE1517AE /* SynchronousResponse.m */; };
 		35F527C6D5A71434688ABEC2 /* FarrisBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */; };
 		35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5271B9DC09F494AE33569 /* ShowConfigurations.m */; };
@@ -37,6 +40,7 @@
 		35F5283D1578BBD6EB034918 /* DiscountLineItem+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5245F94A98A6ACF4C2C81 /* DiscountLineItem+Extensions.m */; };
 		35F528723DB04DAA575BA603 /* app_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52BC2B08AE38F365E81EB /* app_bg.png */; };
 		35F5287D59BBEFD3CD4C4BC0 /* Product+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F529A33F7F381915688AB6 /* Product+Extensions.m */; };
+		35F529219EC92FBEEF983E4A /* right_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F520F9F5A8B31250C20DF9 /* right_arrow@2x.png */; };
 		35F5295CF38EFEB3F0DB36D1 /* AProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52B12F27616E0F71C5A98 /* AProduct.m */; };
 		35F52A19F4EFCD93702E646D /* ProductCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52A62C4F3539476C1736F /* ProductCell.m */; };
 		35F52A25B60B502E3DF218A5 /* NISignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F5222D1F70C9214C658BC9 /* NISignatureView.m */; };
@@ -48,6 +52,7 @@
 		35F52DB7A66E564A37972B3C /* submit-button-out-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5247F0ABA7083C162CA58 /* submit-button-out-green.png */; };
 		35F52DC05197C7D90195FCFB /* submit-button-in-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5216AD37BC89DD32025AB /* submit-button-in-green.png */; };
 		35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52CF25ABF1AF16A369494 /* NilUtil.m */; };
+		35F52E7577ADBEE2377BD100 /* left_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52FDC7C8E29D16E695C80 /* left_arrow.png */; };
 		35F52E7C36B02E6EBA801A1B /* MyOrders.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52BABED1C4FFB96E78BD9 /* MyOrders.png */; };
 		35F52F4B833B78BCED458609 /* SaveButton-in.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52FB5EB455BBF057DAC6C /* SaveButton-in.png */; };
 		35F52FC5C5E61BAC2A7CD197 /* save2out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5256E54BCD292CF9ED322 /* save2out.png */; };
@@ -234,6 +239,8 @@
 		EBBAF1D7187302A20094547E /* Product.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1D6187302A20094547E /* Product.m */; };
 		EBBAF1DD187302A30094547E /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1DC187302A30094547E /* Cart.m */; };
 		EBBAF1E31874B5570094547E /* DiscountLineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1E21874B5570094547E /* DiscountLineItem.m */; };
+		EBCB633B18A21E0400F34107 /* OrderShipDateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB633918A21E0400F34107 /* OrderShipDateViewController.m */; };
+		EBCB633C18A21E0400F34107 /* OrderShipDateViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EBCB633A18A21E0400F34107 /* OrderShipDateViewController.xib */; };
 		EBD32A041764A78200FD28E4 /* FarrisBrosWhiteLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */; };
 		EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */; };
 		EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */; };
@@ -267,6 +274,9 @@
 		335A4306164D7529007B872A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
 		35F520072428E6A11A140BBE /* AnOrder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnOrder.m; sourceTree = "<group>"; };
 		35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductViewControllerHelper.m; sourceTree = "<group>"; };
+		35F5208623283F3F176888E9 /* left_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left_arrow@2x.png"; sourceTree = "<group>"; };
+		35F520F9F5A8B31250C20DF9 /* right_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right_arrow@2x.png"; sourceTree = "<group>"; };
+		35F5213C6E7D0F96A34279D9 /* right_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = right_arrow.png; sourceTree = "<group>"; };
 		35F52168A588B29C511220B5 /* DiscountLineItem+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DiscountLineItem+Extensions.h"; sourceTree = "<group>"; };
 		35F5216AD37BC89DD32025AB /* submit-button-in-green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "submit-button-in-green.png"; sourceTree = "<group>"; };
 		35F521BA81102E568B5457FC /* signature-area.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "signature-area.png"; sourceTree = "<group>"; };
@@ -292,6 +302,7 @@
 		35F5279FCE98C192DDD1BFB4 /* SegmentedControlHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SegmentedControlHelper.m; sourceTree = "<group>"; };
 		35F527D44E4AE1FC93210B28 /* SynchronousResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronousResponse.h; sourceTree = "<group>"; };
 		35F52842A8307AABB72E16F8 /* CartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CartViewCell.h; sourceTree = "<group>"; };
+		35F52865C7C9C5D7BB7437CF /* CKCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CKCalendarView.h; sourceTree = "<group>"; };
 		35F528C981F800396D59FC9C /* save2in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = save2in.png; sourceTree = "<group>"; };
 		35F5292319057213F1E3522E /* AProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AProduct.h; sourceTree = "<group>"; };
 		35F529A33F7F381915688AB6 /* Product+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Product+Extensions.m"; sourceTree = "<group>"; };
@@ -301,6 +312,7 @@
 		35F52A4EC42A3CEBF2CD0F21 /* FarrisBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBG.png; sourceTree = "<group>"; };
 		35F52A62C4F3539476C1736F /* ProductCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductCell.m; sourceTree = "<group>"; };
 		35F52A64DD2EF721B2325A86 /* NISignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NISignatureView.h; sourceTree = "<group>"; };
+		35F52ABF3EBACDE10341D9A9 /* CKCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CKCalendarView.m; sourceTree = "<group>"; };
 		35F52B12F27616E0F71C5A98 /* AProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AProduct.m; sourceTree = "<group>"; };
 		35F52B2D2043856F6E5DD285 /* SegmentedControlHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SegmentedControlHelper.h; sourceTree = "<group>"; };
 		35F52B3C8A568456497B76FC /* ProductCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductCell.h; sourceTree = "<group>"; };
@@ -319,6 +331,7 @@
 		35F52E655DE2917031C78A08 /* clear-button-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clear-button-out.png"; sourceTree = "<group>"; };
 		35F52E74AD542ECB69B97735 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		35F52FB5EB455BBF057DAC6C /* SaveButton-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SaveButton-in.png"; sourceTree = "<group>"; };
+		35F52FDC7C8E29D16E695C80 /* left_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = left_arrow.png; sourceTree = "<group>"; };
 		6414A6E91496AE960088586B /* orangebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangebutton.png; sourceTree = "<group>"; };
 		6414A6F01496B9A10088586B /* bluebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluebutton.png; sourceTree = "<group>"; };
 		6E07A38C1461D26E0043C22B /* CICustomerInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICustomerInfoViewController.h; sourceTree = "<group>"; };
@@ -583,6 +596,9 @@
 		EBBAF1DC187302A30094547E /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
 		EBBAF1E11874B5570094547E /* DiscountLineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscountLineItem.h; sourceTree = "<group>"; };
 		EBBAF1E21874B5570094547E /* DiscountLineItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscountLineItem.m; sourceTree = "<group>"; };
+		EBCB633818A21E0300F34107 /* OrderShipDateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderShipDateViewController.h; sourceTree = "<group>"; };
+		EBCB633918A21E0400F34107 /* OrderShipDateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrderShipDateViewController.m; sourceTree = "<group>"; };
+		EBCB633A18A21E0400F34107 /* OrderShipDateViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OrderShipDateViewController.xib; sourceTree = "<group>"; };
 		EBD32A031764A78200FD28E4 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
 		EBD32A0B1764E5B200FD28E4 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
 		EBD32A0C1764E5B200FD28E4 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
@@ -655,6 +671,28 @@
 				C76E63FD173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m */,
 			);
 			name = Categories;
+			sourceTree = "<group>";
+		};
+		35F524E684302B783B5BDFB9 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				35F52FDC7C8E29D16E695C80 /* left_arrow.png */,
+				35F5213C6E7D0F96A34279D9 /* right_arrow.png */,
+				35F5208623283F3F176888E9 /* left_arrow@2x.png */,
+				35F520F9F5A8B31250C20DF9 /* right_arrow@2x.png */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+		35F525D3784BC6629A6CD718 /* CKCalendar */ = {
+			isa = PBXGroup;
+			children = (
+				35F524E684302B783B5BDFB9 /* resources */,
+				35F52865C7C9C5D7BB7437CF /* CKCalendarView.h */,
+				35F52ABF3EBACDE10341D9A9 /* CKCalendarView.m */,
+			);
+			name = CKCalendar;
+			path = Source;
 			sourceTree = "<group>";
 		};
 		35F526BE4FE5B569FF950483 /* Farris */ = {
@@ -745,6 +783,7 @@
 		6E11856B145F2F2200568ED1 /* Convention */ = {
 			isa = PBXGroup;
 			children = (
+				EBCB633518A21CD500F34107 /* ShipDateCalendar */,
 				6E118609145F314200568ED1 /* config.h */,
 				6E118574145F2F2200568ED1 /* CIAppDelegate.h */,
 				6E118575145F2F2200568ED1 /* CIAppDelegate.m */,
@@ -842,6 +881,7 @@
 				35F521BA81102E568B5457FC /* signature-area.png */,
 				35F5216AD37BC89DD32025AB /* submit-button-in-green.png */,
 				35F5247F0ABA7083C162CA58 /* submit-button-out-green.png */,
+				35F525D3784BC6629A6CD718 /* CKCalendar */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -1325,6 +1365,16 @@
 			name = Fonts;
 			sourceTree = "<group>";
 		};
+		EBCB633518A21CD500F34107 /* ShipDateCalendar */ = {
+			isa = PBXGroup;
+			children = (
+				EBCB633818A21E0300F34107 /* OrderShipDateViewController.h */,
+				EBCB633918A21E0400F34107 /* OrderShipDateViewController.m */,
+				EBCB633A18A21E0400F34107 /* OrderShipDateViewController.xib */,
+			);
+			name = ShipDateCalendar;
+			sourceTree = "<group>";
+		};
 		EBD32A021764A76A00FD28E4 /* Logo */ = {
 			isa = PBXGroup;
 			children = (
@@ -1499,6 +1549,7 @@
 				EBD32A0D1764E5B200FD28E4 /* checkbox_flat_not_ticked.png in Resources */,
 				EBD32A0E1764E5B200FD28E4 /* checkbox_flat_ticked.png in Resources */,
 				9635B83717653E9500406CBA /* customer-cancelin.png in Resources */,
+				EBCB633C18A21E0400F34107 /* OrderShipDateViewController.xib in Resources */,
 				9635B83817653E9500406CBA /* customer-cancelout.png in Resources */,
 				9635B83B17653EDA00406CBA /* cart-cancelin.png in Resources */,
 				9635B83C17653EDA00406CBA /* cart-cancelout.png in Resources */,
@@ -1526,6 +1577,10 @@
 				35F5206FFC8C6A51336A10D6 /* signature-area.png in Resources */,
 				35F52DC05197C7D90195FCFB /* submit-button-in-green.png in Resources */,
 				35F52DB7A66E564A37972B3C /* submit-button-out-green.png in Resources */,
+				35F52E7577ADBEE2377BD100 /* left_arrow.png in Resources */,
+				35F525E51F7A4DEF55FD190C /* right_arrow.png in Resources */,
+				35F5204C879FE5994D97BC21 /* left_arrow@2x.png in Resources */,
+				35F529219EC92FBEEF983E4A /* right_arrow@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1619,6 +1674,7 @@
 				C76D3E6416AE322400F055F4 /* ShipDate.m in Sources */,
 				C76E63FE173B68BA00E2C25B /* UIView+FindAndResignFirstResponder.m in Sources */,
 				EBE8941817B71603005F1895 /* LaunchViewController.m in Sources */,
+				EBCB633B18A21E0400F34107 /* OrderShipDateViewController.m in Sources */,
 				35F527CFE86615F3E1D17405 /* ShowConfigurations.m in Sources */,
 				EBBAF1DD187302A30094547E /* Cart.m in Sources */,
 				35F52A19F4EFCD93702E646D /* ProductCell.m in Sources */,
@@ -1644,6 +1700,7 @@
 				35F525B67308FF3F244DB79D /* SegmentedControlHelper.m in Sources */,
 				35F52A25B60B502E3DF218A5 /* NISignatureView.m in Sources */,
 				35F521043C4DB6FC65076B61 /* ProductCache.m in Sources */,
+				35F5206D3F602AF954BBC083 /* CKCalendarView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
