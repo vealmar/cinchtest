@@ -794,19 +794,19 @@
     self.coreDataOrder.notes = [info objectForKey:kNotes];
     self.coreDataOrder.authorized = [info objectForKey:kAuthorizedBy];
     if (self.poNumberConfig) {
-        self.coreDataOrder.po_number = [info objectForKey:kOrderPoNumber];
+        self.coreDataOrder.po_number = (NSString *) [NilUtil nilOrObject:[info objectForKey:kOrderPoNumber]];
     }
     if (self.contactBeforeShipping) {
         self.coreDataOrder.ship_flag = [[info objectForKey:kShipFlag] isEqualToString:@"true"] ? @(1) : @(0);
     }
     if (self.cancelOrderConfig && [info objectForKey:kCancelByDays]) {
-        self.coreDataOrder.cancelByDays = [info objectForKey:kCancelByDays];
+        self.coreDataOrder.cancelByDays = (NSNumber *) [NilUtil nilOrObject:[info objectForKey:kCancelByDays]];
     }
     if (self.paymentTermsConfig && [info objectForKey:kOrderPaymentTerms]) {
-        self.coreDataOrder.payment_terms = [info objectForKey:kOrderPaymentTerms];
+        self.coreDataOrder.payment_terms = (NSNumber *) [NilUtil nilOrObject:[info objectForKey:kOrderPaymentTerms]];
     }
     if (self.orderShipdateConfig && [info objectForKey:kOrderShipDate]) {
-        self.coreDataOrder.ship_date = [info objectForKey:kOrderShipDate];
+        self.coreDataOrder.ship_date = (NSDate *) [NilUtil nilOrObject:[info objectForKey:kOrderShipDate]];
     }
 }
 
