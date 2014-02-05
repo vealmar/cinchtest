@@ -876,7 +876,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSString *notesText = self.notes.text == nil || [self.notes.text isKindOfClass:[NSNull class]] ? @"" : self.notes.text;
     NSMutableDictionary *order = [NSMutableDictionary dictionaryWithObjectsAndKeys:custid, kOrderCustomerID, authorizedBy, kAuthorizedBy, notesText, kNotes, arr, kOrderItems, nil];
     if (showConfig.cancelOrder) {
-        NSNumber *cancelByDays = [cancelDaysHelper numberAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
+        NSNumber *cancelByDays = [cancelDaysHelper valueAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
         [order setObject:[NilUtil objectOrNSNull:cancelByDays] forKey:kCancelByDays];
     }
     NSDictionary *final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];

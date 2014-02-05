@@ -263,11 +263,11 @@
             [dict setObject:(self.contactBeforeShippingCB.isChecked ? @"true" : @"false") forKey:kShipFlag];
         }
         if (self.cancelConfig) {
-            NSNumber *cancelByDays = [cancelDaysHelper numberAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
+            NSNumber *cancelByDays = [cancelDaysHelper valueAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
             [dict setObject:[NilUtil objectOrNSNull:cancelByDays] forKey:kCancelByDays];
         }
         if (self.paymentTermsConfig) {
-            NSNumber *paymentTerms = [paymentTermsHelper numberAtIndex:[self.paymentTermsControl selectedSegmentIndex]];
+            NSString *paymentTerms = [paymentTermsHelper valueAtIndex:[self.paymentTermsControl selectedSegmentIndex]];
             [dict setObject:[NilUtil objectOrNSNull:paymentTerms] forKey:kOrderPaymentTerms];
         }
         if (self.orderShipdateConfig) {

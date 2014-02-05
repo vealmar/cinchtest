@@ -30,8 +30,8 @@
 - (id)initForPaymentTerms {
     self = [super init];
     if (self) {
-        self.values = @[@-1, @90, @120, @150, @180];
-        self.strings = @[@"N/A", @"90 Days", @"120 Days", @"150 Days", @"180 Days"];
+        self.values = @[@"", @"4% 30 Net 911", @"2% 30 Net 1011", @"Net 30"];
+        self.strings = @[@"N/A", @"4% 30 Net 911", @"2% 30 Net 1011", @"Net 30"];
     }
     return self;
 }
@@ -40,7 +40,7 @@
     return self.strings;
 }
 
-- (NSNumber *)numberAtIndex:(NSInteger)index {
+- (id)valueAtIndex:(NSInteger)index {
     if (index < 0 || index > self.values.count)
         return self.values[0]; //default to first value.
     else
@@ -48,7 +48,7 @@
 }
 
 
-- (NSUInteger)indexForValue:(NSNumber *)value {
+- (NSUInteger)indexForValue:(id)value {
     if (value == nil)
         return 0;
     NSUInteger index = [self.values indexOfObject:value];
