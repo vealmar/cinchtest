@@ -43,6 +43,8 @@
     PullToRefreshView *pull;
     BOOL keyboardUp;
     float keyboardHeight;
+    CIFinalCustomerInfoViewController *customerInfoViewController;
+
 }
 @property(strong, nonatomic) AnOrder *savedOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
@@ -488,12 +490,14 @@
 
 - (void)loadNotesForm {
     if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
-        CIFinalCustomerInfoViewController *ci = [[CIFinalCustomerInfoViewController alloc] init];
-        ci.order = self.coreDataOrder;
-        ci.modalPresentationStyle = UIModalPresentationFormSheet;
-        ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        ci.delegate = self;
-        [self presentViewController:ci animated:YES completion:nil];
+        if (customerInfoViewController == nil) {
+            customerInfoViewController = [[CIFinalCustomerInfoViewController alloc] init];
+            customerInfoViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+            customerInfoViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+            customerInfoViewController.delegate = self;
+        }
+        customerInfoViewController.order = self.coreDataOrder;
+        [self presentViewController:customerInfoViewController animated:YES completion:nil];
     }
 }
 
@@ -806,6 +810,10 @@
     }
 }
 
+- (void)dismissFinalCustomerViewController {
+    [customerInfoViewController dismissViewControllerAnimated:NO completion:nil];
+}
+
 - (NSDictionary *)getCustomerInfo {
     return [self.customer copy];
 }
@@ -1022,5 +1030,6 @@
         }
     }];
 }
+
 
 @end

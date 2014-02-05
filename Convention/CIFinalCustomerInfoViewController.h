@@ -12,6 +12,7 @@
 #import <UIKit/UIKit.h>
 #import "CICustomerInfoViewController.h"
 #import "MICheckBox.h"
+#import "OrderShipDateViewController.h"
 
 @class Order;
 
@@ -23,9 +24,11 @@
 
 - (void)setAuthorizedByInfo:(NSDictionary *)info;
 
+- (void)dismissFinalCustomerViewController;
+
 @end
 
-@interface CIFinalCustomerInfoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate>
+@interface CIFinalCustomerInfoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate, OrderShipDateViewControllerDelegate>
 @property(nonatomic, assign) id <CIFinalCustomerDelegate> delegate;
 @property Order *order;
 @end
