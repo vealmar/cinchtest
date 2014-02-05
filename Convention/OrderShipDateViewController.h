@@ -9,8 +9,16 @@
 #import <UIKit/UIKit.h>
 #import "CKCalendarView.h"
 
+@protocol OrderShipDateViewControllerDelegate <NSObject>
+- (void)shipDateSelected:(NSDate *)date;
+
+- (void)orderShipDateViewControllerCancelled;
+
+@end
+
 @interface OrderShipDateViewController : UIViewController <CKCalendarDelegate>
 @property(strong, nonatomic) NSDate *selectedDate;
+@property(nonatomic, assign) id <OrderShipDateViewControllerDelegate> delegate;
 
-- (id)initWithDateDoneBlock:(void (^)(NSDate *))doneBlock cancelBlock:(void (^)())cancelBlock;
+- (id)initWithDelegate:(id <OrderShipDateViewControllerDelegate>)delegate;
 @end

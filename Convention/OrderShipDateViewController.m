@@ -15,11 +15,10 @@
 @end
 
 @implementation OrderShipDateViewController
-- (id)initWithDateDoneBlock:(void (^)(NSDate *))doneBlock cancelBlock:(void (^)())cancelBlock {
+- (id)initWithDelegate:(id <OrderShipDateViewControllerDelegate>)delegate {
     self = [super initWithNibName:@"OrderShipDateViewController" bundle:nil];
     if (self) {
-        self.doneBlock = doneBlock;
-        self.cancelBlock = cancelBlock;
+        self.delegate = delegate;
     }
     return self;
 }
@@ -44,14 +43,11 @@
 }
 
 - (IBAction)cancelTouched:(id)sender {
-    if (self.cancelBlock)
-        self.cancelBlock();
+    [self.delegate orderShipDateViewControllerCancelled];
 }
 
 - (IBAction)saveTouched:(id)sender {
-    if (self.doneBlock) {
-        self.doneBlock(self.selectedDate);
-    }
+    [self.delegate shipDateSelected:self.selectedDate];
 }
 
 

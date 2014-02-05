@@ -19,8 +19,6 @@
 #import "NilUtil.h"
 #import "CoreDataManager.h"
 #import "DateUtil.h"
-#import "CKCalendarView.h"
-#import "OrderShipDateViewController.h"
 #import "UIView+Boost.h"
 
 @interface CIFinalCustomerInfoViewController () {
@@ -153,12 +151,6 @@
         self.shipDateTextField = textField;
         self.shipDateTextField.backgroundColor = [UIColor whiteColor];
         self.shipDateTextField.delegate = self;
-        self.shipDateViewController = [[OrderShipDateViewController alloc] initWithDateDoneBlock:^(NSDate *date) {
-            [self selectShipDate:date];
-            [shipDatePopoverController dismissPopoverAnimated:YES];
-        }                                                                            cancelBlock:^{
-            [shipDatePopoverController dismissPopoverAnimated:YES];
-        }];
         [self.view addSubview:self.shipDateTextField];
         currentY = CGRectGetMaxY(self.shipDateTextField.frame);
     }
@@ -234,7 +226,7 @@
 }
 
 - (void)back:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.delegate dismissFinalCustomerViewController];
 }
 
 
@@ -283,7 +275,7 @@
         }
         [self.delegate setAuthorizedByInfo:[dict copy]];
         [self.delegate submit:nil];
-        [self dismissViewControllerAnimated:NO completion:nil];
+        [self.delegate dismissFinalCustomerViewController];
     }
 }
 
@@ -342,6 +334,9 @@
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     if ([textField isEqual:self.shipDateTextField]) {
         if (shipDatePopoverController == nil) {
+            if (self.shipDateViewController == nil) {
+                self.shipDateViewController = [[OrderShipDateViewController alloc] initWithDelegate:self];
+            }
             shipDatePopoverController = [[UIPopoverController alloc] initWithContentViewController:self.shipDateViewController];
             [shipDatePopoverController setPopoverContentSize:CGSizeMake(self.shipDateViewController.view.width, self.shipDateViewController.view.height)];
         }
@@ -350,6 +345,15 @@
         return NO;
     } else
         return YES;
+}
+
+- (void)shipDateSelected:(NSDate *)date {
+    [self selectShipDate:date];
+    [shipDatePopoverController dismissPopoverAnimated:YES];
+}
+
+- (void)orderShipDateViewControllerCancelled {
+    [shipDatePopoverController dismissPopoverAnimated:YES];
 }
 
 
