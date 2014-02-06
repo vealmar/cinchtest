@@ -30,8 +30,8 @@
 - (id)initForPaymentTerms {
     self = [super init];
     if (self) {
-        self.values = @[@"", @"4% 30 Net 911", @"2% 30 Net 1011", @"Net 30"];
-        self.strings = @[@"N/A", @"4% 30 Net 911", @"2% 30 Net 1011", @"Net 30"];
+        self.values = @[@"", @"“4% 30 Net 101", @"2% 30 Net 111", @"Net 30"];
+        self.strings = @[@"N/A", @"4% 30 Net 101", @"2% 30 Net 111", @"Net 30"];
     }
     return self;
 }
