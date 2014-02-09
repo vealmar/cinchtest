@@ -166,7 +166,8 @@ CIOrderViewController
             isLoadingOrders = NO;
         };
         NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+        [request setTimeoutInterval:120];
         AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                                                                                             success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
                                                                                                 persistentOrders = [[NSMutableArray alloc] init];
