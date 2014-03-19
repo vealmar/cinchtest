@@ -6,6 +6,7 @@
 //  Copyright 2011 Acuitec. All rights reserved.
 //
 
+#import <Underscore.m/Underscore.h>
 #import "DateUtil.h"
 
 static DateUtil *sharedInstance;
@@ -102,9 +103,8 @@ static DateUtil *sharedInstance;
 }
 
 + (NSDate *)convertYyyymmddthhmmsszToDate:(NSString *)jsonDate {
-    NSMutableOrderedSet *dates = [[NSMutableOrderedSet alloc] init];
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
+    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
     return [df dateFromString:jsonDate];
 }
 
@@ -145,13 +145,10 @@ static DateUtil *sharedInstance;
 }
 
 + (NSArray *)convertYyyymmddArrayToDateArray:(NSArray *)jsonDateArray {
-    NSMutableArray *nsDates = [[NSMutableArray alloc] init];
-    if ([jsonDateArray count] > 0) {
-        for (NSString *jsonDate in jsonDateArray) {
-            [nsDates addObject:[DateUtil convertYyyymmddToDate:jsonDate]];
-        }
-    }
-    return nsDates;
+    return Underscore.array(jsonDateArray)
+                .map(^id(id obj) {
+                    return [DateUtil convertYyyymmddToDate:obj];
+                }).unwrap;
 }
 
 

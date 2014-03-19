@@ -26,7 +26,7 @@
 @synthesize voucher;
 @synthesize qty;
 @synthesize price;
-@synthesize btnShipdates;
+@synthesize lineItemShipDatesButton;
 @synthesize total;
 @synthesize delegate;
 @synthesize qtyBtn;
@@ -133,7 +133,7 @@
     }
 
 }
-- (void)updateCellAtIndexPath:(NSIndexPath *)indexPath withLineItem:(ALineItem *)data quantities:(NSArray *)itemsQty prices:(NSArray *)itemsPrice vouchers:(NSArray *)itemsVouchers shipDates:(NSArray *)itemsShipDates {
+- (void)updateCellAtIndexPath:(NSIndexPath *)indexPath withLineItem:(ALineItem *)data quantities:(NSArray *)itemsQty prices:(NSArray *)itemsPrice vouchers:(NSArray *)itemsVouchers shipDates:(NSArray *)lineItemShipDates {
     Product *product = [Product findProduct:data.productId];
     BOOL isDiscount = [data.category isEqualToString:@"discount"];
     if (isDiscount) {
@@ -143,7 +143,8 @@
         self.invtid.text = invtid;
     }
     [self setDescription:data.desc withSubtext:data.desc2];
-    if ([ShowConfigurations instance].vouchers) {
+    ShowConfigurations *config = [ShowConfigurations instance];
+    if (config.vouchers) {
         if ([itemsVouchers objectAtIndex:indexPath.row]) {
             self.voucher.text = [itemsVouchers objectAtIndex:indexPath.row];
         }
@@ -191,24 +192,24 @@
     }
 
     int nd = 1;
-    if ([[ShowConfigurations instance] shipDates] && product) {
+    if ([config isLineItemShipDatesType] && product) {
         int idx = [product.idx intValue];
         NSString *invtId = product.invtid;
         BOOL isVoucher = idx == 0 && ([invtId isEmpty] || [invtId isEqualToString:@"0"]);
         if (isVoucher) {
-            self.btnShipdates.enabled = NO;
-            [self.btnShipdates setTitle:@"SD:0" forState:UIControlStateDisabled];
+            self.lineItemShipDatesButton.enabled = NO;
+            [self.lineItemShipDatesButton setTitle:@"SD:0" forState:UIControlStateDisabled];
         } else {
-            self.btnShipdates.enabled = YES;//since cells are reused, it may have been set to NO.
+            self.lineItemShipDatesButton.enabled = YES;//since cells are reused, it may have been set to NO.
             int lblsd = 0;
-            if (((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count > 0) {
-                nd = ((NSArray *) [itemsShipDates objectAtIndex:indexPath.row]).count;
+            if (((NSArray *) [lineItemShipDates objectAtIndex:indexPath.row]).count > 0) {
+                nd = ((NSArray *) [lineItemShipDates objectAtIndex:indexPath.row]).count;
                 lblsd = nd;
             }
-            [self.btnShipdates setTitle:[NSString stringWithFormat:@"SD:%d", lblsd] forState:UIControlStateNormal];
+            [self.lineItemShipDatesButton setTitle:[NSString stringWithFormat:@"SD:%d", lblsd] forState:UIControlStateNormal];
         }
     } else {
-        self.btnShipdates.hidden = YES;
+        self.lineItemShipDatesButton.hidden = YES;
     }
     self.numOfShipDates = (NSUInteger) nd;
 

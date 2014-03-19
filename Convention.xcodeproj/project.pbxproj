@@ -56,6 +56,9 @@
 		35F52E7C36B02E6EBA801A1B /* MyOrders.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52BABED1C4FFB96E78BD9 /* MyOrders.png */; };
 		35F52F4B833B78BCED458609 /* SaveButton-in.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52FB5EB455BBF057DAC6C /* SaveButton-in.png */; };
 		35F52FC5C5E61BAC2A7CD197 /* save2out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5256E54BCD292CF9ED322 /* save2out.png */; };
+		4D4AD1ACC10B77277CCD4590 /* CIShipDatesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4AD23FE20A4CC36C9D0B5C /* CIShipDatesViewController.m */; };
+		4D4AD566A6C4CBA27F9299B1 /* DateRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4AD58AA8E26C2152E1729A /* DateRange.m */; };
+		4D4AD5D8C05D64F19F4CB972 /* CISlidingProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4ADDA2F8D851B8BBB57BD3 /* CISlidingProductViewController.m */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
 		6414A6F11496B9A10088586B /* bluebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6F01496B9A10088586B /* bluebutton.png */; };
 		6E07A38F1461D26E0043C22B /* CICustomerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E07A38D1461D26E0043C22B /* CICustomerInfoViewController.m */; };
@@ -253,9 +256,11 @@
 		EBFC477B17D574740009CAD7 /* FarrisCartViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EBFC477A17D574740009CAD7 /* FarrisCartViewCell.xib */; };
 		EC427056173FFB6E004A4A91 /* Zerobuttonin.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427054173FFB6E004A4A91 /* Zerobuttonin.png */; };
 		EC427057173FFB6E004A4A91 /* Zerobuttonout.png in Resources */ = {isa = PBXBuildFile; fileRef = EC427055173FFB6E004A4A91 /* Zerobuttonout.png */; };
+		F44DAB9AAD374FFC8AEDB9B9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 445E84492698473B9EA7AEBF /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		21727971C60D4376BEEE40BD /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		331AF38A165068AE00C74117 /* ReachabilityDelegation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReachabilityDelegation.h; sourceTree = "<group>"; };
 		331AF38B165068AE00C74117 /* ReachabilityDelegation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ReachabilityDelegation.m; sourceTree = "<group>"; };
 		331AF39C165670C400C74117 /* ci_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ci_red.png; sourceTree = "<group>"; };
@@ -332,6 +337,13 @@
 		35F52E74AD542ECB69B97735 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		35F52FB5EB455BBF057DAC6C /* SaveButton-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SaveButton-in.png"; sourceTree = "<group>"; };
 		35F52FDC7C8E29D16E695C80 /* left_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = left_arrow.png; sourceTree = "<group>"; };
+		445E84492698473B9EA7AEBF /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D4AD23FE20A4CC36C9D0B5C /* CIShipDatesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIShipDatesViewController.m; sourceTree = "<group>"; };
+		4D4AD41B958A2D9587C2BD19 /* CISlidingProductViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISlidingProductViewController.h; sourceTree = "<group>"; };
+		4D4AD58AA8E26C2152E1729A /* DateRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateRange.m; sourceTree = "<group>"; };
+		4D4ADA94F3EBC8BD7D573410 /* DateRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateRange.h; sourceTree = "<group>"; };
+		4D4ADA9FCF2057426AA1D1B7 /* CIShipDatesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIShipDatesViewController.h; sourceTree = "<group>"; };
+		4D4ADDA2F8D851B8BBB57BD3 /* CISlidingProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISlidingProductViewController.m; sourceTree = "<group>"; };
 		6414A6E91496AE960088586B /* orangebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangebutton.png; sourceTree = "<group>"; };
 		6414A6F01496B9A10088586B /* bluebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluebutton.png; sourceTree = "<group>"; };
 		6E07A38C1461D26E0043C22B /* CICustomerInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICustomerInfoViewController.h; sourceTree = "<group>"; };
@@ -632,6 +644,7 @@
 				6E11856A145F2F2200568ED1 /* CoreGraphics.framework in Frameworks */,
 				6E118566145F2F2200568ED1 /* UIKit.framework in Frameworks */,
 				6E118568145F2F2200568ED1 /* Foundation.framework in Frameworks */,
+				F44DAB9AAD374FFC8AEDB9B9 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -741,6 +754,115 @@
 			path = Caches;
 			sourceTree = "<group>";
 		};
+		4D4AD19B7D5EBB44FDDEF954 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		4D4AD1B283EB98515BD6984E /* _NewStructure */ = {
+			isa = PBXGroup;
+			children = (
+				4D4ADBB848E722A9ADA72D8B /* Shared */,
+				4D4ADF729DDEA5B3F5DEF913 /* iPhone */,
+				4D4AD75D9C9A88E22FA802A3 /* iPad */,
+				4D4ADB21FBBC4DBA61700D85 /* Other Sources */,
+				4D4ADA8B98F1EA3AE1FCD3F0 /* Supporting Files */,
+			);
+			path = _NewStructure;
+			sourceTree = "<group>";
+		};
+		4D4AD3013FA3178B2DCD03E0 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		4D4AD32AF3286B018778FFD9 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		4D4AD352FFBB6593B370A662 /* Application */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Application;
+			sourceTree = "<group>";
+		};
+		4D4AD75D9C9A88E22FA802A3 /* iPad */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = iPad;
+			sourceTree = "<group>";
+		};
+		4D4AD80911FC299CB4569F6D /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		4D4AD935E138AD3DBFBF950F /* _Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = _Resources;
+			sourceTree = "<group>";
+		};
+		4D4ADA40720D7C320EC1A6DA /* Library */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		4D4ADA8B98F1EA3AE1FCD3F0 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4D4ADAB748D2FE1D4127FD69 /* _Vendor */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = _Vendor;
+			sourceTree = "<group>";
+		};
+		4D4ADB21FBBC4DBA61700D85 /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Other Sources";
+			sourceTree = "<group>";
+		};
+		4D4ADBB848E722A9ADA72D8B /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				4D4AD352FFBB6593B370A662 /* Application */,
+				4D4AD32AF3286B018778FFD9 /* Controllers */,
+				4D4AD80911FC299CB4569F6D /* Models */,
+				4D4AD3013FA3178B2DCD03E0 /* Views */,
+				4D4ADA40720D7C320EC1A6DA /* Library */,
+				4D4AD19B7D5EBB44FDDEF954 /* Support */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		4D4ADF729DDEA5B3F5DEF913 /* iPhone */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = iPhone;
+			sourceTree = "<group>";
+		};
 		6E118556145F2F2100568ED1 = {
 			isa = PBXGroup;
 			children = (
@@ -752,6 +874,9 @@
 				6E11856B145F2F2200568ED1 /* Convention */,
 				6E118564145F2F2200568ED1 /* Frameworks */,
 				6E118562145F2F2200568ED1 /* Products */,
+				21727971C60D4376BEEE40BD /* Pods.xcconfig */,
+				4D4AD935E138AD3DBFBF950F /* _Resources */,
+				4D4ADAB748D2FE1D4127FD69 /* _Vendor */,
 			);
 			sourceTree = "<group>";
 		};
@@ -777,6 +902,7 @@
 				6E118565145F2F2200568ED1 /* UIKit.framework */,
 				6E118567145F2F2200568ED1 /* Foundation.framework */,
 				6E118569145F2F2200568ED1 /* CoreGraphics.framework */,
+				445E84492698473B9EA7AEBF /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -805,6 +931,9 @@
 				35F5260573F670DC82AEFEFF /* ShowConfigurations.h */,
 				35F52DA3C4334B0CFED70C47 /* helpers */,
 				35F52F7994ED07673D7F4A7C /* Caches */,
+				4D4AD1B283EB98515BD6984E /* _NewStructure */,
+				4D4AD58AA8E26C2152E1729A /* DateRange.m */,
+				4D4ADA94F3EBC8BD7D573410 /* DateRange.h */,
 			);
 			path = Convention;
 			sourceTree = "<group>";
@@ -921,6 +1050,10 @@
 				C7DCDF0A16A29D4D00F66C52 /* VendorViewDelegate.h */,
 				35F5206BD8A0B3A8FBB6ED38 /* CIProductViewControllerHelper.m */,
 				35F5234FFAA50499097031CC /* CIProductViewControllerHelper.h */,
+				4D4AD23FE20A4CC36C9D0B5C /* CIShipDatesViewController.m */,
+				4D4ADA9FCF2057426AA1D1B7 /* CIShipDatesViewController.h */,
+				4D4ADDA2F8D851B8BBB57BD3 /* CISlidingProductViewController.m */,
+				4D4AD41B958A2D9587C2BD19 /* CISlidingProductViewController.h */,
 			);
 			name = "order form";
 			sourceTree = "<group>";
@@ -1391,10 +1524,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6E118582145F2F2200568ED1 /* Build configuration list for PBXNativeTarget "Convention" */;
 			buildPhases = (
+				CD8CE74060934521B1CE3697 /* Check Pods Manifest.lock */,
 				831EC61E16644D1900D253CD /* ShellScript */,
 				6E11855D145F2F2200568ED1 /* Sources */,
 				6E11855E145F2F2200568ED1 /* Frameworks */,
 				6E11855F145F2F2200568ED1 /* Resources */,
+				C6CFDF48403240A4BC44A8E5 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1412,7 +1547,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0460;
-				ORGANIZATIONNAME = "Convention Innovations";
+				ORGANIZATIONNAME = "Urban Coding";
 				TargetAttributes = {
 					6E118560145F2F2200568ED1 = {
 						DevelopmentTeam = 4K832UXYM3;
@@ -1429,6 +1564,8 @@
 			mainGroup = 6E118556145F2F2100568ED1;
 			productRefGroup = 6E118562145F2F2200568ED1 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+			);
 			projectRoot = "";
 			targets = (
 				6E118560145F2F2200568ED1 /* Convention */,
@@ -1601,6 +1738,36 @@
 			shellPath = /bin/sh;
 			shellScript = "${PROJECT_DIR}/Convention/bump_build_on_archive.sh";
 		};
+		C6CFDF48403240A4BC44A8E5 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		CD8CE74060934521B1CE3697 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1702,6 +1869,9 @@
 				35F52A25B60B502E3DF218A5 /* NISignatureView.m in Sources */,
 				35F521043C4DB6FC65076B61 /* ProductCache.m in Sources */,
 				35F5206D3F602AF954BBC083 /* CKCalendarView.m in Sources */,
+				4D4AD566A6C4CBA27F9299B1 /* DateRange.m in Sources */,
+				4D4AD1ACC10B77277CCD4590 /* CIShipDatesViewController.m in Sources */,
+				4D4AD5D8C05D64F19F4CB972 /* CISlidingProductViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1793,6 +1963,7 @@
 		};
 		6E118583145F2F2200568ED1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 21727971C60D4376BEEE40BD /* Pods.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1806,12 +1977,14 @@
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				TARGETED_DEVICE_FAMILY = 2;
+				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
 		6E118584145F2F2200568ED1 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 21727971C60D4376BEEE40BD /* Pods.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1824,6 +1997,7 @@
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5F3997B5-ACEE-462C-A1E7-CAD2731F1964";
 				TARGETED_DEVICE_FAMILY = 2;
+				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

@@ -24,7 +24,7 @@
 @property(strong, nonatomic) NSNumber *cancelByDays;
 @property(strong, nonatomic) NSString *poNumber;
 @property(strong, nonatomic) NSString *paymentTerms;
-@property(strong, nonatomic) NSString *shipDate;
+@property(strong, nonatomic) NSArray *shipDates; //NSArray[NSDate]
 @property(strong, nonatomic) Order *coreDataOrder;
 @property(nonatomic) BOOL *shipFlag;
 @property(strong, nonatomic) NSArray *errors;

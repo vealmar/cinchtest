@@ -28,7 +28,7 @@
 
 @end
 
-@interface CIFinalCustomerInfoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate, OrderShipDateViewControllerDelegate>
+@interface CIFinalCustomerInfoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate>
 @property(nonatomic, assign) id <CIFinalCustomerDelegate> delegate;
 @property Order *order;
 @end

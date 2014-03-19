@@ -8,10 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+@class DateRange;
+
 
 @interface ShowConfigurations : NSObject
 @property BOOL discounts;
-@property BOOL shipDates;
+@property BOOL shipDates; //uses or requires shipdates
 @property BOOL shipDatesRequired;
 @property BOOL printing;
 @property BOOL captureSignature;
@@ -24,10 +26,15 @@
 @property UIImage *logo;
 @property BOOL poNumber;
 @property BOOL paymentTerms;
-@property BOOL orderShipDate;
+@property NSString *shipDatesType;
+@property DateRange *orderShipDates;
 
 + (ShowConfigurations *)instance;
 
 + (void)createInstanceFromJson:(NSDictionary *)json;
+
+- (bool)isOrderShipDatesType;
+
+- (bool)isLineItemShipDatesType;
 
 @end

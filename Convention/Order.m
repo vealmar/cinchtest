@@ -23,7 +23,7 @@
 @dynamic po_number;
 @dynamic print;
 @dynamic printer;
-@dynamic ship_date;
+@dynamic ship_dates;
 @dynamic ship_flag;
 @dynamic ship_notes;
 @dynamic status;

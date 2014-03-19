@@ -40,7 +40,7 @@
 }
 
 
-- (id)initWithQuantity:(NSString *)quantity priceInCents:(NSNumber *)priceInCents voucherPriceInCents:(NSNumber *)voucherPriceInCents category:(NSString *)category shipDates:(NSArray *)shipDates
+- (id)initWithQuantity:(NSString *)quantity priceInCents:(NSNumber *)priceInCents voucherPriceInCents:(NSNumber *)voucherPriceInCents category:(NSString *)category shipDates:(NSArray *)lineItemShipDates
         productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
     self = [super initWithEntity:[NSEntityDescription entityForName:@"Cart" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
     if (self) {
@@ -49,9 +49,9 @@
         self.editablePrice = priceInCents;
         self.editableVoucher = voucherPriceInCents;
         self.editableQty = quantity;
-        if (shipDates && shipDates.count > 0) {
+        if (lineItemShipDates && lineItemShipDates.count > 0) {
             NSMutableOrderedSet *coreDataShipDates = [[NSMutableOrderedSet alloc] init];
-            for (NSString *jsonDate in shipDates) {
+            for (NSString *jsonDate in lineItemShipDates) {
                 NSDate *shipDate = [DateUtil convertYyyymmddToDate:jsonDate];
                 ShipDate *coreDataShipDate = [[ShipDate alloc] initWithEntity:[NSEntityDescription entityForName:@"ShipDate" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
                 coreDataShipDate.shipdate = shipDate;

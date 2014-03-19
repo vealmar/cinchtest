@@ -63,7 +63,7 @@
         <attribute name="po_number" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="print" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="printer" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="ship_date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="ship_dates" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="ship_flag" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="ship_notes" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="status" attributeType="String" defaultValueString="pending" syncable="YES"/>

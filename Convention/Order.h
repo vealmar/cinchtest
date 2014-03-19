@@ -26,7 +26,7 @@
 @property(nonatomic, retain) NSString *po_number;
 @property(nonatomic, retain) NSNumber *print;
 @property(nonatomic, retain) NSNumber *printer;
-@property(nonatomic, retain) NSDate *ship_date;
+@property(nonatomic, retain) NSArray *ship_dates; //NSArray[NSDate]
 @property(nonatomic, retain) NSNumber *ship_flag;
 @property(nonatomic, retain) NSString *ship_notes;
 @property(nonatomic, retain) NSString *status;

@@ -6,6 +6,7 @@
 //  Copyright (c) 2011 MotionMobs. All rights reserved.
 //
 
+#import <Underscore.m/Underscore.h>
 #import "CIOrderViewController.h"
 #import "CIOrderCell.h"
 #import "config.h"
@@ -29,6 +30,8 @@
 #import "Product+Extensions.h"
 #import "SegmentedControlHelper.h"
 #import "NilUtil.h"
+#import "CISlidingProductViewController.h"
+#import "DateUtil.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -63,15 +66,17 @@ CIOrderViewController
 
     self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];
+    self.orderShipDatesTextView.font = [UIFont fontWithName:kFontName size:14.f];
 
     showConfig = [ShowConfigurations instance];
     self.logoImage.image = [showConfig logo];
-    if (showConfig.shipDates) {
+    if (showConfig.isLineItemShipDatesType) {
         quantityLabel.hidden = YES;
     } else {
         sdLabel.hidden = YES;
         sqLabel.hidden = YES;
     }
+    if (!showConfig.isOrderShipDatesType) self.orderShipDatesView.hidden = YES;
     if (showConfig.vouchers) {
         self.voucherItemTotalLabel.text = @"VOUCHER";
     } else {
@@ -259,6 +264,17 @@ SG: The argument 'detail' is the selected order.
     if (showConfig.cancelOrder) {
         [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForValue:detail.cancelByDays]];
     }
+    if (showConfig.isOrderShipDatesType) {
+        self.orderShipDatesTextView.text = @"Ship immediately.";
+        if (detail.shipDates.count > 0) {
+            self.orderShipDatesTextView.text = [Underscore.array(detail.shipDates)
+                    .map(^id(id obj) {
+                        return [DateUtil convertDateToMmddyyyy:obj];
+                    })
+                    .unwrap componentsJoinedByString:@", "];
+
+        }
+    }
     currentOrder = detail;
     if (detail) {
         NSArray *arr = detail.lineItems;
@@ -327,26 +343,41 @@ SG: The argument 'detail' is the selected order.
 #pragma mark - Load Product View Conroller
 
 - (void)loadProductView:(BOOL)newOrder customer:(NSDictionary *)customer {
-    CIProductViewController *productView = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
-    productView.authToken = self.authToken;
-    productView.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
-    productView.loggedInVendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];
-    productView.delegate = self;
-    productView.managedObjectContext = self.managedObjectContext;
-    productView.newOrder = newOrder;
-    productView.customer = customer;
+    CIProductViewController *productViewController = [self initializeCIProductViewController:newOrder customer:customer];
+    CISlidingProductViewController * slidingProductViewController = [[CISlidingProductViewController alloc] initWithTopViewController:productViewController];
+    [self presentViewController:slidingProductViewController animated:NO completion:nil];
+}
+
+- (CIProductViewController *)initializeCIProductViewController:(bool)newOrder customer:(NSDictionary *)customer {
+//    OrderFactory *orderFactory = [[OrderFactory alloc] init];
+//    orderFactory.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
+//    orderFactory.loggedInVendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];
+//    orderFactory.managedObjectContext = self.managedObjectContext;
+//
+//    [orderFactory build:coreDataOrder withState:newOrder forCustomer:customer];
+//
+//    //=====
+
+    CIProductViewController *productViewController = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
+    productViewController.authToken = self.authToken;
+    productViewController.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
+    productViewController.loggedInVendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];
+    productViewController.delegate = self;
+    productViewController.managedObjectContext = self.managedObjectContext;
+    productViewController.newOrder = newOrder;
+    productViewController.customer = customer;
 
     if (!newOrder) {
-        productView.orderId = (NSInteger) currentOrder.orderId;
-        productView.selectedOrder = currentOrder;
+        productViewController.orderId = (NSInteger) currentOrder.orderId;
+        productViewController.selectedOrder = currentOrder;
     }
     if ([ShowConfigurations instance].printing) {
-        productView.availablePrinters = [availablePrinters copy];
+        productViewController.availablePrinters = [availablePrinters copy];
         if (![currentPrinter isEmpty])
-            productView.selectedPrintStationId = [[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue];
+            productViewController.selectedPrintStationId = [[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue];
     }
-    [productView setTitle:@"Select Products"];
-    [self presentViewController:productView animated:NO completion:nil];
+    [productViewController setTitle:@"Select Products"];
+    return productViewController;
 }
 
 #pragma mark - UITableView Datasource
@@ -565,9 +596,16 @@ SG: This method gets called when you swipe on an order in the order list and tap
             // (we don't let users specify ship dates for vouchers). Voucher items need to be counted towards the total once.
             //If we used 0 for numShipDates, sctotal = [[self.itemsVouchers objectAtIndex:i] doubleValue] * qty * numShipDates
             // and ttotal += price * qty * numShipDates will evaluate to 0 which would not be right.
-            double numShipDates = 1;
-            if (((NSArray *) [self.itemsShipDates objectAtIndex:(NSUInteger) i]).count > 0)
-                numShipDates = ((NSArray *) [self.itemsShipDates objectAtIndex:(NSUInteger) i]).count;
+            int numShipDates = 0;
+            ShowConfigurations *config = [ShowConfigurations instance];
+            if (config.shipDates) {
+                if ([config isLineItemShipDatesType]) {
+                    numShipDates = ((NSArray *) [self.itemsShipDates objectAtIndex:(NSUInteger) i]).count;
+                } else if ([config isOrderShipDatesType]) {
+                    numShipDates = currentOrder.shipDates.count;
+                }
+            }
+            if (0 == numShipDates) numShipDates = 1;
 
             if ([[self.itemsDiscounts objectAtIndex:(NSUInteger) i] intValue] == 0)
                 ttotal += price * qty * numShipDates;

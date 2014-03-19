@@ -293,8 +293,19 @@
         for (Cart *cart in coreDataOrder.carts) {
             NSNumber *qtyNumber = [NSNumber numberWithInt:[CIProductViewControllerHelper getQuantity:cart.editableQty]];//takes care of resolving quantities for multi stores
             NSDecimalNumber *qty = [NSDecimalNumber decimalNumberWithString:[qtyNumber stringValue]];
-            NSNumber *shipDatesNumber = [NSNumber numberWithInt:cart.shipdates.count];
-            NSDecimalNumber *shipDates = cart.shipdates.count == 0 ? [NSDecimalNumber decimalNumberWithString:@"1"] : [NSDecimalNumber decimalNumberWithString:[shipDatesNumber stringValue]];
+
+            ShowConfigurations *config = [ShowConfigurations instance];
+            int shipDatesCount = 0;
+            if (config.shipDates) {
+                if ([config isLineItemShipDatesType]) {
+                    shipDatesCount = cart.shipdates.count;
+                } else if ([config isOrderShipDatesType]) {
+                    shipDatesCount = cart.order.ship_dates.count;
+                }
+            }
+            NSDecimalNumber *shipDates = shipDatesCount == 0 ? [NSDecimalNumber decimalNumberWithString:@"1"] :
+                    [NSDecimalNumber decimalNumberWithString:[[NSNumber numberWithInt:shipDatesCount] stringValue]];
+
             NSNumber *priceNumber = [NSNumber numberWithDouble:[cart.editablePrice intValue] / 100.0];
             NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[priceNumber stringValue]];//todo switch to using product#showprice
             grossTotal = [grossTotal decimalNumberByAdding:[[qty decimalNumberByMultiplyingBy:price] decimalNumberByMultiplyingBy:shipDates]];

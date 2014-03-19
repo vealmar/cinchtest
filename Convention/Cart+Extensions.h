@@ -16,7 +16,7 @@
 
 - (id)initWithLineItem:(ALineItem *)lineItem context:(NSManagedObjectContext *)context;
 
-- (id)initWithQuantity:(NSString *)quantity priceInCents:(NSNumber *)priceInCents voucherPriceInCents:(NSNumber *)voucherPriceInCents category:(NSString *)category shipDates:(NSArray *)shipDates
+- (id)initWithQuantity:(NSString *)quantity priceInCents:(NSNumber *)priceInCents voucherPriceInCents:(NSNumber *)voucherPriceInCents category:(NSString *)category shipDates:(NSArray *)lineItemShipDates
              productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
 
 - (id)initWithProduct:(Product *)product context:(NSManagedObjectContext *)context;

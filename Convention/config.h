@@ -84,7 +84,7 @@
 #define kOrderPrinter @"printer"
 #define kOrderPoNumber @"po_number"
 #define kOrderPaymentTerms @"payment_terms"
-#define kOrderShipDate @"ship_date"
+#define kOrderShipDates @"ship_dates"
 
 
 //Customer Info keys:

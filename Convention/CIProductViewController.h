@@ -20,6 +20,7 @@
 @class CIViewController;
 @class Order;
 @class AnOrder;
+@protocol CISlidingProductViewControllerDelegate;
 typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
     PartialOrderSaved,
     PartialOrderCancelled,
@@ -38,10 +39,12 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @interface CIProductViewController : UIViewController <UITableViewDelegate, UITableViewDataSource,
         UIAlertViewDelegate, ProductCellDelegate,
         CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate,
-        UIPrinterSelectedDelegate, VendorViewDelegate, PullToRefreshViewDelegate> {
+        UIPrinterSelectedDelegate, VendorViewDelegate, PullToRefreshViewDelegate,
+        CISlidingProductViewControllerDelegate> {
 
 }
 
+@property (nonatomic, weak) id<CISlidingProductViewControllerDelegate> slidingProductViewControllerDelegate;
 @property(nonatomic, strong) IBOutlet UITableView *productsTableView;
 @property(nonatomic, strong) IBOutlet UIImageView *ciLogo;
 @property(nonatomic, strong) IBOutlet UITextField *hiddenTxt;
@@ -103,16 +106,20 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(nonatomic) int selectedPrintStationId;
 @property(nonatomic, strong) NSDictionary *availablePrinters;
 @property(nonatomic) BOOL allowPrinting;
-@property(nonatomic) BOOL showShipDates;
+@property(nonatomic) BOOL useShipDates;
 @property(nonatomic) BOOL contactBeforeShipping;
 @property(nonatomic) BOOL cancelOrderConfig;
 @property(nonatomic) BOOL poNumberConfig;
 @property(nonatomic) BOOL paymentTermsConfig;
-@property(nonatomic) BOOL orderShipdateConfig;
+@property(nonatomic) BOOL useOrderBasedShipDates;
 @property(nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 //Order selected in the order view controller
 @property(nonatomic, strong) AnOrder *selectedOrder;
 @property(nonatomic) BOOL newOrder;
+
+//Working copy of selected or new order
+@property(nonatomic, strong) Order *coreDataOrder;
+
 @property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
 
 - (IBAction)searchDidEndEditing:(UITextField *)sender;

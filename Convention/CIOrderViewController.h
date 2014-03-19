@@ -37,10 +37,7 @@
 @property(weak, nonatomic) IBOutlet UITextField *searchText;
 
 @property(weak, nonatomic) IBOutlet UITableView *sideTable;
-@property(weak, nonatomic) IBOutlet UITextView *customer;
-@property(weak, nonatomic) IBOutlet UITextView *authorizer;
 @property(weak, nonatomic) IBOutlet UITableView *itemsTable;
-@property(weak, nonatomic) IBOutlet UITextView *notes;
 
 @property(weak, nonatomic) IBOutlet UILabel *NoOrdersLabel;
 @property(strong, nonatomic) IBOutlet UIScrollView *OrderDetailScroll;
@@ -50,14 +47,21 @@
 @property(weak, nonatomic) IBOutlet UILabel *discountTotal;
 //SG:Displays discount total.
 @property(weak, nonatomic) IBOutlet UILabel *total;
-@property(weak, nonatomic) IBOutlet UILabel *notesLabel;
 @property(weak, nonatomic) IBOutlet UILabel *grossTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *totalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *discountTotalLabel;
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotal;
 @property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
-@property(weak, nonatomic) IBOutlet UISegmentedControl *cancelDaysControl;
+
+// Order Detail
+@property(weak, nonatomic) IBOutlet UITextView *customer;
+@property(weak, nonatomic) IBOutlet UITextView *authorizer;
+@property(weak, nonatomic) IBOutlet UILabel *notesLabel;
+@property(weak, nonatomic) IBOutlet UITextView *notes;
 @property(weak, nonatomic) IBOutlet UIView *cancelDaysView;
+@property(weak, nonatomic) IBOutlet UISegmentedControl *cancelDaysControl;
+@property(weak, nonatomic) IBOutlet UIView *orderShipDatesView;
+@property(weak, nonatomic) IBOutlet UITextView *orderShipDatesTextView;
 
 @property(weak, nonatomic) IBOutlet UIImageView *logoImage;
 

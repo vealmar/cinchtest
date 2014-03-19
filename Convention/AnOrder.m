@@ -15,7 +15,6 @@
 #import "CIProductViewControllerHelper.h"
 #import "DateUtil.h"
 
-
 @implementation AnOrder {
 
 }
@@ -36,7 +35,7 @@
         self.cancelByDays = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"cancel_by_days"]];
         self.poNumber = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"po_number"]];
         self.paymentTerms = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"payment_terms"]];
-        self.shipDate = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"ship_date"]];
+        self.shipDates = [DateUtil convertYyyymmddArrayToDateArray:[NilUtil objectOrEmptyArray:[JSON objectForKey:@"ship_dates"]]];
         self.customer = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
         self.errors = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"errors"]];
         NSMutableArray *lineItems = [[NSMutableArray alloc] init];
@@ -69,7 +68,7 @@
         self.cancelByDays = order.cancelByDays;
         self.poNumber = order.po_number;
         self.paymentTerms = order.payment_terms;
-        self.shipDate = [DateUtil convertDateToYyyymmdd:order.ship_date];
+        self.shipDates = [NilUtil objectOrEmptyArray:order.ship_dates];
         self.coreDataOrder = order;
         int itemTotal = 0;
         int voucherTotal = 0;

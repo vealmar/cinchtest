@@ -28,14 +28,10 @@
     CGRect originalBounds;
     SegmentedControlHelper *cancelDaysHelper;
     SegmentedControlHelper *paymentTermsHelper;
-    UIPopoverController *shipDatePopoverController;
 }
 
 @property(strong, nonatomic) UITextField *authorizedByTextField;
 @property(strong, nonatomic) UITextField *poNumberTextField;
-@property(strong, nonatomic) UITextField *shipDateTextField;
-@property(strong, nonatomic) OrderShipDateViewController *shipDateViewController;
-@property(strong, nonatomic) NSDate *selectedShipDate;
 @property(strong, nonatomic) UITextView *notesTextView;
 @property(strong, nonatomic) MICheckBox *contactBeforeShippingCB;
 @property(strong, nonatomic) UISegmentedControl *cancelDaysControl;
@@ -44,7 +40,6 @@
 @property BOOL cancelConfig;
 @property BOOL poNumberConfig;
 @property BOOL paymentTermsConfig;
-@property BOOL orderShipdateConfig;
 
 @end
 
@@ -57,7 +52,6 @@
         self.cancelConfig = configurations.cancelOrder;
         self.poNumberConfig = configurations.poNumber;
         self.paymentTermsConfig = configurations.paymentTerms;
-        self.orderShipdateConfig = configurations.orderShipDate;
         cancelDaysHelper = [[SegmentedControlHelper alloc] initForCancelByDays];
         paymentTermsHelper = [[SegmentedControlHelper alloc] initForPaymentTerms];
     }
@@ -65,8 +59,6 @@
 }
 
 #pragma mark - View lifecycle
-
-
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -83,9 +75,6 @@
     }
     if (self.paymentTermsConfig) {
         [self.paymentTermsControl setSelectedSegmentIndex:[paymentTermsHelper indexForValue:self.order.payment_terms]];
-    }
-    if (self.orderShipdateConfig) {
-        [self selectShipDate:self.order.ship_date];
     }
 
     self.view.superview.bounds = originalBounds;
@@ -140,19 +129,6 @@
         self.poNumberTextField.backgroundColor = [UIColor whiteColor];
         [self.view addSubview:self.poNumberTextField];
         currentY = CGRectGetMaxY(self.poNumberTextField.frame);
-    }
-    if (self.orderShipdateConfig) {
-        UILabel *shipDateLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
-        shipDateLabel.font = labelFont;
-        shipDateLabel.textColor = [UIColor whiteColor];
-        shipDateLabel.text = @"SHIP DATE";
-        [self.view addSubview:shipDateLabel];
-        textField = [[UITextField alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(shipDateLabel.frame) + 10, elementWidth, 44.0)];
-        self.shipDateTextField = textField;
-        self.shipDateTextField.backgroundColor = [UIColor whiteColor];
-        self.shipDateTextField.delegate = self;
-        [self.view addSubview:self.shipDateTextField];
-        currentY = CGRectGetMaxY(self.shipDateTextField.frame);
     }
     if (self.contactBeforeShippingConfig) {
         UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 350.0, 35.0)];
@@ -211,15 +187,6 @@
     return NO;  //Without this keyboard and datepickerview do not disappear even if the text or picker field resigns first responder status.
 }
 
-- (void)updateShipDateTextField {
-    self.shipDateTextField.text = self.selectedShipDate ? [DateUtil convertDateToMmddyyyy:self.selectedShipDate] : @"";
-}
-
-- (void)selectShipDate:(NSDate *)date {
-    self.selectedShipDate = date;
-    [self updateShipDateTextField];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     originalBounds = self.view.bounds;
@@ -269,9 +236,6 @@
         if (self.paymentTermsConfig) {
             NSString *paymentTerms = [paymentTermsHelper valueAtIndex:[self.paymentTermsControl selectedSegmentIndex]];
             [dict setObject:[NilUtil objectOrNSNull:paymentTerms] forKey:kOrderPaymentTerms];
-        }
-        if (self.orderShipdateConfig) {
-            [dict setObject:[NilUtil objectOrNSNull:self.selectedShipDate] forKey:kOrderShipDate];
         }
         [self.delegate setAuthorizedByInfo:[dict copy]];
         [self.delegate submit:nil];
@@ -330,31 +294,5 @@
         }
     }
 }
-
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    if ([textField isEqual:self.shipDateTextField]) {
-        if (shipDatePopoverController == nil) {
-            if (self.shipDateViewController == nil) {
-                self.shipDateViewController = [[OrderShipDateViewController alloc] initWithDelegate:self];
-            }
-            shipDatePopoverController = [[UIPopoverController alloc] initWithContentViewController:self.shipDateViewController];
-            [shipDatePopoverController setPopoverContentSize:CGSizeMake(self.shipDateViewController.view.width, self.shipDateViewController.view.height)];
-        }
-        self.shipDateViewController.selectedDate = self.selectedShipDate;
-        [shipDatePopoverController presentPopoverFromRect:self.shipDateTextField.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-        return NO;
-    } else
-        return YES;
-}
-
-- (void)shipDateSelected:(NSDate *)date {
-    [self selectShipDate:date];
-    [shipDatePopoverController dismissPopoverAnimated:YES];
-}
-
-- (void)orderShipDateViewControllerCancelled {
-    [shipDatePopoverController dismissPopoverAnimated:YES];
-}
-
 
 @end

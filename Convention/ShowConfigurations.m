@@ -10,6 +10,7 @@
 #import "config.h"
 #import "SettingsManager.h"
 #import "NilUtil.h"
+#import "DateRange.h"
 
 static ShowConfigurations *showConfigurations = nil;
 
@@ -24,9 +25,9 @@ static ShowConfigurations *showConfigurations = nil;
     showConfigurations = [[[self class] alloc] init];
     if (showConfigurations) {
         showConfigurations.discounts = [[json objectForKey:@"discounts"] boolValue];
-        NSString *shipdatesValue = [NilUtil objectOrEmptyString:[json objectForKey:@"shipdates"]];
-        showConfigurations.shipDates = [shipdatesValue isEqualToString:@"required"] || [shipdatesValue isEqualToString:@"optional"];
-        showConfigurations.shipDatesRequired = [shipdatesValue isEqualToString:@"required"];
+        NSString *shipDatesValue = [NilUtil objectOrEmptyString:[json objectForKey:@"shipDates"]];
+        showConfigurations.shipDates = [shipDatesValue isEqualToString:@"required"] || [shipDatesValue isEqualToString:@"optional"];
+        showConfigurations.shipDatesRequired = [shipDatesValue isEqualToString:@"required"];
         showConfigurations.printing = [[json objectForKey:@"printing"] boolValue];
         showConfigurations.vouchers = [[json objectForKey:@"vouchers"] boolValue];
         showConfigurations.contracts = [[json objectForKey:@"contracts"] boolValue];
@@ -50,10 +51,16 @@ static ShowConfigurations *showConfigurations = nil;
             }
         }
         showConfigurations.boothPaymentsDate = date;
+        showConfigurations.poNumber = [[json objectForKey:@"poNumber"] boolValue];
+        showConfigurations.paymentTerms = [[json objectForKey:@"paymentTerms"] boolValue];
+        showConfigurations.shipDatesType = [NilUtil objectOrEmptyString:[json objectForKey:@"shipDatesType"]];
+
+        if (![[NSNull null] isEqual:[json objectForKey:@"orderShipDates"]]) {
+            showConfigurations.orderShipDates = [DateRange createInstanceFromJson:[NSArray arrayWithArray:[json mutableArrayValueForKey:@"orderShipDates"]]];
+        } else {
+            showConfigurations.orderShipDates = [DateRange createInstanceFromJson:@[]];
+        }
     }
-    showConfigurations.poNumber = [[json objectForKey:@"poNumber"] boolValue];
-    showConfigurations.paymentTerms = [[json objectForKey:@"paymentTerms"] boolValue];
-    showConfigurations.orderShipDate = [[json objectForKey:@"orderShipdate"] boolValue];
 }
 
 + (UIImage *)imageFromUrl:(NSString *)url defaultImage:(NSString *)imageName {
@@ -71,6 +78,14 @@ static ShowConfigurations *showConfigurations = nil;
     }
     return image == nil? [UIImage imageNamed:imageName] : image;
 
+}
+
+- (bool)isOrderShipDatesType {
+    return self.shipDates && [self.shipDatesType isEqualToString:@"order"];
+}
+
+- (bool)isLineItemShipDatesType {
+    return self.shipDates && [self.shipDatesType isEqualToString:@"lineitem"];
 }
 
 @end

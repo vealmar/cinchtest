@@ -31,6 +31,7 @@
 #import "AProduct.h"
 #import "MBProgressHUD.h"
 #import "ProductCache.h"
+#import "CISlidingProductViewController.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -48,8 +49,6 @@
 }
 @property(strong, nonatomic) AnOrder *savedOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
-//Working copy of selected or new order
-@property(nonatomic, strong) Order *coreDataOrder;
 @end
 
 @implementation CIProductViewController
@@ -93,13 +92,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.showShipDates = [[ShowConfigurations instance] shipDates];
+    self.useShipDates = [ShowConfigurations instance].shipDates;
     self.allowPrinting = [ShowConfigurations instance].printing;
     self.contactBeforeShipping = [ShowConfigurations instance].contactBeforeShipping;
     self.cancelOrderConfig = [ShowConfigurations instance].cancelOrder;
     self.poNumberConfig = [ShowConfigurations instance].poNumber;
     self.paymentTermsConfig = [ShowConfigurations instance].paymentTerms;
-    self.orderShipdateConfig = [ShowConfigurations instance].orderShipDate;
+    self.useOrderBasedShipDates = self.useShipDates && [[ShowConfigurations instance] isOrderShipDatesType];
     self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
     pull = [[PullToRefreshView alloc] initWithScrollView:self.productsTableView];
     [pull setDelegate:self];
@@ -114,7 +113,7 @@
         self.tableHeaderFarris.hidden = NO;
         self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     }
-    if (!self.showShipDates) self.btnSelectShipDates.hidden = YES;
+    if (!self.useShipDates) self.btnSelectShipDates.hidden = YES; // todo change after shipdates restructure
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -413,7 +412,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.showShipDates) {
+    if (self.useShipDates && [[ShowConfigurations instance] isLineItemShipDatesType]) {
         NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
         Product *product = [Product findProduct:productId];
         if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]) {
@@ -421,7 +420,7 @@
             [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryNone;
         } else {
             [selectedIdx addObject:[NSNumber numberWithInteger:[indexPath row]]];
-            if (![product.invtid isEqualToString:@"0"] && self.showShipDates) {
+            if (![product.invtid isEqualToString:@"0"]) {
                 [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
             }
         }
@@ -534,6 +533,19 @@
 
 - (IBAction)shipdatesTouched:(id)sender {
     [self.view endEditing:YES];
+
+    if (self.useOrderBasedShipDates) {
+        [self loadOrderShipDateCalendar];
+    } else {
+        [self loadLineItemShipDateCalendar];
+    }
+}
+
+- (void)loadOrderShipDateCalendar {
+    [self.slidingProductViewControllerDelegate toggleShipDates];
+}
+
+- (void)loadLineItemShipDateCalendar {
     if (selectedIdx.count <= 0) {
         [[[UIAlertView alloc] initWithTitle:@"Oops" message:@"Please select the item(s) you want to set dates for."
                                    delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -804,9 +816,6 @@
     }
     if (self.paymentTermsConfig && [info objectForKey:kOrderPaymentTerms]) {
         self.coreDataOrder.payment_terms = (NSString *) [NilUtil nilOrObject:[info objectForKey:kOrderPaymentTerms]];
-    }
-    if (self.orderShipdateConfig && [info objectForKey:kOrderShipDate]) {
-        self.coreDataOrder.ship_date = (NSDate *) [NilUtil nilOrObject:[info objectForKey:kOrderShipDate]];
     }
 }
 

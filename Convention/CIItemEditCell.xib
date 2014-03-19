@@ -136,7 +136,7 @@
                 </subviews>
             </tableViewCellContentView>
             <connections>
-                <outlet property="btnShipdates" destination="36" id="52"/>
+                <outlet property="lineItemShipDatesButton" destination="36" id="52"/>
                 <outlet property="desc" destination="35" id="44"/>
                 <outlet property="desc1" destination="76" id="78"/>
                 <outlet property="desc2" destination="77" id="79"/>
