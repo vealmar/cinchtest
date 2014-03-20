@@ -30,8 +30,14 @@
 - (id)initForPaymentTerms {
     self = [super init];
     if (self) {
-        self.values = @[@"", @"“4% 30 Net 101", @"2% 30 Net 111", @"Net 30"];
-        self.strings = @[@"N/A", @"4% 30 Net 101", @"2% 30 Net 111", @"Net 30"];
+        // currently set to AmChar Mar 2014 values
+//        FFA 10/Net 30
+//        Net 10
+//        ROG (not sure how this is different from COD)
+//        COD
+//        N/A
+        self.values = @[@"", @"FFA10/NET30", @"NET10", @"ROG", @"COD"];
+        self.strings = @[@"N/A", @"FFA10/Net30", @"Net10", @"ROG", @"COD"];
     }
     return self;
 }
