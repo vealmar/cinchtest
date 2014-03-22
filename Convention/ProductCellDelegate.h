@@ -14,6 +14,8 @@
 
 - (void)QtyChange:(int)qty forIndex:(int)idx;
 
+- (void)ShowPriceChange:(double)price forIndex:(int)idx;
+
 - (void)QtyTouchForIndex:(int)idx;
 
 - (void)setSelectedRow:(NSIndexPath *)index;

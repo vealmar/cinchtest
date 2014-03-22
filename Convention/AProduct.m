@@ -41,6 +41,7 @@
         self.vendid = product.vendid;
         self.vendor_id = product.vendor_id;
         self.voucher = product.voucher;
+        self.editable = product.editable;
     }
     return self;
 }

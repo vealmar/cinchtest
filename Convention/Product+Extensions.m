@@ -66,7 +66,7 @@
         NSString *shipdate2Str = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShipDate2]];
         if (shipdate2Str)
             self.shipdate2 = [DateUtil convertYyyymmddthhmmsszToDate:shipdate2Str];
-
+        self.editable = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductEditable]];
     }
     return self;
 }

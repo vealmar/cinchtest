@@ -33,7 +33,17 @@
         self.min.text = @"";
         self.regPrice.text = @"";
         self.showPrice.text = @"";
+        self.editableShowPrice.text = @"";
         self.numOfShipDates.text = @"";
+    }
+    if (cart != nil) {
+        self.editableShowPrice.text = [NumberUtil formatCentsAsDollarsWithoutSymbol:cart.editablePrice];
+    } else {
+        if (product)
+            self.editableShowPrice.text = [NumberUtil formatCentsAsDollarsWithoutSymbol:product.showprc];
+        else
+            self.editableShowPrice.text = @"";
+
     }
     if (cart != nil && cart.editableQty != nil) {
         self.quantity.text = cart.editableQty;
@@ -49,13 +59,25 @@
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.accessoryType = UITableViewCellAccessoryNone;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
-
+    if (product.editable && product.editable.intValue == 1) {
+        self.showPrice.hidden = YES;
+        self.editableShowPrice.hidden = NO;
+    } else {
+        self.showPrice.hidden = NO;
+        self.editableShowPrice.hidden = YES;
+    }
     [self updateErrorsView:cart.errors];
 }
 
 - (IBAction)quantityChanged:(id)sender {
     if (self.delegate) {
         [self.delegate QtyChange:[self.quantity.text intValue] forIndex:self.tag];
+    }
+}
+
+- (IBAction)showPriceChanged:(id)sender {
+    if (self.delegate) {
+        [self.delegate ShowPriceChange:[self.editableShowPrice.text doubleValue] forIndex:self.tag];
     }
 }
 

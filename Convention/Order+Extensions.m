@@ -107,6 +107,16 @@
     }
 }
 
+- (void)updateItemShowPrice:(NSNumber *)price productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
+    Cart *cart = [self findOrCreateCartForId:productId context:context];
+    cart.editablePrice = [NumberUtil convertDollarsToCents:price];
+    NSError *error = nil;
+    if (![context save:&error]) {
+        NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
+        [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+    }
+}
+
 - (NSArray *)productIds {
     NSMutableArray *productIds = [[NSMutableArray alloc] initWithCapacity:self.carts.count];
     for (Cart *cart in self.carts) {

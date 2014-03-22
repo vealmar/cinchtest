@@ -26,8 +26,11 @@
 @property(weak, nonatomic) IBOutlet UILabel *qtyLbl;
 @property(weak, nonatomic) IBOutlet UILabel *descr;
 @property(weak, nonatomic) IBOutlet UILabel *numOfShipDates;
+@property(weak, nonatomic) IBOutlet UITextField *editableShowPrice;
 
 - (IBAction)quantityChanged:(id)sender;
+
+- (IBAction)showPriceChanged:(id)sender;
 
 @property(nonatomic, assign) id <ProductCellDelegate> delegate;
 

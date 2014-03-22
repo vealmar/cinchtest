@@ -15,6 +15,12 @@
 + (NSNumber *)zeroIntNSNumber;
 
 + (NSString *)formatDollarAmount:(NSNumber *)dollarAmount;
+
 + (NSNumber *)convertDollarsToCents:(NSNumber *)dollars;
+
++ (NSNumber *)convertCentsToDollars:(NSNumber *)cents;
+
 + (NSString *)formatCentsAsCurrency:(NSNumber *)cents;
+
++ (NSString *)formatCentsAsDollarsWithoutSymbol:(NSNumber *)cents;
 @end

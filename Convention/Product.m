@@ -2,8 +2,8 @@
 //  Product.m
 //  Convention
 //
-//  Created by septerr on 12/31/13.
-//  Copyright (c) 2013 Convention Innovations. All rights reserved.
+//  Created by septerr on 3/22/14.
+//  Copyright (c) 2014 Urban Coding. All rights reserved.
 //
 
 #import "Product.h"
@@ -40,6 +40,7 @@
 @dynamic vendid;
 @dynamic vendor_id;
 @dynamic voucher;
+@dynamic editable;
 @dynamic carts;
 @dynamic discountLineItems;
 

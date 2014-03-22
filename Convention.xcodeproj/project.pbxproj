@@ -222,6 +222,7 @@
 		C7DCDF0916A297FE00F66C52 /* BulletinViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7DCDF0716A297FD00F66C52 /* BulletinViewController.xib */; };
 		C7EB25E81665CA8D00B1CD4F /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = C7EB25E71665CA8D00B1CD4F /* Reachability.m */; };
 		EB0C7FE91760194B0038A3AD /* FarrisOrderDetail.png in Resources */ = {isa = PBXBuildFile; fileRef = EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */; };
+		EB3870E718DDEA88008BBF15 /* Product.m in Sources */ = {isa = PBXBuildFile; fileRef = EB3870E618DDEA88008BBF15 /* Product.m */; };
 		EB5A0A9C175EF2C200246C24 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = EB5A0A9B175EF2C200246C24 /* FBLogin.png */; };
 		EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD10188851810004ABB6 /* GLKit.framework */; };
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
@@ -239,7 +240,6 @@
 		EBAFEBFE18A2FB5900228001 /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = EBAFEBFD18A2FB5900228001 /* Order.m */; };
 		EBBAF1AD186E30560094547E /* EditableEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1AC186E30560094547E /* EditableEntity.m */; };
 		EBBAF1B6186E30570094547E /* Error.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1B5186E30570094547E /* Error.m */; };
-		EBBAF1D7187302A20094547E /* Product.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1D6187302A20094547E /* Product.m */; };
 		EBBAF1DD187302A30094547E /* Cart.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1DC187302A30094547E /* Cart.m */; };
 		EBBAF1E31874B5570094547E /* DiscountLineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = EBBAF1E21874B5570094547E /* DiscountLineItem.m */; };
 		EBCB633B18A21E0400F34107 /* OrderShipDateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EBCB633918A21E0400F34107 /* OrderShipDateViewController.m */; };
@@ -577,6 +577,9 @@
 		C7EB25E71665CA8D00B1CD4F /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
 		EB0C7FE81760194B0038A3AD /* FarrisOrderDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisOrderDetail.png; sourceTree = "<group>"; };
 		EB20BA26189C57DD00F9EFA2 /* ProductCart4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart4.xcdatamodel; sourceTree = "<group>"; };
+		EB3870E418DDE9F4008BBF15 /* ProductCart7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart7.xcdatamodel; sourceTree = "<group>"; };
+		EB3870E518DDEA88008BBF15 /* Product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
+		EB3870E618DDEA88008BBF15 /* Product.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Product.m; sourceTree = "<group>"; };
 		EB5A0A9B175EF2C200246C24 /* FBLogin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FBLogin.png; sourceTree = "<group>"; };
 		EB5BBD10188851810004ABB6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		EB5BBD121888518E0004ABB6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -595,7 +598,7 @@
 		EB7D8FEB17DDD4E300F2FB8C /* Vendor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vendor.m; sourceTree = "<group>"; };
 		EB7D8FED17DDD60100F2FB8C /* Bulletin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bulletin.h; sourceTree = "<group>"; };
 		EB7D8FEE17DDD60100F2FB8C /* Bulletin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bulletin.m; sourceTree = "<group>"; };
-		EBAFEBFB18A2FAB000228001 /* ProductCart6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = file; path = ProductCart6.xcdatamodel; sourceTree = "<group>"; };
+		EBAFEBFB18A2FAB000228001 /* ProductCart6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart6.xcdatamodel; sourceTree = "<group>"; };
 		EBAFEBFC18A2FB5900228001 /* Order.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Order.h; sourceTree = "<group>"; };
 		EBAFEBFD18A2FB5900228001 /* Order.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Order.m; sourceTree = "<group>"; };
 		EBB8A1E518A1FF7A009B7B57 /* ProductCart5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart5.xcdatamodel; sourceTree = "<group>"; };
@@ -603,8 +606,6 @@
 		EBBAF1AC186E30560094547E /* EditableEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableEntity.m; sourceTree = "<group>"; };
 		EBBAF1B4186E30570094547E /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
 		EBBAF1B5186E30570094547E /* Error.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Error.m; sourceTree = "<group>"; };
-		EBBAF1D5187302A20094547E /* Product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
-		EBBAF1D6187302A20094547E /* Product.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Product.m; sourceTree = "<group>"; };
 		EBBAF1DB187302A30094547E /* Cart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cart.h; sourceTree = "<group>"; };
 		EBBAF1DC187302A30094547E /* Cart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cart.m; sourceTree = "<group>"; };
 		EBBAF1E11874B5570094547E /* DiscountLineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscountLineItem.h; sourceTree = "<group>"; };
@@ -1112,8 +1113,6 @@
 				EBBAF1E21874B5570094547E /* DiscountLineItem.m */,
 				EBBAF1DB187302A30094547E /* Cart.h */,
 				EBBAF1DC187302A30094547E /* Cart.m */,
-				EBBAF1D5187302A20094547E /* Product.h */,
-				EBBAF1D6187302A20094547E /* Product.m */,
 				EBBAF1B4186E30570094547E /* Error.h */,
 				EBBAF1B5186E30570094547E /* Error.m */,
 				EBBAF1AB186E30560094547E /* EditableEntity.h */,
@@ -1131,6 +1130,8 @@
 				C7BA94F71653462B00E6705B /* Order+Extensions.h */,
 				C7BA94F81653462C00E6705B /* Order+Extensions.m */,
 				C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */,
+				EB3870E518DDEA88008BBF15 /* Product.h */,
+				EB3870E618DDEA88008BBF15 /* Product.m */,
 				EBAFEBFC18A2FB5900228001 /* Order.h */,
 				EBAFEBFD18A2FB5900228001 /* Order.m */,
 				EB7D8FEA17DDD4E300F2FB8C /* Vendor.h */,
@@ -1546,7 +1547,7 @@
 		6E118558145F2F2100568ED1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0460;
+				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Urban Coding";
 				TargetAttributes = {
 					6E118560145F2F2200568ED1 = {
@@ -1564,8 +1565,6 @@
 			mainGroup = 6E118556145F2F2100568ED1;
 			productRefGroup = 6E118562145F2F2200568ED1 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-			);
 			projectRoot = "";
 			targets = (
 				6E118560145F2F2200568ED1 /* Convention */,
@@ -1780,6 +1779,7 @@
 				EBBAF1AD186E30560094547E /* EditableEntity.m in Sources */,
 				33B70479164DD29F00CF2E96 /* ErrorHandler.m in Sources */,
 				33B7047B164DD29F00CF2E96 /* SettingsManager.m in Sources */,
+				EB3870E718DDEA88008BBF15 /* Product.m in Sources */,
 				33B7047D164DD29F00CF2E96 /* GroupedObject.m in Sources */,
 				6E118572145F2F2200568ED1 /* main.m in Sources */,
 				6E118576145F2F2200568ED1 /* CIAppDelegate.m in Sources */,
@@ -1849,7 +1849,6 @@
 				35F52565AD01794E5970974F /* ALineItem.m in Sources */,
 				35F52DEA82ECA0E18E3B8967 /* NilUtil.m in Sources */,
 				35F527ED52FF1F2798544129 /* CoreDataManager.m in Sources */,
-				EBBAF1D7187302A20094547E /* Product.m in Sources */,
 				35F521BE40815F698E85FF9E /* CIProductViewControllerHelper.m in Sources */,
 				35F52AF2E661528B3EDAABF5 /* NumberUtil.m in Sources */,
 				35F521774853EA59DB5E6754 /* CartViewCell.m in Sources */,
@@ -1901,9 +1900,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -1919,11 +1919,15 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDEBUG=1";
 				PROVISIONING_PROFILE = "E7BAF522-EF70-4C38-8F42-0AEFAD7C31D6";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
@@ -1936,9 +1940,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -1947,11 +1952,14 @@
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PROVISIONING_PROFILE = "9A9387AE-A9A8-49C6-8D6A-CAEDB0BFF689";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9A9387AE-A9A8-49C6-8D6A-CAEDB0BFF689";
@@ -2031,12 +2039,13 @@
 			children = (
 				EBB8A1E518A1FF7A009B7B57 /* ProductCart5.xcdatamodel */,
 				EBAFEBFB18A2FAB000228001 /* ProductCart6.xcdatamodel */,
+				EB3870E418DDE9F4008BBF15 /* ProductCart7.xcdatamodel */,
 				EB20BA26189C57DD00F9EFA2 /* ProductCart4.xcdatamodel */,
 				C73E2FDB165C7FB600FE8DE9 /* ProductCart2.xcdatamodel */,
 				EBFABF02189C38250089F79A /* ProductCart3.xcdatamodel */,
 				C7BA948E1651DA3700E6705B /* ProductCart.xcdatamodel */,
 			);
-			currentVersion = EBAFEBFB18A2FAB000228001 /* ProductCart6.xcdatamodel */;
+			currentVersion = EB3870E418DDE9F4008BBF15 /* ProductCart7.xcdatamodel */;
 			path = ProductCart.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

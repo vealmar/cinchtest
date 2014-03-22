@@ -63,6 +63,9 @@
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     self.numOfShipDates.text = cart.shipdates && cart.shipdates.count > 0 ? [NSString stringWithFormat:@"%d", cart.shipdates.count] : @"";
+    if (cart.product.editable && cart.product.editable.intValue == 1) {
+        self.showPrice.text = [NumberUtil formatCentsAsCurrency:cart.editablePrice];
+    }
     [self updateErrorsView:cart.errors];
 }
 

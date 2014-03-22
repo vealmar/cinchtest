@@ -39,6 +39,8 @@
 @property(nonatomic, retain) NSNumber *voucher;
 @property(nonatomic, retain) NSSet *carts;
 @property(nonatomic, retain) NSSet *discountLineItems;
+@property(nonatomic, retain) NSNumber *editable;
+
 
 - (id)initWithCoreDataProduct:(Product *)product;
 @end

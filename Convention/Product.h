@@ -2,8 +2,8 @@
 //  Product.h
 //  Convention
 //
-//  Created by septerr on 12/31/13.
-//  Copyright (c) 2013 Convention Innovations. All rights reserved.
+//  Created by septerr on 3/22/14.
+//  Copyright (c) 2014 Urban Coding. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -42,6 +42,7 @@
 @property(nonatomic, retain) NSString *vendid;
 @property(nonatomic, retain) NSNumber *vendor_id;
 @property(nonatomic, retain) NSNumber *voucher;
+@property(nonatomic, retain) NSNumber *editable;
 @property(nonatomic, retain) NSSet *carts;
 @property(nonatomic, retain) NSSet *discountLineItems;
 @end

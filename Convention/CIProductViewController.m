@@ -918,6 +918,13 @@
     self.unsavedChangesPresent = YES;
 }
 
+- (void)ShowPriceChange:(double)price forIndex:(int)idx {
+    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
+    [self.coreDataOrder updateItemShowPrice:@(price) productId:productId context:self.managedObjectContext];
+    self.unsavedChangesPresent = YES;
+    [self updateTotals];
+}
+
 - (void)setSelectedRow:(NSIndexPath *)index {
     selectedItemRowIndexPath = index;
 }

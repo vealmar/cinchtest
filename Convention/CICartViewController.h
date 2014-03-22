@@ -73,6 +73,8 @@
 
 - (void)VoucherChange:(double)voucherPrice forIndex:(int)idx;
 
+- (void)ShowPriceChange:(double)price forIndex:(int)idx;
+
 - (IBAction)Cancel:(id)sender;
 
 

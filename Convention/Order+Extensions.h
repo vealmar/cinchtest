@@ -19,6 +19,8 @@
 
 - (void)updateItemVoucher:(NSNumber *)voucher productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
 
+- (void)updateItemShowPrice:(NSNumber *)price productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+
 - (Cart *)findCartForProductId:(NSNumber *)productId;
 
 - (DiscountLineItem *)findDiscountForLineItemId:(NSNumber *)lineItemId;

@@ -140,6 +140,8 @@
 #define kProductMin @"min"
 #define kProductStatus @"status"
 #define kProductCategory @"category"
+#define kProductEditable @"editable"
+
 
 #define kLineItemPRICE @"price"
 #define kLineItemVoucher @"voucherPrice"

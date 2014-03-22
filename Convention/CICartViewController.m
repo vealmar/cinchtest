@@ -328,6 +328,12 @@
     self.unsavedChangesPresent = YES;
 }
 
+- (void)ShowPriceChange:(double)price forIndex:(int)idx {
+    NSNumber *productId = self.productsInCart[(NSUInteger) idx];
+    [self.coreDataOrder updateItemShowPrice:@(price) productId:productId context:self.managedObjectContext];
+    self.unsavedChangesPresent = YES;
+}
+
 - (void)QtyChange:(int)qty forIndex:(int)idx {
     NSNumber *productId = self.productsInCart[(NSUInteger) idx];
     [self.coreDataOrder updateItemQuantity:[NSString stringWithFormat:@"%i", qty] productId:productId context:self.managedObjectContext];
