@@ -3,6 +3,7 @@
 // Copyright (c) 2014 Urban Coding. All rights reserved.
 //
 
+#import <Underscore.m/Underscore.h>
 #import "CKCalendarView.h"
 #import "CIShipDatesViewController.h"
 #import "ECSlidingViewController.h"
@@ -12,6 +13,11 @@
 #import "DateRange.h"
 #import "ShowConfigurations.h"
 #import "Order.h"
+#import "Cart+Extensions.h"
+#import "NotificationConstants.h"
+#import "UIView+Boost.h"
+#import "CIShipDateTableViewCell.h"
+#import "NSArray+Boost.h"
 
 @interface CIShipDatesViewController()
 
@@ -30,6 +36,8 @@
 
 @property CGRect originalFrame;
 
+@property NSMutableArray *selectedCarts;
+
 @end
 
 @implementation CIShipDatesViewController
@@ -40,6 +48,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     self = [super init];
     if (self) {
         self.workingOrder = workingOrder;
+        self.selectedCarts = [NSMutableArray array];
         self.selectedShipDates = [NSMutableArray array];
         self.orderShipDates = [ShowConfigurations instance].orderShipDates;
 
@@ -54,6 +63,9 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         self.tableView.allowsSelection = NO;
 
         self.originalFrame = CGRectZero; //placeholder nil
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:CartSelectionNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:CartDeselectionNotification object:nil];
     }
     return self;
 }
@@ -75,6 +87,37 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 - (void)viewDidLoad {
     [self.tableView setSeparatorColor:[UIColor colorWithWhite:1.0 alpha:0.2]];
+}
+
+- (void)dealloc {
+   [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)onCartSelection:(NSNotification *)notification {
+    Cart *cart = (Cart *) notification.object;
+    if (notification.name == CartSelectionNotification) {
+        [self.selectedCarts addObject:cart];
+    } else if (notification.name == CartDeselectionNotification) {
+        [self.selectedCarts removeObject:cart];
+    }
+
+    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+        if (self.selectedCarts.count == 0) {
+            [self.selectedShipDates.copy enumerateObjectsUsingBlock:^(id date, NSUInteger idx, BOOL *stop) {
+                [self toggleDateSelection:date];
+            }];
+        }
+        if (self.selectedCarts.count == 1) {
+            // add in all fixed dates, even if they arent currently assigned quantities
+            NSArray *cartShipDates = ((Cart *) self.selectedCarts.firstObject).shipdates;
+            NSMutableSet *shipDates = [NSMutableSet set];
+            if (cartShipDates) [shipDates addObjectsFromArray:[[cartShipDates valueForKey:@"shipdate"] allObjects]];
+            [shipDates addObjectsFromArray:self.orderShipDates.fixedDates];
+            [shipDates.allObjects enumerateObjectsUsingBlock:^(id date, NSUInteger idx, BOOL *stop) {
+                [self toggleDateSelection:date];
+            }];
+        }
+    }
 }
 
 #pragma mark CKCalendarDelegate
@@ -115,7 +158,16 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             [self reloadSelectedDatesSection];
         }
         [self.calendarView reloadDates:@[date]];
-        if (nil != self.workingOrder) self.workingOrder.ship_dates = [NSArray arrayWithArray:self.selectedShipDates];
+        if (nil != self.workingOrder) {
+            if ([ShowConfigurations instance].isOrderShipDatesType) {
+                self.workingOrder.ship_dates = [NSArray arrayWithArray:self.selectedShipDates];
+            } else if ([ShowConfigurations instance].isLineItemShipDatesType) {
+                // we will let the shipdates get updated when a quantity changes
+//                [self.selectedCarts enumerateObjectsUsingBlock:^(id cart, NSUInteger idx, BOOL *stop) {
+//                    [cart updateShipDates:[NSArray arrayWithArray:self.selectedShipDates]];
+//                }];
+            }
+        }
     }
 }
 
@@ -233,22 +285,50 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         cell = self.calendarCell;
     } else {
         cell = [self.tableView dequeueReusableCellWithIdentifier:dateCellIdentifier];
+        NSDate *selectedDate = [self.selectedShipDates count] == 0 ? nil : [self.selectedShipDates objectAtIndex:indexPath.row];
         if (nil == cell) {
-            cell = [self createShipDateCell];
-            cell.textLabel.font = [UIFont fontWithName:kFontName size:14.0f];
+            cell = [self createShipDateCellOn:selectedDate];
         }
-        NSString *label = [self.selectedShipDates count] == 0 ? @"No dates selected, ship immediately." : [DateUtil convertDateToMmddyyyy:[self.selectedShipDates objectAtIndex:indexPath.row]];
-        cell.textLabel.text = label;
     }
 
     return cell;
 }
 
-- (UITableViewCell *)createShipDateCell {
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width, 40)];
-    cell.backgroundColor = self.tableBackgroundColor;
-    cell.textLabel.textColor = self.tableTextColor;
+- (UITableViewCell *)createShipDateCellOn:(NSDate *)shipDate {
+    BOOL useQuantityField = [ShowConfigurations instance].isLineItemShipDatesType && [self.selectedShipDates count] != 0;
+    CIShipDateTableViewCell *cell = [[CIShipDateTableViewCell alloc] initOn:shipDate for:self.selectedCarts usingQuantityField:useQuantityField];
+
+    if (useQuantityField) {
+        UISwipeGestureRecognizer *swipeLeftGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(decrementQuantity:)];
+        swipeLeftGesture.numberOfTouchesRequired = 1;
+        swipeLeftGesture.cancelsTouchesInView = NO;
+        swipeLeftGesture.direction = UISwipeGestureRecognizerDirectionLeft;
+        cell.contentView.userInteractionEnabled = YES;
+        [cell.contentView addGestureRecognizer:swipeLeftGesture];
+
+        UISwipeGestureRecognizer *swipeRightGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(incrementQuantity:)];
+        swipeRightGesture.numberOfTouchesRequired = 1;
+        swipeRightGesture.cancelsTouchesInView = NO;
+        swipeRightGesture.direction = UISwipeGestureRecognizerDirectionRight;
+        cell.contentView.userInteractionEnabled = YES;
+        [cell.contentView addGestureRecognizer:swipeRightGesture];
+    }
+
     return cell;
+}
+
+- (void)incrementQuantity:(UISwipeGestureRecognizer *)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        CIShipDateTableViewCell *cell = recognizer.view.superview.superview;
+        cell.quantity += 1;
+    }
+}
+
+- (void)decrementQuantity:(UISwipeGestureRecognizer *)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        CIShipDateTableViewCell *cell = recognizer.view.superview.superview;
+        cell.quantity -= 1;
+    }
 }
 
 - (UITableViewCell *)createCalendarCell {

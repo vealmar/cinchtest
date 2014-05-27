@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "CICustomerInfoViewController.h"
-#import "PWProductCell.h"
 #import "CIStoreQtyTableViewController.h"
 #import "CISignatureViewController.h"
+#import "ProductCellDelegate.h"
 
 @class Cart;
 @class ALineItem;

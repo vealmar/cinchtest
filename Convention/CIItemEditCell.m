@@ -20,17 +20,6 @@
 @end
 
 @implementation CIItemEditCell
-@synthesize desc;
-@synthesize desc1;
-@synthesize desc2;
-@synthesize voucher;
-@synthesize qty;
-@synthesize price;
-@synthesize lineItemShipDatesButton;
-@synthesize total;
-@synthesize delegate;
-@synthesize qtyBtn;
-@synthesize priceLbl;
 
 - (void)updateErrorsView:(NSArray *)errors {
     if (errors && errors.count > 0) {
@@ -100,12 +89,6 @@
     }
 }
 
-- (IBAction)shipdates:(id)sender {
-    if (self.delegate) {
-        [self.delegate ShipDatesTouchForIndex:self.tag];
-    }
-}
-
 - (void)textFieldDidEndEditing:(UITextField *)textField {
 }
 
@@ -133,57 +116,31 @@
     }
 
 }
-- (void)updateCellAtIndexPath:(NSIndexPath *)indexPath withLineItem:(ALineItem *)data quantities:(NSArray *)itemsQty prices:(NSArray *)itemsPrice vouchers:(NSArray *)itemsVouchers shipDates:(NSArray *)lineItemShipDates {
+
+- (void)showLineItem:(ALineItem *)data withTag:(NSInteger *)tag {
+    ShowConfigurations *config = [ShowConfigurations instance];
     Product *product = [Product findProduct:data.productId];
-    BOOL isDiscount = [data.category isEqualToString:@"discount"];
-    if (isDiscount) {
+
+    // description
+    if (data.isDiscount) {
         self.invtid.text = @"Discount";
     } else if (data.productId) {
         NSString *invtid = product ? product.invtid : @"Product Not Found";
         self.invtid.text = invtid;
     }
     [self setDescription:data.desc withSubtext:data.desc2];
-    ShowConfigurations *config = [ShowConfigurations instance];
+
+    // vouchers
     if (config.vouchers) {
-        if ([itemsVouchers objectAtIndex:indexPath.row]) {
-            self.voucher.text = [itemsVouchers objectAtIndex:indexPath.row];
-        }
-        else
-            self.voucher.text = @"0";
+        self.voucher.text = data.voucherPrice ? [NSString stringWithFormat:@"%d", data.voucherPrice] : @"0";
     } else {
         self.voucher.hidden = YES;
     }
 
-    BOOL isJSON = NO;
-    double q = 0;
-    if ([itemsQty objectAtIndex:indexPath.row]) {
-        self.qty.text = [itemsQty objectAtIndex:indexPath.row];
-        self.qtyLbl.text = [itemsQty objectAtIndex:indexPath.row];
-        q = [self.qty.text doubleValue];
-    }
-    else
-        self.qty.text = @"0";
-
-    __autoreleasing NSError *err = nil;
-    NSMutableDictionary *dict = [self.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-    if (!err && dict && ![dict isKindOfClass:[NSNull class]] && dict.allKeys.count > 0) {
-        isJSON = YES;
-    }
-    if (isJSON) {
-        [self.qtyBtn setHidden:NO];
-        for (NSString *key in dict.allKeys) {
-            q += [[dict objectForKey:key] doubleValue];
-        }
-        if (ceil(q) == q) {
-            [self.qtyBtn setTitle:[NSString stringWithFormat:@"%d", (int) q] forState:UIControlStateNormal];
-        } else
-            [self.qtyBtn setTitle:[NSString stringWithFormat:@"%.1f", q] forState:UIControlStateNormal];
-
-    } else {
-        [self.qtyBtn setHidden:YES];
-    }
-
-    if (isDiscount) {
+    // quantities
+    self.qtyBtn.hidden = YES;
+    self.qty.text = self.qtyLbl.text = [NSString stringWithFormat:@"%i", data.totalQuantity];
+    if (data.isDiscount || config.isLineItemShipDatesType) {
         self.qty.hidden = YES;
         self.qtyLbl.hidden = NO;
     } else {
@@ -191,41 +148,28 @@
         self.qtyLbl.hidden = YES;
     }
 
-    int nd = 1;
+    // ship dates
     if ([config isLineItemShipDatesType] && product) {
-        int idx = [product.idx intValue];
-        NSString *invtId = product.invtid;
-        BOOL isVoucher = idx == 0 && ([invtId isEmpty] || [invtId isEqualToString:@"0"]);
-        if (isVoucher) {
-            self.lineItemShipDatesButton.enabled = NO;
-            [self.lineItemShipDatesButton setTitle:@"SD:0" forState:UIControlStateDisabled];
-        } else {
-            self.lineItemShipDatesButton.enabled = YES;//since cells are reused, it may have been set to NO.
-            int lblsd = 0;
-            if (((NSArray *) [lineItemShipDates objectAtIndex:indexPath.row]).count > 0) {
-                nd = ((NSArray *) [lineItemShipDates objectAtIndex:indexPath.row]).count;
-                lblsd = nd;
-            }
-            [self.lineItemShipDatesButton setTitle:[NSString stringWithFormat:@"SD:%d", lblsd] forState:UIControlStateNormal];
-        }
+        self.shipDatesLabel.text = [NSString stringWithFormat:@"%i", data.shipDates.count];
+        self.shipDatesLabel.hidden = NO;
     } else {
-        self.lineItemShipDatesButton.hidden = YES;
+        self.shipDatesLabel.hidden = YES;
     }
-    self.numOfShipDates = (NSUInteger) nd;
 
-    if ([itemsPrice objectAtIndex:indexPath.row] && ![[itemsPrice objectAtIndex:indexPath.row] isKindOfClass:[NSNull class]]) {
+    // price/total
+    self.numOfShipDates = data.shipDates.count;
+    if (data.price && ![data.price isKindOfClass:[NSNull class]]) {
         NSNumberFormatter *nf = [[NSNumberFormatter alloc] init];
         nf.formatterBehavior = NSNumberFormatterBehavior10_4;
         nf.maximumFractionDigits = 2;
         nf.minimumFractionDigits = 2;
         nf.minimumIntegerDigits = 1;
-
-        double price = [[itemsPrice objectAtIndex:indexPath.row] doubleValue];
-
+        double price = [data.price doubleValue];
         self.price.text = [nf stringFromNumber:[NSNumber numberWithDouble:price]];
         self.priceLbl.text = self.price.text;
         [self.price setHidden:YES];
-        self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(price * q * nd)] numberStyle:NSNumberFormatterCurrencyStyle];
+        double total = config.isLineItemShipDatesType ? price * data.totalQuantity : price * data.totalQuantity * data.shipDates.count;
+        self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(total)] numberStyle:NSNumberFormatterCurrencyStyle];
     }
     else {
         self.price.text = @"0.00";
@@ -233,7 +177,7 @@
         [self.price setHidden:YES];
         self.total.text = @"$0.00";
     }
-    self.tag = indexPath.row;
+    self.tag = tag;
     [self updateErrorsView:data.errors];
 }
 

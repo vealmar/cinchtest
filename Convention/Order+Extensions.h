@@ -23,6 +23,8 @@
 
 - (Cart *)findCartForProductId:(NSNumber *)productId;
 
+- (Cart *)findOrCreateCartForId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+
 - (DiscountLineItem *)findDiscountForLineItemId:(NSNumber *)lineItemId;
 
 - (NSArray *)productIds;

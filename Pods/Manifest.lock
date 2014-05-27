@@ -1,13 +1,16 @@
 PODS:
   - ECSlidingViewController (2.0.1)
+  - JSONKit (1.5pre)
   - Underscore.m (0.2.1)
 
 DEPENDENCIES:
   - ECSlidingViewController (~> 2.0.1)
+  - JSONKit (~> 1.5pre)
   - Underscore.m (~> 0.2.1)
 
 SPEC CHECKSUMS:
-  ECSlidingViewController: d7bb96ee5bbe261ed80ee16a513f94b9fd3c9767
-  Underscore.m: 593ea54a19d3cc4439387a83d36eb7ba6ffd1707
+  ECSlidingViewController: e93ab7e075fc9a99a874fa050ce3b2a64026eb85
+  JSONKit: efef3bbd3372ff33f96b9c6f34cf4fe18e74ab69
+  Underscore.m: f99c166a9fdccfb5069085b6b4263c04b817fc9f
 
-COCOAPODS: 0.29.0
+COCOAPODS: 0.33.1

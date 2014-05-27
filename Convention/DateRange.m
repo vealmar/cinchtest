@@ -44,6 +44,10 @@
     return [DateUtil convertYyyymmddthhmmsszToDate:dateString];
 }
 
+- (NSArray *)fixedDates {
+    return [NSArray arrayWithArray:self.dates];
+}
+
 - (bool)covers:(NSDate *)date {
     __block bool result = false;
 
@@ -59,7 +63,7 @@
     [self.ranges enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         NSComparisonResult day1Result = [[((NSArray *) obj) objectAtIndex:0] compare:date];
         NSComparisonResult day2Result = [[((NSArray *) obj) objectAtIndex:1] compare:date];
-        if ((day1Result == NSOrderedSame || day1Result == NSOrderedAscending) && day2Result == NSOrderedSame || day2Result == NSOrderedDescending) {
+        if ((day1Result == NSOrderedSame || day1Result == NSOrderedAscending) && (day2Result == NSOrderedSame || day2Result == NSOrderedDescending)) {
             result = true;
             stop = true;
         }

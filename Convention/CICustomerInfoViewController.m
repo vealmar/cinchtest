@@ -15,6 +15,7 @@
 #import "CoreDataManager.h"
 #import "Customer.h"
 #import "CoreDataUtil.h"
+#import "NotificationConstants.h"
 
 @implementation CICustomerInfoViewController {
     NSString *selectedCustomer;
@@ -200,7 +201,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationCustomersLoaded object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:CustomersLoadedNotification object:nil];
 }
 
 #pragma mark search methods

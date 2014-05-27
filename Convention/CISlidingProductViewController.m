@@ -29,9 +29,7 @@
         }
 
         // enable swiping on the top view
-//        self.topViewAnchoredGesture = ECSlidingViewControllerAnchoredGestureTapping;
         [productViewController.view addGestureRecognizer:self.panGesture];
-//        [productViewController.view addGestureRecognizer:self.resetTapGesture];
 
         UIView *productView = productViewController.view;
         UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:productView.bounds];
@@ -53,18 +51,67 @@
 - (UIViewController *)initializeShipDateController:(CIProductViewController *)productViewController {
     CIShipDatesViewController *shipDateController = [[CIShipDatesViewController alloc] initWithWorkingOrder:productViewController.coreDataOrder];
 
-    //listen for changes KVO
-    [productViewController addObserver:self forKeyPath:@"coreDataOrder" options:NSKeyValueObservingOptionNew context:nil];
-
     // configure under right view controller
     shipDateController.edgesForExtendedLayout = UIRectEdgeTop | UIRectEdgeBottom | UIRectEdgeRight; // don't go under the top view
 
     return shipDateController;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+
+    //listen for changes KVO
+    CIProductViewController *productViewController = (CIProductViewController *) self.topViewController;
+    [productViewController addObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder)) options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
+    //remove KVO observers
+    CIProductViewController *productViewController = (CIProductViewController *) self.topViewController;
+    [productViewController removeObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder))];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    UITapGestureRecognizer *productViewTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(productViewTapped:)];
+    productViewTapRecognizer.numberOfTapsRequired = 1;
+    productViewTapRecognizer.cancelsTouchesInView = NO;
+    self.topViewController.view.userInteractionEnabled = YES;
+    [self.topViewController.view addGestureRecognizer:productViewTapRecognizer];
+
+    UITapGestureRecognizer *shipdateViewTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shipdateViewTapped:)];
+    shipdateViewTapRecognizer.numberOfTapsRequired = 1;
+    shipdateViewTapRecognizer.cancelsTouchesInView = NO;
+    self.underRightViewController.view.userInteractionEnabled = YES;
+    [self.underRightViewController.view addGestureRecognizer:shipdateViewTapRecognizer];
+}
+
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if (@"coreDataOrder" == keyPath) {
+    if (NSStringFromSelector(@selector(coreDataOrder)) == keyPath) {
         self.shipDateController.workingOrder = [change objectForKey:@"new"];
+    }
+}
+
+//User is in middle of editing a quantity (so the keyboard is visible), then taps somewhere else on the screen - the keyboard should disappear.
+- (void)productViewTapped:(UITapGestureRecognizer *)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        CIProductViewController *productViewController = (CIProductViewController *)self.topViewController;
+        [self resetTopViewAnimated:YES];
+        [productViewController.view endEditing:YES];
+        [productViewController.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
+            [productViewController toggleCartSelection:cart]; //disable selection
+        }];
+    }
+}
+
+//User is in middle of editing a quantity (so the keyboard is visible), then taps somewhere else on the screen - the keyboard should disappear.
+- (void)shipdateViewTapped:(UITapGestureRecognizer *)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        [self.underRightViewController.view endEditing:YES];
     }
 }
 

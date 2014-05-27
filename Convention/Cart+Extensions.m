@@ -6,6 +6,8 @@
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
+#import <JSONKit/JSONKit.h>
+#import <Underscore.m/Underscore.h>
 #import "Cart+Extensions.h"
 #import "ALineItem.h"
 #import "config.h"
@@ -19,6 +21,8 @@
 #import "Error+Extensions.h"
 #import "Product.h"
 #import "Product+Extensions.h"
+#import "NSDate+Boost.h"
+#import "NotificationConstants.h"
 
 @implementation Cart (Extensions)
 
@@ -41,7 +45,7 @@
 
 
 - (id)initWithQuantity:(NSString *)quantity priceInCents:(NSNumber *)priceInCents voucherPriceInCents:(NSNumber *)voucherPriceInCents category:(NSString *)category shipDates:(NSArray *)lineItemShipDates
-        productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
+             productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
     self = [super initWithEntity:[NSEntityDescription entityForName:@"Cart" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
     if (self) {
         self.product = [Product findProduct:productId];
@@ -49,15 +53,12 @@
         self.editablePrice = priceInCents;
         self.editableVoucher = voucherPriceInCents;
         self.editableQty = quantity;
+        self.shipdates = [[NSMutableOrderedSet alloc] init];
         if (lineItemShipDates && lineItemShipDates.count > 0) {
-            NSMutableOrderedSet *coreDataShipDates = [[NSMutableOrderedSet alloc] init];
             for (NSString *jsonDate in lineItemShipDates) {
                 NSDate *shipDate = [DateUtil convertYyyymmddToDate:jsonDate];
-                ShipDate *coreDataShipDate = [[ShipDate alloc] initWithEntity:[NSEntityDescription entityForName:@"ShipDate" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
-                coreDataShipDate.shipdate = shipDate;
-                [coreDataShipDates addObject:coreDataShipDate];
+                [self addShipDate:shipDate];
             }
-            self.shipdates = coreDataShipDates;
         }
     }
     return self;
@@ -81,6 +82,66 @@
         }
     }
     return shipDates;
+}
+
+- (int)getQuantityForShipDate:(NSDate *)date {
+    NSMutableDictionary *quantities = [self.editableQty objectFromJSONString];
+    return [[quantities valueForKey:[date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'Z'"]] intValue];
+}
+
+- (int)totalQuantity {
+    id quantities = [self.editableQty objectFromJSONString];
+    if (quantities == nil) {
+        return 0;
+    } else if ([quantities isKindOfClass:[NSString class]]) {
+        return [quantities intValue];
+    } else if ([quantities isKindOfClass:[NSDictionary class]]) {
+        NSNumber* total = Underscore.array([((NSDictionary *)quantities) allValues]).reduce([NSNumber numberWithInt:0], ^(NSNumber *memo, NSNumber *obj) {
+            return [NSNumber numberWithInt:([obj intValue] + [memo intValue])];
+        });
+        return [total intValue];
+    }
+    return 0;
+}
+
+- (void)setQuantity:(int)quantity forShipDate:(NSDate *)date {
+    NSMutableDictionary *quantities = [[self.editableQty objectFromJSONString] mutableCopy];
+    if (quantities == nil) {
+        quantities = [NSMutableDictionary dictionary];
+    }
+    [quantities setValue:[NSNumber numberWithInt:quantity] forKey:[date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'Z'"]];
+    self.editableQty = [quantities JSONString];
+    [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:self];
+
+    BOOL containsDate = [self containsShipDate:date];
+    if (quantity > 0 && !containsDate) [self addShipDate:date];
+    if (quantity == 0 && containsDate) [self removeShipDate:date];
+}
+
+- (void)setQuantity:(int)quantity {
+    self.editableQty = [NSString stringWithFormat:@"%i", quantity];
+    [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:self];
+}
+
+- (void)addShipDate:(NSDate *)date {
+    ShipDate *coreDataShipDate = [[ShipDate alloc] initWithEntity:[NSEntityDescription entityForName:@"ShipDate" inManagedObjectContext:self.managedObjectContext] insertIntoManagedObjectContext:self.managedObjectContext];
+    coreDataShipDate.shipdate = date;
+    coreDataShipDate.cart = self;
+    [((NSMutableSet *)self.shipdates) addObject:coreDataShipDate];
+}
+
+- (void)removeShipDate:(NSDate *)date {
+    Underscore.array(self.shipdates).filter(^BOOL(ShipDate *shipDate){
+        return [shipDate.shipdate isEqualToDate:date];
+    }).each(^(ShipDate *shipDate) {
+        [((NSMutableSet *)self.shipdates) removeObject:shipDate];
+    });
+}
+
+- (BOOL)containsShipDate:(NSDate *)date {
+    return Underscore.array(self.shipdates).any(^BOOL(ShipDate *shipDate){
+        return [shipDate.shipdate isEqualToDate:date];
+    });
 }
 
 - (NSDictionary *)asJsonReqParameter {

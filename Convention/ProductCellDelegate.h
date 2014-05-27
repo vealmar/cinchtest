@@ -10,14 +10,17 @@
 
 @protocol ProductCellDelegate <NSObject>
 @required
+// deprecated, was part of voucher handling for PWProductCell
 - (void)VoucherChange:(double)price forIndex:(int)idx;
 
-- (void)QtyChange:(int)qty forIndex:(int)idx;
-
+// farris product cell
 - (void)ShowPriceChange:(double)price forIndex:(int)idx;
 
+// farris product cell
 - (void)QtyTouchForIndex:(int)idx;
 
+// CartViewCell, triggered off textFieldShouldBeginEditing
+// FarrisProductCell, triggered off textFieldShouldBeginEditing
 - (void)setSelectedRow:(NSIndexPath *)index;
 
 @end

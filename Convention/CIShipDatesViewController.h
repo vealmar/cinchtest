@@ -8,7 +8,7 @@
 
 @class Order;
 
-@interface CIShipDatesViewController : UITableViewController <CKCalendarDelegate>
+@interface CIShipDatesViewController : UITableViewController <CKCalendarDelegate, UITextFieldDelegate>
 
 //Working copy of selected or new order
 @property Order *workingOrder;

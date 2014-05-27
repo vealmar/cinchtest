@@ -16,7 +16,7 @@
 @property(weak, nonatomic) IBOutlet UILabel *desc;
 @property(weak, nonatomic) IBOutlet UILabel *desc1;
 @property(weak, nonatomic) IBOutlet UILabel *desc2;
-@property(weak, nonatomic) IBOutlet UIButton *lineItemShipDatesButton;
+@property(weak, nonatomic) IBOutlet UILabel *shipDatesLabel;
 @property(weak, nonatomic) IBOutlet UITextField *voucher;
 @property(weak, nonatomic) IBOutlet UITextField *qty;
 @property(weak, nonatomic) IBOutlet UILabel *qtyLbl;
@@ -37,8 +37,6 @@
 
 - (IBAction)qtyTouch:(id)sender;
 
-- (IBAction)shipdates:(id)sender;
-
-- (void)updateCellAtIndexPath:(NSIndexPath *)indexPath withLineItem:(ALineItem *)data quantities:(NSArray *)itemsQty prices:(NSArray *)itemsPrice vouchers:(NSArray *)itemsVouchers shipDates:(NSArray *)lineItemShipDates;
+- (void)showLineItem:(ALineItem *)data withTag:(NSInteger *)tag;
 
 @end

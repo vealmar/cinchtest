@@ -19,6 +19,8 @@
 #import "DiscountLineItem.h"
 #import "DiscountLineItem+Extensions.h"
 #import "DateUtil.h"
+#import "ShipDate.h"
+#import "NotificationConstants.h"
 
 @implementation Order (Extensions)
 
@@ -90,6 +92,7 @@
 - (void)updateItemQuantity:(NSString *)quantity productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
     Cart *cart = [self findOrCreateCartForId:productId context:context];
     cart.editableQty = quantity;
+    [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:cart];
     NSError *error = nil;
     if (![context save:&error]) {
         NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];

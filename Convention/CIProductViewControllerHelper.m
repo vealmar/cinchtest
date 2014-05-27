@@ -307,9 +307,14 @@
                     [NSDecimalNumber decimalNumberWithString:[[NSNumber numberWithInt:shipDatesCount] stringValue]];
 
             NSNumber *priceNumber = [NSNumber numberWithDouble:[cart.editablePrice intValue] / 100.0];
-            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[priceNumber stringValue]];//todo switch to using product#showprice
-            grossTotal = [grossTotal decimalNumberByAdding:[[qty decimalNumberByMultiplyingBy:price] decimalNumberByMultiplyingBy:shipDates]];
-            if ([cart.editableVoucher intValue] != 0) {//cart.editableVoucher will never be null. all number fields have a default value of 0 in core data. you can change the default if you want .
+            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[priceNumber stringValue]];
+            if (config.isLineItemShipDatesType) {
+                grossTotal = [grossTotal decimalNumberByAdding:[qty decimalNumberByMultiplyingBy:price]];
+            } else {
+                grossTotal = [grossTotal decimalNumberByAdding:[[qty decimalNumberByMultiplyingBy:price] decimalNumberByMultiplyingBy:shipDates]];
+            }
+            if ([cart.editableVoucher intValue] != 0) {
+                //cart.editableVoucher will never be null. all number fields have a default value of 0 in core data. you can change the default if you want .
                 NSNumber *voucherNumber = [NSNumber numberWithDouble:[cart.editableVoucher intValue] / 100.0];
                 NSDecimalNumber *voucher = [NSDecimalNumber decimalNumberWithString:[voucherNumber stringValue]];
                 NSDecimalNumber *intermediate = [[qty decimalNumberByMultiplyingBy:voucher] decimalNumberByMultiplyingBy:shipDates];

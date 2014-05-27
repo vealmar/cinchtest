@@ -9,6 +9,7 @@
 @interface DateRange : NSObject
 
 + (DateRange *)createInstanceFromJson:(NSArray *)array;
-
+- (NSArray *)fixedDates;
 - (bool)covers:(NSDate *)date;
+
 @end

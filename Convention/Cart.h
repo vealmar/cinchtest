@@ -38,11 +38,8 @@
 
 - (void)replaceShipdatesAtIndexes:(NSIndexSet *)indexes withShipdates:(NSArray *)values;
 
-- (void)addShipdatesObject:(ShipDate *)value;
-
-- (void)removeShipdatesObject:(ShipDate *)value;
-
 - (void)addShipdates:(NSOrderedSet *)values;
 
 - (void)removeShipdates:(NSOrderedSet *)values;
+
 @end

@@ -7,6 +7,7 @@
 //
 
 #import <Underscore.m/Underscore.h>
+#import <JSONKit/JSONKit.h>
 #import "CIOrderViewController.h"
 #import "CIOrderCell.h"
 #import "config.h"
@@ -32,6 +33,7 @@
 #import "NilUtil.h"
 #import "CISlidingProductViewController.h"
 #import "DateUtil.h"
+#import "NotificationConstants.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -124,7 +126,7 @@ CIOrderViewController
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidHideNotification object:nil];
-    if ([ShowConfigurations instance].printing) [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
+    if ([ShowConfigurations instance].printing) [[NSNotificationCenter defaultCenter] removeObserver:self name:PrintersLoadedNotification object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -469,7 +471,7 @@ SG: The argument 'detail' is the selected order.
             cell.total.hidden = YES;
         }
         ALineItem *data = [currentOrder.lineItems objectAtIndex:(NSUInteger) [indexPath row]];
-        [cell updateCellAtIndexPath:indexPath withLineItem:data quantities:self.itemsQty prices:self.itemsPrice vouchers:self.itemsVouchers shipDates:self.itemsShipDates];
+        [cell showLineItem:data withTag:indexPath.row];
         return cell;
     }
 }
@@ -607,10 +609,16 @@ SG: This method gets called when you swipe on an order in the order list and tap
             }
             if (0 == numShipDates) numShipDates = 1;
 
-            if ([[self.itemsDiscounts objectAtIndex:(NSUInteger) i] intValue] == 0)
-                ttotal += price * qty * numShipDates;
-            else
+            if ([[self.itemsDiscounts objectAtIndex:(NSUInteger) i] intValue] == 0) {
+                if (config.isLineItemShipDatesType) {
+                    ttotal += price * qty;
+                } else {
+                    ttotal += price * qty * numShipDates;
+                }
+            }
+            else {
                 discountTotal += fabs(price * qty);
+            }
             sctotal += [[self.itemsVouchers objectAtIndex:(NSUInteger) i] doubleValue] * qty * numShipDates;
         }
 
@@ -970,16 +978,16 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
             availablePrinters = [NSDictionary dictionaryWithDictionary:printStations];
             if (![currentPrinter isEmpty] && [self printerIsOnline:currentPrinter]) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:kPrintersLoaded object:nil];
+                [[NSNotificationCenter defaultCenter] postNotificationName:PrintersLoadedNotification object:nil];
             } else {
-                [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
+                [[NSNotificationCenter defaultCenter] removeObserver:self name:PrintersLoadedNotification object:nil];
                 [self selectPrintStation];
             }
         }
 
     }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
 
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:PrintersLoadedNotification object:nil];
         NSString *msg = [NSString stringWithFormat:@"Unable to load available printers. %@", [error localizedDescription]];
         [[[UIAlertView alloc] initWithTitle:@"No Printers" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
     }];
@@ -988,7 +996,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (void)printOrder {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:kPrintersLoaded object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:PrintersLoadedNotification object:nil];
     if (availablePrinters && [availablePrinters count] > 0 && ![currentPrinter isEmpty]) {
 
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -1031,7 +1039,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     if (currentOrder && currentOrder.orderId) {
 
         if (!availablePrinters || ![self printerIsOnline:[[SettingsManager sharedManager] lookupSettingByString:@"printer"]]) {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(printOrder) name:kPrintersLoaded object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(printOrder) name:PrintersLoadedNotification object:nil];
             [self loadPrinters];
         } else {
             [self printOrder];

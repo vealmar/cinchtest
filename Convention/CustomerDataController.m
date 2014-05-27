@@ -10,6 +10,7 @@
 #import "config.h"
 #import "AFJSONRequestOperation.h"
 #import "SettingsManager.h"
+#import "NotificationConstants.h"
 
 @implementation CustomerDataController
 
@@ -19,9 +20,9 @@
     void(^finish)(NSArray *) = ^(NSArray *customers) {
         NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] initWithCapacity:1];
         if (customers) {
-            [userInfo setObject:customers forKey:kCustomerNotificationKey];
+            [userInfo setObject:customers forKey:kCustomerUserInfoKey];
         }
-        [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationCustomersLoaded object:nil userInfo:(NSDictionary *) userInfo];
+        [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil userInfo:(NSDictionary *) userInfo];
     };
 
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];

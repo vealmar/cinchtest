@@ -148,16 +148,16 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                                                                                         success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+                                                                                            [[CoreDataUtil sharedManager] deleteAllObjects:@"Customer"];
                                                                                             if (JSON && ([(NSArray *) JSON count] > 0)) {
-                                                                                                [[CoreDataUtil sharedManager] deleteAllObjects:@"Customer"];
                                                                                                 NSArray *customers = (NSArray *) JSON;
                                                                                                 for (NSDictionary *customer in customers) {
                                                                                                     [self.managedObjectContext insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:self.managedObjectContext]];
                                                                                                 }
                                                                                                 [[CoreDataUtil sharedManager] saveObjects];
-                                                                                                [hud hide:NO];
-                                                                                                [self loadProducts];
                                                                                             }
+                                                                                            [hud hide:NO];
+                                                                                            [self loadProducts];
                                                                                         }
                                                                                         failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
                                                                                             [hud hide:NO];

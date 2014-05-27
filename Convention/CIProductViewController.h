@@ -10,7 +10,6 @@
 #import "CICustomerInfoViewController.h"
 #import "CIFinalCustomerInfoViewController.h"
 #import "CICartViewController.h"
-#import "PWProductCell.h"
 #import "CIStoreQtyTableViewController.h"
 #import "ReachabilityDelegation.h"
 #import "PrinterSelectionViewController.h"
@@ -81,8 +80,6 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 - (IBAction)dismissVendorTouched:(id)sender;
 
-- (IBAction)handleTap:(UITapGestureRecognizer *)recognizer;
-
 - (IBAction)shipdatesTouched:(id)sender;
 
 @property(nonatomic, assign) id <CIProductViewDelegate> delegate;
@@ -119,8 +116,12 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 //Working copy of selected or new order
 @property(nonatomic, strong) Order *coreDataOrder;
+//Cart objects (in the coreDataOrder) which have been selected by the user.
+@property(nonatomic, strong) NSMutableSet *selectedCarts;
 
 @property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
+
+- (void)toggleCartSelection:(Cart *)cart;
 
 - (IBAction)searchDidEndEditing:(UITextField *)sender;
 

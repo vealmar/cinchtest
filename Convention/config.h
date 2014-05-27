@@ -9,7 +9,6 @@
 #ifndef Convention_config_h
 #define Convention_config_h
 
-
 #define SERVER @"server"
 #define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
 #define ShowID [[SettingsManager sharedManager] lookupSettingByString:@"show"]
@@ -133,8 +132,6 @@
 #define kProductInitialShow @"initial_show"
 #define kProductVendID @"vendid"
 #define kProductVendorID @"vendor_id"
-#define kProductCreatedAt @"created_at"
-#define kProductUpdatedAt @"updated_at"
 #define kProductBulletin @"bulletin"
 #define kProductBulletinId @"bulletin_id"
 #define kProductMin @"min"
@@ -142,27 +139,14 @@
 #define kProductCategory @"category"
 #define kProductEditable @"editable"
 
-
 #define kLineItemPRICE @"price"
 #define kLineItemVoucher @"voucherPrice"
-
-
-#define kEditablePrice @"editablePrice"
-#define kEditableVoucher @"editableVoucher"
-#define kEditableQty @"editableQty"
-
 
 #define kReportPrintOrderId @"order_id"
 
 #define kOFFSET_FOR_KEYBOARD 80.0
 
 #define kFontName @"BEBAS"
-
-
-//notifications
-#define kNotificationCustomersLoaded @"NotificationCustomersLoaded"
-#define kCustomerNotificationKey @"customers"
-#define kPrintersLoaded @"PrintersLoaded"
 
 #define kCustomerId @"id"
 #define kCustomerCustId @"custid"
@@ -185,7 +169,6 @@
 #define kBulletinImportId @"import_id"
 
 #define kErrors @"errors"
-#define kLineItemErrors @"line_item_errors"
 
 
 #endif

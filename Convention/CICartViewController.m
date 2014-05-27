@@ -1,4 +1,3 @@
-#import "Order.h"//
 //  CICartViewController.m
 //  Convention
 //
@@ -6,13 +5,14 @@
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
+#import <JSONKit/JSONKit.h>
+#import "Order.h"
 #import "CICartViewController.h"
 #import "config.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "ShowConfigurations.h"
 #import "CIProductViewControllerHelper.h"
 #import "NumberUtil.h"
-#import "PWCartViewCell.h"
 #import "FarrisCartViewCell.h"
 #import "SettingsManager.h"
 #import "Cart.h"
@@ -217,21 +217,12 @@
     if ([indexPath section] == 0) { //product items
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
         Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        if ([kShowCorp isEqualToString:kPigglyWiggly]) {
-            PWCartViewCell *cell = (PWCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-            [cell initializeWith:multiStore showPrice:self.showPrice product:cart.product tag:[indexPath row] quantity:cart.editableQty
-                           price:@([cart.editablePrice intValue] / 100.0) voucher:@([cart.editableVoucher intValue] / 100.0)
-                       shipDates:cart.shipdates.count productCellDelegate:self];
-            return cell;
-        } else {
-            FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-            [cell initializeWithCart:cart tag:[indexPath row] ProductCellDelegate:self];
-            return cell;
-        }
+        FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
+        [cell initializeWithCart:cart tag:[indexPath row] ProductCellDelegate:self];
+        return cell;
     } else { //discount items
         NSNumber *lineItemId = self.discountsInCart[(NSUInteger) [indexPath row]];
         DiscountLineItem *discountLineItem = [self.coreDataOrder findDiscountForLineItemId:lineItemId];
-        Product *product = [Product findProduct:discountLineItem.productId];
         FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
         [cell initializeWithDiscount:discountLineItem tag:[indexPath row] ProductCellDelegate:self];
         return cell;

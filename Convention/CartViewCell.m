@@ -9,6 +9,7 @@
 #import "CartViewCell.h"
 #import "ProductCellDelegate.h"
 #import "Error.h"
+#import "ShowConfigurations.h"
 
 
 @implementation CartViewCell {
@@ -16,10 +17,15 @@
 @synthesize InvtID;
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    UITableView *tableView = (UITableView *) self.superview.superview;
-    NSIndexPath *indexPath = [tableView indexPathForCell:self];
-    [self.delegate setSelectedRow:indexPath];
-    return YES;
+    // todo make sure the field shows as plain text instead of a field?
+    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+        return NO;
+    } else {
+        UITableView *tableView = (UITableView *) self.superview.superview;
+        NSIndexPath *indexPath = [tableView indexPathForCell:self];
+        [self.delegate setSelectedRow:indexPath];
+        return YES;
+    }
 }
 
 - (void)updateErrorsView:(NSSet *)errors {

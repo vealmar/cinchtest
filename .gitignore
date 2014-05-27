@@ -6,4 +6,6 @@ Convention/popupadjustitemNEWNoEmail_OLD.png
 .idea
 xcuserdata
 Convention.xcodeproj
+Convention.xcworkspace
 .DS_Store
+Pods

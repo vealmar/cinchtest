@@ -14,7 +14,12 @@
 #import "Product.h"
 #import "DiscountLineItem+Extensions.h"
 #import "Product+Extensions.h"
+#import "Cart+Extensions.h"
 
+@interface FarrisCartViewCell () {
+    Cart *cart;
+}
+@end
 
 @implementation FarrisCartViewCell {
 
@@ -49,12 +54,13 @@
     [self updateErrorsView:[[NSSet alloc] init]];
 }
 
-- (void)initializeWithCart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWithCart:(Cart *)cartInitial tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    cart = cartInitial;
     self.InvtID.text = cart.product.invtid;
     [self setDescription:cart.product.descr withSubtext:cart.product.descr2];
     NSNumber *minNumber = (NSNumber *) [NilUtil nilOrObject:cart.product.min];
     self.min.text = minNumber ? [minNumber stringValue] : @"";
-    self.quantity.text = cart.editableQty;
+    self.quantity.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
     self.quantity.hidden = NO;
     self.qtyLbl.hidden = YES;
     self.regPrice.text = [NumberUtil formatCentsAsCurrency:cart.product.regprc];
@@ -88,8 +94,8 @@
 }
 
 - (IBAction)quantityChanged:(id)sender {
-    if (self.delegate) {
-        [self.delegate QtyChange:[self.quantity.text intValue] forIndex:self.tag];
+    if (cart) {
+        [cart setQuantity:[self.quantity.text intValue]];
     }
 }
 

@@ -6,6 +6,8 @@
 //
 
 
+#import <JSONKit/JSONKit.h>
+#import <Underscore.m/Underscore.h>
 #import "ALineItem.h"
 #import "NilUtil.h"
 
@@ -38,4 +40,24 @@
 - (BOOL)isStandard {
     return self.category && [self.category isEqualToString:@"standard"];
 }
+
+- (int)totalQuantity {
+    id quantities = [self.quantity objectFromJSONString];
+    if (quantities == nil) {
+        return 0;
+    } else if ([quantities isKindOfClass:[NSString class]]) {
+        return [quantities intValue];
+    } else if ([quantities isKindOfClass:[NSDictionary class]]) {
+        NSNumber* total = Underscore.array([((NSDictionary *)quantities) allValues]).reduce([NSNumber numberWithInt:0], ^(NSNumber *memo, NSString *obj) {
+            return [NSNumber numberWithInt:([obj intValue] + [memo intValue])];
+        });
+        return [total intValue];
+    }
+    return 0;
+}
+
+- (BOOL)isDiscount {
+    return [self.category isEqualToString:@"discount"];
+}
+
 @end

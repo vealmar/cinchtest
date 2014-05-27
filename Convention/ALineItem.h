@@ -24,4 +24,9 @@
 - (id)initWithJsonFromServer:(NSDictionary *)json;
 
 - (BOOL)isStandard;
+
+- (int)totalQuantity;
+
+- (BOOL)isDiscount;
+
 @end

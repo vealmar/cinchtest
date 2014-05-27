@@ -6,12 +6,12 @@
 //  Copyright (c) 2011 MotionMobs. All rights reserved.
 //
 
+#import <JSONKit/JSONKit.h>
+#import "CISlidingProductViewController.h"
 #import "CIProductViewController.h"
 #import "config.h"
-#import "CICalendarViewController.h"
 #import "SettingsManager.h"
 #import "CoreDataUtil.h"
-#import "ShipDate.h"
 #import "Order+Extensions.h"
 #import "AFJSONRequestOperation.h"
 #import "UIAlertViewDelegateWithBlock.h"
@@ -25,19 +25,17 @@
 #import "Product.h"
 #import "Vendor.h"
 #import "Bulletin.h"
-#import "Cart+Extensions.h"
 #import "Error.h"
-#import "Product+Extensions.h"
 #import "AProduct.h"
 #import "MBProgressHUD.h"
 #import "ProductCache.h"
-#import "CISlidingProductViewController.h"
+#import "NotificationConstants.h"
+#import "Cart+Extensions.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
     int currentBulletin; //Bulletin selected in the bulletin drop down
     NSArray *vendorsData; //Vendors belonging to the same vendor group as the logged in vendors. These vendors are displayed in the bulletins drop down.
-    NSMutableSet *selectedIdx; //Item rows selected for specifying ship dates. These rows appear with a checkmark.
     NSDictionary *bulletins;
     NSIndexPath *selectedItemRowIndexPath;
     CIProductViewControllerHelper *helper;
@@ -45,7 +43,6 @@
     BOOL keyboardUp;
     float keyboardHeight;
     CIFinalCustomerInfoViewController *customerInfoViewController;
-
 }
 @property(strong, nonatomic) AnOrder *savedOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
@@ -67,13 +64,13 @@
         currentBulletin = 0;
         self.vendorProductIds = [NSMutableArray array];
         self.vendorProducts = [NSMutableArray array];
-        selectedIdx = [NSMutableSet set];
         self.multiStore = NO;
         self.orderSubmitted = NO;
         self.selectedPrintStationId = 0;
         self.unsavedChangesPresent = NO;
         helper = [[CIProductViewControllerHelper alloc] init];
         keyboardUp = NO;
+        self.selectedCarts = [NSMutableSet set];
     }
     return self;
 }
@@ -113,7 +110,7 @@
         self.tableHeaderFarris.hidden = NO;
         self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     }
-    if (!self.useShipDates) self.btnSelectShipDates.hidden = YES; // todo change after shipdates restructure
+    if (![ShowConfigurations instance].isOrderShipDatesType) self.btnSelectShipDates.hidden = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -138,13 +135,18 @@
         //so it is important to undo the frame resize at this point.
         [self keyboardDidHide];
     }
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
-                                                 name:UIKeyboardDidHideNotification object:nil];
     self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
     [self.vendorTable reloadData];
     [self updateErrorsView];
+
+    // notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardDidShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide) name:UIKeyboardDidHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartQuantityChange:) name:CartQuantityChangedNotification object:nil];
+
+    // listen for changes KVO
+    [self addObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder)) options:0 context:nil];
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -157,6 +159,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder))];
 }
 
 # pragma mark - Initialization
@@ -356,6 +359,26 @@
     }
 }
 
+- (void)toggleCartSelection:(Cart *)cart {
+    int row = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        // obj should be a productId
+        return [obj isEqual:cart.cartId];
+    }];
+    UITableViewCell *productCell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]];
+
+    if ([self.selectedCarts containsObject:cart]) {
+        [self.selectedCarts removeObject:cart];
+        [[NSNotificationCenter defaultCenter] postNotificationName:CartDeselectionNotification object:cart];
+        productCell.accessoryType = UITableViewCellAccessoryNone;
+    } else {
+        [self.selectedCarts addObject:cart];
+        [[NSNotificationCenter defaultCenter] postNotificationName:CartSelectionNotification object:cart];
+        if (![cart.product.invtid isEqualToString:@"0"]) {
+            productCell.accessoryType = UITableViewCellAccessoryCheckmark;
+        }
+    }
+}
+
 #pragma mark - Other Views
 
 /**
@@ -402,28 +425,23 @@
     NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
     AProduct *product = [[ProductCache sharedCache] getProduct:productId];
     UITableViewCell *cell = [helper dequeueReusableProductCell:myTableView];
-    if ([kShowCorp isEqualToString:kPigglyWiggly]) {
-        BOOL rowIsSelected = [selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]] && ![product.invtid isEqualToString:@"0"];
-        [(PWProductCell *) cell initializeWith:self.customer multiStore:self.multiStore aProduct:product cart:[self.coreDataOrder findCartForProductId:product.productId] checkmarked:rowIsSelected tag:[indexPath row] productCellDelegate:self];
-    } else {
-        [(FarrisProductCell *) cell initializeWithAProduct:product cart:[self.coreDataOrder findCartForProductId:product.productId] tag:[indexPath row] ProductCellDelegate:self];
-    }
+    [(FarrisProductCell *)cell initializeWithAProduct:product cart:[self.coreDataOrder findCartForProductId:product.productId] tag:[indexPath row] ProductCellDelegate:self];
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.useShipDates && [[ShowConfigurations instance] isLineItemShipDatesType]) {
+    if ([[ShowConfigurations instance] isLineItemShipDatesType]) {
         NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-        Product *product = [Product findProduct:productId];
-        if ([selectedIdx containsObject:[NSNumber numberWithInteger:[indexPath row]]]) {
-            [selectedIdx removeObject:[NSNumber numberWithInteger:[indexPath row]]];
-            [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryNone;
-        } else {
-            [selectedIdx addObject:[NSNumber numberWithInteger:[indexPath row]]];
-            if (![product.invtid isEqualToString:@"0"]) {
-                [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
-            }
-        }
+        Cart *cart = [self.coreDataOrder findOrCreateCartForId:productId context:self.managedObjectContext];
+        [self toggleCartSelection:cart];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([[ShowConfigurations instance] isLineItemShipDatesType]) {
+        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
+        Cart *cart = [self.coreDataOrder findOrCreateCartForId:productId context:self.managedObjectContext];
+        [self toggleCartSelection:cart];
     }
 }
 
@@ -457,7 +475,7 @@
         self.dismissVendor.hidden = YES;
         return;
     }
-    [selectedIdx removeAllObjects];
+    [self.selectedCarts removeAllObjects];
     if (vendorsData && [vendorsData count] > 0) {
         [self showVendorView];
     }
@@ -532,114 +550,12 @@
 }
 
 - (IBAction)shipdatesTouched:(id)sender {
+    [self loadShipDateCalendar];
+}
+
+- (void)loadShipDateCalendar {
     [self.view endEditing:YES];
-
-    if (self.useOrderBasedShipDates) {
-        [self loadOrderShipDateCalendar];
-    } else {
-        [self loadLineItemShipDateCalendar];
-    }
-}
-
-- (void)loadOrderShipDateCalendar {
     [self.slidingProductViewControllerDelegate toggleShipDates];
-}
-
-- (void)loadLineItemShipDateCalendar {
-    if (selectedIdx.count <= 0) {
-        [[[UIAlertView alloc] initWithTitle:@"Oops" message:@"Please select the item(s) you want to set dates for."
-                                   delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        return;
-    }
-
-    NSMutableArray *ranges = [NSMutableArray arrayWithCapacity:selectedIdx.count];
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-
-    for (NSNumber *idx in selectedIdx) {
-        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx.intValue];
-        Product *product = [Product findProduct:productId];
-        if ([product.invtid isEqualToString:@"0"]) {
-            continue;
-        }
-        NSDate *startDate = [[NSDate alloc] init];
-        NSDate *endDate = [[NSDate alloc] init];
-        if (product.shipdate1) {
-            startDate = product.shipdate1;
-        }
-        if (product.shipdate2) {
-            endDate = product.shipdate2;
-        }
-        NSMutableArray *dateList = [NSMutableArray array];
-        NSCalendar *currentCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-        NSDateComponents *comps = [[NSDateComponents alloc] init];
-        [comps setDay:1];
-        [dateList addObject:startDate];
-        NSDate *currentDate = startDate;
-        // add one the first time through, so that we can use NSOrderedAscending (prevents millisecond infinite loop)
-        currentDate = [currentCalendar dateByAddingComponents:comps toDate:currentDate options:0];
-        while ([endDate compare:currentDate] != NSOrderedAscending) {
-            [dateList addObject:currentDate];
-            currentDate = [currentCalendar dateByAddingComponents:comps toDate:currentDate options:0];
-        }
-        [ranges addObject:dateList];
-    }
-    CICalendarViewController *calView = [[CICalendarViewController alloc] initWithNibName:@"CICalendarViewController" bundle:nil];
-    calView.modalPresentationStyle = UIModalPresentationFormSheet;
-    CICalendarViewController __weak *weakCalView = calView;
-    calView.cancelTouched = ^{
-        CICalendarViewController *strongCalView = weakCalView;
-        [strongCalView dismissViewControllerAnimated:NO completion:nil];
-    };
-    calView.doneTouched = ^(NSArray *dates) {
-        CICalendarViewController *strongCalView = weakCalView;
-        [selectedIdx enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-            NSNumber *idx = (NSNumber *) obj;
-            NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [idx integerValue]];
-            [self updateShipDatesInCartWithId:productId forDates:dates];
-            [self updateTotals];
-            self.unsavedChangesPresent = YES;
-            [self updateCellColorForId:(NSUInteger) [idx integerValue]];
-        }];
-        [selectedIdx removeAllObjects];
-        [self reloadTable];
-        [strongCalView dismissViewControllerAnimated:NO completion:nil];
-    };
-    __block NSMutableArray *selectedArr = [NSMutableArray array];
-    [selectedIdx enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-        NSNumber *idx = (NSNumber *) obj;
-        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [idx integerValue]];
-        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        [selectedArr addObjectsFromArray:[cart shipDatesAsDatesArray]];
-    }];
-
-    NSArray *selectedDates = [[[NSOrderedSet orderedSetWithArray:selectedArr] array] copy];
-    if (ranges.count > 1) {
-        NSMutableSet *final = [NSMutableSet setWithArray:[ranges objectAtIndex:0]];
-        for (int i = 1; i < ranges.count; i++) {
-            NSSet *tempset = [NSSet setWithArray:[ranges objectAtIndex:(NSUInteger) i]];
-            [final intersectSet:tempset];
-        }
-        if (final.count <= 0) {
-            [[[UIAlertView alloc] initWithTitle:@"Oops" message:@"We couldn't find any dates that could be used for all of the items you have selected! Please de-select some and then try again!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        } else {
-            calView.startDate = [[final allObjects] objectAtIndex:0];
-            calView.afterLoad = ^{
-                calView.calendarView.avalibleDates = [[final allObjects] mutableCopy];
-                calView.calendarView.selectedDates = [selectedDates mutableCopy];
-            };
-            [self presentViewController:calView animated:NO completion:nil];
-        }
-    } else {
-        if (ranges && ranges.count == 1) {
-            calView.startDate = [[ranges objectAtIndex:0] objectAtIndex:0];
-            calView.afterLoad = ^{
-                calView.calendarView.avalibleDates = [[ranges objectAtIndex:0] mutableCopy];
-                calView.calendarView.selectedDates = [selectedDates mutableCopy];
-            };
-            [self presentViewController:calView animated:NO completion:nil];
-        }
-    }
 }
 
 - (IBAction)searchDidBeginEditing:(UITextField *)sender {
@@ -673,31 +589,10 @@
         //if search is active i.e. we are doing limited search, query all product attributes and add them to the cahce since they will be needed when table is reloaded.
         //if search is not active, query only product ids since the result might include a large number of products and the table reload will only show 10-20 cells.
         self.resultData = [CoreDataManager getProductIdsMatchingQueryString:queryString sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]] limit:limit managedObjectContext:self.managedObjectContext vendor:currentVendor bulletin:currentBulletin];
-        [selectedIdx removeAllObjects];
+        [self.selectedCarts removeAllObjects];
         selectedItemRowIndexPath = nil;
     }
     [self reloadTable];
-}
-
-//User is in middle of editing a quantity (so the keyboard is visible), then taps somewhere else on the screen - the keyboard should disappear.
-- (IBAction)handleTap:(UITapGestureRecognizer *)recognizer {
-    if (recognizer.state == UIGestureRecognizerStateEnded) {
-        if ([kShowCorp isEqualToString:kPigglyWiggly]) {
-            for (PWProductCell *cell in self.productsTableView.visibleCells) {
-                if ([cell.quantity isFirstResponder]) {
-                    [cell.quantity resignFirstResponder];//so the keyboard will hide
-                    break;
-                }
-            }
-        } else {
-            for (FarrisProductCell *cell in self.productsTableView.visibleCells) {
-                if ([cell.quantity isFirstResponder]) {
-                    [cell.quantity resignFirstResponder];//so the keyboard will hide
-                    break;
-                }
-            }
-        }
-    }
 }
 
 - (void)keyboardWillShow:(NSNotification *)note {
@@ -705,15 +600,6 @@
     // In addition scroll the selected row into view.
     NSDictionary *info = [note userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-//    CGRect frame = self.productsTableView.frame;
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationBeginsFromCurrentState:YES];
-//    [UIView setAnimationDuration:0.3f];
-//    frame.size.height -= (kbSize.width - 69); //width because landscape. 69 is height of the view that contains totals at the end of the table.
-//    self.productsTableView.frame = frame;
-//    [self.productsTableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-//    keyboardUp = YES;
-//    [UIView commitAnimations];
     //todo maybe we should be scrolling the parent view of the table (put table and totals view inside a view and that will be the parent we scroll?)
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
@@ -733,16 +619,6 @@
 }
 
 - (void)keyboardDidHide {
-//    CGRect frame = self.productsTableView.frame;
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationBeginsFromCurrentState:YES];
-//    [UIView setAnimationDuration:0.3f];
-//    CGRect tbFrame = [self.productsTableView frame];
-//    tbFrame.size.height = 501;
-//    [self.productsTableView setFrame:tbFrame];
-//    keyboardUp = NO;
-//    [UIView commitAnimations];
-
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
@@ -875,31 +751,46 @@
 
 #pragma mark - ProductCellDelegate
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (NSStringFromSelector(@selector(coreDataOrder)) == keyPath) {
+        NSError *error = nil;
+        if (![self.managedObjectContext save:&error]) {
+            NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
+            [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+        }
+    }
+}
 
-- (void)QtyChange:(int)qty forIndex:(int)idx {
-    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
-    [self.coreDataOrder updateItemQuantity:[NSString stringWithFormat:@"%i", qty] productId:productId context:self.managedObjectContext];
-    self.unsavedChangesPresent = YES;
+- (void)onCartQuantityChange:(NSNotification *)notification {
+    Cart *cart = (Cart *) notification.object;
+    int idx = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+        // obj should be a productId
+        return [obj isEqual:cart.cartId];
+    }];
+    FarrisProductCell *cell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
+    cell.quantity.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
     [self updateCellColorForId:(NSUInteger) idx];
     [self updateTotals];
+
+    self.unsavedChangesPresent = YES;
 }
 
 - (void)QtyTouchForIndex:(int)idx {
-    if ([self.poController isPopoverVisible]) {
-        [self.poController dismissPopoverAnimated:YES];
-    } else {
-        if (!self.storeQtysPO) {
-            self.storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
-        }
+    if ([ShowConfigurations instance].isLineItemShipDatesType) {
         NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
-        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        self.storeQtysPO.stores = [[cart.editableQty objectFromJSONString] mutableCopy];
-        self.storeQtysPO.tag = idx;
-        self.storeQtysPO.delegate = self;
-        CGRect frame = [self.productsTableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-        frame = CGRectOffset(frame, 750, 0);
-        self.poController = [[UIPopoverController alloc] initWithContentViewController:self.storeQtysPO];
-        [self.poController presentPopoverFromRect:frame inView:self.productsTableView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        Cart *cart = [self.coreDataOrder findOrCreateCartForId:productId
+                                                       context:self.managedObjectContext];
+
+        if (self.selectedCarts.count == 1) {
+            [self.view endEditing:YES];
+            [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
+                [self toggleCartSelection:cart]; //disable selection
+            }];
+        } else {
+            [self toggleCartSelection:cart];
+        }
+
+        [self loadShipDateCalendar];
     }
 }
 
@@ -930,57 +821,6 @@
 }
 
 #pragma mark - Core Data routines
-
-- (void)updateShipDatesInCartWithId:(NSNumber *)cartId forDates:(NSArray *)dates {
-    if (dates && [dates count] > 0) {
-        Cart *cart = [self.coreDataOrder findCartForProductId:cartId];
-        if (cart)
-            [self updateShipDates:dates inCart:cart];
-    }
-}
-
-- (void)updateShipDates:(NSArray *)dates inCart:(Cart *)cart {
-    if (dates && cart && [dates count] > 0) {
-        NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
-
-        NSMutableArray *cartDates = [[NSMutableArray alloc] initWithCapacity:[cart.shipdates count]];
-        for (ShipDate *sd in cart.shipdates) {
-            [cartDates addObject:sd.shipdate];
-        }
-
-        NSMutableArray *newDates = [[NSMutableArray alloc] initWithCapacity:[dates count]];
-        for (NSDate *aDate in dates) {
-            NSTimeInterval timeInt = [aDate timeIntervalSinceReferenceDate];
-            [newDates addObject:[[NSDate alloc] initWithTimeIntervalSinceReferenceDate:timeInt]];
-        }
-
-        NSArray *sortedCartDates = [cartDates sortedArrayUsingSelector:@selector(compare:)];
-        NSArray *sortedDates = [newDates sortedArrayUsingSelector:@selector(compare:)];
-
-        if (![sortedDates isEqualToArray:sortedCartDates]) {
-            NSMutableArray *newShipDates = [[NSMutableArray alloc] init];
-            for (NSDate *aDate in sortedDates) {
-                ShipDate *sd = [NSEntityDescription insertNewObjectForEntityForName:@"ShipDate" inManagedObjectContext:cart.managedObjectContext];
-                [sd setShipdate:aDate];
-                [newShipDates addObject:sd];
-            }
-
-            for (ShipDate *shipDate in cart.shipdates) {
-                [self.managedObjectContext deleteObject:shipDate];
-            }
-
-            NSOrderedSet *orderedDates = [NSOrderedSet orderedSetWithArray:newShipDates];
-            [cart setShipdates:orderedDates];
-
-            NSError *error = nil;
-            BOOL success = [self.managedObjectContext save:&error];
-            if (!success) {
-                DLog(@"Error updating shipdates in cart: %@", [error localizedDescription]);
-            }
-        }
-    }
-}
 
 - (void)updateCellColorForId:(NSUInteger)index {
     NSNumber *productId = [self.resultData objectAtIndex:index];

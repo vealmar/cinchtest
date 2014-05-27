@@ -11,22 +11,29 @@
 #import "NumberUtil.h"
 #import "Cart.h"
 #import "AProduct.h"
+#import "ShowConfigurations.h"
+#import "Cart+Extensions.h"
 
 @interface FarrisProductCell () {
     NSString *originalCellValue;
+    Cart *cart;
 }
 @end
 
 @implementation FarrisProductCell
 
 
-- (void)initializeWithAProduct:(AProduct *)product cart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+- (void)initializeWithAProduct:(AProduct *)product cart:(Cart *)cartInitial tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    cart = cartInitial;
     if (product) {
         self.InvtID.text = product.invtid;
         [self setDescription:product.descr withSubtext:product.descr2];
         self.min.text = product.min != nil ? [product.min stringValue] : @"";
         self.regPrice.text = [NumberUtil formatCentsAsCurrency:product.regprc];
         self.showPrice.text = [NumberUtil formatCentsAsCurrency:product.showprc];
+        if ([product.showprc isEqual:product.regprc]) {
+            self.showPrice.text = @"";
+        }
     } else {
         self.InvtID.text = @"Product Not Found";
         [self setDescription:@"" withSubtext:@""];
@@ -46,7 +53,7 @@
 
     }
     if (cart != nil && cart.editableQty != nil) {
-        self.quantity.text = cart.editableQty;
+        self.quantity.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
         if (product)
             self.numOfShipDates.text = cart.shipdates && cart.shipdates.count > 0 ? [NSString stringWithFormat:@"%d", cart.shipdates.count] : @"";
 
@@ -70,9 +77,7 @@
 }
 
 - (IBAction)quantityChanged:(id)sender {
-    if (self.delegate) {
-        [self.delegate QtyChange:[self.quantity.text intValue] forIndex:self.tag];
-    }
+    cart.editableQty = [NSString stringWithFormat:@"%i", [self.quantity.text intValue]];
 }
 
 - (IBAction)showPriceChanged:(id)sender {
@@ -90,7 +95,8 @@
     UITableView *tableView = (UITableView *) self.superview.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
     [self.delegate setSelectedRow:indexPath];
-    return YES;
+    [self.delegate QtyTouchForIndex:indexPath.row];
+    return ![ShowConfigurations instance].isLineItemShipDatesType;
 }
 
 - (BOOL)textFieldShouldClear:(UITextField *)textField {
