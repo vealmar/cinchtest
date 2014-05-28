@@ -360,23 +360,25 @@
 }
 
 - (void)toggleCartSelection:(Cart *)cart {
-    int row = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        // obj should be a productId
-        return [obj isEqual:cart.cartId];
-    }];
-    UITableViewCell *productCell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        int row = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+            // obj should be a productId
+            return [obj isEqual:cart.cartId];
+        }];
+        UITableViewCell *productCell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]];
 
-    if ([self.selectedCarts containsObject:cart]) {
-        [self.selectedCarts removeObject:cart];
-        [[NSNotificationCenter defaultCenter] postNotificationName:CartDeselectionNotification object:cart];
-        productCell.accessoryType = UITableViewCellAccessoryNone;
-    } else {
-        [self.selectedCarts addObject:cart];
-        [[NSNotificationCenter defaultCenter] postNotificationName:CartSelectionNotification object:cart];
-        if (![cart.product.invtid isEqualToString:@"0"]) {
-            productCell.accessoryType = UITableViewCellAccessoryCheckmark;
+        if ([self.selectedCarts containsObject:cart]) {
+            [self.selectedCarts removeObject:cart];
+            [[NSNotificationCenter defaultCenter] postNotificationName:CartDeselectionNotification object:cart];
+            productCell.accessoryType = UITableViewCellAccessoryNone;
+        } else {
+            [self.selectedCarts addObject:cart];
+            [[NSNotificationCenter defaultCenter] postNotificationName:CartSelectionNotification object:cart];
+            if (![cart.product.invtid isEqualToString:@"0"]) {
+                productCell.accessoryType = UITableViewCellAccessoryCheckmark;
+            }
         }
-    }
+    });
 }
 
 #pragma mark - Other Views
