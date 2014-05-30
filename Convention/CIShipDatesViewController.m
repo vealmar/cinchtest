@@ -161,11 +161,10 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         if (nil != self.workingOrder) {
             if ([ShowConfigurations instance].isOrderShipDatesType) {
                 self.workingOrder.ship_dates = [NSArray arrayWithArray:self.selectedShipDates];
-            } else if ([ShowConfigurations instance].isLineItemShipDatesType) {
-                // we will let the shipdates get updated when a quantity changes
-//                [self.selectedCarts enumerateObjectsUsingBlock:^(id cart, NSUInteger idx, BOOL *stop) {
-//                    [cart updateShipDates:[NSArray arrayWithArray:self.selectedShipDates]];
-//                }];
+            } else if ([ShowConfigurations instance].isLineItemShipDatesType && ![self.selectedShipDates containsObject:date]) {
+                [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, NSUInteger idx, BOOL *stop) {
+                    [cart setQuantity:0 forShipDate:date];
+                }];
             }
         }
     }
