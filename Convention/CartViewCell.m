@@ -17,7 +17,6 @@
 @synthesize InvtID;
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    // todo make sure the field shows as plain text instead of a field?
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
         return NO;
     } else {

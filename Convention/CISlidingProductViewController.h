@@ -19,6 +19,6 @@
 
 @required
 
--(void)toggleShipDates;
+-(void)toggleShipDates:(BOOL)shouldOpen;
 
 @end

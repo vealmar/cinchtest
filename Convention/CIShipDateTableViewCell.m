@@ -7,6 +7,7 @@
 #import "Cart+Extensions.h"
 #import "DateUtil.h"
 #import "config.h"
+#import "NotificationConstants.h"
 
 @interface CIShipDateTableViewCell ()
 
@@ -50,6 +51,8 @@
     return self;
 }
 
+
+
 - (int)quantity {
     return self.quantityField.text.intValue;
 }
@@ -70,6 +73,8 @@
     if ([textField.text isEqualToString:@"0"]) {
         textField.text = @"";
     }
+
+    [[NSNotificationCenter defaultCenter] addObserver:textField selector:@selector(resignFirstResponder) name:CartDeselectionNotification object:nil];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -91,6 +96,8 @@
     [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, NSUInteger idx, BOOL *stop) {
         [cart setQuantity:quantity forShipDate:self.shipDate];
     }];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:textField name:CartDeselectionNotification object:nil];
 }
 
 @end

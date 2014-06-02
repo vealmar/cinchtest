@@ -31,6 +31,8 @@
 #import "ProductCache.h"
 #import "NotificationConstants.h"
 #import "Cart+Extensions.h"
+#import "ProductSearch.h"
+#import "ProductSearchQueue.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -46,6 +48,7 @@
 }
 @property(strong, nonatomic) AnOrder *savedOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
+@property ProductSearchQueue *productSearchQueue;
 @end
 
 @implementation CIProductViewController
@@ -71,6 +74,7 @@
         helper = [[CIProductViewControllerHelper alloc] init];
         keyboardUp = NO;
         self.selectedCarts = [NSMutableSet set];
+        self.productSearchQueue = [[ProductSearchQueue alloc] initWithProductController:self];
     }
     return self;
 }
@@ -146,7 +150,7 @@
 
     // listen for changes KVO
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder)) options:0 context:nil];
-
+    [self addObserver:self forKeyPath:NSStringFromSelector(@selector(resultData)) options:NSKeyValueObservingOptionNew context:NULL];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -160,6 +164,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder))];
+    [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(resultData))];
 }
 
 # pragma mark - Initialization
@@ -261,7 +266,6 @@
     }
     self.resultData = sortedProductIds;
     [self updateVendorAndBulletinLabel];
-    [self reloadTable];
 }
 
 - (void)createNewOrder {
@@ -360,23 +364,30 @@
 }
 
 - (void)toggleCartSelection:(Cart *)cart {
+    __block Cart *blockCart = cart;
     dispatch_async(dispatch_get_main_queue(), ^{
         int row = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
             // obj should be a productId
-            return [obj isEqual:cart.cartId];
+            return [obj isEqual:blockCart.cartId];
         }];
-        UITableViewCell *productCell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]];
 
-        if ([self.selectedCarts containsObject:cart]) {
-            [self.selectedCarts removeObject:cart];
-            [[NSNotificationCenter defaultCenter] postNotificationName:CartDeselectionNotification object:cart];
-            productCell.accessoryType = UITableViewCellAccessoryNone;
-        } else {
-            [self.selectedCarts addObject:cart];
-            [[NSNotificationCenter defaultCenter] postNotificationName:CartSelectionNotification object:cart];
-            if (![cart.product.invtid isEqualToString:@"0"]) {
-                productCell.accessoryType = UITableViewCellAccessoryCheckmark;
+        if (row != NSNotFound) {
+            UITableViewCell *productCell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]];
+            if ([self.selectedCarts containsObject:blockCart]) {
+                productCell.accessoryType = UITableViewCellAccessoryNone;
+            } else {
+                if (![blockCart.product.invtid isEqualToString:@"0"]) {
+                    productCell.accessoryType = UITableViewCellAccessoryCheckmark;
+                }
             }
+        }
+
+        if ([self.selectedCarts containsObject:blockCart]) {
+            [self.selectedCarts removeObject:blockCart];
+            [[NSNotificationCenter defaultCenter] postNotificationName:CartDeselectionNotification object:blockCart];
+        } else {
+            [self.selectedCarts addObject:blockCart];
+            [[NSNotificationCenter defaultCenter] postNotificationName:CartSelectionNotification object:blockCart];
         }
     });
 }
@@ -552,16 +563,23 @@
 }
 
 - (IBAction)shipdatesTouched:(id)sender {
-    [self loadShipDateCalendar];
-}
-
-- (void)loadShipDateCalendar {
     [self.view endEditing:YES];
-    [self.slidingProductViewControllerDelegate toggleShipDates];
+    [self.slidingProductViewControllerDelegate toggleShipDates:YES];
 }
 
 - (IBAction)searchDidBeginEditing:(UITextField *)sender {
+    sender.text = @"";
+    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+        // close calendar
+        if (self.selectedCarts.count == 1) {
+            [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
+                [self toggleCartSelection:cart]; //disable selection
+            }];
+            [self.slidingProductViewControllerDelegate toggleShipDates:NO];
+        }
+    }
 
+    [self searchProducts:sender.text searchIsActive:YES];
 }
 
 - (IBAction)searchDidChangeEditing:(UITextField *)sender {
@@ -580,7 +598,6 @@
     [self searchProducts:self.searchText.text searchIsActive:NO];
 }
 
-
 - (void)searchProducts:(NSString *)queryString searchIsActive:(BOOL)searchIsActive {
     if (self.vendorProducts == nil|| [self.vendorProducts isKindOfClass:[NSNull class]] || [self.vendorProducts count] == 0) return;
     queryString = [queryString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -590,11 +607,11 @@
         NSUInteger limit = searchIsActive ? 50 : 0; //0 indicates no limit
         //if search is active i.e. we are doing limited search, query all product attributes and add them to the cahce since they will be needed when table is reloaded.
         //if search is not active, query only product ids since the result might include a large number of products and the table reload will only show 10-20 cells.
-        self.resultData = [CoreDataManager getProductIdsMatchingQueryString:queryString sortDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]] limit:limit managedObjectContext:self.managedObjectContext vendor:currentVendor bulletin:currentBulletin];
+        ProductSearch *productSearch = [ProductSearch searchFor:queryString inBulletin:currentBulletin forVendor:currentVendor limitResultSize:limit usingContext:self.managedObjectContext];
+        [self.productSearchQueue search:productSearch];
         [self.selectedCarts removeAllObjects];
         selectedItemRowIndexPath = nil;
     }
-    [self reloadTable];
 }
 
 - (void)keyboardWillShow:(NSNotification *)note {
@@ -754,12 +771,14 @@
 #pragma mark - ProductCellDelegate
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if (NSStringFromSelector(@selector(coreDataOrder)) == keyPath) {
+    if ([NSStringFromSelector(@selector(coreDataOrder)) isEqualToString:keyPath]) {
         NSError *error = nil;
         if (![self.managedObjectContext save:&error]) {
             NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
             [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
         }
+    } else if ([NSStringFromSelector(@selector(resultData)) isEqualToString:keyPath]) {
+        [self reloadTable];
     }
 }
 
@@ -769,9 +788,11 @@
         // obj should be a productId
         return [obj isEqual:cart.cartId];
     }];
-    FarrisProductCell *cell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-    cell.quantity.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
-    [self updateCellColorForId:(NSUInteger) idx];
+    if (idx != NSNotFound) {
+        FarrisProductCell *cell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
+        cell.quantity.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
+        [self updateCellColorForId:(NSUInteger) idx];
+    }
     [self updateTotals];
 
     self.unsavedChangesPresent = YES;
@@ -784,15 +805,16 @@
                                                        context:self.managedObjectContext];
 
         if (self.selectedCarts.count == 1) {
-            [self.view endEditing:YES];
             [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
                 [self toggleCartSelection:cart]; //disable selection
             }];
+            [self.slidingProductViewControllerDelegate toggleShipDates:NO];
         } else {
             [self toggleCartSelection:cart];
+            [self.slidingProductViewControllerDelegate toggleShipDates:YES];
         }
 
-        [self loadShipDateCalendar];
+        [self.searchText resignFirstResponder];
     }
 }
 

@@ -15,6 +15,7 @@
 #import "DiscountLineItem+Extensions.h"
 #import "Product+Extensions.h"
 #import "Cart+Extensions.h"
+#import "ShowConfigurations.h"
 
 @interface FarrisCartViewCell () {
     Cart *cart;
@@ -60,9 +61,6 @@
     [self setDescription:cart.product.descr withSubtext:cart.product.descr2];
     NSNumber *minNumber = (NSNumber *) [NilUtil nilOrObject:cart.product.min];
     self.min.text = minNumber ? [minNumber stringValue] : @"";
-    self.quantity.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
-    self.quantity.hidden = NO;
-    self.qtyLbl.hidden = YES;
     self.regPrice.text = [NumberUtil formatCentsAsCurrency:cart.product.regprc];
     self.showPrice.text = [NumberUtil formatCentsAsCurrency:cart.product.showprc];
     self.delegate = productCellDelegate;
@@ -72,6 +70,16 @@
     if (cart.product.editable && cart.product.editable.intValue == 1) {
         self.showPrice.text = [NumberUtil formatCentsAsCurrency:cart.editablePrice];
     }
+    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+        self.qtyLbl.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
+        self.quantity.hidden = YES;
+        self.qtyLbl.hidden = NO;
+    } else {
+        self.quantity.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
+        self.quantity.hidden = NO;
+        self.qtyLbl.hidden = YES;
+    }
+
     [self updateErrorsView:cart.errors];
 }
 

@@ -56,9 +56,11 @@
 		35F52F4B833B78BCED458609 /* SaveButton-in.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52FB5EB455BBF057DAC6C /* SaveButton-in.png */; };
 		35F52FC5C5E61BAC2A7CD197 /* save2out.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5256E54BCD292CF9ED322 /* save2out.png */; };
 		4D4AD1ACC10B77277CCD4590 /* CIShipDatesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4AD23FE20A4CC36C9D0B5C /* CIShipDatesViewController.m */; };
+		4D4AD2E5450207522D33D28E /* ProductSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4ADACF22CF49EB9A299BB0 /* ProductSearch.m */; };
 		4D4AD566A6C4CBA27F9299B1 /* DateRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4AD58AA8E26C2152E1729A /* DateRange.m */; };
 		4D4AD5D8C05D64F19F4CB972 /* CISlidingProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4ADDA2F8D851B8BBB57BD3 /* CISlidingProductViewController.m */; };
 		4D4AD61158A40A54BC9F7B20 /* CIShipDateTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4AD39684D6BFDEEDC01F29 /* CIShipDateTableViewCell.m */; };
+		4D4ADD8EF0B97FE5F3E39A78 /* ProductSearchQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4AD7BDACC9616CC2048CE2 /* ProductSearchQueue.m */; };
 		4D4ADF77973064B0F633EEC7 /* NotificationConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4ADE727B327BB479DB6BD7 /* NotificationConstants.m */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
 		6414A6F11496B9A10088586B /* bluebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6F01496B9A10088586B /* bluebutton.png */; };
@@ -336,11 +338,15 @@
 		4D4AD23FE20A4CC36C9D0B5C /* CIShipDatesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIShipDatesViewController.m; sourceTree = "<group>"; };
 		4D4AD39684D6BFDEEDC01F29 /* CIShipDateTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIShipDateTableViewCell.m; sourceTree = "<group>"; };
 		4D4AD41B958A2D9587C2BD19 /* CISlidingProductViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISlidingProductViewController.h; sourceTree = "<group>"; };
+		4D4AD45AA96D85073AD170E4 /* ProductSearchQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductSearchQueue.h; sourceTree = "<group>"; };
 		4D4AD58AA8E26C2152E1729A /* DateRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateRange.m; sourceTree = "<group>"; };
+		4D4AD61B22A303363EE4E831 /* ProductSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductSearch.h; sourceTree = "<group>"; };
 		4D4AD6C21F32B6B4F49D562E /* NotificationConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationConstants.h; sourceTree = "<group>"; };
+		4D4AD7BDACC9616CC2048CE2 /* ProductSearchQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductSearchQueue.m; sourceTree = "<group>"; };
 		4D4AD9173C07CD86AF4F4254 /* CIShipDateTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIShipDateTableViewCell.h; sourceTree = "<group>"; };
 		4D4ADA94F3EBC8BD7D573410 /* DateRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateRange.h; sourceTree = "<group>"; };
 		4D4ADA9FCF2057426AA1D1B7 /* CIShipDatesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIShipDatesViewController.h; sourceTree = "<group>"; };
+		4D4ADACF22CF49EB9A299BB0 /* ProductSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProductSearch.m; sourceTree = "<group>"; };
 		4D4ADDA2F8D851B8BBB57BD3 /* CISlidingProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISlidingProductViewController.m; sourceTree = "<group>"; };
 		4D4ADE727B327BB479DB6BD7 /* NotificationConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationConstants.m; sourceTree = "<group>"; };
 		6414A6E91496AE960088586B /* orangebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangebutton.png; sourceTree = "<group>"; };
@@ -1051,6 +1057,10 @@
 				4D4AD41B958A2D9587C2BD19 /* CISlidingProductViewController.h */,
 				4D4AD39684D6BFDEEDC01F29 /* CIShipDateTableViewCell.m */,
 				4D4AD9173C07CD86AF4F4254 /* CIShipDateTableViewCell.h */,
+				4D4AD7BDACC9616CC2048CE2 /* ProductSearchQueue.m */,
+				4D4AD45AA96D85073AD170E4 /* ProductSearchQueue.h */,
+				4D4ADACF22CF49EB9A299BB0 /* ProductSearch.m */,
+				4D4AD61B22A303363EE4E831 /* ProductSearch.h */,
 			);
 			name = "order form";
 			sourceTree = "<group>";
@@ -1849,6 +1859,8 @@
 				4D4AD5D8C05D64F19F4CB972 /* CISlidingProductViewController.m in Sources */,
 				4D4ADF77973064B0F633EEC7 /* NotificationConstants.m in Sources */,
 				4D4AD61158A40A54BC9F7B20 /* CIShipDateTableViewCell.m in Sources */,
+				4D4ADD8EF0B97FE5F3E39A78 /* ProductSearchQueue.m in Sources */,
+				4D4AD2E5450207522D33D28E /* ProductSearch.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1952,8 +1964,8 @@
 			baseConfigurationReference = 21727971C60D4376BEEE40BD /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Convention Innovation, LLC";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Convention Innovation, LLC";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Convention/Convention-Prefix.pch";
 				INFOPLIST_FILE = "Convention/Convention-Info.plist";
@@ -1976,7 +1988,7 @@
 			baseConfigurationReference = 21727971C60D4376BEEE40BD /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Convention Innovation, LLC";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Convention Innovation, LLC";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Convention/Convention-Prefix.pch";

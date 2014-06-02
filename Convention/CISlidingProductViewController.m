@@ -98,7 +98,7 @@
 
 //User is in middle of editing a quantity (so the keyboard is visible), then taps somewhere else on the screen - the keyboard should disappear.
 - (void)productViewTapped:(UITapGestureRecognizer *)recognizer {
-    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        if (recognizer.state == UIGestureRecognizerStateEnded) {
         CIProductViewController *productViewController = (CIProductViewController *)self.topViewController;
         [self resetTopViewAnimated:YES];
         [productViewController.view endEditing:YES];
@@ -117,10 +117,10 @@
 
 #pragma mark slidingProductViewControllerDelegate
 
-- (void)toggleShipDates {
-    if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
+- (void)toggleShipDates:(BOOL)shouldOpen {
+    if (shouldOpen && self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
         [self anchorTopViewToLeftAnimated:true];
-    } else if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionAnchoredLeft) {
+    } else if (!shouldOpen && self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionAnchoredLeft) {
         [self resetTopViewAnimated:true];
     }
 }

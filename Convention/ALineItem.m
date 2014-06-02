@@ -43,8 +43,8 @@
 
 - (int)totalQuantity {
     id quantities = [self.quantity objectFromJSONString];
-    if (quantities == nil) {
-        return 0;
+    if (self.quantity != nil && quantities == nil) {
+        return [self.quantity intValue];
     } else if ([quantities isKindOfClass:[NSString class]]) {
         return [quantities intValue];
     } else if ([quantities isKindOfClass:[NSDictionary class]]) {

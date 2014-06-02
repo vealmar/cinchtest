@@ -64,7 +64,7 @@
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.selectionStyle = UITableViewCellSelectionStyleNone;
-    self.accessoryType = UITableViewCellAccessoryNone;
+    if (![self.InvtID.text isEqualToString:product.invtid]) self.accessoryType = UITableViewCellAccessoryNone;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     if (product.editable && product.editable.intValue == 1) {
         self.showPrice.hidden = YES;
