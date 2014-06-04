@@ -47,11 +47,15 @@
                 self.quantity = [cart getQuantityForShipDate:shipDate];
             }
         }
+
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cellTapped:)];
+        tapGesture.numberOfTouchesRequired = 1;
+        tapGesture.cancelsTouchesInView = NO;
+        [self.contentView addGestureRecognizer:tapGesture];
+
     }
     return self;
 }
-
-
 
 - (int)quantity {
     return self.quantityField.text.intValue;
@@ -63,6 +67,13 @@
         [cart setQuantity:quantity forShipDate:self.shipDate];
     }];
 }
+
+- (void)cellTapped:(UISwipeGestureRecognizer *)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        [self.quantityField becomeFirstResponder];
+    }
+}
+
 
 #pragma mark UITextViewDelegate
 

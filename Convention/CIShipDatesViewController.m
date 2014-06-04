@@ -158,14 +158,13 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             [self reloadSelectedDatesSection];
         }
         [self.calendarView reloadDates:@[date]];
-        if (nil != self.workingOrder) {
-            if ([ShowConfigurations instance].isOrderShipDatesType) {
-                self.workingOrder.ship_dates = [NSArray arrayWithArray:self.selectedShipDates];
-            } else if ([ShowConfigurations instance].isLineItemShipDatesType && ![self.selectedShipDates containsObject:date]) {
-                [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, NSUInteger idx, BOOL *stop) {
-                    [cart setQuantity:0 forShipDate:date];
-                }];
-            }
+        // todo self.workingOrder isnt being used anymore, need to change the logic for order ship dates
+        if (nil != self.workingOrder && [ShowConfigurations instance].isOrderShipDatesType) {
+            self.workingOrder.ship_dates = [NSArray arrayWithArray:self.selectedShipDates];
+        } else if ([ShowConfigurations instance].isLineItemShipDatesType && ![self.selectedShipDates containsObject:date]) {
+            [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, NSUInteger idx, BOOL *stop) {
+                [cart setQuantity:0 forShipDate:date];
+            }];
         }
     }
 }
@@ -302,15 +301,15 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         swipeLeftGesture.numberOfTouchesRequired = 1;
         swipeLeftGesture.cancelsTouchesInView = NO;
         swipeLeftGesture.direction = UISwipeGestureRecognizerDirectionLeft;
-        cell.contentView.userInteractionEnabled = YES;
         [cell.contentView addGestureRecognizer:swipeLeftGesture];
 
         UISwipeGestureRecognizer *swipeRightGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(incrementQuantity:)];
         swipeRightGesture.numberOfTouchesRequired = 1;
         swipeRightGesture.cancelsTouchesInView = NO;
         swipeRightGesture.direction = UISwipeGestureRecognizerDirectionRight;
-        cell.contentView.userInteractionEnabled = YES;
         [cell.contentView addGestureRecognizer:swipeRightGesture];
+
+        cell.contentView.userInteractionEnabled = YES;
     }
 
     return cell;

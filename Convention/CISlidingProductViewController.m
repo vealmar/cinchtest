@@ -98,8 +98,9 @@
 
 //User is in middle of editing a quantity (so the keyboard is visible), then taps somewhere else on the screen - the keyboard should disappear.
 - (void)productViewTapped:(UITapGestureRecognizer *)recognizer {
-        if (recognizer.state == UIGestureRecognizerStateEnded) {
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
         CIProductViewController *productViewController = (CIProductViewController *)self.topViewController;
+        [self.underRightViewController.view endEditing:YES];
         [self resetTopViewAnimated:YES];
         [productViewController.view endEditing:YES];
         [productViewController.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {

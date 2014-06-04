@@ -366,21 +366,22 @@
 - (void)toggleCartSelection:(Cart *)cart {
     __block Cart *blockCart = cart;
     dispatch_async(dispatch_get_main_queue(), ^{
-        int row = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-            // obj should be a productId
-            return [obj isEqual:blockCart.cartId];
-        }];
-
-        if (row != NSNotFound) {
-            UITableViewCell *productCell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]];
-            if ([self.selectedCarts containsObject:blockCart]) {
-                productCell.accessoryType = UITableViewCellAccessoryNone;
-            } else {
-                if (![blockCart.product.invtid isEqualToString:@"0"]) {
-                    productCell.accessoryType = UITableViewCellAccessoryCheckmark;
-                }
-            }
-        }
+//        int row = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
+//            // obj should be a productId
+//            return [obj isEqual:blockCart.cartId];
+//        }];
+//
+//        if (row != NSNotFound) {
+//            UITableViewCell *productCell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]];
+//            if ([self.selectedCarts containsObject:blockCart]) {
+//                productCell.accessoryType = UITableViewCellAccessoryNone;
+//            } else {
+//                if (![blockCart.product.invtid isEqualToString:@"0"]) {
+//                    // todo revert this back to checkmark; right now the checks are showing up in random places when we change bulletins
+//                    productCell.accessoryType = UITableViewCellAccessoryNone;
+//                }
+//            }
+//        }
 
         if ([self.selectedCarts containsObject:blockCart]) {
             [self.selectedCarts removeObject:blockCart];
