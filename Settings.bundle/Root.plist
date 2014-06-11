@@ -82,7 +82,7 @@
                 <key>Key</key>
                 <string>show</string>
                 <key>DefaultValue</key>
-                <string>15</string>
+                <string>17</string>
                 <key>IsSecure</key>
                 <false/>
                 <key>KeyboardType</key>

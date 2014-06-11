@@ -16,8 +16,6 @@
 #import "CICalendarViewController.h"
 #import "SettingsManager.h"
 #import "StringManipulation.h"
-#import "AFHTTPClient.h"
-#import "AFJSONRequestOperation.h"
 #import "CoreDataUtil.h"
 #import "Order.h"
 #import "ShowConfigurations.h"
@@ -34,6 +32,7 @@
 #import "CISlidingProductViewController.h"
 #import "DateUtil.h"
 #import "NotificationConstants.h"
+#import "CinchJSONAPIClient.h"
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -64,7 +63,6 @@ CIOrderViewController
     [super viewDidLoad];
     currentOrder = nil;
     isLoadingOrders = NO;
-    reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self withUrl:kBASEURL];
 
     self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];
@@ -172,29 +170,25 @@ CIOrderViewController
             [pull finishedLoading];
             isLoadingOrders = NO;
         };
-        NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken];
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
-        [request setTimeoutInterval:120];
-        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                            success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                                                                                                persistentOrders = [[NSMutableArray alloc] init];
-                                                                                                for (NSDictionary *order in JSON) {
-                                                                                                    [persistentOrders addObject:[[AnOrder alloc] initWithJSONFromServer:order]];
-                                                                                                }
-                                                                                                partialOrders = [self loadPartialOrders];
-                                                                                                self.allorders = [partialOrders mutableCopy];
-                                                                                                [self.allorders addObjectsFromArray:persistentOrders];
-                                                                                                self.filteredOrders = [self.allorders mutableCopy];
-                                                                                                [self.sideTable reloadData];
-                                                                                                self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
-                                                                                                cleanup();
-                                                                                                [self highlightOrder:orderId];
-                                                                                            } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                    [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@", [error localizedDescription]] delegate:nil
-                                      cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                    cleanup();
-                }];
-        [operation start];
+
+        [[CinchJSONAPIClient sharedInstance] GET:kDBORDER parameters:@{ kAuthToken: self.authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+            persistentOrders = [[NSMutableArray alloc] init];
+            for (NSDictionary *order in JSON) {
+                [persistentOrders addObject:[[AnOrder alloc] initWithJSONFromServer:order]];
+            }
+            partialOrders = [self loadPartialOrders];
+            self.allorders = [partialOrders mutableCopy];
+            [self.allorders addObjectsFromArray:persistentOrders];
+            self.filteredOrders = [self.allorders mutableCopy];
+            [self.sideTable reloadData];
+            self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
+            cleanup();
+            [self highlightOrder:orderId];
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading orders:%@", [error localizedDescription]] delegate:nil
+                              cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+            cleanup();
+        }];
     }
 }
 
@@ -833,30 +827,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
         [[SettingsManager sharedManager] saveSetting:@"password" value:@""];
     };
 
-    NSString *logoutPath;
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    if (self.authToken) parameters[kAuthToken] = self.authToken;
 
-    if (self.authToken) {
-        logoutPath = [NSString stringWithFormat:@"%@?%@=%@", kDBLOGOUT, kAuthToken, self.authToken];
-    } else {
-        logoutPath = kDBLOGOUT;
-    }
-
-
-    NSURL *url = [NSURL URLWithString:logoutPath];
-    AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
-    NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:@"" parameters:nil];
-    AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request success:^(AFHTTPRequestOperation *op, id responseObject) {
-
+    [[CinchJSONAPIClient sharedInstance] DELETE:kDBLOGOUT parameters:parameters success:^(NSURLSessionDataTask *task, id JSON) {
         clearSettings();
         [self dismissViewControllerAnimated:YES completion:nil];
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:[NSString stringWithFormat:@"There was an error logging out please try again! Error:%@", [error localizedDescription]]
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
 
-    }                                                                   failure:^(AFHTTPRequestOperation *op, NSError *error) {
-
-        [[[UIAlertView alloc] initWithTitle:@"Error" message:[NSString stringWithFormat:@"There was an error logging out please try again! Error:%@",
-                                                                                        [error localizedDescription]] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }];
-
-    [operation start];
 }
 
 - (IBAction)logout:(id)sender {
@@ -926,8 +910,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
         NSNumber *cancelByDays = [cancelDaysHelper valueAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
         [order setObject:[NilUtil objectOrNSNull:cancelByDays] forKey:kCancelByDays];
     }
-    NSDictionary *final = [NSDictionary dictionaryWithObjectsAndKeys:order, kOrder, nil];
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBORDEREDITS([currentOrder.orderId intValue]), kAuthToken, self.authToken];
+    NSDictionary *parameters = @{ kOrder: order, kAuthToken: self.authToken };
+    NSString *url = kDBORDEREDITS([currentOrder.orderId intValue]);
     void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
         unsavedChangesPresent = NO;
         AnOrder *savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
@@ -941,7 +925,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
             [sender setSelected:NO];
         }
     };
-    [helper sendRequest:@"PUT" url:url parameters:final successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Saving order"];
+    [helper sendRequest:@"PUT" url:url parameters:parameters successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Saving order"];
 }
 
 - (IBAction)Refresh:(id)sender {
@@ -968,8 +952,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (void)loadPrinters {
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETPRINTERS]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+    [[CinchJSONAPIClient sharedInstance] GET:kDBGETPRINTERS parameters:@{ } success:^(NSURLSessionDataTask *task, id JSON) {
         if (JSON && [JSON isKindOfClass:[NSArray class]] && [JSON count] > 0) {
             NSMutableDictionary *printStations = [[NSMutableDictionary alloc] initWithCapacity:[JSON count]];
             for (NSDictionary *printer in JSON) {
@@ -978,21 +961,21 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
             availablePrinters = [NSDictionary dictionaryWithDictionary:printStations];
             if (![currentPrinter isEmpty] && [self printerIsOnline:currentPrinter]) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:PrintersLoadedNotification object:nil];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    @autoreleasepool {
+                        [[NSNotificationCenter defaultCenter] postNotificationName:PrintersLoadedNotification object:nil];
+                    }
+                });
             } else {
                 [[NSNotificationCenter defaultCenter] removeObserver:self name:PrintersLoadedNotification object:nil];
                 [self selectPrintStation];
             }
         }
-
-    }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
         [[NSNotificationCenter defaultCenter] removeObserver:self name:PrintersLoadedNotification object:nil];
         NSString *msg = [NSString stringWithFormat:@"Unable to load available printers. %@", [error localizedDescription]];
         [[[UIAlertView alloc] initWithTitle:@"No Printers" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
     }];
-
-    [operation start];
 }
 
 - (void)printOrder {
@@ -1005,24 +988,16 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
         NSString *orderID = [NSString stringWithFormat:@"%@", currentOrder.orderId];
         NSNumber *printStationId = [NSNumber numberWithInt:[[[availablePrinters objectForKey:currentPrinter] objectForKey:@"id"] intValue]];
-        NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:orderID, kReportPrintOrderId, printStationId, @"printer_id", nil];
 
-        AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:kDBREPORTPRINTS]];
-        [client setParameterEncoding:AFJSONParameterEncoding];
-        NSMutableURLRequest *request = [client requestWithMethod:@"POST" path:nil parameters:params];
-
-        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+        [[CinchJSONAPIClient sharedInstance] POST:kDBREPORTPRINTS parameters:@{ kAuthToken: self.authToken, kReportPrintOrderId: orderID, @"printer_id": printStationId } success:^(NSURLSessionDataTask *task, id JSON) {
             [hud hide:NO];
             NSString *msg = [NSString stringWithFormat:@"Your order has printed successfully to station: %@", printStationId];
             [[[UIAlertView alloc] initWithTitle:@"Success" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-
-        }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
             [hud hide:NO];
             NSString *errorMsg = [NSString stringWithFormat:@"There was an error printing the order. %@", error.localizedDescription];
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         }];
-
-        [operation start];
     }
 }
 
@@ -1142,21 +1117,16 @@ SG: This method gets called when you swipe on an order in the order list and tap
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
         hud.labelText = @"Loading customer";
         [hud show:NO];
-        NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMER([customerId stringValue]), kAuthToken, self.authToken];
-        NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                            success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                                                                                                [self loadProductView:NO customer:(NSDictionary *) JSON];
-                                                                                                [hud hide:NO];
-                                                                                            }
-                                                                                            failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                                                                                                [hud hide:NO];
-                                                                                                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
-                                                                                                                  cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                                                                                                NSLog(@"%@", [error localizedDescription]);
-                                                                                            }];
-        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-        [queue addOperation:operation];
+
+        [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMER([customerId stringValue]) parameters:@{ kAuthToken: self.authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+            [self loadProductView:NO customer:(NSDictionary *) JSON];
+            [hud hide:NO];
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            [hud hide:NO];
+            [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
+                              cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+            NSLog(@"%@", [error localizedDescription]);
+        }];
     }
 }
 
@@ -1170,24 +1140,20 @@ SG: This method gets called when you swipe on an order in the order list and tap
             MBProgressHUD *deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
             deleteHUD.labelText = @"Deleting order";
             [deleteHUD show:NO];
-            NSURL *url = [NSURL URLWithString:kDBORDEREDITS([orderToDelete.orderId integerValue])];
-            AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:url];
-            NSMutableURLRequest *request = [client requestWithMethod:@"DELETE" path:nil parameters:nil];
-            AFHTTPRequestOperation *operation = [client HTTPRequestOperationWithRequest:request
-                                                                                success:^(AFHTTPRequestOperation *op, id responseObject) {
-                                                                                    if (coreDataOrder != nil)[[CoreDataUtil sharedManager] deleteObject:coreDataOrder];
-                                                                                    [self deleteRowFromOrderListAtIndex:rowToDelete];
-                                                                                    if (currentOrder && currentOrder.orderId == orderToDelete.orderId) {
-                                                                                        self.OrderDetailScroll.hidden = YES;
-                                                                                        currentOrder = nil;
-                                                                                    }
-                                                                                    [deleteHUD hide:NO];
-                                                                                } failure:^(AFHTTPRequestOperation *op, NSError *error) {
-                        NSString *errorMsg = [NSString stringWithFormat:@"Error deleting order. %@", error.localizedDescription];
-                        [[[UIAlertView alloc] initWithTitle:@"Error" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-                        [deleteHUD hide:NO];
-                    }];
-            [operation start];
+
+            [[CinchJSONAPIClient sharedInstance] DELETE:kDBORDEREDITS([orderToDelete.orderId integerValue]) parameters:@{ kAuthToken: self.authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+                if (coreDataOrder != nil)[[CoreDataUtil sharedManager] deleteObject:coreDataOrder];
+                [self deleteRowFromOrderListAtIndex:rowToDelete];
+                if (currentOrder && currentOrder.orderId == orderToDelete.orderId) {
+                    self.OrderDetailScroll.hidden = YES;
+                    currentOrder = nil;
+                }
+                [deleteHUD hide:NO];
+            } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                NSString *errorMsg = [NSString stringWithFormat:@"Error deleting order. %@", error.localizedDescription];
+                [[[UIAlertView alloc] initWithTitle:@"Error" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+                [deleteHUD hide:NO];
+            }];
         } else {
             if (coreDataOrder != nil)[[CoreDataUtil sharedManager] deleteObject:coreDataOrder];
             [self deleteRowFromOrderListAtIndex:rowToDelete];

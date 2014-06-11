@@ -7,12 +7,11 @@
 //
 
 #import "LaunchViewController.h"
-#import "AFJSONRequestOperation.h"
 #import "config.h"
 #import "SettingsManager.h"
-#import "AFHTTPClient.h"
 #import "CIViewController.h"
 #import "ShowConfigurations.h"
+#import "CinchJSONAPIClient.h"
 
 @interface LaunchViewController ()
 @property(weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
@@ -66,18 +65,13 @@
 }
 
 - (void)obtainShowConfigurationAndPresentLoginView {
-    AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:ConfigUrl]];
-    void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) = ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+    [[CinchJSONAPIClient sharedInstance] GET:ConfigUrl parameters:@{ } success:^(NSURLSessionDataTask *task, id JSON) {
         [ShowConfigurations createInstanceFromJson:(NSDictionary *) JSON];
         [self performSelectorOnMainThread:@selector(presentLoginView) withObject:nil waitUntilDone:NO];
-    };
-    void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) = ^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
         [self performSelectorOnMainThread:@selector(updateLabel:) withObject:@"Settings seem to be invalid. Please make sure Server and Show specified in Ci settings are correct." waitUntilDone:NO];
         NSLog([error localizedDescription]);
         [self performSelectorOnMainThread:@selector(stopActivityIndicator) withObject:nil waitUntilDone:NO];
-    };
-    NSMutableURLRequest *request = [client requestWithMethod:@"GET" path:nil parameters:nil];
-    AFJSONRequestOperation *op = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:successBlock failure:failureBlock];
-    [op start];
+    }];
 }
 @end

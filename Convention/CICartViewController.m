@@ -140,10 +140,10 @@
     if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
         self.coreDataOrder.status = @"pending";
         [[CoreDataUtil sharedManager] saveObjects];
-        NSDictionary *parameters = [self.coreDataOrder asJSONReqParameter];
-        //todo should we keep completed orders, complete? Or should we update status to pending if they go to cart view, even if they did not make any changes?
+        NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[self.coreDataOrder asJSONReqParameter]];
+        parameters[kAuthToken] = self.authToken;
         NSString *method = [self.coreDataOrder.orderId intValue] > 0 ? @"PUT" : @"POST";
-        NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken] : [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS([self.coreDataOrder.orderId intValue])], kAuthToken, self.authToken];
+        NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? kDBORDER : kDBORDEREDITS([self.coreDataOrder.orderId intValue]);
         void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
             self.savedOrder = [self loadJson:json];
             self.unsavedChangesPresent = NO;
@@ -259,9 +259,10 @@
 
 - (IBAction)finishOrder:(id)sender {
     if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
-        NSDictionary *parameters = [self.coreDataOrder asJSONReqParameter];
+        NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[self.coreDataOrder asJSONReqParameter]];
+        parameters[kAuthToken] = self.authToken;
         NSString *method = [self.coreDataOrder.orderId intValue] > 0 ? @"PUT" : @"POST";
-        NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken] : [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS([self.coreDataOrder.orderId intValue])], kAuthToken, self.authToken];
+        NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? kDBORDER : kDBORDEREDITS([self.coreDataOrder.orderId intValue]);
         void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
             [self.managedObjectContext deleteObject:self.coreDataOrder];//delete existing core data representation
             [[CoreDataUtil sharedManager] saveObjects];

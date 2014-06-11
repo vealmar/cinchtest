@@ -77,7 +77,7 @@
 }
 
 - (IBAction)quantityChanged:(id)sender {
-    cart.editableQty = [NSString stringWithFormat:@"%i", [self.quantity.text intValue]];
+    [cart setQuantity:[self.quantity.text intValue]];
 }
 
 - (IBAction)showPriceChanged:(id)sender {
@@ -109,8 +109,7 @@
     if ([textField.text isEmpty]) {
         textField.text = originalCellValue;
     }
-    if ([textField isFirstResponder])
-        [textField resignFirstResponder];
+    if ([textField isFirstResponder]) [textField resignFirstResponder];
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {

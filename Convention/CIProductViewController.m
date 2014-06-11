@@ -13,7 +13,6 @@
 #import "SettingsManager.h"
 #import "CoreDataUtil.h"
 #import "Order+Extensions.h"
-#import "AFJSONRequestOperation.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "FarrisProductCell.h"
 #import "ShowConfigurations.h"
@@ -33,6 +32,7 @@
 #import "Cart+Extensions.h"
 #import "ProductSearch.h"
 #import "ProductSearchQueue.h"
+#import "CinchJSONAPIClient.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -223,13 +223,13 @@
     submit.labelText = @"Loading Products";
     [submit show:NO];
 
-    void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
+    void (^successBlock)(id) = ^(id json) {
         [self loadProductsForCurrentVendorAndBulletin];//this method includes a call to reloadtable
         [pull finishedLoading];
         [self adjustTableInset]; //pull.finishedLoading resets the content offsets
         [submit hide:NO];
     };
-    void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
+    void (^failureBlock)() = ^() {
         [pull finishedLoading];
         [self adjustTableInset]; //pull.finishedLoading resets the content offsets
         [submit hide:NO];
@@ -286,7 +286,7 @@
         NSError *error = nil;
         BOOL success = [context save:&error];
         if (!success) {
-            DLog(@"Error saving new order: %@", [error localizedDescription]);
+            NSLog(@"%s:%d Error saving new order: %@, %@", __func__, __LINE__, [error localizedDescription], [error userInfo]);
             NSString *msg = [NSString stringWithFormat:@"Error saving new order: %@", [error localizedDescription]];
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
             [alert show];
@@ -364,7 +364,6 @@
 }
 
 - (void)toggleCartSelection:(Cart *)cart {
-    __block Cart *blockCart = cart;
     dispatch_async(dispatch_get_main_queue(), ^{
 //        int row = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
 //            // obj should be a productId
@@ -383,12 +382,20 @@
 //            }
 //        }
 
-        if ([self.selectedCarts containsObject:blockCart]) {
-            [self.selectedCarts removeObject:blockCart];
-            [[NSNotificationCenter defaultCenter] postNotificationName:CartDeselectionNotification object:blockCart];
+        if ([self.selectedCarts containsObject:cart]) {
+            [self.selectedCarts removeObject:cart];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                @autoreleasepool {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:CartDeselectionNotification object:cart];
+                }
+            });
         } else {
-            [self.selectedCarts addObject:blockCart];
-            [[NSNotificationCenter defaultCenter] postNotificationName:CartSelectionNotification object:blockCart];
+            [self.selectedCarts addObject:cart];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                @autoreleasepool {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:CartSelectionNotification object:cart];
+                }
+            });
         }
     });
 }
@@ -439,7 +446,7 @@
     NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
     AProduct *product = [[ProductCache sharedCache] getProduct:productId];
     UITableViewCell *cell = [helper dequeueReusableProductCell:myTableView];
-    [(FarrisProductCell *)cell initializeWithAProduct:product cart:[self.coreDataOrder findCartForProductId:product.productId] tag:[indexPath row] ProductCellDelegate:self];
+    [(FarrisProductCell *)cell initializeWithAProduct:product cart:[self.coreDataOrder findOrCreateCartForId:product.productId context:self.managedObjectContext] tag:[indexPath row] ProductCellDelegate:self];
     return cell;
 }
 
@@ -496,8 +503,7 @@
 }
 
 - (void)loadPrintersAndPromptForSelection {
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:kDBGETPRINTERS]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+    [[CinchJSONAPIClient sharedInstance] GET:kDBGETPRINTERS parameters:@{ kAuthToken: self.authToken } success:^(NSURLSessionDataTask *task, id JSON) {
         if (JSON != nil && [JSON isKindOfClass:[NSArray class]] && [JSON count] > 0) {
             NSMutableDictionary *printStations = [[NSMutableDictionary alloc] initWithCapacity:[JSON count]];
             for (NSDictionary *printer in JSON) {
@@ -512,11 +518,10 @@
                 [self prompForPrinterSelection];
             }
         }
-    }                                                                                   failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
         NSString *msg = [NSString stringWithFormat:@"Unable to load available printers. Order will not be printed. %@", [error localizedDescription]];
         [[[UIAlertView alloc] initWithTitle:@"No Printers" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
     }];
-    [operation start];
 }
 
 - (void)loadNotesForm {
@@ -654,9 +659,10 @@
     self.coreDataOrder.status = @"complete";
     self.coreDataOrder.print = [NSNumber numberWithBool:printThisOrder];
     self.coreDataOrder.printer = printThisOrder ? [NSNumber numberWithInt:self.selectedPrintStationId] : nil;
-    NSDictionary *parameters = [self.coreDataOrder asJSONReqParameter];
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[self.coreDataOrder asJSONReqParameter]];
+    parameters[kAuthToken] = self.authToken;
     NSString *method = [self.coreDataOrder.orderId intValue] > 0 ? @"PUT" : @"POST";
-    NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? [NSString stringWithFormat:@"%@?%@=%@", kDBORDER, kAuthToken, self.authToken] : [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBORDEREDITS([self.coreDataOrder.orderId intValue])], kAuthToken, self.authToken];
+    NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? kDBORDER : kDBORDEREDITS([self.coreDataOrder.orderId intValue]);
     void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
         self.savedOrder = [self loadJson:JSON];
         [self Return];

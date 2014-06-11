@@ -14,23 +14,20 @@
 #define ShowID [[SettingsManager sharedManager] lookupSettingByString:@"show"]
 #define kPigglyWiggly @"PigglyWiggly"
 #define kShowCorp [[SettingsManager sharedManager] lookupSettingByString:@"host"]
-#define ConfigUrl [NSString stringWithFormat:@"%@/shows/%@/configurations.json", kBASEURL, ShowID]
-#define kDBLOGIN [NSString stringWithFormat:@"%@/vendors/sign_in.json",kBASEURL]
-#define kDBLOGOUT [NSString stringWithFormat:@"%@/vendors/sign_out.json",kBASEURL]
-#define kDBGETPRODUCTS [NSString stringWithFormat:@"%@/vendor/shows/%@/products.json",kBASEURL,ShowID]
-#define kDBGETVENDORSWithVG(VendorGroupID) [NSString stringWithFormat:@"%@/vendor/shows/%@/vendorgroups.json?%@=%@",kBASEURL,ShowID,kVendorGroupID,VendorGroupID]
-#define kDBGETCUSTOMERS [NSString stringWithFormat:@"%@/vendor/shows/%@/customers.json",kBASEURL,ShowID]
-#define kDBGETCUSTOMER(customerId) [NSString stringWithFormat:@"%@/vendor/shows/%@/customers/%@.json?",kBASEURL,ShowID, customerId]
-#define kDBORDER [NSString stringWithFormat:@"%@/vendor/shows/%@/orders.json",kBASEURL,ShowID]
-#define kDBORDEREDITS(ID) [NSString stringWithFormat:@"%@/vendor/shows/%@/orders/%d.json",kBASEURL,ShowID,ID]
-#define kDBCAPTURESIG(ID)[NSString stringWithFormat:@"%@/vendor/orders/%d/signature.json",kBASEURL,ID]
+#define ConfigUrl [NSString stringWithFormat:@"/shows/%@/configurations.json", ShowID]
+#define kDBLOGIN @"/vendors/sign_in.json"
+#define kDBLOGOUT @"/vendors/sign_out.json"
+#define kDBGETPRODUCTS [NSString stringWithFormat:@"/vendor/shows/%@/products.json",ShowID]
+#define kDBGETVENDORSWithVG [NSString stringWithFormat:@"/vendor/shows/%@/vendorgroups.json",ShowID]
+#define kDBGETCUSTOMERS [NSString stringWithFormat:@"/vendor/shows/%@/customers.json",ShowID]
+#define kDBGETCUSTOMER(customerId) [NSString stringWithFormat:@"/vendor/shows/%@/customers/%@.json?",ShowID, customerId]
+#define kDBORDER [NSString stringWithFormat:@"/vendor/shows/%@/orders.json",ShowID]
+#define kDBORDEREDITS(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%d.json",ShowID,ID]
+#define kDBCAPTURESIG(ID)[NSString stringWithFormat:@"/vendor/orders/%d/signature.json",ID]
 
-//delete line item from given order
-#define kDBOrderLineItemDelete(ID) [NSString stringWithFormat:@"%@/vendor/line_items/%d.json", kBASEURL, ID]
-
-#define kDBREPORTPRINTS [NSString stringWithFormat:@"%@/vendor/shows/%@/report_prints.json",kBASEURL,ShowID]
-#define kDBGETPRINTERS [NSString stringWithFormat:@"%@/vendor/shows/%@/printers.json", kBASEURL, ShowID]
-#define kDBGETBULLETINS [NSString stringWithFormat:@"%@/vendor/shows/%@/bulletins.json", kBASEURL, ShowID]
+#define kDBREPORTPRINTS [NSString stringWithFormat:@"/vendor/shows/%@/report_prints.json",ShowID]
+#define kDBGETPRINTERS [NSString stringWithFormat:@"/vendor/shows/%@/printers.json", ShowID]
+#define kDBGETBULLETINS [NSString stringWithFormat:@"/vendor/shows/%@/bulletins.json", ShowID]
 
 //Auth keys
 #define kEmailKey @"vendor[login]"

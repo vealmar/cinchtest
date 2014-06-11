@@ -8,15 +8,13 @@
 
 #import "CustomerDataController.h"
 #import "config.h"
-#import "AFJSONRequestOperation.h"
 #import "SettingsManager.h"
 #import "NotificationConstants.h"
+#import "CinchJSONAPIClient.h"
 
 @implementation CustomerDataController
 
 + (void)loadCustomers:(NSString *)authToken {
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
-
     void(^finish)(NSArray *) = ^(NSArray *customers) {
         NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] initWithCapacity:1];
         if (customers) {
@@ -25,19 +23,11 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil userInfo:(NSDictionary *) userInfo];
     };
 
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-            success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-
-                finish(JSON);
-
-            } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-
-                finish(nil);
-            }];
-
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    [queue addOperation:operation];
+    [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMERS parameters:@{ kAuthToken: authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+        finish(JSON);
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        finish(nil);
+    }];
 }
 
 @end

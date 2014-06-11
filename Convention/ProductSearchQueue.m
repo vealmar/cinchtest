@@ -58,44 +58,47 @@
     [self.operationQueue cancelAllOperations];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        NSMutableArray *searchOperations = [NSMutableArray array];
-        [[search split:@","] enumerateObjectsUsingBlock:^(ProductSearch *search, NSUInteger idx, BOOL *stop) {
-            if (search.queryString.length > 0) {
-                ProductSearchOperation *searchOperation = [ProductSearchOperation search:search];
-                [searchOperations addObject:searchOperation];
-            }
-        }];
+        @autoreleasepool {
+            NSMutableArray *searchOperations = [NSMutableArray array];
+            [[search split:@","] enumerateObjectsUsingBlock:^(ProductSearch *search, NSUInteger idx, BOOL *stop) {
+                if (search.queryString.length > 0) {
+                    ProductSearchOperation *searchOperation = [ProductSearchOperation search:search];
+                    [searchOperations addObject:searchOperation];
+                }
+            }];
 
-        NSOperation *setResultsOperation = [[NSOperation alloc] init];
-        [searchOperations enumerateObjectsUsingBlock:^(id searchOperation, NSUInteger idx, BOOL *stop) {
-            [setResultsOperation addDependency:searchOperation];
-        }];
-        setResultsOperation.completionBlock = ^{
-            if (!setResultsOperation.isCancelled) {
-                NSMutableArray *newResults = [NSMutableArray array];
-                [setResultsOperation.dependencies enumerateObjectsUsingBlock:^(ProductSearchOperation *searchOperation, NSUInteger idx, BOOL *stop) {
-                    NSArray *results = searchOperation.results;
-                    if (newResults.count == 0) {
-                        [newResults addObjectsFromArray:results];
-                    } else {
-                        NSSet *resultsSet = [NSSet setWithArray:results];
-                        NSMutableArray *objectsToRemove = [NSMutableArray array];
-                        [newResults enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                            if (![resultsSet containsObject:obj]) {
-                                [objectsToRemove addObject:obj];
-                            }
-                        }];
-                        [newResults removeObjectsInArray:objectsToRemove];
-                    }
-                }];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    self.productController.resultData = newResults;
-                });
-            }
-        };
+            NSOperation *setResultsOperation = [[NSOperation alloc] init];
+            [searchOperations enumerateObjectsUsingBlock:^(id searchOperation, NSUInteger idx, BOOL *stop) {
+                [setResultsOperation addDependency:searchOperation];
+            }];
+            __weak NSOperation *weakSetResultsOperation = setResultsOperation;
+            setResultsOperation.completionBlock = ^{
+                if (!weakSetResultsOperation.isCancelled) {
+                    NSMutableArray *newResults = [NSMutableArray array];
+                    [weakSetResultsOperation.dependencies enumerateObjectsUsingBlock:^(ProductSearchOperation *searchOperation, NSUInteger idx, BOOL *stop) {
+                        NSArray *results = searchOperation.results;
+                        if (newResults.count == 0) {
+                            [newResults addObjectsFromArray:results];
+                        } else {
+                            NSSet *resultsSet = [NSSet setWithArray:results];
+                            NSMutableArray *objectsToRemove = [NSMutableArray array];
+                            [newResults enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                                if (![resultsSet containsObject:obj]) {
+                                    [objectsToRemove addObject:obj];
+                                }
+                            }];
+                            [newResults removeObjectsInArray:objectsToRemove];
+                        }
+                    }];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        self.productController.resultData = newResults;
+                    });
+                }
+            };
 
-        [self.operationQueue addOperation:setResultsOperation];
-        [self.operationQueue addOperations:searchOperations waitUntilFinished:NO];
+            [self.operationQueue addOperation:setResultsOperation];
+            [self.operationQueue addOperations:searchOperations waitUntilFinished:NO];
+        }
     });
 }
 

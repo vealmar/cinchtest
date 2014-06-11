@@ -18,7 +18,6 @@
 @interface CIOrderViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate,
         UITextViewDelegate, UIAlertViewDelegate, ItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
         CIStoreQtyDelegate, PullToRefreshViewDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate, CICustomerDelegate> {
-    ReachabilityDelegation *reachDelegation;
 }
 
 @property(nonatomic, strong) NSString *authToken;

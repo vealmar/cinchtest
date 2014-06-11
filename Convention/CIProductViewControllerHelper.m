@@ -15,8 +15,6 @@
 #import "Order.h"
 #import "Cart+Extensions.h"
 #import "MBProgressHUD.h"
-#import "AFJSONRequestOperation.h"
-#import "AFHTTPClient.h"
 #import "Product.h"
 #import "Product+Extensions.h"
 #import "NilUtil.h"
@@ -25,6 +23,9 @@
 #import "CoreDataUtil.h"
 #import "Vendor.h"
 #import "NumberUtil.h"
+#import "AFURLConnectionOperation.h"
+#import "CinchJSONAPIClient.h"
+#import "JSONResponseSerializerWithErrorData.h"
 
 
 @implementation CIProductViewControllerHelper {
@@ -188,33 +189,33 @@
     MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
     submit.labelText = loadingText;
     [submit show:NO];
-    AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
-    [client setParameterEncoding:AFJSONParameterEncoding];
 
-    NSMutableURLRequest *request = [client requestWithMethod:httpMethod path:nil parameters:parameters];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
-                                                                                            [submit hide:NO];
-                                                                                            if (successBlock) successBlock(req, response, json);
-                                                                                        } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
-                [submit hide:NO];
-                if (failureBlock) failureBlock(req, response, error, json);
-                NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-                NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
-                if (statusCode == 422) {
-                    NSArray *validationErrors = json ? [((NSDictionary *) json) objectForKey:kErrors] : nil;
-                    if (validationErrors && validationErrors.count > 0) {
-                        alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
-                    }
-                } else if (statusCode == 0) {
-                    alertMessage = @"Request timed out.";
+    NSMutableURLRequest *request = [[CinchJSONAPIClient sharedInstance].requestSerializer requestWithMethod:httpMethod URLString:[NSString stringWithFormat:@"%@%@", kBASEURL, url] parameters:parameters error:nil];
+    __block NSURLSessionDataTask *task = [[CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization] dataTaskWithRequest:request completionHandler:^(NSURLResponse * response, id json, NSError *error) {
+        if (error) {
+            [submit hide:NO];
+            if (failureBlock) failureBlock(request, response, error, json);
+            NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+            NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
+            if (statusCode == 422) {
+                NSArray *validationErrors = json ? [((NSDictionary *) json) objectForKey:kErrors] : nil;
+                if (validationErrors && validationErrors.count > 0) {
+                    alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
                 }
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-            }];
-    [operation start];
+            } else if (statusCode == 0) {
+                alertMessage = @"Request timed out.";
+            }
+            [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        } else {
+            [submit hide:NO];
+            if (successBlock) successBlock(request, response, json);
+        }
+    }];
+
+    [task resume];
 }
 
-- (void)sendSignature:(UIImage *)signature total:(NSNumber *)total orderId:(NSNumber *)orderId authToken:(NSString *)authToken successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock view:(UIView *)view {
+- (void)sendSignature:(UIImage *)signature total:(NSNumber *)total orderId:(NSNumber *)orderId authToken:(NSString *)authToken successBlock:(void (^)())successBlock failureBlock:(void (^)(NSError *error))failureBlock view:(UIView *)view {
     NSData *imageData = nil;
 //    @autoreleasepool {
     imageData = UIImagePNGRepresentation(signature);
@@ -223,25 +224,19 @@
         MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
         submit.labelText = @"Saving signature";
         [submit show:NO];
-        NSString *url = [NSString stringWithFormat:@"%@?%@=%@", [NSString stringWithFormat:kDBCAPTURESIG([orderId intValue])], kAuthToken, authToken];
-        AFHTTPClient *client = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
-        [client setParameterEncoding:AFJSONParameterEncoding];
-        NSDictionary *parameters = @{@"total" : total};
-        NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:@"" parameters:parameters constructingBodyWithBlock:^(id <AFMultipartFormData> formData) {
+
+        [[CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization] POST:kDBCAPTURESIG([orderId intValue]) parameters:@{ kAuthToken: authToken, @"total": total } constructingBodyWithBlock:^(id <AFMultipartFormData> formData) {
             [formData appendPartWithFileData:imageData name:@"signature" fileName:@"signature" mimeType:@"image/png"];
+        } success:^(NSURLSessionDataTask *task, id JSON) {
+            [submit hide:NO];
+            if (successBlock) successBlock();
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            [submit hide:NO];
+            if (failureBlock) failureBlock(error);
+            NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+            NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
+            [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         }];
-        AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                            success:^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
-                                                                                                [submit hide:NO];
-                                                                                                if (successBlock) successBlock(req, response, json);
-                                                                                            } failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
-                    [submit hide:NO];
-                    if (failureBlock) failureBlock(req, response, error, json);
-                    NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-                    NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
-                    [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                }];
-        [operation start];
     } else {
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"There was an error in capturing your signature. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }

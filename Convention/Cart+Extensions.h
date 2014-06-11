@@ -26,7 +26,6 @@
 - (int)getQuantityForShipDate:(NSDate *)date;
 - (int)totalQuantity;
 - (void)setQuantity:(int)quantity forShipDate:(NSDate *)date;
-
 - (void)setQuantity:(int)quantity;
 
 - (NSDictionary *)asJsonReqParameter;

@@ -41,7 +41,7 @@
     @try {
         if (self.signatureView.drawnSignature) {
             UIImage *signatureImage = [self.signatureView snapshot];
-            void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
+            void (^successBlock)() = ^() {
                 [self signatureCaptured];
             };
             [self.helper sendSignature:signatureImage total:self.total orderId:self.orderId authToken:self.authToken successBlock:successBlock failureBlock:nil view:self.view];

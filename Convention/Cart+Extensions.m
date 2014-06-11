@@ -92,7 +92,7 @@
 - (int)totalQuantity {
     id quantities = [self.editableQty objectFromJSONString];
     if (quantities == nil) {
-        return 0;
+        return self.editableQty == nil ? 0 : [self.editableQty intValue];
     } else if ([quantities isKindOfClass:[NSString class]]) {
         return [quantities intValue];
     } else if ([quantities isKindOfClass:[NSDictionary class]]) {
@@ -111,7 +111,12 @@
     }
     [quantities setValue:[NSNumber numberWithInt:quantity] forKey:[date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'Z'"]];
     self.editableQty = [quantities JSONString];
-    [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:self];
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @autoreleasepool {
+            [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:self];
+        }
+    });
 
     BOOL containsDate = [self containsShipDate:date];
     if (quantity > 0 && !containsDate) [self addShipDate:date];
@@ -120,7 +125,11 @@
 
 - (void)setQuantity:(int)quantity {
     self.editableQty = [NSString stringWithFormat:@"%i", quantity];
-    [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:self];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @autoreleasepool {
+            [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:self];
+        }
+    });
 }
 
 - (void)addShipDate:(NSDate *)date {

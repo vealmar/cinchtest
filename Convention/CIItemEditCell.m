@@ -17,6 +17,7 @@
 
 @interface CIItemEditCell ()
 @property NSUInteger numOfShipDates;
+@property ALineItem *lineItem;
 @end
 
 @implementation CIItemEditCell
@@ -41,22 +42,18 @@
     }
 }
 
-- (void)UpdateTotal {
-    __autoreleasing NSError *err = nil;
-    NSMutableDictionary *dict = [self.qty.text objectFromJSONStringWithParseOptions:JKParseOptionNone error:&err];
-
-    double q = 0;
-    if (err) {
-        q = [self.qty.text doubleValue];
-    } else {
-        for (NSString *key in dict.allKeys) {
-            q += [[dict objectForKey:key] doubleValue];
+- (void)updateTotal:(int)quantity {
+    if (self.lineItem) {
+        ShowConfigurations *config = [ShowConfigurations instance];
+        double price = [self.lineItem.price doubleValue];
+        double total = 0;
+        if (config.shipDates && !config.isLineItemShipDatesType) {
+            total = price * quantity * self.lineItem.shipDates.count;
+        } else {
+            total = price * quantity;
         }
+        self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(total)] numberStyle:NSNumberFormatterCurrencyStyle];
     }
-
-    double p = [self.priceLbl.text doubleValue];
-
-    self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(q * p * self.numOfShipDates)] numberStyle:NSNumberFormatterCurrencyStyle];
 }
 
 - (IBAction)voucherEdit:(id)sender {
@@ -67,7 +64,7 @@
 }
 
 - (IBAction)qtyEdit:(id)sender {
-    [self UpdateTotal];
+    [self updateTotal:self.qty.text.intValue];
     if (self.delegate) {
         [self.delegate setQuantity:self.qty.text atIndex:self.tag];
         [self.delegate UpdateTotal];
@@ -76,7 +73,7 @@
 
 - (IBAction)priceEdit:(id)sender {
     self.priceLbl.text = self.price.text;
-    [self UpdateTotal];
+    [self updateTotal:self.lineItem.totalQuantity];
     if (self.delegate) {
         [self.delegate setPrice:self.price.text atIndex:self.tag];
         [self.delegate UpdateTotal];
@@ -97,6 +94,11 @@
         [self.delegate setActiveField:textField];
         [self.delegate setSelectedRow:self.tag];
     }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
 }
 
 - (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {
@@ -120,6 +122,7 @@
 - (void)showLineItem:(ALineItem *)data withTag:(NSInteger *)tag {
     ShowConfigurations *config = [ShowConfigurations instance];
     Product *product = [Product findProduct:data.productId];
+    self.lineItem = data;
 
     // description
     if (data.isDiscount) {
@@ -168,8 +171,7 @@
         self.price.text = [nf stringFromNumber:[NSNumber numberWithDouble:price]];
         self.priceLbl.text = self.price.text;
         [self.price setHidden:YES];
-        double total = config.isLineItemShipDatesType ? price * data.totalQuantity : price * data.totalQuantity * data.shipDates.count;
-        self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:(total)] numberStyle:NSNumberFormatterCurrencyStyle];
+        [self updateTotal:self.lineItem.totalQuantity];
     }
     else {
         self.price.text = @"0.00";

@@ -17,12 +17,14 @@
 #import "DiscountLineItem+Extensions.h"
 #import "Cart+Extensions.h"
 #import "SynchronousResponse.h"
-#import "AFJSONRequestOperation.h"
 #import "CIAppDelegate.h"
 #import "ProductCache.h"
 #import "SetupInfo.h"
 #import "StringManipulation.h"
 #import "ProductSearch.h"
+#import "JSONResponseSerializerWithErrorData.h"
+#import "AFURLConnectionOperation.h"
+#import "CinchJSONAPIClient.h"
 
 
 @implementation CoreDataManager {
@@ -90,6 +92,8 @@
 + (NSArray *)getVendors:(NSManagedObjectContext *)managedObjectContext {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Vendor" inManagedObjectContext:managedObjectContext]];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES];
+    [fetchRequest setSortDescriptors:@[sortDescriptor]];
     NSError *error = nil;
     NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
     if (error) {
@@ -112,82 +116,77 @@
 }
 
 + (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSString *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext
-             onSuccess:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
-             onFailure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock {
+             onSuccess:(void (^)(id JSON))successBlock
+             onFailure:(void (^)())failureBlock {
 
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@&%@=%@", kDBGETPRODUCTS, kAuthToken, authToken, kVendorGroupID, vendorGroupId];
+    [[CinchJSONAPIClient sharedInstance] GET:kDBGETPRODUCTS parameters:@{ kAuthToken: authToken, kVendorGroupID: vendorGroupId } success:^(NSURLSessionDataTask *task, id JSON) {
+        if (JSON && ([(NSArray *) JSON count] > 0)) {
+            [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
+            NSArray *products = (NSArray *) JSON;
 
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                                                                                            if (JSON && ([(NSArray *) JSON count] > 0)) {
-                                                                                                [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
-                                                                                                NSArray *products = (NSArray *) JSON;
+            int batchSize = 500;
+            int productsCount = [products count];
+            NSRange range = NSMakeRange(0, productsCount > batchSize ? batchSize : productsCount);
 
-                                                                                                int batchSize = 500;
-                                                                                                int productsCount = [products count];
-                                                                                                NSRange range = NSMakeRange(0, productsCount > batchSize ? batchSize : productsCount);
+            NSDate *start = [NSDate date];
+            while (range.length > 0) {
+                NSArray *productsBatch = [products subarrayWithRange:range];
+                @autoreleasepool {
+                    for (NSDictionary *productJson in productsBatch) {
+                        [[Product alloc] initWithProductFromServer:productJson context:managedObjectContext];
+                    }
+                    [managedObjectContext save:nil];
+                }
+                int newStartLocation = range.location + range.length;
+                range = NSMakeRange(newStartLocation, productsCount - newStartLocation > batchSize ? batchSize : productsCount - newStartLocation);
+            }
 
-                                                                                                NSDate *start = [NSDate date];
-                                                                                                while (range.length > 0) {
-                                                                                                    NSArray *productsBatch = [products subarrayWithRange:range];
-                                                                                                    @autoreleasepool {
-                                                                                                        for (NSDictionary *productJson in productsBatch) {
-                                                                                                            [[Product alloc] initWithProductFromServer:productJson context:managedObjectContext];
-                                                                                                        }
-                                                                                                        [managedObjectContext save:nil];
-                                                                                                    }
-                                                                                                    int newStartLocation = range.location + range.length;
-                                                                                                    range = NSMakeRange(newStartLocation, productsCount - newStartLocation > batchSize ? batchSize : productsCount - newStartLocation);
-                                                                                                }
+            //re-establish connection between carts and products
+            NSArray *carts = [[CoreDataUtil sharedManager] fetchArray:@"Cart" withPredicate:nil];
+            if (carts) {
+                for (Cart *cart in carts) {
+                    Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", cart.cartId]];
+                    if (product) {
+                        cart.product = product;
+                    }
+                }
+            }
+            //re-establish connection between discount line items and products
+            NSArray *discountLineItems = [[CoreDataUtil sharedManager] fetchArray:@"DiscountLineItem" withPredicate:nil];
+            if (discountLineItems) {
+                for (DiscountLineItem *discountLineItem in discountLineItems) {
+                    Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", discountLineItem.productId]];
+                    if (product) {
+                        discountLineItem.product = product;
+                    }
+                }
+            }
+            [[CoreDataUtil sharedManager] saveObjects];
 
-                                                                                                //re-establish connection between carts and products
-                                                                                                NSArray *carts = [[CoreDataUtil sharedManager] fetchArray:@"Cart" withPredicate:nil];
-                                                                                                if (carts) {
-                                                                                                    for (Cart *cart in carts) {
-                                                                                                        Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", cart.cartId]];
-                                                                                                        if (product) {
-                                                                                                            cart.product = product;
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                                //re-establish connection between discount line items and products
-                                                                                                NSArray *discountLineItems = [[CoreDataUtil sharedManager] fetchArray:@"DiscountLineItem" withPredicate:nil];
-                                                                                                if (discountLineItems) {
-                                                                                                    for (DiscountLineItem *discountLineItem in discountLineItems) {
-                                                                                                        Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", discountLineItem.productId]];
-                                                                                                        if (product) {
-                                                                                                            discountLineItem.product = product;
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                                [[CoreDataUtil sharedManager] saveObjects];
+            NSDate *methodFinish = [NSDate date];
+            NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:start];
 
-                                                                                                NSDate *methodFinish = [NSDate date];
-                                                                                                NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:start];
-
-                                                                                                NSLog(@"Execution Time: %f", executionTime);
-                                                                                            }
-                                                                                            if (successBlock) successBlock(req, response, JSON);
-                                                                                        }
-                                                                                        failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *err, id JSON) {
-                                                                                            if (failureBlock) failureBlock(req, response, err, JSON);
-                                                                                            NSInteger statusCode = [[[err userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-                                                                                            NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
-                                                                                            if (statusCode == 422) {
-                                                                                                NSArray *validationErrors = JSON ? [((NSDictionary *) JSON) objectForKey:kErrors] : nil;
-                                                                                                if (validationErrors && validationErrors.count > 0) {
-                                                                                                    alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
-                                                                                                }
-                                                                                            } else if (statusCode == 0) {
-                                                                                                alertMessage = @"Request timed out.";
-                                                                                            } else {
-                                                                                                alertMessage = [err localizedDescription];
-                                                                                            }
-                                                                                            [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                                                                                            NSLog(@"%@ Error Loading Products: %@", [self class], [err localizedDescription]);
-                                                                                        }];
-    [operation start];
+            NSLog(@"Execution Time: %f", executionTime);
+        }
+        if (successBlock) successBlock(JSON);
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        id JSON = error.userInfo[JSONResponseSerializerWithErrorDataKey];
+        if (failureBlock) failureBlock();
+        NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+        NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
+        if (statusCode == 422) {
+            NSArray *validationErrors = JSON ? [((NSDictionary *) JSON) objectForKey:kErrors] : nil;
+            if (validationErrors && validationErrors.count > 0) {
+                alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
+            }
+        } else if (statusCode == 0) {
+            alertMessage = @"Request timed out.";
+        } else {
+            alertMessage = [error localizedDescription];
+        }
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        NSLog(@"%@ Error Loading Products: %@", [self class], [error localizedDescription]);
+    }];
 }
 
 + (NSUInteger)getProductCount {
@@ -241,8 +240,8 @@
         NSMutableArray *productIds = [[NSMutableArray alloc] init];
         NSArray *products = [self getProductsMatching:search addToCache:YES];
         if (products) {
-            [products enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                [productIds addObject:((Product *) obj).productId];
+            [products enumerateObjectsUsingBlock:^(Product *obj, NSUInteger idx, BOOL *stop) {
+                [productIds addObject:obj.productId];
             }];
         }
         return productIds;

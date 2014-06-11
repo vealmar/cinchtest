@@ -11,11 +11,11 @@
 #import "Macros.h"
 #import "config.h"
 #import "SettingsManager.h"
-#import "AFJSONRequestOperation.h"
 #import "CoreDataManager.h"
 #import "Customer.h"
 #import "CoreDataUtil.h"
 #import "NotificationConstants.h"
+#import "CinchJSONAPIClient.h"
 
 @implementation CICustomerInfoViewController {
     NSString *selectedCustomer;
@@ -172,32 +172,27 @@
         hud.labelText = @"Loading customers";
         [hud show:NO];
     }
-    NSString *url = [NSString stringWithFormat:@"%@?%@=%@", kDBGETCUSTOMERS, kAuthToken, authToken];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
-    AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
-                                                                                        success:^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-                                                                                            if (JSON && ([(NSArray *) JSON count] > 0)) {
-                                                                                                NSArray *customers = (NSArray *) JSON;
-                                                                                                for (NSDictionary *customer in customers) {
-                                                                                                    [self.managedObjectContext insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:self.managedObjectContext]];
-                                                                                                }
-                                                                                                [[CoreDataUtil sharedManager] saveObjects];
-                                                                                            }
-                                                                                            [self setCustomerData:(NSArray *) JSON];
-                                                                                            if (triggeredByPullToRefresh)
-                                                                                                [pull finishedLoading];
-                                                                                            else
-                                                                                                [hud hide:NO];
-                                                                                        }
-                                                                                        failure:^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                                                                                            [self setCustomerData:nil];
-                                                                                            if (triggeredByPullToRefresh)
-                                                                                                [pull finishedLoading];
-                                                                                            else
-                                                                                                [hud hide:NO];
-                                                                                        }];
-    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
-    [queue addOperation:operation];
+
+    [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMERS parameters:@{ kAuthToken: authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+        if (JSON && ([(NSArray *) JSON count] > 0)) {
+            NSArray *customers = (NSArray *) JSON;
+            for (NSDictionary *customer in customers) {
+                [self.managedObjectContext insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:self.managedObjectContext]];
+            }
+            [[CoreDataUtil sharedManager] saveObjects];
+        }
+        [self setCustomerData:(NSArray *) JSON];
+        if (triggeredByPullToRefresh)
+            [pull finishedLoading];
+        else
+            [hud hide:NO];
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        [self setCustomerData:nil];
+        if (triggeredByPullToRefresh)
+            [pull finishedLoading];
+        else
+            [hud hide:NO];
+    }];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {

@@ -92,7 +92,11 @@
 - (void)updateItemQuantity:(NSString *)quantity productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
     Cart *cart = [self findOrCreateCartForId:productId context:context];
     cart.editableQty = quantity;
-    [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:cart];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        @autoreleasepool {
+            [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:cart];
+        }
+    });
     NSError *error = nil;
     if (![context save:&error]) {
         NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
