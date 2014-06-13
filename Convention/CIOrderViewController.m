@@ -877,7 +877,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
                 [strs addObject:str];
             }
             Product *product = [Product findProduct:lineItem.productId];
-            if (![helper itemHasQuantity:qty]) {
+            if (!(qty && [qty intValue] > 0)) {
                 [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:[NSString stringWithFormat:@"Item %@ has no quantity. Please specify a quantity and then save.", product.invtid] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
                 return;
             }

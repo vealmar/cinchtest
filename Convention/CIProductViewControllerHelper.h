@@ -16,9 +16,6 @@
 
 
 @interface CIProductViewControllerHelper : NSObject
-- (BOOL)itemHasQuantity:(BOOL)multiStore quantity:(NSString *)quantity;
-
-- (BOOL)itemHasQuantity:(NSString *)quantity;
 
 + (BOOL)itemIsVoucher:(Product *)product;
 

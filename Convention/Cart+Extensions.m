@@ -154,15 +154,13 @@
 }
 
 - (NSDictionary *)asJsonReqParameter {
-    BOOL hasQuantity = [[[CIProductViewControllerHelper alloc] init] itemHasQuantity:self.editableQty];
-    if (hasQuantity) { //only include items that have non-zero quantity specified
+    if (self.totalQuantity > 0) { //only include items that have non-zero quantity specified
         return [NSDictionary dictionaryWithObjectsAndKeys:[self.orderLineItem_id intValue] == 0 ? [NSNull null] : self.orderLineItem_id, kID,
                                                           self.cartId, kLineItemProductID,
                                                           [NilUtil objectOrNSNull:self.editableQty], kLineItemQuantity,
                                                           @([self.editablePrice intValue] / 100.0), kLineItemPrice,
                                                           @([self.editableVoucher intValue] / 100.0), kLineItemVoucherPrice,
                                                           [ShowConfigurations instance].shipDates ? self.shipDatesAsStringArray : @[], kLineItemShipDates,
-
                                                           nil];
     } else if ([self.orderLineItem_id intValue] != 0) { //if quantity is 0 and item exists on server, tell server to destroy it. if it does not exist on server, don't include it.
         return [NSDictionary dictionaryWithObjectsAndKeys:self.orderLineItem_id, kID, @(1), @"_destroy", nil];

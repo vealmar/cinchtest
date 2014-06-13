@@ -146,13 +146,13 @@
         NSDictionary *proDict = [cart asJsonReqParameter];
         if (proDict) [arr addObject:(id) proDict];
     }
-    NSMutableDictionary *newOrder = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNSNull:self.customer_id], kOrderCustomerID,
+    NSDictionary *newOrder = [NSDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNSNull:self.customer_id], kOrderCustomerID,
                                                                                       [NilUtil objectOrNSNull:self.notes], kNotes,
                                                                                       [NilUtil objectOrNSNull:self.authorized], kAuthorizedBy,
                                                                                       [self.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
                                                                                       [NilUtil objectOrNSNull:self.cancelByDays], kCancelByDays,
                                                                                       [NilUtil objectOrNSNull:self.status], kOrderStatus,
-                                                                                      arr, kOrderItems,
+                                                                                      [NSArray arrayWithArray:arr], kOrderItems,
                                                                                       [self.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,
                                                                                       [NilUtil objectOrNSNull:self.printer], kOrderPrinter,
                                                                                       [NilUtil objectOrNSNull:self.po_number], kOrderPoNumber,

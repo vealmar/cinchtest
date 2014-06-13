@@ -46,33 +46,6 @@
     }
 }
 
-- (BOOL)itemHasQuantity:(BOOL)multiStore quantity:(NSString *)quantity {
-    NSInteger num = 0;
-    if (!multiStore) {
-        num = [quantity integerValue];
-    } else {
-        NSMutableDictionary *qty = [quantity objectFromJSONString];
-        for (NSString *n in qty.allKeys) {
-            int j = [[qty objectForKey:n] intValue];
-            if (j > num) {
-                num = j;
-                if (num > 0) {
-                    break;
-                }
-            }
-        }
-    }
-    return num > 0;
-}
-
-- (BOOL)itemHasQuantity:(NSString *)quantity {
-    if (quantity) {
-        BOOL isMultiSTore = ([[quantity stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] startsWith:@"{"]);
-        return [self itemHasQuantity:isMultiSTore quantity:quantity];
-    } else
-        return NO;
-}
-
 + (BOOL)itemIsVoucher:(Product *)product {
     int idx = [product.idx intValue];
     NSString *invtId = product.invtid;
@@ -86,7 +59,7 @@
 
 - (void)updateCellBackground:(UITableViewCell *)cell cart:(Cart *)cart {
     if ([ShowConfigurations instance].shipDatesRequired) {
-        BOOL hasQty = [self itemHasQuantity:cart.editableQty];
+        BOOL hasQty = cart.totalQuantity > 0;
         BOOL hasShipDates = cart.shipdates && cart.shipdates.count > 0;
         BOOL isVoucher = [CIProductViewControllerHelper itemIsVoucher:cart.product];
         if (!isVoucher) {
@@ -107,7 +80,7 @@
             }
         }
     } else {
-        BOOL hasQty = [self itemHasQuantity:cart.editableQty];
+        BOOL hasQty = cart.totalQuantity > 0;
         if (hasQty) {
             cell.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
         } else {
@@ -154,7 +127,7 @@
 
     BOOL hasQuantity = NO;
     for (Cart *cart in coreDataOrder.carts) {
-        if ([self itemHasQuantity:cart.editableQty]) {
+        if (cart.totalQuantity > 0) {
             hasQuantity = YES;
             break;
         }
@@ -169,7 +142,7 @@
     if ([ShowConfigurations instance].shipDatesRequired) {
         for (Cart *cart in coreDataOrder.carts) {
             Product *product = [Product findProduct:cart.cartId];
-            BOOL hasQty = [self itemHasQuantity:cart.editableQty];
+            BOOL hasQty = cart.totalQuantity > 0;
             if (hasQty && ![CIProductViewControllerHelper itemIsVoucher:product]) {
                 BOOL hasShipDates = [NilUtil objectOrEmptyArray:cart.shipdates].count > 0; //todo is call to nilutil needed?
                 if (!hasShipDates) {
@@ -190,8 +163,9 @@
     submit.labelText = loadingText;
     [submit show:NO];
 
-    NSMutableURLRequest *request = [[CinchJSONAPIClient sharedInstance].requestSerializer requestWithMethod:httpMethod URLString:[NSString stringWithFormat:@"%@%@", kBASEURL, url] parameters:parameters error:nil];
-    __block NSURLSessionDataTask *task = [[CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization] dataTaskWithRequest:request completionHandler:^(NSURLResponse * response, id json, NSError *error) {
+    CinchJSONAPIClient *client = [CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization];
+    NSMutableURLRequest *request = [client.requestSerializer requestWithMethod:httpMethod URLString:[NSString stringWithFormat:@"%@%@", kBASEURL, url] parameters:parameters error:nil];
+    __block NSURLSessionDataTask *task = [client dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id json, NSError *error) {
         if (error) {
             [submit hide:NO];
             if (failureBlock) failureBlock(request, response, error, json);
