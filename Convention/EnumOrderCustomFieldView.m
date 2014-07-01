@@ -23,9 +23,10 @@
             [NSException raise:NSGenericException format:@"Enum must have more than one enum_values."];
         }
 
+        self.frame = CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 35.0 + 10.0 + 35.0);
         self.showCustomField = showCustomField;
 
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 35.0)];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, elementWidth, 35.0)];
         label.font = [UIFont fontWithName:@"Futura-MediumItalic" size:22.0f];
         label.textColor = [UIColor whiteColor];
         label.text = showCustomField.label;
@@ -33,11 +34,9 @@
 
         UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:showCustomField.enumValues];
         self.segmentedControl = segmentedControl;
-        self.segmentedControl.frame = CGRectMake(cgPoint.x, CGRectGetMaxY(label.frame) + 10, elementWidth, 35.0);
+        self.segmentedControl.frame = CGRectMake(0, CGRectGetMaxY(label.frame) + 10, elementWidth, 35.0);
         self.segmentedControl.tintColor = [UIColor colorWith256Red:255 green:144 blue:58];
         [self addSubview:self.segmentedControl];
-
-        self.frame = CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 35.0 + 10.0 + 35.0);
     }
     return self;
 }
@@ -50,7 +49,7 @@
     if ([[NSNull null] isEqual:value]) {
         [[self segmentedControl] setSelectedSegmentIndex:0];
     } else {
-        [self.segmentedControl setSelectedSegmentIndex:[self.showCustomField.enumValues objectAtIndex:[self.segmentedControl selectedSegmentIndex]]];
+        [self.segmentedControl setSelectedSegmentIndex:[self.showCustomField.enumValues indexOfObject:value]];
     }
 }
 

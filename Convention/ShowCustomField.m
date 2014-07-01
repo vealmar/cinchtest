@@ -10,6 +10,7 @@
 - (id)init:(NSDictionary *)json {
     self = [self init];
     if (self) {
+        self.id = [NSNumber numberWithInt:[[json objectForKey:@"id"] intValue]];
         self.ownerType = [json objectForKey:@"ownerType"];
         self.fieldName = [json objectForKey:@"fieldName"];
         self.label = [json objectForKey:@"label"];

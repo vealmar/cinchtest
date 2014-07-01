@@ -18,18 +18,17 @@
     self = [super init];
     if (self) {
         self.showCustomField = showCustomField;
+        self.frame = CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 35.0 + 10.0 + 44.0);
 
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 35.0)];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, elementWidth, 35.0)];
         label.font = [UIFont fontWithName:@"Futura-MediumItalic" size:22.0f];
         label.textColor = [UIColor whiteColor];
         label.text = showCustomField.label;
         [self addSubview:label];
 
-        self.textField = [[UITextField alloc] initWithFrame:CGRectMake(cgPoint.x, CGRectGetMaxY(label.frame) + 10.0, elementWidth, 44.0)];
+        self.textField = [[UITextField alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(label.frame) + 10.0, elementWidth, 44.0)];
         self.textField.backgroundColor = [UIColor whiteColor];
         [self addSubview:self.textField];
-
-        self.frame = CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 35.0 + 10.0 + 44.0);
     }
     return self;
 }

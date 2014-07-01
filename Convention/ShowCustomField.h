@@ -8,6 +8,7 @@
 
 @interface ShowCustomField : NSObject
 
+@property NSNumber *id;
 @property NSString *ownerType;
 @property NSString *fieldName;
 @property NSString *label;

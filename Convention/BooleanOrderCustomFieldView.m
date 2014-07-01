@@ -19,8 +19,9 @@
     self = [super init];
     if (self) {
         self.showCustomField = showCustomField;
+        self.frame = CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 40.0);
 
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 35.0)];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, elementWidth, 35.0)];
         label.font = [UIFont fontWithName:@"Futura-MediumItalic" size:22.0f];
         label.textColor = [UIColor whiteColor];
         label.text = showCustomField.label;
@@ -28,8 +29,6 @@
 
         self.checkBox = [[MICheckBox alloc] initWithFrame:CGRectMake(470.0, cgPoint.y, 40.0, 40.0)];;
         [self addSubview:self.checkBox];
-
-        self.frame = CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 40.0);
     }
     return self;
 }

@@ -98,6 +98,7 @@
 
 //purchased Items keys:
 #define kCustomFieldFieldName @"field_name"
+#define kCustomFieldCustomFieldInfoId @"custom_field_info_id"
 #define kCustomFieldValue @"value"
 #define kOrderItems @"line_items_attributes"
 #define kCustomFields @"custom_fields_attributes"

@@ -20,6 +20,8 @@
 
 + (NSDateFormatter *)createFormatter;
 
++ (NSDateFormatter *)createFormatter:(NSString *)format;
+
 + (NSDate *)parseDate:(NSString *)dateString;
 
 + (NSString *)stringFromGMTDate:(NSDate *)date;

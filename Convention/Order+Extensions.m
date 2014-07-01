@@ -62,7 +62,7 @@
         }
         self.carts = carts;
         self.discountLineItems = discountLineItems;
-        self.customFields = [NilUtil objectOrDefault:orderFromServer defaultObject:[NSArray array]];
+        self.customFields = [NilUtil objectOrDefault:orderFromServer.customFields defaultObject:[NSArray array]];
     }
     return self;
 }
@@ -155,10 +155,22 @@
 }
 
 - (void)setCustomFieldValueFor:(ShowCustomField *)showCustomField value:(NSString *)value {
+    NSDictionary *customField = Underscore.array(self.customFields).find(^BOOL(NSDictionary *dict) {
+        return [showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:[dict objectForKey:kCustomFieldFieldName]];
+    });
+    if (nil == customField) {
+        customField = @{ kCustomFieldCustomFieldInfoId : showCustomField.id, kCustomFieldFieldName : showCustomField.fieldName, kCustomFieldValue : value };
+    } else {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:customField];
+        dict[kCustomFieldValue] = value;
+        customField = dict;
+    }
+
+    // remove existing field if it exists in collection
     self.customFields = Underscore.array(self.customFields).filter(^BOOL(NSDictionary *dict) {
         return !([showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:[dict objectForKey:kCustomFieldFieldName]]);
     }).unwrap;
-    NSDictionary *customField = @{ kCustomFieldFieldName : showCustomField.fieldName, kCustomFieldValue : value };
+    // add new one
     self.customFields = [self.customFields arrayByAddingObject:customField];
 }
 

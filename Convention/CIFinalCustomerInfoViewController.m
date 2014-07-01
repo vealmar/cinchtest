@@ -118,12 +118,12 @@
     CGFloat leftX = 30.0;
     CGFloat elementWidth = 480.0;
     __block CGFloat currentY = 0.0;
-    CGFloat verticalMargin = 20.0;
+    CGFloat verticalMargin = 15.0;
     UIFont *labelFont = [UIFont fontWithName:@"Futura-MediumItalic" size:22.0f];
     UILabel *authorizedByLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + (verticalMargin * 2), 300.0, 35.0)];
     authorizedByLabel.font = labelFont;
     authorizedByLabel.textColor = [UIColor whiteColor];
-    authorizedByLabel.text = @"AUTHORIZED BY";
+    authorizedByLabel.text = @"Authorized By";
     [self.view addSubview:authorizedByLabel];
     UITextField *textField = [[UITextField alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(authorizedByLabel.frame) + 10, elementWidth, 44.0)];
     self.authorizedByTextField = textField;
@@ -132,7 +132,7 @@
     UILabel *notesLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(self.authorizedByTextField.frame) + verticalMargin, 300.0, 35.0)];
     notesLabel.font = labelFont;
     notesLabel.textColor = [UIColor whiteColor];
-    notesLabel.text = @"NOTES";
+    notesLabel.text = @"Notes";
     [self.view addSubview:notesLabel];
     UITextView *textView = [[UITextView alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(notesLabel.frame) + 10, elementWidth, 80.0)];;
     self.notesTextView = textView;
@@ -164,7 +164,7 @@
         UILabel *poLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
         poLabel.font = labelFont;
         poLabel.textColor = [UIColor whiteColor];
-        poLabel.text = @"PO NUMBER";
+        poLabel.text = @"PO Number";
         [self.view addSubview:poLabel];
         textField = [[UITextField alloc] initWithFrame:CGRectMake(leftX, CGRectGetMaxY(poLabel.frame) + 10, elementWidth, 44.0)];
         self.poNumberTextField = textField;
@@ -177,7 +177,7 @@
         UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 350.0, 35.0)];
         contactLabel.font = labelFont;
         contactLabel.textColor = [UIColor whiteColor];
-        contactLabel.text = @"CONTACT BEFORE SHIPPING?";
+        contactLabel.text = @"Contact Before Shipping?";
         [self.view addSubview:contactLabel];
         MICheckBox *checkBox = [[MICheckBox alloc] initWithFrame:CGRectMake(470.0, contactLabel.frame.origin.y, 40.0, 40.0)];;
         self.contactBeforeShippingCB = checkBox;
@@ -186,10 +186,10 @@
     }
 
     if (self.cancelConfig) {
-        UILabel *cancelLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY, 420.0, 35.0)];
+        UILabel *cancelLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
         cancelLabel.font = labelFont;
         cancelLabel.textColor = [UIColor whiteColor];
-        cancelLabel.text = @"CANCEL IF NOT SHIPPED WITHIN:";
+        cancelLabel.text = @"Cancel If Not Shipped Within";
         [self.view addSubview:cancelLabel];
         UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:[cancelDaysHelper displayStrings]];
         self.cancelDaysControl = segmentedControl;
@@ -203,7 +203,7 @@
         UILabel *paymentTermsLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
         paymentTermsLabel.font = labelFont;
         paymentTermsLabel.textColor = [UIColor whiteColor];
-        paymentTermsLabel.text = @"PAYMENT TERMS";
+        paymentTermsLabel.text = @"Payment Terms";
         [self.view addSubview:paymentTermsLabel];
         UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:[paymentTermsHelper displayStrings]];
         self.paymentTermsControl = segmentedControl;
