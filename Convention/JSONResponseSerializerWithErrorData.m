@@ -17,7 +17,7 @@
         NSMutableDictionary *userInfo = [(*error).userInfo mutableCopy];
         if (data == nil) {
             userInfo[JSONResponseSerializerWithErrorDataKey] = nil;
-        } else {
+        } else if (JSONObject != nil) {
             userInfo[JSONResponseSerializerWithErrorDataKey] = JSONObject;
         }
         NSError *newError = [NSError errorWithDomain:(*error).domain code:(*error).code userInfo:userInfo];

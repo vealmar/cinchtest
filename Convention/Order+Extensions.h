@@ -10,6 +10,7 @@
 #import "Cart.h"
 
 @class AnOrder;
+@class ShowCustomField;
 
 @interface Order (Extensions)
 
@@ -30,6 +31,10 @@
 - (NSArray *)productIds;
 
 - (NSArray *)discountLineItemIds;
+
+- (NSString *)customFieldValueFor:(ShowCustomField *)showCustomField;
+
+- (void)setCustomFieldValueFor:(ShowCustomField *)showCustomField value:(NSString *)value;
 
 - (NSDictionary *)asJSONReqParameter;
 

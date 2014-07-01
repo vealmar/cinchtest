@@ -10,7 +10,6 @@
 
 @class DateRange;
 
-
 @interface ShowConfigurations : NSObject
 @property BOOL discounts;
 @property BOOL shipDates; //uses or requires shipdates
@@ -28,6 +27,7 @@
 @property BOOL paymentTerms;
 @property NSString *shipDatesType;
 @property DateRange *orderShipDates;
+@property NSArray *customFields; //Array<ShowCustomField>
 
 + (ShowConfigurations *)instance;
 
@@ -36,5 +36,7 @@
 - (bool)isOrderShipDatesType;
 
 - (bool)isLineItemShipDatesType;
+
+- (NSArray *)orderCustomFields;
 
 @end

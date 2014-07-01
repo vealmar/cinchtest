@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
+#import <Underscore.m/Underscore.h>
 #import "CIFinalCustomerInfoViewController.h"
 #import "Macros.h"
 #import "config.h"
@@ -20,6 +21,13 @@
 #import "CoreDataManager.h"
 #import "DateUtil.h"
 #import "UIView+Boost.h"
+#import "OrderCustomFieldView.h"
+#import "ShowCustomField.h"
+#import "StringOrderCustomFieldView.h"
+#import "DateOrderCustomFieldView.h"
+#import "EnumOrderCustomFieldView.h"
+#import "BooleanOrderCustomFieldView.h"
+#import "Order+Extensions.h"
 
 @interface CIFinalCustomerInfoViewController () {
     SetupInfo *authorizedBy;
@@ -40,6 +48,7 @@
 @property BOOL cancelConfig;
 @property BOOL poNumberConfig;
 @property BOOL paymentTermsConfig;
+@property NSArray *customFieldViews; // id<OrderCustomFieldView>
 
 @end
 
@@ -64,15 +73,26 @@
     [super viewWillAppear:animated];
     context = ((CIAppDelegate *) [[UIApplication sharedApplication] delegate]).managedObjectContext;
     [self defaultAuthorizedbyText];
-    if (self.contactBeforeShippingConfig)
-        [self defaultShippingFields];
+
     self.notesTextView.text = self.order && self.order.notes ? self.order.notes : @"";
+
+    Underscore.array(self.customFieldViews).each(^(id<OrderCustomFieldView> orderCustomFieldView) {
+        //take order custom field value and
+        [orderCustomFieldView value:[self.order customFieldValueFor:orderCustomFieldView.showCustomField]];
+    });
+
+    if (self.contactBeforeShippingConfig) {
+        [self defaultShippingFields];
+    }
+
     if (self.cancelConfig) {
         [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForValue:self.order.cancelByDays]];
     }
+
     if (self.poNumberConfig) {
         self.poNumberTextField.text = self.order && self.order.po_number ? self.order.po_number : @"";
     }
+
     if (self.paymentTermsConfig) {
         [self.paymentTermsControl setSelectedSegmentIndex:[paymentTermsHelper indexForValue:self.order.payment_terms]];
     }
@@ -97,7 +117,7 @@
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
     CGFloat leftX = 30.0;
     CGFloat elementWidth = 480.0;
-    CGFloat currentY = 0.0;
+    __block CGFloat currentY = 0.0;
     CGFloat verticalMargin = 20.0;
     UIFont *labelFont = [UIFont fontWithName:@"Futura-MediumItalic" size:22.0f];
     UILabel *authorizedByLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + (verticalMargin * 2), 300.0, 35.0)];
@@ -118,6 +138,28 @@
     self.notesTextView = textView;
     [self.view addSubview:self.notesTextView];
     currentY = CGRectGetMaxY(self.notesTextView.frame);
+
+    self.customFieldViews = Underscore.array([[ShowConfigurations instance] orderCustomFields]).map(^id(ShowCustomField *showCustomField) {
+        UIView<OrderCustomFieldView> *fieldView;
+        if (showCustomField.isStringValueType) {
+            fieldView = [[StringOrderCustomFieldView alloc] init:showCustomField at:CGPointMake(leftX, currentY + verticalMargin) withElementWidth:elementWidth];
+        } else if (showCustomField.isEnumValueType) {
+            fieldView = [[EnumOrderCustomFieldView alloc] init:showCustomField at:CGPointMake(leftX, currentY + verticalMargin) withElementWidth:elementWidth];
+        } else if (showCustomField.isDateValueType) {
+            fieldView = [[DateOrderCustomFieldView alloc] init:showCustomField at:CGPointMake(leftX, currentY + verticalMargin) withElementWidth:elementWidth];
+        } else if (showCustomField.isBooleanValueType) {
+            fieldView = [[BooleanOrderCustomFieldView alloc] init:showCustomField at:CGPointMake(leftX, currentY + verticalMargin) withElementWidth:elementWidth];
+        } else {
+            NSLog(@"Unsupported Custom Field Value Type.");
+            return [NSNull null];
+        }
+        [self.view addSubview:fieldView];
+        currentY = CGRectGetMaxY(fieldView.frame);
+        return fieldView;
+    }).filter(^BOOL(id obj) {
+        return [[NSNull null] isEqual:obj] ? NO : YES;
+    }).unwrap;
+
     if (self.poNumberConfig) {
         UILabel *poLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
         poLabel.font = labelFont;
@@ -130,6 +172,7 @@
         [self.view addSubview:self.poNumberTextField];
         currentY = CGRectGetMaxY(self.poNumberTextField.frame);
     }
+
     if (self.contactBeforeShippingConfig) {
         UILabel *contactLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 350.0, 35.0)];
         contactLabel.font = labelFont;
@@ -141,6 +184,7 @@
         [self.view addSubview:self.contactBeforeShippingCB];
         currentY = CGRectGetMaxY(self.contactBeforeShippingCB.frame);
     }
+
     if (self.cancelConfig) {
         UILabel *cancelLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY, 420.0, 35.0)];
         cancelLabel.font = labelFont;
@@ -154,6 +198,7 @@
         [self.view addSubview:self.cancelDaysControl];
         currentY = CGRectGetMaxY(self.cancelDaysControl.frame);
     }
+
     if (self.paymentTermsConfig) {
         UILabel *paymentTermsLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
         paymentTermsLabel.font = labelFont;
@@ -167,6 +212,7 @@
         [self.view addSubview:self.paymentTermsControl];
         currentY = CGRectGetMaxY(self.paymentTermsControl.frame);
     }
+
     UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cancelButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchDown];
     [cancelButton setBackgroundImage:[UIImage imageNamed:@"cart-cancelout.png"] forState:UIControlStateNormal];
@@ -221,23 +267,29 @@
         if (self.contactBeforeShippingConfig) {
             [self updateSetting:@"ship_flag" newValue:self.contactBeforeShippingCB.isChecked ? @"YES" : @"NO" setupInfo:shipFlag];
         }
-        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-        [dict setObject:self.authorizedByTextField.text forKey:kAuthorizedBy];
-        [dict setObject:self.notesTextView.text forKey:kNotes];
-        if (self.poNumberConfig)
-            [dict setObject:self.poNumberTextField.text forKey:kOrderPoNumber];
+
+        self.order.notes = self.notesTextView.text;
+        self.order.authorized = self.authorizedByTextField.text;
+
+        Underscore.array(self.customFieldViews).each(^(id<OrderCustomFieldView> orderCustomFieldView) {
+            [self.order setCustomFieldValueFor:orderCustomFieldView.showCustomField value:orderCustomFieldView.value];
+        });
+
+        if (self.poNumberConfig) {
+            self.order.po_number = (NSString *) [NilUtil nilOrObject:self.poNumberTextField.text];
+        }
         if (self.contactBeforeShippingConfig) {
-            [dict setObject:(self.contactBeforeShippingCB.isChecked ? @"true" : @"false") forKey:kShipFlag];
+            self.order.ship_flag = self.contactBeforeShippingCB.isChecked ? @(1) : @(0);
         }
         if (self.cancelConfig) {
             NSNumber *cancelByDays = [cancelDaysHelper valueAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
-            [dict setObject:[NilUtil objectOrNSNull:cancelByDays] forKey:kCancelByDays];
+            self.order.cancelByDays = (NSNumber *) [NilUtil nilOrObject:cancelByDays];
         }
         if (self.paymentTermsConfig) {
             NSString *paymentTerms = [paymentTermsHelper valueAtIndex:[self.paymentTermsControl selectedSegmentIndex]];
-            [dict setObject:[NilUtil objectOrNSNull:paymentTerms] forKey:kOrderPaymentTerms];
+            self.order.payment_terms = (NSString *) [NilUtil nilOrObject:paymentTerms];
         }
-        [self.delegate setAuthorizedByInfo:[dict copy]];
+        
         [self.delegate submit:nil];
         [self.delegate dismissFinalCustomerViewController];
     }

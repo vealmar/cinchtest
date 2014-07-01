@@ -36,6 +36,7 @@
         self.poNumber = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"po_number"]];
         self.paymentTerms = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"payment_terms"]];
         self.shipDates = [DateUtil convertYyyymmddArrayToDateArray:[NilUtil objectOrEmptyArray:[JSON objectForKey:@"ship_dates"]]];
+        self.customFields = [JSON objectForKey:@"custom_fields"];
         self.customer = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
         self.errors = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"errors"]];
         NSMutableArray *lineItems = [[NSMutableArray alloc] init];
@@ -69,6 +70,7 @@
         self.poNumber = order.po_number;
         self.paymentTerms = order.payment_terms;
         self.shipDates = [NilUtil objectOrEmptyArray:order.ship_dates];
+        self.customFields = order.customFields;
         self.coreDataOrder = order;
         int itemTotal = 0;
         int voucherTotal = 0;

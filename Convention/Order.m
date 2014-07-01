@@ -31,5 +31,6 @@
 @dynamic vendorGroupId;
 @dynamic carts;
 @dynamic discountLineItems;
+@dynamic customFields;
 
 @end

@@ -66,6 +66,11 @@
 		4D4ADF77973064B0F633EEC7 /* NotificationConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D4ADE727B327BB479DB6BD7 /* NotificationConstants.m */; };
 		6414A6EA1496AE960088586B /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6E91496AE960088586B /* orangebutton.png */; };
 		6414A6F11496B9A10088586B /* bluebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6414A6F01496B9A10088586B /* bluebutton.png */; };
+		6DDC94281B989279A036AD74 /* ShowCustomField.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC93D0570FC234A0C90ADE /* ShowCustomField.m */; };
+		6DDC9A4DCF0FEEB7B812D4FD /* EnumOrderCustomFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC94288E977C77D2B43463 /* EnumOrderCustomFieldView.m */; };
+		6DDC9BF25185FC6EB90BAF83 /* DateOrderCustomFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9A21F6E1E62E0B06F652 /* DateOrderCustomFieldView.m */; };
+		6DDC9D949D903ACBD5E5064E /* BooleanOrderCustomFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9DA35A0FE8BB2D720913 /* BooleanOrderCustomFieldView.m */; };
+		6DDC9F9C7F9E37B187D6AB3A /* StringOrderCustomFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9BA6632E54CA8786A422 /* StringOrderCustomFieldView.m */; };
 		6E07A38F1461D26E0043C22B /* CICustomerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E07A38D1461D26E0043C22B /* CICustomerInfoViewController.m */; };
 		6E07A3901461D26E0043C22B /* CICustomerInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6E07A38E1461D26E0043C22B /* CICustomerInfoViewController.xib */; };
 		6E0C5F9E15A24D29000E050A /* vendorbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6E0C5F9D15A24D29000E050A /* vendorbutton.png */; };
@@ -348,6 +353,18 @@
 		4D4ADE727B327BB479DB6BD7 /* NotificationConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationConstants.m; sourceTree = "<group>"; };
 		6414A6E91496AE960088586B /* orangebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orangebutton.png; sourceTree = "<group>"; };
 		6414A6F01496B9A10088586B /* bluebutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bluebutton.png; sourceTree = "<group>"; };
+		69087A7B1961353700B78D64 /* ProductCart8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart8.xcdatamodel; sourceTree = "<group>"; };
+		6DDC92629D544E33A026870A /* OrderCustomFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderCustomFieldView.h; sourceTree = "<group>"; };
+		6DDC93D0570FC234A0C90ADE /* ShowCustomField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowCustomField.m; sourceTree = "<group>"; };
+		6DDC9411A2E89AB7008B3D40 /* StringOrderCustomFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringOrderCustomFieldView.h; sourceTree = "<group>"; };
+		6DDC94288E977C77D2B43463 /* EnumOrderCustomFieldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EnumOrderCustomFieldView.m; sourceTree = "<group>"; };
+		6DDC9570E5B5CFD6CA220EEB /* EnumOrderCustomFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnumOrderCustomFieldView.h; sourceTree = "<group>"; };
+		6DDC996050AC207E39EFAEB1 /* ShowCustomField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowCustomField.h; sourceTree = "<group>"; };
+		6DDC9A21F6E1E62E0B06F652 /* DateOrderCustomFieldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateOrderCustomFieldView.m; sourceTree = "<group>"; };
+		6DDC9AC0CD76B1909299569D /* DateOrderCustomFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateOrderCustomFieldView.h; sourceTree = "<group>"; };
+		6DDC9BA6632E54CA8786A422 /* StringOrderCustomFieldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringOrderCustomFieldView.m; sourceTree = "<group>"; };
+		6DDC9C9AD639B9D11FFAB37E /* BooleanOrderCustomFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BooleanOrderCustomFieldView.h; sourceTree = "<group>"; };
+		6DDC9DA35A0FE8BB2D720913 /* BooleanOrderCustomFieldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BooleanOrderCustomFieldView.m; sourceTree = "<group>"; };
 		6E07A38C1461D26E0043C22B /* CICustomerInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICustomerInfoViewController.h; sourceTree = "<group>"; };
 		6E07A38D1461D26E0043C22B /* CICustomerInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICustomerInfoViewController.m; sourceTree = "<group>"; };
 		6E07A38E1461D26E0043C22B /* CICustomerInfoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CICustomerInfoViewController.xib; sourceTree = "<group>"; };
@@ -845,6 +862,22 @@
 			path = iPhone;
 			sourceTree = "<group>";
 		};
+		6DDC9F96FED4AC17FACE8979 /* Order Custom Fields */ = {
+			isa = PBXGroup;
+			children = (
+				6DDC92629D544E33A026870A /* OrderCustomFieldView.h */,
+				6DDC9BA6632E54CA8786A422 /* StringOrderCustomFieldView.m */,
+				6DDC9411A2E89AB7008B3D40 /* StringOrderCustomFieldView.h */,
+				6DDC9DA35A0FE8BB2D720913 /* BooleanOrderCustomFieldView.m */,
+				6DDC9C9AD639B9D11FFAB37E /* BooleanOrderCustomFieldView.h */,
+				6DDC94288E977C77D2B43463 /* EnumOrderCustomFieldView.m */,
+				6DDC9570E5B5CFD6CA220EEB /* EnumOrderCustomFieldView.h */,
+				6DDC9A21F6E1E62E0B06F652 /* DateOrderCustomFieldView.m */,
+				6DDC9AC0CD76B1909299569D /* DateOrderCustomFieldView.h */,
+			);
+			name = "Order Custom Fields";
+			sourceTree = "<group>";
+		};
 		6E118556145F2F2100568ED1 = {
 			isa = PBXGroup;
 			children = (
@@ -918,6 +951,8 @@
 				4D4ADA94F3EBC8BD7D573410 /* DateRange.h */,
 				4D4AD6C21F32B6B4F49D562E /* NotificationConstants.h */,
 				4D4ADE727B327BB479DB6BD7 /* NotificationConstants.m */,
+				6DDC93D0570FC234A0C90ADE /* ShowCustomField.m */,
+				6DDC996050AC207E39EFAEB1 /* ShowCustomField.h */,
 			);
 			path = Convention;
 			sourceTree = "<group>";
@@ -1010,6 +1045,7 @@
 				749833C915DDAABA00F3EB26 /* CIStoreQty */,
 				C71484CC1659977C00C57E24 /* CustomerDataController.h */,
 				C71484CD1659977D00C57E24 /* CustomerDataController.m */,
+				6DDC9F96FED4AC17FACE8979 /* Order Custom Fields */,
 			);
 			name = "Customer Info";
 			sourceTree = "<group>";
@@ -1808,6 +1844,11 @@
 				4D4AD2E5450207522D33D28E /* ProductSearch.m in Sources */,
 				4D4ADE7B87F75988A3C909ED /* JSONResponseSerializerWithErrorData.m in Sources */,
 				4D4AD7D0AB49344520599F2A /* CinchJSONAPIClient.m in Sources */,
+				6DDC9F9C7F9E37B187D6AB3A /* StringOrderCustomFieldView.m in Sources */,
+				6DDC9D949D903ACBD5E5064E /* BooleanOrderCustomFieldView.m in Sources */,
+				6DDC9A4DCF0FEEB7B812D4FD /* EnumOrderCustomFieldView.m in Sources */,
+				6DDC9BF25185FC6EB90BAF83 /* DateOrderCustomFieldView.m in Sources */,
+				6DDC94281B989279A036AD74 /* ShowCustomField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1919,8 +1960,8 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_CFLAGS = "-DDEBUG=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "3BFE907E-FF4E-4EF1-BCD6-3AFA338BFF43";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "3BFE907E-FF4E-4EF1-BCD6-3AFA338BFF43";
+				PROVISIONING_PROFILE = "16831499-CE10-4E70-B59B-807884D62617";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "16831499-CE10-4E70-B59B-807884D62617";
 				TARGETED_DEVICE_FAMILY = 2;
 				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				VALID_ARCHS = "armv7 armv7s";
@@ -1943,8 +1984,8 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "E7C55F02-A812-4129-9300-B915E28F33DB";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E7C55F02-A812-4129-9300-B915E28F33DB";
+				PROVISIONING_PROFILE = "5823EBA4-BB5C-4188-A329-49B9ABC7E349";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5823EBA4-BB5C-4188-A329-49B9ABC7E349";
 				TARGETED_DEVICE_FAMILY = 2;
 				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				VALID_ARCHS = "armv7 armv7s";
@@ -1979,6 +2020,7 @@
 		C7BA948D1651DA3700E6705B /* ProductCart.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				69087A7B1961353700B78D64 /* ProductCart8.xcdatamodel */,
 				EBB8A1E518A1FF7A009B7B57 /* ProductCart5.xcdatamodel */,
 				EBAFEBFB18A2FAB000228001 /* ProductCart6.xcdatamodel */,
 				EB3870E418DDE9F4008BBF15 /* ProductCart7.xcdatamodel */,
@@ -1987,7 +2029,7 @@
 				EBFABF02189C38250089F79A /* ProductCart3.xcdatamodel */,
 				C7BA948E1651DA3700E6705B /* ProductCart.xcdatamodel */,
 			);
-			currentVersion = EB3870E418DDE9F4008BBF15 /* ProductCart7.xcdatamodel */;
+			currentVersion = 69087A7B1961353700B78D64 /* ProductCart8.xcdatamodel */;
 			path = ProductCart.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

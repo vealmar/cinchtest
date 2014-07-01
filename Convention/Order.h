@@ -34,6 +34,8 @@
 @property(nonatomic, retain) NSString *vendorGroupId;
 @property(nonatomic, retain) NSSet *carts;
 @property(nonatomic, retain) NSSet *discountLineItems;
+@property(nonatomic, retain) NSArray *customFields; //NSArray[NSDictionary[kCustomFieldFieldName, kCustomFieldValue]]
+
 @end
 
 @interface Order (CoreDataGeneratedAccessors)

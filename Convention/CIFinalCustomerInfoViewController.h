@@ -22,8 +22,6 @@
 
 - (IBAction)submit:(id)sender;
 
-- (void)setAuthorizedByInfo:(NSDictionary *)info;
-
 - (void)dismissFinalCustomerViewController;
 
 @end

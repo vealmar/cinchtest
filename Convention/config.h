@@ -97,7 +97,10 @@
 #define kCancelByDays @"cancel_by_days"
 
 //purchased Items keys:
+#define kCustomFieldFieldName @"field_name"
+#define kCustomFieldValue @"value"
 #define kOrderItems @"line_items_attributes"
+#define kCustomFields @"custom_fields_attributes"
 #define kLineItemProductID @"product_id"
 #define kLineItemQuantity @"quantity"
 #define kLineItemPrice @"price"

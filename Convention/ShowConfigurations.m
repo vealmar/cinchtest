@@ -6,11 +6,13 @@
 //
 
 
+#import <Underscore.m/Underscore.h>
 #import "ShowConfigurations.h"
 #import "config.h"
 #import "SettingsManager.h"
 #import "NilUtil.h"
 #import "DateRange.h"
+#import "ShowCustomField.h"
 
 static ShowConfigurations *showConfigurations = nil;
 
@@ -60,6 +62,10 @@ static ShowConfigurations *showConfigurations = nil;
         } else {
             showConfigurations.orderShipDates = [DateRange createInstanceFromJson:@[]];
         }
+
+        showConfigurations.customFields = Underscore.array([json objectForKey:@"customFieldInfos"]).map(^id(NSDictionary *json) {
+            return [[ShowCustomField alloc] init:json];
+        }).unwrap;
     }
 }
 
@@ -86,6 +92,12 @@ static ShowConfigurations *showConfigurations = nil;
 
 - (bool)isLineItemShipDatesType {
     return self.shipDates && [self.shipDatesType isEqualToString:@"lineitem"];
+}
+
+- (NSArray *)orderCustomFields {
+    return Underscore.array(self.customFields).filter(^BOOL(ShowCustomField *field) {
+        return [field.ownerType isEqualToString:@"Order"];
+    }).unwrap;
 }
 
 @end

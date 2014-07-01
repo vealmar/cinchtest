@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
+#import <Underscore.m/Underscore.h>
 #import "Order+Extensions.h"
 #import "config.h"
 #import "NumberUtil.h"
@@ -21,6 +22,7 @@
 #import "DateUtil.h"
 #import "ShipDate.h"
 #import "NotificationConstants.h"
+#import "ShowCustomField.h"
 
 @implementation Order (Extensions)
 
@@ -60,6 +62,7 @@
         }
         self.carts = carts;
         self.discountLineItems = discountLineItems;
+        self.customFields = [NilUtil objectOrDefault:orderFromServer defaultObject:[NSArray array]];
     }
     return self;
 }
@@ -140,25 +143,44 @@
     return discountLineItemIds;
 }
 
-- (NSDictionary *)asJSONReqParameter {
-    NSMutableArray *arr = [[NSMutableArray alloc] initWithCapacity:self.carts.count];
-    for (Cart *cart in self.carts) {
-        NSDictionary *proDict = [cart asJsonReqParameter];
-        if (proDict) [arr addObject:(id) proDict];
+- (NSString *)customFieldValueFor:(ShowCustomField *)showCustomField {
+    NSDictionary *customField = Underscore.array(self.customFields).find(^BOOL(NSDictionary *dict) {
+        return [showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:[dict objectForKey:kCustomFieldFieldName]];
+    });
+    if (customField == nil) {
+        return [NSNull null];
+    } else {
+        return [customField objectForKey:kCustomFieldValue];
     }
+}
+
+- (void)setCustomFieldValueFor:(ShowCustomField *)showCustomField value:(NSString *)value {
+    self.customFields = Underscore.array(self.customFields).filter(^BOOL(NSDictionary *dict) {
+        return !([showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:[dict objectForKey:kCustomFieldFieldName]]);
+    }).unwrap;
+    NSDictionary *customField = @{ kCustomFieldFieldName : showCustomField.fieldName, kCustomFieldValue : value };
+    self.customFields = [self.customFields arrayByAddingObject:customField];
+}
+
+- (NSDictionary *)asJSONReqParameter {
+    NSArray *lineItems = Underscore.array(self.carts).map(^id(Cart *cart) {
+        return [cart asJsonReqParameter];
+    }).unwrap;
+
     NSDictionary *newOrder = [NSDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNSNull:self.customer_id], kOrderCustomerID,
-                                                                                      [NilUtil objectOrNSNull:self.notes], kNotes,
-                                                                                      [NilUtil objectOrNSNull:self.authorized], kAuthorizedBy,
-                                                                                      [self.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
-                                                                                      [NilUtil objectOrNSNull:self.cancelByDays], kCancelByDays,
-                                                                                      [NilUtil objectOrNSNull:self.status], kOrderStatus,
-                                                                                      [NSArray arrayWithArray:arr], kOrderItems,
-                                                                                      [self.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,
-                                                                                      [NilUtil objectOrNSNull:self.printer], kOrderPrinter,
-                                                                                      [NilUtil objectOrNSNull:self.po_number], kOrderPoNumber,
-                                                                                      [NilUtil objectOrNSNull:self.payment_terms], kOrderPaymentTerms,
-                                                                                      [NilUtil objectOrNSNull:[DateUtil convertDateArrayToYyyymmddArray:self.ship_dates]], kOrderShipDates,
-                                                                                      nil];
+                                                                        [NilUtil objectOrNSNull:self.notes], kNotes,
+                                                                        [NilUtil objectOrNSNull:self.authorized], kAuthorizedBy,
+                                                                        [self.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
+                                                                        [NilUtil objectOrNSNull:self.cancelByDays], kCancelByDays,
+                                                                        [NilUtil objectOrNSNull:self.status], kOrderStatus,
+                                                                        [NSArray arrayWithArray:lineItems], kOrderItems,
+                                                                        [self.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,
+                                                                        [NilUtil objectOrNSNull:self.printer], kOrderPrinter,
+                                                                        [NilUtil objectOrNSNull:self.po_number], kOrderPoNumber,
+                                                                        [NilUtil objectOrNSNull:self.payment_terms], kOrderPaymentTerms,
+                                                                        [NilUtil objectOrNSNull:[DateUtil convertDateArrayToYyyymmddArray:self.ship_dates]], kOrderShipDates,
+                                                                        [NSArray arrayWithArray:self.customFields], kCustomFields,
+                                                                        nil];
     return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
 }
 
