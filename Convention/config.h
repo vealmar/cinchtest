@@ -30,8 +30,8 @@
 #define kDBGETBULLETINS [NSString stringWithFormat:@"/vendor/shows/%@/bulletins.json", ShowID]
 
 //Auth keys
-#define kEmailKey @"vendor[login]"
-#define kPasswordKey @"vendor[password]"
+#define kEmailKey @"user[login]"
+#define kPasswordKey @"user[password]"
 #define kEmailMasterKey @"host[login]"
 #define kPasswordMasterKey @"host[password]"
 #define kAuthToken @"auth_token"

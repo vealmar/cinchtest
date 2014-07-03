@@ -17,6 +17,4 @@
 
 @property (nonatomic, assign) id<VendorViewDelegate> delegate;
 
-@property (nonatomic, weak) UIPopoverController *parentPopover;
-
 @end

@@ -66,6 +66,7 @@ static ShowConfigurations *showConfigurations = nil;
         showConfigurations.customFields = Underscore.array([json objectForKey:@"customFieldInfos"]).map(^id(NSDictionary *json) {
             return [[ShowCustomField alloc] init:json];
         }).unwrap;
+        showConfigurations.vendorMode = [[NilUtil objectOrEmptyString:[json objectForKey:@"customerType"]] isEqualToString:@"vendor"];
     }
 }
 

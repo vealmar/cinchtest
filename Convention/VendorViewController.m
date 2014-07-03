@@ -18,7 +18,6 @@
 
 @synthesize vendors;
 @synthesize bulletins;
-@synthesize parentPopover;
 @synthesize delegate;
 
 - (id)initWithStyle:(UITableViewStyle)style {

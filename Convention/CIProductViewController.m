@@ -33,6 +33,7 @@
 #import "ProductSearch.h"
 #import "ProductSearchQueue.h"
 #import "CinchJSONAPIClient.h"
+#import "BulletinViewController.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -104,7 +105,7 @@
     pull = [[PullToRefreshView alloc] initWithScrollView:self.productsTableView];
     [pull setDelegate:self];
     [self.productsTableView addSubview:pull];
-    currentVendor = self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
+    currentVendor = ![ShowConfigurations instance].vendorMode && self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
     if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         self.tableHeaderPigglyWiggly.hidden = NO;
@@ -406,24 +407,29 @@
 * SG: This is the Bulletins drop down.
 */
 - (void)showVendorView {
-    VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
-    vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
-
-    if (bulletins != nil)
-        vendorViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
-
-    vendorViewController.delegate = self;
+    UIViewController *rootDropdownController;
+    if ([ShowConfigurations instance].vendorMode) {
+        BulletinViewController *bulletinViewController = [[BulletinViewController alloc] initWithNibName:@"BulletinViewController" bundle:nil];
+        bulletinViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
+        bulletinViewController.delegate = self;
+        rootDropdownController = bulletinViewController;
+    } else {
+        VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
+        vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
+        if (bulletins != nil) vendorViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
+        vendorViewController.delegate = self;
+        rootDropdownController = vendorViewController;
+    }
 
     CGRect frame = self.vendorDropdown.frame;
     frame = CGRectOffset(frame, 0, 0);
 
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vendorViewController];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:rootDropdownController];
     nav.navigationBarHidden = NO;
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil];
     nav.navigationItem.backBarButtonItem = backButton;
 
     self.poController = [[UIPopoverController alloc] initWithContentViewController:nav];
-    vendorViewController.parentPopover = self.poController;
     [self.poController presentPopoverFromRect:frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 

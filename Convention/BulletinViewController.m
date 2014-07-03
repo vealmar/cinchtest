@@ -7,6 +7,8 @@
 //
 
 #import "BulletinViewController.h"
+#import "ShowConfigurations.h"
+#import "Underscore.h"
 
 @interface BulletinViewController ()
 
@@ -33,9 +35,23 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.title = @"Bulletins";
+    self.title = @"Brands";
     //self.navigationItem.leftBarButtonItem = nil;
     self.navigationItem.backBarButtonItem = nil;
+}
+
+- (NSArray *)currentBulletins {
+    if ([ShowConfigurations instance].vendorMode) {
+        NSMutableArray *combinedBulletins = [Underscore.array([bulletins allValues]).flatten.filter(^BOOL(NSDictionary *dictionary) {
+            return ![[dictionary valueForKey:@"id"] isEqual:@(0)];
+        }).sort(^NSComparisonResult(NSDictionary *a, NSDictionary *b) {
+            return [[a objectForKey:@"name"] compare:[b objectForKey:@"name"]];
+        }).unwrap mutableCopy];
+        [combinedBulletins insertObject:@{ @"id" : @(0), @"name" : @"Any" } atIndex:0];
+        return [NSArray arrayWithArray:combinedBulletins];
+    } else {
+        return [bulletins objectForKey:[NSNumber numberWithInt:currentVendId]];
+    }
 }
 
 #pragma mark - Table view data source
@@ -45,7 +61,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSArray *bulls = [bulletins objectForKey:[NSNumber numberWithInt:currentVendId]];
+    NSArray *bulls = [self currentBulletins];
     if (bulletins != nil)
         return [bulls count];
     else
@@ -59,7 +75,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
 
-    NSDictionary *details = [[bulletins objectForKey:[NSNumber numberWithInt:currentVendId]] objectAtIndex:[indexPath row]];
+    NSDictionary *details = [[self currentBulletins] objectAtIndex:[indexPath row]];
     if ([details objectForKey:@"name"] != nil)
         cell.textLabel.text = [details objectForKey:@"name"];
     else

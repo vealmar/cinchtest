@@ -38,6 +38,7 @@
         [client setRequestSerializer:requestSerializer];
     }
     client.requestSerializer.timeoutInterval = 150;
+    [client.requestSerializer setValue:@"application/json" forHTTPHeaderField:@"Accept"];
 
     [client.reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         switch (status) {
