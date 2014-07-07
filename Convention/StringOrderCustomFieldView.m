@@ -38,7 +38,7 @@
 }
 
 - (void)value:(NSString *)value {
-    self.textField.text = value;
+    self.textField.text = [[NSNull null] isEqual:value] ? @"" : value;
 }
 
 
