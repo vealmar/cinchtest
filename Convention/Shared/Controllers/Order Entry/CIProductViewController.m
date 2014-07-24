@@ -352,6 +352,7 @@
 - (void)updateErrorsView {
     NSSet *errors = self.coreDataOrder ? self.coreDataOrder.errors : nil;
     if (errors && errors.count > 0) {
+        //#todo convert this to color string and remove color from storyboard
         NSMutableString *bulletList = [NSMutableString stringWithCapacity:errors.count * 30];
         for (Error *error in errors) {
             [bulletList appendFormat:@"%@\n", error.message];
@@ -475,6 +476,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSNumber *productId = self.resultData[(NSUInteger) indexPath.row];
     Cart *cart = [self.coreDataOrder findCartForProductId:productId];
+    //#todo move this to errorview object?
     return (cart.errors.count > 0) ? 44 + cart.errors.count * 42 : 44;
 }
 

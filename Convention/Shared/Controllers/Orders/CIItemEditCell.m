@@ -24,6 +24,7 @@
 
 - (void)updateErrorsView:(NSArray *)errors {
     if (errors && errors.count > 0) {
+        //#todo convert this to color string and remove color from storyboard
         NSMutableString *bulletList = [NSMutableString stringWithCapacity:errors.count * 30];
         for (Error *error in errors) {
             [bulletList appendFormat:@"%@\n", error];

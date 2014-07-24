@@ -33,6 +33,7 @@
         for (Error *error in errors) {
             [bulletList appendFormat:@"%@\n", error.message];
         }
+        //#todo convert this to color string and remove color from storyboard
         self.errorMessageView.text = bulletList;
         self.errorMessageView.hidden = NO;
         self.errorMessageHeightConstraint.constant = 59.0f;
