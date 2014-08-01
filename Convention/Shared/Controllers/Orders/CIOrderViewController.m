@@ -345,15 +345,6 @@ SG: The argument 'detail' is the selected order.
 }
 
 - (CIProductViewController *)initializeCIProductViewController:(bool)newOrder customer:(NSDictionary *)customer {
-//    OrderFactory *orderFactory = [[OrderFactory alloc] init];
-//    orderFactory.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
-//    orderFactory.loggedInVendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];
-//    orderFactory.managedObjectContext = self.managedObjectContext;
-//
-//    [orderFactory build:coreDataOrder withState:newOrder forCustomer:customer];
-//
-//    //=====
-
     CIProductViewController *productViewController = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
     productViewController.authToken = self.authToken;
     productViewController.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
@@ -554,8 +545,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
         return 114;
     else {
         ALineItem *data = [currentOrder.lineItems objectAtIndex:(NSUInteger) [indexPath row]];
-        if (data.errors.count > 0)
-            return 44 + data.errors.count * 42;
+        if (data.warnings.count > 0 || data.errors.count > 0)
+            return 44 + ((data.warnings.count + data.errors.count) * 42);
         else
             return 44;
     }

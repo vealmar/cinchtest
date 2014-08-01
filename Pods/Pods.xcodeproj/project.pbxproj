@@ -280,7 +280,6 @@
 				BB7843A03B23465CBDC3EB9C /* Underscore+Functional.m */,
 				7F926D46D8D9410AB0103F53 /* Support Files */,
 			);
-			name = Underscore.m;
 			path = Underscore.m;
 			sourceTree = "<group>";
 		};
@@ -302,7 +301,6 @@
 				689C86CF2BFE4414AB41137D /* UIViewController+ECSlidingViewController.m */,
 				F1A22AB979A14510B0F7BFD9 /* Support Files */,
 			);
-			name = ECSlidingViewController;
 			path = ECSlidingViewController;
 			sourceTree = "<group>";
 		};
@@ -409,7 +407,6 @@
 				533B274DC8F04B0AB60BAE1F /* JSONKit.m */,
 				FFAE2CE57B76458BA706741C /* Support Files */,
 			);
-			name = JSONKit;
 			path = JSONKit;
 			sourceTree = "<group>";
 		};
@@ -436,7 +433,6 @@
 				6D6DF1AD2EA34580A56C38B6 /* Support Files */,
 				46A272C841BB435CAFA53932 /* UIKit */,
 			);
-			name = AFNetworking;
 			path = AFNetworking;
 			sourceTree = "<group>";
 		};
@@ -701,8 +697,6 @@
 			mainGroup = 45202540804B4920A44A4C33;
 			productRefGroup = AEDF4C25D8044D239E87F82E /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-			);
 			projectRoot = "";
 			targets = (
 				3EE25B7A57524081A0965707 /* Pods */,

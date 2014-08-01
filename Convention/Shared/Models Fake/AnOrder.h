@@ -28,6 +28,7 @@
 @property(strong, nonatomic) NSArray *customFields; //NSArray[NSDictionary[kCustomFieldFieldName, kCustomFieldValue]]
 @property(strong, nonatomic) Order *coreDataOrder;
 @property(nonatomic) BOOL *shipFlag;
+@property(strong, nonatomic) NSArray *warnings;
 @property(strong, nonatomic) NSArray *errors;
 
 - (id)initWithJSONFromServer:(NSDictionary *)JSON;

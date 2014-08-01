@@ -73,7 +73,7 @@
         self.showPrice.hidden = NO;
         self.editableShowPrice.hidden = YES;
     }
-    [self updateErrorsView:cart.errors];
+    [self updateErrorsView:cart];
 }
 
 - (IBAction)quantityChanged:(id)sender {

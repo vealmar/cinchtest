@@ -233,8 +233,8 @@
     if (indexPath.section == 0) {
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
         Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        if (cart.errors.count > 0)
-            return 44 + cart.errors.count * 42;
+        if (cart.warnings.count > 0 || cart.errors.count > 0)
+            return 44 + ((cart.warnings.count + cart.errors.count) * 42);
     }
     return 44;
 }
@@ -243,7 +243,7 @@
     if (indexPath.section == 0) {
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
         Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        [helper updateCellBackground:cell cart:cart];
+        [helper updateCellBackground:cell order:self.coreDataOrder cart:cart];
     }
 }
 
@@ -332,7 +332,7 @@
     self.unsavedChangesPresent = YES;
     Cart *cart = [self.coreDataOrder findCartForProductId:productId];
     ProductCell *cell = (ProductCell *) [self.productsUITableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:(NSUInteger) idx inSection:0]];
-    [helper updateCellBackground:cell cart:cart];
+    [helper updateCellBackground:cell order:self.coreDataOrder cart:cart];
 }
 
 - (void)QtyTouchForIndex:(int)idx {

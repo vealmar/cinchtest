@@ -21,7 +21,7 @@
 
 - (BOOL)isProductAVoucher:(NSNumber *)productId;
 
-- (void)updateCellBackground:(UITableViewCell *)cell cart:(Cart *)cart;
+- (void)updateCellBackground:(UITableViewCell *)cell order:(Order *)order cart:(Cart *)cart;
 
 - (UITableViewCell *)dequeueReusableProductCell:(UITableView *)table;
 

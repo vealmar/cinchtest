@@ -1,5 +1,5 @@
 //
-// Created by septerr on 9/2/13.
+// Created by septerr on 8/19/13.
 // Copyright (c) 2013 Convention Innovations. All rights reserved.
 //
 // To change the template use AppCode | Preferences | File Templates.
@@ -10,14 +10,11 @@
 
 @class Cart;
 
-@protocol ProductCellDelegate;
 
-
-@interface CartViewCell : UITableViewCell <UITextFieldDelegate>
-@property(weak, nonatomic) IBOutlet UILabel *InvtID;
-@property(nonatomic, assign) id <ProductCellDelegate> delegate;
+@interface ProductCell : UITableViewCell <UITextFieldDelegate>
+@property(unsafe_unretained, nonatomic) IBOutlet UILabel *InvtID;
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
 @property(weak, nonatomic) IBOutlet UITextView *errorMessageView;
 
-- (void)updateErrorsView:(NSSet *)errors;
+- (void)updateErrorsView:(Cart *)cart;
 @end

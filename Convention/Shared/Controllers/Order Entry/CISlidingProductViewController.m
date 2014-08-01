@@ -63,6 +63,11 @@
     //listen for changes KVO
     CIProductViewController *productViewController = (CIProductViewController *) self.topViewController;
     [productViewController addObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder)) options:NSKeyValueObservingOptionNew context:nil];
+
+    // the child view will have viewWillAppear run first, so we want to capture any working order changes
+    // since they won't trigger the above KVO handler as the handler is initialized in this parent view controller's
+    // viewWillAppear
+    self.shipDateController.workingOrder = productViewController.coreDataOrder;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -91,7 +96,7 @@
 
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if (NSStringFromSelector(@selector(coreDataOrder)) == keyPath) {
+    if ([NSStringFromSelector(@selector(coreDataOrder)) isEqualToString:keyPath]) {
         self.shipDateController.workingOrder = [change objectForKey:@"new"];
     }
 }

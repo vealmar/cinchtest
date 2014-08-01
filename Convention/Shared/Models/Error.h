@@ -9,11 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class EditableEntity;
-
 @interface Error : NSManagedObject
 
 @property(nonatomic, retain) NSString *message;
-@property(nonatomic, retain) EditableEntity *editableEntity;
 
 @end

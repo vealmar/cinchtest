@@ -158,7 +158,6 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             [self reloadSelectedDatesSection];
         }
         [self.calendarView reloadDates:@[date]];
-        // todo self.workingOrder isnt being used anymore, need to change the logic for order ship dates
         if (nil != self.workingOrder && [ShowConfigurations instance].isOrderShipDatesType) {
             self.workingOrder.ship_dates = [NSArray arrayWithArray:self.selectedShipDates];
         } else if ([ShowConfigurations instance].isLineItemShipDatesType && ![self.selectedShipDates containsObject:date]) {

@@ -38,6 +38,7 @@
         self.shipDates = [DateUtil convertYyyymmddArrayToDateArray:[NilUtil objectOrEmptyArray:[JSON objectForKey:@"ship_dates"]]];
         self.customFields = [JSON objectForKey:@"custom_fields"];
         self.customer = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
+        self.warnings = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"warnings"]];
         self.errors = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"errors"]];
         NSMutableArray *lineItems = [[NSMutableArray alloc] init];
         NSArray *jsonLIneItems = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"line_items"]];

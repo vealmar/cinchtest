@@ -10,6 +10,9 @@
 #import "ProductCellDelegate.h"
 #import "Error.h"
 #import "ShowConfigurations.h"
+#import "Cart+Extensions.h"
+#import "UIColor+Boost.h"
+#import "EditableEntity+Extensions.h"
 
 
 @implementation CartViewCell {
@@ -27,14 +30,9 @@
     }
 }
 
-- (void)updateErrorsView:(NSSet *)errors {
-    if (errors.count > 0) {
-        NSMutableString *bulletList = [NSMutableString stringWithCapacity:errors.count * 30];
-        for (Error *error in errors) {
-            [bulletList appendFormat:@"%@\n", error.message];
-        }
-        //#todo convert this to color string and remove color from storyboard
-        self.errorMessageView.text = bulletList;
+- (void)updateErrorsView:(Cart *)cart {
+    if (cart && [cart hasErrorsOrWarnings]) {
+        self.errorMessageView.attributedText = [cart buildMessageSummary];
         self.errorMessageView.hidden = NO;
         self.errorMessageHeightConstraint.constant = 59.0f;
         CGFloat contentHeight = self.errorMessageView.contentSize.height;

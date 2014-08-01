@@ -79,6 +79,7 @@
     if (coordinator != nil) {
         _managedObjectContext = [[NSManagedObjectContext alloc] init];
         [_managedObjectContext setPersistentStoreCoordinator:coordinator];
+        [_managedObjectContext setMergePolicy:[[NSMergePolicy alloc] initWithMergeType:NSMergeByPropertyObjectTrumpMergePolicyType]];
     }
     return _managedObjectContext;
 }
@@ -101,43 +102,11 @@
         return _persistentStoreCoordinator;
     }
 
-    //DLog(@"%@", [self managedObjectModel]);
-
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart8.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart9-2.sqlite"];
 //    [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
 
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-
-
-//    NSDictionary *sourceMetadata = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:NSSQLiteStoreType URL:nil error:&error];
-//    if (sourceMetadata == nil) {
-//        [[[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-//        DLog(@"Error loading source metadata: %@", error.localizedDescription);
-//        abort();
-//    }
-//    
-//    NSManagedObjectModel *destinationModel = [_persistentStoreCoordinator managedObjectModel];
-//    BOOL pscCompatible = [destinationModel isConfiguration:nil compatibleWithStoreMetadata:sourceMetadata];
-//    
-//    if (!pscCompatible) {
-//        error = nil;
-//        NSManagedObjectModel *sourceModel = [NSManagedObjectModel mergedModelFromBundles:nil forStoreMetadata:sourceMetadata];
-//        if (sourceModel == nil) {
-//            [[[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-//            DLog(@"Error finding source model for migration: %@", error.localizedDescription);
-//            abort();
-//        }
-//
-//        NSMappingModel *mappingModel = [NSMappingModel mappingModelFromBundles:nil forSourceModel:sourceModel destinationModel:destinationModel];
-//        if (mappingModel == nil) {
-//            [[[UIAlertView alloc] initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-//            DLog(@"Error finding mapping model for migration: %@", error.localizedDescription);
-//            abort();
-//        }
-//        
-//        
-//    }
 
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
                                                    configuration:nil URL:storeURL options:nil error:&error]) {

@@ -1,16 +1,18 @@
 //
 //  EditableEntity.m
-//  Convention
+//  Pods
 //
-//  Created by septerr on 12/27/13.
-//  Copyright (c) 2013 Convention Innovations. All rights reserved.
+//  Created by David Jafari on 7/30/14.
+//
 //
 
 #import "EditableEntity.h"
+#import "Error.h"
 
 
 @implementation EditableEntity
 
 @dynamic errors;
+@dynamic warnings;
 
 @end

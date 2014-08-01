@@ -57,32 +57,43 @@
     return [CIProductViewControllerHelper itemIsVoucher:product];
 }
 
-- (void)updateCellBackground:(UITableViewCell *)cell cart:(Cart *)cart {
+- (void)updateCellBackground:(UITableViewCell *)cell order:(Order *)order cart:(Cart *)cart {
+    UIColor *green = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
+    UIColor *red = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
     if ([ShowConfigurations instance].shipDatesRequired) {
-        BOOL hasQty = cart.totalQuantity > 0;
-        BOOL hasShipDates = cart.shipdates && cart.shipdates.count > 0;
-        BOOL isVoucher = [CIProductViewControllerHelper itemIsVoucher:cart.product];
-        if (!isVoucher) {
-            if (hasQty) {
-                if (hasShipDates) {
-                    cell.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
-                } else {
-                    cell.backgroundColor = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
-                }
+        if ([ShowConfigurations instance].isOrderShipDatesType) {
+            if (cart.totalQuantity > 0) {
+                if (order && order.ship_dates.count > 0) cell.backgroundColor = green;
+                else cell.backgroundColor = red;
             } else {
                 cell.backgroundColor = [UIColor whiteColor];
             }
-        } else {
-            if (hasQty) {
-                cell.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
+        } else if ([ShowConfigurations instance].isLineItemShipDatesType) {
+            BOOL hasQty = cart.totalQuantity > 0;
+            BOOL hasShipDates = cart.shipdates && cart.shipdates.count > 0;
+            BOOL isVoucher = [CIProductViewControllerHelper itemIsVoucher:cart.product];
+            if (!isVoucher) {
+                if (hasQty) {
+                    if (hasShipDates) {
+                        cell.backgroundColor = green;
+                    } else {
+                        cell.backgroundColor = red;
+                    }
+                } else {
+                    cell.backgroundColor = [UIColor whiteColor];
+                }
             } else {
-                cell.backgroundColor = [UIColor whiteColor];
+                if (hasQty) {
+                    cell.backgroundColor = green;
+                } else {
+                    cell.backgroundColor = [UIColor whiteColor];
+                }
             }
         }
     } else {
         BOOL hasQty = cart.totalQuantity > 0;
         if (hasQty) {
-            cell.backgroundColor = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
+            cell.backgroundColor = green;
         } else {
             cell.backgroundColor = [UIColor whiteColor];
         }
@@ -140,14 +151,21 @@
 
     //if using ship dates, all items with non-zero quantity (except vouchers) should have ship date(s)
     if ([ShowConfigurations instance].shipDatesRequired) {
-        for (Cart *cart in coreDataOrder.carts) {
-            Product *product = [Product findProduct:cart.cartId];
-            BOOL hasQty = cart.totalQuantity > 0;
-            if (hasQty && ![CIProductViewControllerHelper itemIsVoucher:product]) {
-                BOOL hasShipDates = [NilUtil objectOrEmptyArray:cart.shipdates].count > 0; //todo is call to nilutil needed?
-                if (!hasShipDates) {
-                    [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have ship date(s) before the order can be submitted. Check cart items and try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-                    return NO;
+        if ([[ShowConfigurations instance] isOrderShipDatesType]) {
+            if (coreDataOrder.ship_dates.count == 0) {
+                [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"You must select at least one ship date for this order before submitting." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+                return NO;
+            }
+        } else if ([[ShowConfigurations instance] isLineItemShipDatesType]) {
+            for (Cart *cart in coreDataOrder.carts) {
+                Product *product = [Product findProduct:cart.cartId];
+                BOOL hasQty = cart.totalQuantity > 0;
+                if (hasQty && ![CIProductViewControllerHelper itemIsVoucher:product]) {
+                    BOOL hasShipDates = [NilUtil objectOrEmptyArray:cart.shipdates].count > 0; //todo is call to nilutil needed?
+                    if (!hasShipDates) {
+                        [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have ship date(s) before the order can be submitted. Check cart items and try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+                        return NO;
+                    }
                 }
             }
         }

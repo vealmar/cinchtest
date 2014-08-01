@@ -8,18 +8,16 @@
 
 #import "ProductCell.h"
 #import "Error.h"
+#import "Cart.h"
+#import "EditableEntity+Extensions.h"
 
 
 @implementation ProductCell {
 
 }
-- (void)updateErrorsView:(NSSet *)errors {
-    if (errors.count > 0) {
-        NSMutableString *bulletList = [NSMutableString stringWithCapacity:errors.count * 30];
-        for (Error *error in errors) {
-            [bulletList appendFormat:@"%@\n", error.message];
-        }
-        self.errorMessageView.text = bulletList;
+- (void)updateErrorsView:(Cart *)cart {
+    if (cart && [cart hasErrorsOrWarnings]) {
+        self.errorMessageView.attributedText = [cart buildMessageSummary];
         self.errorMessageView.hidden = NO;
         self.errorMessageHeightConstraint.constant = 59.0f;
         CGFloat contentHeight = self.errorMessageView.contentSize.height;

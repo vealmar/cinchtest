@@ -14,6 +14,8 @@
 #import "Error.h"
 #import "Product.h"
 #import "Product+Extensions.h"
+#import "EditableEntity.h"
+#import "EditableEntity+Extensions.h"
 
 @interface CIItemEditCell ()
 @property NSUInteger numOfShipDates;
@@ -22,14 +24,11 @@
 
 @implementation CIItemEditCell
 
-- (void)updateErrorsView:(NSArray *)errors {
-    if (errors && errors.count > 0) {
-        //#todo convert this to color string and remove color from storyboard
-        NSMutableString *bulletList = [NSMutableString stringWithCapacity:errors.count * 30];
-        for (Error *error in errors) {
-            [bulletList appendFormat:@"%@\n", error];
-        }
-        self.errorMessageView.text = bulletList;
+- (void)updateErrorsView:(ALineItem *)lineItem {
+    NSArray *warnings = lineItem ? lineItem.warnings : [NSArray new];
+    NSArray *errors = lineItem ? lineItem.errors : [NSArray new];
+    if (warnings.count > 0 || errors.count > 0) {
+        self.errorMessageView.attributedText = [EditableEntity buildMessageSummaryWithErrors:errors withWarnings:warnings];
         self.errorMessageView.hidden = NO;
         self.errorMessageHeightConstraint.constant = 59.0f;
         CGFloat contentHeight = self.errorMessageView.contentSize.height;
@@ -181,7 +180,7 @@
         self.total.text = @"$0.00";
     }
     self.tag = tag;
-    [self updateErrorsView:data.errors];
+    [self updateErrorsView:data];
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {

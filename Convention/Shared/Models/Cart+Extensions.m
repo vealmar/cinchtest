@@ -14,7 +14,6 @@
 #import "NumberUtil.h"
 #import "DateUtil.h"
 #import "ShipDate.h"
-#import "CIProductViewControllerHelper.h"
 #import "NilUtil.h"
 #import "ShowConfigurations.h"
 #import "Error.h"
@@ -30,6 +29,10 @@
     self = [self initWithQuantity:lineItem.quantity priceInCents:[NumberUtil convertDollarsToCents:lineItem.price] voucherPriceInCents:[NumberUtil convertDollarsToCents:lineItem.voucherPrice] category:lineItem.category shipDates:lineItem.shipDates
                         productId:lineItem.productId context:context];
     self.orderLineItem_id = lineItem.itemId;
+    for (NSString *warning in [NilUtil objectOrEmptyArray:lineItem.warnings]) {
+        Error *lineItemError = [[Error alloc] initWithMessage:warning andContext:self.managedObjectContext];
+        [self addWarningsObject:lineItemError];
+    }
     for (NSString *error in [NilUtil objectOrEmptyArray:lineItem.errors]) {
         Error *lineItemError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
         [self addErrorsObject:lineItemError];

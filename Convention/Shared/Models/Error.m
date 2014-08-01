@@ -12,6 +12,5 @@
 @implementation Error
 
 @dynamic message;
-@dynamic editableEntity;
 
 @end

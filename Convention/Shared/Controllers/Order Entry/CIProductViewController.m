@@ -34,6 +34,7 @@
 #import "ProductSearchQueue.h"
 #import "CinchJSONAPIClient.h"
 #import "BulletinViewController.h"
+#import "EditableEntity+Extensions.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -151,6 +152,10 @@
 
     // listen for changes KVO
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder)) options:0 context:nil];
+    [self addObserver:self
+           forKeyPath:[NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(coreDataOrder)), NSStringFromSelector(@selector(ship_dates))]
+              options:0
+              context:nil];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(resultData)) options:NSKeyValueObservingOptionNew context:NULL];
 }
 
@@ -165,6 +170,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder))];
+    [self removeObserver:self forKeyPath:[NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(coreDataOrder)), NSStringFromSelector(@selector(ship_dates))]];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(resultData))];
 }
 
@@ -350,14 +356,10 @@
 }
 
 - (void)updateErrorsView {
-    NSSet *errors = self.coreDataOrder ? self.coreDataOrder.errors : nil;
-    if (errors && errors.count > 0) {
-        //#todo convert this to color string and remove color from storyboard
-        NSMutableString *bulletList = [NSMutableString stringWithCapacity:errors.count * 30];
-        for (Error *error in errors) {
-            [bulletList appendFormat:@"%@\n", error.message];
-        }
-        self.errorMessageTextView.text = bulletList;
+    NSSet *warnings = self.coreDataOrder ? self.coreDataOrder.warnings : [NSSet new];
+    NSSet *errors = self.coreDataOrder ? self.coreDataOrder.errors : [NSSet new];
+    if (warnings.count > 0 || errors.count > 0) {
+        self.errorMessageTextView.attributedText = [self.coreDataOrder buildMessageSummary];
         self.errorMessageTextView.hidden = NO;
     } else {
         self.errorMessageTextView.text = @"";
@@ -446,7 +448,7 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-    [helper updateCellBackground:cell cart:[self.coreDataOrder findCartForProductId:productId]];
+    [helper updateCellBackground:cell order:self.coreDataOrder cart:[self.coreDataOrder findCartForProductId:productId]];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -476,8 +478,11 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSNumber *productId = self.resultData[(NSUInteger) indexPath.row];
     Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-    //#todo move this to errorview object?
-    return (cart.errors.count > 0) ? 44 + cart.errors.count * 42 : 44;
+
+    if (cart.warnings.count > 0 || cart.errors.count > 0)
+        return 44 + ((cart.warnings.count + cart.errors.count) * 42);
+    else
+        return 44;
 }
 
 #pragma mark - Events
@@ -769,12 +774,16 @@
 #pragma mark - ProductCellDelegate
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    NSString *orderShipDatesKeyPath = [NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(coreDataOrder)), NSStringFromSelector(@selector(ship_dates))];
     if ([NSStringFromSelector(@selector(coreDataOrder)) isEqualToString:keyPath]) {
         NSError *error = nil;
         if (![self.managedObjectContext save:&error]) {
             NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
             [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
         }
+    } else if ([orderShipDatesKeyPath isEqualToString:keyPath]) {
+        [self.productsTableView reloadData];
+        [self updateTotals];
     } else if ([NSStringFromSelector(@selector(resultData)) isEqualToString:keyPath]) {
         [self reloadTable];
     }
@@ -847,7 +856,7 @@
 - (void)updateCellColorForId:(NSUInteger)index {
     NSNumber *productId = [self.resultData objectAtIndex:index];
     ProductCell *cell = (ProductCell *) [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-    [helper updateCellBackground:cell cart:[self.coreDataOrder findCartForProductId:productId]];
+    [helper updateCellBackground:cell order:self.coreDataOrder cart:[self.coreDataOrder findCartForProductId:productId]];
 }
 
 #pragma mark - UIAlertViewDelegate

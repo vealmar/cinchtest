@@ -44,6 +44,10 @@
         self.po_number = orderFromServer.poNumber;
         self.payment_terms = orderFromServer.paymentTerms;
         self.ship_dates = orderFromServer.shipDates;
+        for (NSString *warning in [NilUtil objectOrEmptyArray:orderFromServer.warnings]) {
+            Error *lineItemrError = [[Error alloc] initWithMessage:warning andContext:self.managedObjectContext];
+            [self addWarningsObject:lineItemrError];
+        }
         for (NSString *error in [NilUtil objectOrEmptyArray:orderFromServer.errors]) {
             Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
             [self addErrorsObject:lineItemrError];
