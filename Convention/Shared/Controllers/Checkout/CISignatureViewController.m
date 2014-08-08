@@ -68,6 +68,7 @@
 }
 
 - (void)signatureCaptured {
+    [self.signatureView erase];
     [self.signatureView releaseMemory];
     [self dismissViewControllerAnimated:YES completion:^{
         [self.delegate signatureViewDismissed];
