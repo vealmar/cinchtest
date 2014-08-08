@@ -27,7 +27,8 @@
             NSString *label = shipDate == nil ? @"No dates selected, ship immediately." : [DateUtil convertDateToMmddyyyy:shipDate];
             self.textLabel.text = label;
         }
-        self.backgroundColor = [UIColor colorWithRed:57/255.0f green:59/255.0f blue:64/255.0f alpha:1];
+        UIColor *backgroundColor = [UIColor colorWithRed:57/255.0f green:59/255.0f blue:64/255.0f alpha:1];
+        self.backgroundColor = backgroundColor;
         self.textLabel.textColor = [UIColor whiteColor];
         self.textLabel.font = [UIFont fontWithName:kFontName size:14.0f];
         if (useQuantity) {

@@ -178,6 +178,7 @@
        failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock
                view:(UIView *)view loadingText:(NSString *)loadingText {
     MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
+    submit.removeFromSuperViewOnHide = YES;
     submit.labelText = loadingText;
     [submit show:NO];
 
@@ -200,6 +201,7 @@
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         } else {
             [submit hide:NO];
+
             if (successBlock) successBlock(request, response, json);
         }
     }];
@@ -214,6 +216,7 @@
 //    }
     if (imageData) {
         MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
+        submit.removeFromSuperViewOnHide = YES;
         submit.labelText = @"Saving signature";
         [submit show:NO];
 

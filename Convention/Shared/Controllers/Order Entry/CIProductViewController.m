@@ -64,19 +64,7 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self != nil) {
-        self.viewInitialized = NO;
-        currentVendor = 0;
-        currentBulletin = 0;
-        self.vendorProductIds = [NSMutableArray array];
-        self.vendorProducts = [NSMutableArray array];
-        self.multiStore = NO;
-        self.orderSubmitted = NO;
-        self.selectedPrintStationId = 0;
-        self.unsavedChangesPresent = NO;
         helper = [[CIProductViewControllerHelper alloc] init];
-        keyboardUp = NO;
-        self.selectedCarts = [NSMutableSet set];
-        self.productSearchQueue = [[ProductSearchQueue alloc] initWithProductController:self];
     }
     return self;
 }
@@ -90,6 +78,23 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
     return UIInterfaceOrientationIsLandscape(interfaceOrientation);
+}
+
+- (void)reinit {
+    self.delegate = nil;
+    self.coreDataOrder = nil;
+    self.savedOrder = nil;
+    self.viewInitialized = NO;
+    currentVendor = 0;
+    currentBulletin = 0;
+    self.vendorProductIds = [NSMutableArray array];
+    self.vendorProducts = [NSMutableArray array];
+    self.multiStore = NO;
+    self.orderSubmitted = NO;
+    self.selectedPrintStationId = 0;
+    self.unsavedChangesPresent = NO;
+    keyboardUp = NO;
+    self.selectedCarts = [NSMutableSet set];
 }
 
 
@@ -145,6 +150,8 @@
     [self.vendorTable reloadData];
     [self updateErrorsView];
 
+    self.productSearchQueue = [[ProductSearchQueue alloc] initWithProductController:self];
+
     // notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardDidShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide) name:UIKeyboardDidHideNotification object:nil];
@@ -168,6 +175,7 @@
 
 
 - (void)viewWillDisappear:(BOOL)animated {
+    self.productSearchQueue = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder))];
     [self removeObserver:self forKeyPath:[NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(coreDataOrder)), NSStringFromSelector(@selector(ship_dates))]];
@@ -227,6 +235,7 @@
 - (void)reloadProducts {
 
     MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    submit.removeFromSuperViewOnHide = YES;
     submit.labelText = @"Loading Products";
     [submit show:NO];
 
@@ -914,8 +923,13 @@
                 [[CoreDataUtil sharedManager] deleteObject:self.coreDataOrder];  //always delete the core data entry before exiting this view. core data should contain an entry only if the order crashed in the middle of an order
             }
             [self.delegate Return:orderId order:self.savedOrder updateStatus:status];
+            [self reinit]; //clear up memory
         }
     }];
+}
+
+- (void)dealloc {
+    DLog(@"Deallocing CIProductViewController");
 }
 
 

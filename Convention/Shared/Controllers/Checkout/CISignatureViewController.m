@@ -18,16 +18,19 @@
 @implementation CISignatureViewController {
 
 }
-- (id)initWithTotal:(NSNumber *)total authToken:(NSString *)authToken orderId:(NSNumber *)orderId andDelegate:(id <SignatureDelegate>)delegate {
+- (id)init {
     self = [super initWithNibName:@"CISignatureViewController" bundle:nil];
     if (self) {
-        self.delegate = delegate;
-        self.total = total;
-        self.orderId = orderId;
-        self.authToken = authToken;
         self.helper = [[CIProductViewControllerHelper alloc] init];
     }
     return self;
+}
+
+- (void)reinitWithTotal:(NSNumber *)total authToken:(NSString *)authToken orderId:(NSNumber *)orderId andDelegate:(id <SignatureDelegate>)delegate {
+    self.delegate = delegate;
+    self.total = total;
+    self.orderId = orderId;
+    self.authToken = authToken;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -35,7 +38,6 @@
     self.backgroundImageView.image = [[ShowConfigurations instance] loginScreen];
     self.totalLabel.text = [NumberUtil formatDollarAmount:self.total];
 }
-
 
 - (IBAction)submit:(UIButton *)sender {
     @try {
@@ -69,6 +71,7 @@
     [self.signatureView releaseMemory];
     [self dismissViewControllerAnimated:YES completion:^{
         [self.delegate signatureViewDismissed];
+        self.delegate = nil;
     }];
 }
 

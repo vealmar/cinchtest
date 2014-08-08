@@ -11,6 +11,8 @@
 @interface CISlidingProductViewController ()
 
 @property CIShipDatesViewController *shipDateController;
+@property UITapGestureRecognizer *productViewTapRecognizer;
+@property UITapGestureRecognizer *shipdateViewTapRecognizer;
 
 @end
 
@@ -21,8 +23,6 @@
     self = [super initWithTopViewController:productViewController];
 
     if (self) {
-        productViewController.slidingProductViewControllerDelegate = self;
-
         if ([ShowConfigurations instance].shipDates) {
             self.shipDateController = [self initializeShipDateController:productViewController];
             self.underRightViewController = self.shipDateController;
@@ -60,8 +60,22 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    //listen for changes KVO
     CIProductViewController *productViewController = (CIProductViewController *) self.topViewController;
+    productViewController.slidingProductViewControllerDelegate = self;
+
+    self.productViewTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(productViewTapped:)];
+    self.productViewTapRecognizer.numberOfTapsRequired = 1;
+    self.productViewTapRecognizer.cancelsTouchesInView = NO;
+    self.topViewController.view.userInteractionEnabled = YES;
+    [self.topViewController.view addGestureRecognizer:self.productViewTapRecognizer];
+
+    self.shipdateViewTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shipdateViewTapped:)];
+    self.shipdateViewTapRecognizer.numberOfTapsRequired = 1;
+    self.shipdateViewTapRecognizer.cancelsTouchesInView = NO;
+    self.underRightViewController.view.userInteractionEnabled = YES;
+    [self.underRightViewController.view addGestureRecognizer:self.shipdateViewTapRecognizer];
+
+    //listen for changes KVO
     [productViewController addObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder)) options:NSKeyValueObservingOptionNew context:nil];
 
     // the child view will have viewWillAppear run first, so we want to capture any working order changes
@@ -73,25 +87,18 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
-    //remove KVO observers
     CIProductViewController *productViewController = (CIProductViewController *) self.topViewController;
+    productViewController.slidingProductViewControllerDelegate = nil;
+
+    //remove KVO observers
     [productViewController removeObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder))];
+
+    [self.topViewController.view removeGestureRecognizer:self.productViewTapRecognizer];
+    [self.underRightViewController.view removeGestureRecognizer:self.shipdateViewTapRecognizer];
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    UITapGestureRecognizer *productViewTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(productViewTapped:)];
-    productViewTapRecognizer.numberOfTapsRequired = 1;
-    productViewTapRecognizer.cancelsTouchesInView = NO;
-    self.topViewController.view.userInteractionEnabled = YES;
-    [self.topViewController.view addGestureRecognizer:productViewTapRecognizer];
-
-    UITapGestureRecognizer *shipdateViewTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(shipdateViewTapped:)];
-    shipdateViewTapRecognizer.numberOfTapsRequired = 1;
-    shipdateViewTapRecognizer.cancelsTouchesInView = NO;
-    self.underRightViewController.view.userInteractionEnabled = YES;
-    [self.underRightViewController.view addGestureRecognizer:shipdateViewTapRecognizer];
 }
 
 

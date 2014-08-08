@@ -169,6 +169,7 @@
     MBProgressHUD *hud;
     if (!triggeredByPullToRefresh) {
         hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.removeFromSuperViewOnHide = YES;
         hud.labelText = @"Loading customers";
         [hud show:NO];
     }

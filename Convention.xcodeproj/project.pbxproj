@@ -30,6 +30,7 @@
 		6DDC91683800E384B47955FE /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9E6BF85018452D08D3BE /* SettingsManager.m */; };
 		6DDC918D13B07B6D4A580E57 /* order_template_areaRIGHT.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9DF89A62D4B5C5B7CC2D /* order_template_areaRIGHT.png */; };
 		6DDC918D955F5D3035430E95 /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9B0F1CCA6B068E19A151 /* orangebutton.png */; };
+		6DDC91AA1E6C096F0A8D0E4B /* OrderShipDateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9497FB5EABD9F9199DC0 /* OrderShipDateViewController.m */; };
 		6DDC91AAE860C9A0C2E4EEE2 /* CIFinalCustomerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9D02B4F50ACD8E05E228 /* CIFinalCustomerInfoViewController.m */; };
 		6DDC91AD19C22DE159057DE3 /* productpageBACKGROUND.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9B2500E459D1836715EB /* productpageBACKGROUND.jpg */; };
 		6DDC92102889DA6CFCB2E7ED /* deletein.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9C9A3548F1E8C66FFB19 /* deletein.png */; };
@@ -150,7 +151,6 @@
 		6DDC9A8DD908C9C820A9C02A /* square-paper@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9685C0D2A47D5ADC249C /* square-paper@2x.png */; };
 		6DDC9A9ED104ED467046F189 /* ALineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9FF55F0DEEF1AB6B5421 /* ALineItem.m */; };
 		6DDC9AA18DD22292453BF908 /* cart-cancelout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC938DC1B03DAD2A25CE7D /* cart-cancelout.png */; };
-		6DDC9ABCC2BF1691E6808929 /* OrderShipDateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9BA4A80826055BF6ABFB /* OrderShipDateViewController.m */; };
 		6DDC9AC1F7F6F371F932F73D /* NotificationConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9F9C0D8D7055357A5516 /* NotificationConstants.m */; };
 		6DDC9ACC872F454F247630BE /* Detail.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC920F635806F4C6CC71FC /* Detail.png */; };
 		6DDC9AEEADCAE5DF9A81C58C /* CIShipDatesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9E1853A304C500293445 /* CIShipDatesViewController.m */; };
@@ -359,6 +359,7 @@
 		6DDC94817C091244074B2162 /* checkbox_flat_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_ticked.png; sourceTree = "<group>"; };
 		6DDC949214C8B61DB47DD631 /* CIAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIAppDelegate.h; sourceTree = "<group>"; };
 		6DDC949463B0352863D50106 /* ErrorHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ErrorHandler.h; sourceTree = "<group>"; };
+		6DDC9497FB5EABD9F9199DC0 /* OrderShipDateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrderShipDateViewController.m; sourceTree = "<group>"; };
 		6DDC9499EB2C65D9E71F560D /* CISlidingProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISlidingProductViewController.m; sourceTree = "<group>"; };
 		6DDC94A55870A44EAD06A630 /* FarrisProductCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FarrisProductCell.xib; sourceTree = "<group>"; };
 		6DDC94A77A9C5C23E31B5BC2 /* homeBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = homeBG.png; sourceTree = "<group>"; };
@@ -518,7 +519,6 @@
 		6DDC9B7AA96777E00E47A4C2 /* VendorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VendorViewController.h; sourceTree = "<group>"; };
 		6DDC9B81015AC47C5E8A8866 /* PrinterSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterSelectionViewController.m; sourceTree = "<group>"; };
 		6DDC9BA2B0FB7FCB61E3A0B5 /* CIOrderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CIOrderCell.xib; sourceTree = "<group>"; };
-		6DDC9BA4A80826055BF6ABFB /* OrderShipDateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrderShipDateViewController.m; sourceTree = "<group>"; };
 		6DDC9BB780FD2D0D2178AA0B /* OrderShipDateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderShipDateViewController.h; sourceTree = "<group>"; };
 		6DDC9BC453500DB43A36392F /* EditButton-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "EditButton-out.png"; sourceTree = "<group>"; };
 		6DDC9BCB2E429C258AC4DF29 /* NISignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NISignatureView.h; sourceTree = "<group>"; };
@@ -685,6 +685,7 @@
 				6DDC9345DD07521601DCBD2F /* FarrisProductCell.h */,
 				6DDC9BF483E026C1DE2D1475 /* FarrisProductCell.m */,
 				6DDC95B61DCF19D4EC6CC592 /* ProductCell.m */,
+				6DDC9497FB5EABD9F9199DC0 /* OrderShipDateViewController.m */,
 			);
 			path = "Order Entry";
 			sourceTree = "<group>";
@@ -707,7 +708,6 @@
 				6DDC9730DF139B2471ABE7FB /* CICartViewController.m */,
 				6DDC9D02B4F50ACD8E05E228 /* CIFinalCustomerInfoViewController.m */,
 				6DDC944677287FBF662C7EC6 /* CIFinalCustomerInfoViewController.h */,
-				6DDC9BA4A80826055BF6ABFB /* OrderShipDateViewController.m */,
 				6DDC9BB780FD2D0D2178AA0B /* OrderShipDateViewController.h */,
 				6DDC9D2324E841B008F64F66 /* CartViewCell.m */,
 				6DDC9883F68C92BEA0B7E4AA /* CartViewCell.h */,
@@ -1701,7 +1701,6 @@
 				6DDC92ED494C50BDBC94216A /* CISignatureViewController.m in Sources */,
 				6DDC9DE2F561BB3ACAC7F865 /* CICartViewController.m in Sources */,
 				6DDC91AAE860C9A0C2E4EEE2 /* CIFinalCustomerInfoViewController.m in Sources */,
-				6DDC9ABCC2BF1691E6808929 /* OrderShipDateViewController.m in Sources */,
 				6DDC9E7C0620132F80E713CC /* LaunchViewController.m in Sources */,
 				692824761989930C0020FC1E /* EditableEntity.m in Sources */,
 				6DDC9A227C81B5BD5CD2E6AC /* ProductSearch.m in Sources */,
@@ -1761,6 +1760,7 @@
 				6DDC93CD40DE3A618412C435 /* ProductCell.m in Sources */,
 				6DDC9C63A47A83096376C62F /* CartViewCell.m in Sources */,
 				6DDC94652169E4D9403CB612 /* FarrisCartViewCell.m in Sources */,
+				6DDC91AA1E6C096F0A8D0E4B /* OrderShipDateViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1864,7 +1864,7 @@
 			baseConfigurationReference = 21727971C60D4376BEEE40BD /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Mark  Veal (7JN56J2NT7)";
+				CODE_SIGN_IDENTITY = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Convention/Convention-Prefix.pch";
 				INFOPLIST_FILE = "Convention/Convention-Info.plist";

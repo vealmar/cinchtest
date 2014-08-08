@@ -121,6 +121,8 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 @property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
 
+- (void)reinit;
+
 - (void)toggleCartSelection:(Cart *)cart;
 
 - (IBAction)searchDidEndEditing:(UITextField *)sender;

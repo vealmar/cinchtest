@@ -1,6 +1,6 @@
 platform :ios, '7.1'
 
-pod 'ECSlidingViewController', '~> 2.0.1'
+pod 'ECSlidingViewController', '~> 2.0.2'
 pod 'Underscore.m', '~> 0.2.1'
 pod 'JSONKit', '~> 1.5pre'
 pod "AFNetworking", "~> 2.0"

@@ -102,6 +102,7 @@
 
     MBProgressHUD *__weak loginHud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     loginHud.labelText = @"Logging in";
+    loginHud.removeFromSuperViewOnHide = YES;
     [loginHud show:NO];
 
     [[CinchJSONAPIClient sharedInstance] POST:kDBLOGIN parameters:@{ kEmailKey: Email, kPasswordKey: Password } success:^(NSURLSessionDataTask *task, id JSON) {
@@ -130,6 +131,7 @@
 
 - (void)loadCustomers {
     MBProgressHUD *__weak hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.removeFromSuperViewOnHide = YES;
     hud.labelText = @"Loading customers";
     [hud show:NO];
 
@@ -153,6 +155,7 @@
 
 - (void)loadProducts {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.removeFromSuperViewOnHide = YES;
     hud.labelText = @"Loading products";
     [hud show:NO];
 
@@ -174,6 +177,7 @@
 
 - (void)loadVendors {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.removeFromSuperViewOnHide = YES;
     hud.labelText = @"Loading vendors";
     [hud show:NO];
     [[CoreDataUtil sharedManager] deleteAllObjects:@"Vendor"];
@@ -200,6 +204,7 @@
 
 - (void)loadBulletins {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.removeFromSuperViewOnHide = YES;
     hud.labelText = @"Loading bulletins";
     [hud show:NO];
     [[CoreDataUtil sharedManager] deleteAllObjects:@"Bulletin"];

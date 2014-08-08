@@ -52,6 +52,7 @@
     __weak IBOutlet UILabel *sqLabel;
     __weak IBOutlet UILabel *quantityLabel;
 }
+
 @end
 
 @implementation
@@ -162,6 +163,7 @@ CIOrderViewController
         MBProgressHUD *hud;
         if (showLoadingIndicator) {  //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
             hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
+            hud.removeFromSuperViewOnHide = YES;
             hud.labelText = @"Getting orders";
             [hud show:NO];
         }
@@ -338,14 +340,28 @@ SG: The argument 'detail' is the selected order.
 
 #pragma mark - Load Product View Conroller
 
+
+
 - (void)loadProductView:(BOOL)newOrder customer:(NSDictionary *)customer {
     CIProductViewController *productViewController = [self initializeCIProductViewController:newOrder customer:customer];
-    CISlidingProductViewController * slidingProductViewController = [[CISlidingProductViewController alloc] initWithTopViewController:productViewController];
+
+    static CISlidingProductViewController *slidingProductViewController;
+    static dispatch_once_t loadSlidingViewControllerOnce;
+    dispatch_once(&loadSlidingViewControllerOnce, ^{
+        slidingProductViewController = [[CISlidingProductViewController alloc] initWithTopViewController:productViewController];
+    });
+
     [self presentViewController:slidingProductViewController animated:NO completion:nil];
 }
 
 - (CIProductViewController *)initializeCIProductViewController:(bool)newOrder customer:(NSDictionary *)customer {
-    CIProductViewController *productViewController = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
+    static CIProductViewController *productViewController;
+    static dispatch_once_t loadProductViewControllerOnce;
+    dispatch_once(&loadProductViewControllerOnce, ^{
+        productViewController = [[CIProductViewController alloc] initWithNibName:@"CIProductViewController" bundle:nil];
+    });
+
+    [productViewController reinit];
     productViewController.authToken = self.authToken;
     productViewController.loggedInVendorId = [[self.vendorInfo objectForKey:kID] stringValue];
     productViewController.loggedInVendorGroupId = [[self.vendorInfo objectForKey:kVendorGroupID] stringValue];
@@ -760,7 +776,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
     } else if (updateStatus == PersistentOrderUpdated) {//persistent order updated
         [self persistentOrderUpdated:savedOrder];
     }
-
 }
 
 - (void)persistentOrderUpdated:(AnOrder *)updatedOrder {
@@ -974,6 +989,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     if (availablePrinters && [availablePrinters count] > 0 && ![currentPrinter isEmpty]) {
 
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.removeFromSuperViewOnHide = YES;
         hud.labelText = @"Printing";
         [hud show:NO];
 
@@ -1106,6 +1122,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         [self loadProductView:NO customer:[customer asDictionary]];
     } else {
         MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+        hud.removeFromSuperViewOnHide = YES;
         hud.labelText = @"Loading customer";
         [hud show:NO];
 
@@ -1129,6 +1146,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         }
         if (orderToDelete.orderId != nil && [orderToDelete.orderId intValue] != 0) {
             MBProgressHUD *deleteHUD = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+            deleteHUD.removeFromSuperViewOnHide = YES;
             deleteHUD.labelText = @"Deleting order";
             [deleteHUD show:NO];
 

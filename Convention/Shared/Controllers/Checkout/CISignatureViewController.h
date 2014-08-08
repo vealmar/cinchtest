@@ -19,7 +19,7 @@
 
 @property(weak, nonatomic) IBOutlet UIImageView *backgroundImageView;
 
-- (id)initWithTotal:(NSNumber *)total authToken:(NSString *)authToken orderId:(NSNumber *)orderId andDelegate:(id <SignatureDelegate>)delegate;
+- (void)reinitWithTotal:(NSNumber *)total authToken:(NSString *)authToken orderId:(NSNumber *)orderId andDelegate:(id <SignatureDelegate>)delegate;
 
 - (IBAction)submit:(UIButton *)sender;
 

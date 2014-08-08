@@ -360,8 +360,15 @@
 - (void)displaySignatureScreen {
     NSArray *totals = [helper getTotals:self.coreDataOrder];
     double netTotal = [(NSNumber *) totals[0] doubleValue] + [(NSNumber *) totals[2] doubleValue];
-    CISignatureViewController *signatureViewController = [[CISignatureViewController alloc] initWithTotal:[NSNumber numberWithDouble:netTotal] authToken:self.authToken orderId:self.coreDataOrder.orderId andDelegate:(id <SignatureDelegate>) self];
-    signatureViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+
+    static CISignatureViewController *signatureViewController;
+    static dispatch_once_t loadSignatureViewControllerOnce;
+    dispatch_once(&loadSignatureViewControllerOnce, ^{
+        signatureViewController = [[CISignatureViewController alloc] init];
+        signatureViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    });
+
+    [signatureViewController reinitWithTotal:[NSNumber numberWithDouble:netTotal] authToken:self.authToken orderId:self.coreDataOrder.orderId andDelegate:(id <SignatureDelegate>) self];
     [self presentViewController:signatureViewController animated:YES completion:nil];
 }
 

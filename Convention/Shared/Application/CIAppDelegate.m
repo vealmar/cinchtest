@@ -34,6 +34,11 @@
     return YES;
 }
 
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
+    DLog(@"Application received memory warning!!!");
+}
+
+
 #pragma mark Reachability
 
 
