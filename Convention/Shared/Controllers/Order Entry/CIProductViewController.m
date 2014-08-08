@@ -911,11 +911,11 @@
     enum OrderUpdateStatus status = [self.selectedOrder.status isEqualToString:@"partial"] && self.savedOrder == nil? PartialOrderCancelled
             : [self.selectedOrder.status isEqualToString:@"partial"] && self.savedOrder != nil? PartialOrderSaved
                     : [self.selectedOrder.orderId intValue] != 0 && self.savedOrder == nil? PersistentOrderUnchanged
-                            : [self.selectedOrder.orderId intValue] != 0 && self.savedOrder != nil? PersistentOrderUpdated
+                            : !self.newOrder && [self.selectedOrder.orderId intValue] != 0 && self.savedOrder != nil? PersistentOrderUpdated
                                     : self.newOrder && self.savedOrder == nil? NewOrderCancelled
                                             : NewOrderCreated;
 
-    [self dismissViewControllerAnimated:YES completion:^{
+        [self dismissViewControllerAnimated:YES completion:^{
         if (self.delegate != nil) {
             NSNumber *orderId = nil;
             if (self.coreDataOrder != nil) {
