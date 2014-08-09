@@ -112,7 +112,6 @@
     [pull setDelegate:self];
     [self.productsTableView addSubview:pull];
     currentVendor = ![ShowConfigurations instance].vendorMode && self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
-    if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
     if ([kShowCorp isEqualToString:kPigglyWiggly]) {
         self.tableHeaderPigglyWiggly.hidden = NO;
         self.tableHeaderFarris.hidden = YES;
@@ -151,6 +150,7 @@
     [self updateErrorsView];
 
     self.productSearchQueue = [[ProductSearchQueue alloc] initWithProductController:self];
+    if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
 
     // notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardDidShowNotification object:nil];
@@ -445,6 +445,18 @@
     [self.poController presentPopoverFromRect:frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
+- (void)closeCalendar {
+    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+        // close calendar
+        if (self.selectedCarts.count == 1) {
+            [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
+                [self toggleCartSelection:cart]; //disable selection
+            }];
+            [self.slidingProductViewControllerDelegate toggleShipDates:NO];
+        }
+    }
+}
+
 #pragma mark - UITableView Data Source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -597,15 +609,7 @@
 
 - (IBAction)searchDidBeginEditing:(UITextField *)sender {
     sender.text = @"";
-    if ([ShowConfigurations instance].isLineItemShipDatesType) {
-        // close calendar
-        if (self.selectedCarts.count == 1) {
-            [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
-                [self toggleCartSelection:cart]; //disable selection
-            }];
-            [self.slidingProductViewControllerDelegate toggleShipDates:NO];
-        }
-    }
+    [self closeCalendar];
 
     [self searchProducts:sender.text searchIsActive:YES];
 }
@@ -815,16 +819,14 @@
 }
 
 - (void)QtyTouchForIndex:(int)idx {
+
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
         NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
         Cart *cart = [self.coreDataOrder findOrCreateCartForId:productId
                                                        context:self.managedObjectContext];
 
         if (self.selectedCarts.count == 1) {
-            [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
-                [self toggleCartSelection:cart]; //disable selection
-            }];
-            [self.slidingProductViewControllerDelegate toggleShipDates:NO];
+            [self closeCalendar];
         } else {
             [self toggleCartSelection:cart];
             [self.slidingProductViewControllerDelegate toggleShipDates:YES];

@@ -134,6 +134,7 @@
     if (shouldOpen && self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
         [self anchorTopViewToLeftAnimated:true];
     } else if (!shouldOpen && self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionAnchoredLeft) {
+        [self.underRightViewController.view endEditing:YES];
         [self resetTopViewAnimated:true];
     }
 }
