@@ -30,6 +30,13 @@
 
         // enable swiping on the top view
         [productViewController.view addGestureRecognizer:self.panGesture];
+        // remove the ecsliding action so ours comes first - theirs triggers userInteractionEnabled = NO and we need to
+        // be able to endEditing on our views before this happens (without interaction, nothing will happen)
+        [self.panGesture removeTarget:self action:@selector(detectPanGestureRecognizer:)];
+        [self.panGesture addTarget:self action:@selector(onPanGesture:)];
+        [self.panGesture addTarget:self action:@selector(detectPanGestureRecognizer:)];
+        // disable by default, we only let them slide the pane closed; we dont let them open without first selecting a line
+        self.panGesture.enabled = NO;
 
         UIView *productView = productViewController.view;
         UIBezierPath *shadowPath = [UIBezierPath bezierPathWithRect:productView.bounds];
@@ -111,13 +118,24 @@
 //User is in middle of editing a quantity (so the keyboard is visible), then taps somewhere else on the screen - the keyboard should disappear.
 - (void)productViewTapped:(UITapGestureRecognizer *)recognizer {
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        CIProductViewController *productViewController = (CIProductViewController *)self.topViewController;
         [self.underRightViewController.view endEditing:YES];
+        [self.topViewController.view endEditing:YES];
         [self resetTopViewAnimated:YES];
-        [productViewController.view endEditing:YES];
-        [productViewController.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
-            [productViewController toggleCartSelection:cart]; //disable selection
-        }];
+        [self deselectAllCarts];
+        self.panGesture.enabled = NO;
+    }
+}
+
+- (void)onPanGesture:(UIPanGestureRecognizer *)recognizer {
+    if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionAnchoredLeft) {
+        if (recognizer.state == UIGestureRecognizerStateBegan) {
+            [self deselectAllCarts];
+            [self.underRightViewController.view endEditing:YES];
+            [self.topViewController.view endEditing:YES];
+        }
+        if (recognizer.state == UIGestureRecognizerStateEnded) {
+            self.panGesture.enabled = NO;
+        }
     }
 }
 
@@ -128,11 +146,19 @@
     }
 }
 
+- (void)deselectAllCarts {
+    CIProductViewController *productViewController = (CIProductViewController *)self.topViewController;
+    [productViewController.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
+        [productViewController toggleCartSelection:cart]; //disable selection
+    }];
+}
+
 #pragma mark slidingProductViewControllerDelegate
 
 - (void)toggleShipDates:(BOOL)shouldOpen {
     if (shouldOpen && self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionCentered) {
         [self anchorTopViewToLeftAnimated:true];
+        self.panGesture.enabled = YES;
     } else if (!shouldOpen && self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionAnchoredLeft) {
         [self.underRightViewController.view endEditing:YES];
         [self resetTopViewAnimated:true];

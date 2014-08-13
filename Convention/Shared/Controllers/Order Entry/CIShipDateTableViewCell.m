@@ -8,6 +8,7 @@
 #import "DateUtil.h"
 #import "config.h"
 #import "NotificationConstants.h"
+#import "ShowConfigurations.h"
 
 @interface CIShipDateTableViewCell ()
 
@@ -27,6 +28,17 @@
             NSString *label = shipDate == nil ? @"No dates selected, ship immediately." : [DateUtil convertDateToMmddyyyy:shipDate];
             self.textLabel.text = label;
         }
+
+        if ([ShowConfigurations instance].isLineItemShipDatesType && shipDate != nil) {
+            self.textLabel.text = [DateUtil convertDateToMmddyyyy:shipDate];
+        } else if ([ShowConfigurations instance].isOrderShipDatesType) {
+            if (shipDate == nil) {
+                self.textLabel.text = @"No dates selected, ship immediately.";
+            } else {
+                self.textLabel.text = [DateUtil convertDateToMmddyyyy:shipDate];
+            }
+        }
+
         UIColor *backgroundColor = [UIColor colorWithRed:57/255.0f green:59/255.0f blue:64/255.0f alpha:1];
         self.backgroundColor = backgroundColor;
         self.textLabel.textColor = [UIColor whiteColor];
