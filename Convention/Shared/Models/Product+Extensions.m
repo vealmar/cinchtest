@@ -42,7 +42,6 @@
         self.caseqty = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductCaseQty]];
         self.dirship = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDirShip]];
         self.linenbr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductLineNbr]];
-        self.new = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductNew]];
         self.adv = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductAdv]];
         self.discount = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDiscount]];
         self.vendor_id = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductVendorID]];

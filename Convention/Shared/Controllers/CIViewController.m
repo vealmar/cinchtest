@@ -61,8 +61,10 @@
     NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     NSString *build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
 
-    self.email.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
-    self.password.text = [[SettingsManager sharedManager] lookupSettingByString:@"password"];
+    //@todo USERNAME-PLIST
+    //@todo these were previously stored as defaults in the app settings, now store saved value for JUST the username in plist
+//    self.email.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
+//    self.password.text = [[SettingsManager sharedManager] lookupSettingByString:@"password"];
 
     self.lblVersion.text = [NSString stringWithFormat:@"CI %@.%@", version, build];
 
@@ -233,8 +235,9 @@
     masterViewController.managedObjectContext = self.managedObjectContext;
     [self presentViewController:masterViewController animated:YES completion:nil];
 
-    [[SettingsManager sharedManager] saveSetting:@"username" value:email.text];
-    [[SettingsManager sharedManager] saveSetting:@"password" value:password.text];
+    //@todo USERNAME-PLIST save these to plist instead
+//    [[SettingsManager sharedManager] saveSetting:@"username" value:email.text];
+//    [[SettingsManager sharedManager] saveSetting:@"password" value:password.text];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {

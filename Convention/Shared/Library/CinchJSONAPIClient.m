@@ -56,4 +56,44 @@
     return client;
 }
 
+- (void)log:(NSString *)method request:(NSString *)URLString parameters:(id)parameters {
+    NSLog(@"[API] %@ %@", method, URLString);
+}
+
+- (NSURLSessionDataTask *)GET:(NSString *)URLString parameters:(id)parameters success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    [self log:@"GET" request:URLString parameters:parameters];
+    return [super GET:URLString parameters:parameters success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)HEAD:(NSString *)URLString parameters:(id)parameters success:(void (^)(NSURLSessionDataTask *task))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    [self log:@"HEAD" request:URLString parameters:parameters];
+    return [super HEAD:URLString parameters:parameters success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)POST:(NSString *)URLString parameters:(id)parameters success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    [self log:@"POST" request:URLString parameters:parameters];
+    return [super POST:URLString parameters:parameters success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)POST:(NSString *)URLString parameters:(id)parameters constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    [self log:@"POST" request:URLString parameters:parameters];
+    return [super POST:URLString parameters:parameters constructingBodyWithBlock:block success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)PUT:(NSString *)URLString parameters:(id)parameters success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    [self log:@"PUT" request:URLString parameters:parameters];
+    return [super PUT:URLString parameters:parameters success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)PATCH:(NSString *)URLString parameters:(id)parameters success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    [self log:@"PATCH" request:URLString parameters:parameters];
+    return [super PATCH:URLString parameters:parameters success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)DELETE:(NSString *)URLString parameters:(id)parameters success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    [self log:@"DELETE" request:URLString parameters:parameters];
+    return [super DELETE:URLString parameters:parameters success:success failure:failure];
+}
+
+
 @end

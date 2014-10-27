@@ -7,6 +7,8 @@
 //
 
 #import <GLKit/GLKit.h>
+#import <OpenGLES/ES2/gl.h>
+#import <OpenGLES/ES2/glext.h>
 #import "NISignatureView.h"
 
 #define             STROKE_WIDTH_MIN 0.005 // Stroke width determined by touch velocity

@@ -107,7 +107,7 @@
         return _persistentStoreCoordinator;
     }
 
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart9-2.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart9-3.sqlite"];
 //    [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
 
     NSError *error = nil;

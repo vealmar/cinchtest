@@ -29,7 +29,6 @@
 @property(nonatomic, retain) NSString *invtid;
 @property(nonatomic, retain) NSString *linenbr;
 @property(nonatomic, retain) NSNumber *min;
-@property(nonatomic, retain) NSNumber *new;
 @property(nonatomic, retain) NSString *partnbr;
 @property(nonatomic, retain) NSNumber *productId;
 @property(nonatomic, retain) NSNumber *regprc;

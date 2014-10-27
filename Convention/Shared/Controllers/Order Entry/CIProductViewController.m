@@ -145,7 +145,8 @@
         //so it is important to undo the frame resize at this point.
         [self keyboardDidHide];
     }
-    self.vendorLabel.text = [[SettingsManager sharedManager] lookupSettingByString:@"username"];
+    //@todo USERNAME-PLIST pull username from cache to this label
+    self.vendorLabel.text = @"";
     [self.vendorTable reloadData];
     [self updateErrorsView];
 

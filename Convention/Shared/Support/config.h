@@ -120,7 +120,6 @@
 #define kProductCaseQty @"caseqty"
 #define kProductDirShip @"dirship"
 #define kProductLineNbr @"linenbr"
-#define kProductNew @"new"
 #define kProductAdv @"adv"
 #define kProductRegPrc @"regprc"
 #define kProductShipDate1 @"shipdate1"

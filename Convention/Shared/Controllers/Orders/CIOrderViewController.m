@@ -829,8 +829,9 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 - (void)logout {
     void (^clearSettings)(void) = ^{
-        [[SettingsManager sharedManager] saveSetting:@"username" value:@""];
-        [[SettingsManager sharedManager] saveSetting:@"password" value:@""];
+        //@todo USERNAME-PLIST
+//        [[SettingsManager sharedManager] saveSetting:@"username" value:@""];
+//        [[SettingsManager sharedManager] saveSetting:@"password" value:@""];
     };
 
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];

@@ -26,43 +26,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<false/>
-			<key>Key</key>
-			<string>username</string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
-			<key>Title</key>
-			<string>Username</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string></string>
-			<key>IsSecure</key>
-			<true/>
-			<key>Key</key>
-			<string>password</string>
-			<key>KeyboardType</key>
-			<string>Alphabet</string>
-			<key>Title</key>
-			<string>Password</string>
-			<key>Type</key>
-			<string>PSTextFieldSpecifier</string>
-		</dict>
-		<dict>
-			<key>AutocapitalizationType</key>
-			<string>None</string>
-			<key>AutocorrectionType</key>
-			<string>No</string>
-			<key>DefaultValue</key>
-			<string>http://remington.cinchsales.com</string>
+			<string>http://uc-dev.cinchsales.com</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -82,7 +46,7 @@
 			<key>Key</key>
 			<string>show</string>
 			<key>DefaultValue</key>
-			<string>25</string>
+			<string>27</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>

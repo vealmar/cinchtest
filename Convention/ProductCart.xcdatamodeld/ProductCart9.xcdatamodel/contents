@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="9" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="9" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6244" systemVersion="13F34" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Bulletin" representedClassName="Bulletin" syncable="YES">
         <attribute name="bulletinId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -91,7 +91,6 @@
         <attribute name="invtid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="linenbr" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="min" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="new" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="partnbr" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="productId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="regprc" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -162,7 +161,7 @@
         <element name="EditableEntity" positionX="0" positionY="0" width="128" height="73"/>
         <element name="Error" positionX="0" positionY="0" width="128" height="58"/>
         <element name="Order" positionX="0" positionY="0" width="128" height="360"/>
-        <element name="Product" positionX="0" positionY="0" width="128" height="525"/>
+        <element name="Product" positionX="0" positionY="0" width="128" height="508"/>
         <element name="SetupInfo" positionX="0" positionY="0" width="128" height="75"/>
         <element name="ShipDate" positionX="0" positionY="0" width="128" height="75"/>
         <element name="Vendor" positionX="0" positionY="0" width="128" height="375"/>

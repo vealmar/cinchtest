@@ -27,7 +27,6 @@
 @dynamic invtid;
 @dynamic linenbr;
 @dynamic min;
-@dynamic new;
 @dynamic partnbr;
 @dynamic productId;
 @dynamic regprc;
