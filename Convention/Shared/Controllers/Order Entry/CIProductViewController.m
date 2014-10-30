@@ -145,8 +145,9 @@
         //so it is important to undo the frame resize at this point.
         [self keyboardDidHide];
     }
-    //@todo USERNAME-PLIST pull username from cache to this label
-    self.vendorLabel.text = @"";
+
+    self.vendorLabel.text = [[NSUserDefaults standardUserDefaults] objectForKey:kSettingsUsernameKey];
+
     [self.vendorTable reloadData];
     [self updateErrorsView];
 

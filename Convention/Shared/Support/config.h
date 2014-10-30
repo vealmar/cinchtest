@@ -170,5 +170,7 @@
 
 #define kErrors @"errors"
 
+#define kSettingsUsernameKey @"kSettingsUsernameKey"
+#define kSettingsPasswordKey @"kSettingsPasswordKey"
 
 #endif
