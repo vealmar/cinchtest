@@ -17,13 +17,9 @@
 @class Order;
 
 @protocol CIFinalCustomerDelegate <NSObject>
-
 - (NSDictionary *)getCustomerInfo;
-
 - (IBAction)submit:(id)sender;
-
 - (void)dismissFinalCustomerViewController;
-
 @end
 
 @interface CIFinalCustomerInfoViewController : UIViewController <UITextFieldDelegate, UITextViewDelegate>

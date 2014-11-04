@@ -251,6 +251,7 @@
 		6E118607145F2FB100568ED1 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E118603145F2FB100568ED1 /* MobileCoreServices.framework */; };
 		6E118608145F2FB100568ED1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E118604145F2FB100568ED1 /* SystemConfiguration.framework */; };
 		C713AFAC1656E45100E151EA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C713AFAB1656E45100E151EA /* QuartzCore.framework */; };
+		D8C7055A1A037E6A00D395AE /* CIFinalCustomerFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */; };
 		EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD10188851810004ABB6 /* GLKit.framework */; };
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
 		F44DAB9AAD374FFC8AEDB9B9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 445E84492698473B9EA7AEBF /* libPods.a */; };
@@ -621,6 +622,8 @@
 		840E6E4E6A54AF653F49031A /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		B8DB35D00377269B92AEA423 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		C713AFAB1656E45100E151EA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		D8C705571A037E6A00D395AE /* CIFinalCustomerFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIFinalCustomerFormViewController.h; sourceTree = "<group>"; };
+		D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIFinalCustomerFormViewController.m; sourceTree = "<group>"; };
 		EB5BBD10188851810004ABB6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		EB5BBD121888518E0004ABB6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -707,8 +710,10 @@
 				6DDC9A129AA1C52DDD2570C1 /* CISignatureViewController.h */,
 				6DDC910E06ECAA1BC5B9FD96 /* CICartViewController.h */,
 				6DDC9730DF139B2471ABE7FB /* CICartViewController.m */,
-				6DDC9D02B4F50ACD8E05E228 /* CIFinalCustomerInfoViewController.m */,
+				D8C705571A037E6A00D395AE /* CIFinalCustomerFormViewController.h */,
+				D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */,
 				6DDC944677287FBF662C7EC6 /* CIFinalCustomerInfoViewController.h */,
+				6DDC9D02B4F50ACD8E05E228 /* CIFinalCustomerInfoViewController.m */,
 				6DDC9BB780FD2D0D2178AA0B /* OrderShipDateViewController.h */,
 				6DDC9D2324E841B008F64F66 /* CartViewCell.m */,
 				6DDC9883F68C92BEA0B7E4AA /* CartViewCell.h */,
@@ -1039,8 +1044,8 @@
 			children = (
 				6DDC99C347BF19514B3DDA0E /* CICalendarViewController.h */,
 				6DDC90879AD60087DE92EBF8 /* CICalendarViewController.m */,
-				6DDC98BE98AA0E002305B36F /* CIViewController.m */,
 				6DDC9D75736A36B24BEF8C8C /* CIViewController.h */,
+				6DDC98BE98AA0E002305B36F /* CIViewController.m */,
 				6DDC9ACF5EFCCAC4023B546E /* Orders */,
 				6DDC900E5C0DE5DC0D45681D /* Order Entry */,
 				6DDC916BBE0F6C9CEA426F21 /* Checkout */,
@@ -1719,6 +1724,7 @@
 				6DDC9622685A7986A3EFD7F9 /* CinchJSONAPIClient.m in Sources */,
 				6DDC9928AD8AC88804F4EAAF /* ErrorHandler.m in Sources */,
 				6DDC9B9AE2E5632C07CB13B5 /* DateUtil.m in Sources */,
+				D8C7055A1A037E6A00D395AE /* CIFinalCustomerFormViewController.m in Sources */,
 				6DDC9DC39255CE1C3A2D2DEF /* NilUtil.m in Sources */,
 				6DDC9D1ED36CF90E14CF839C /* UIAlertViewDelegateWithBlock.m in Sources */,
 				6DDC92CB3456424BA9C0BA16 /* DateRange.m in Sources */,

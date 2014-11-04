@@ -3,6 +3,7 @@ platform :ios, '7.1'
 pod 'ECSlidingViewController', '~> 2.0.2'
 pod 'Underscore.m', '~> 0.2.1'
 pod 'JSONKit', '~> 1.5pre'
+pod 'XLForm'
 pod "AFNetworking", "~> 2.0"
 
 # Remove 64-bit build architecture from Pods targets
