@@ -228,16 +228,16 @@
 }
 
 - (void)presentOrderViewController {
-    static UIViewController *c;
-//    c = [[CIFinalCustomerInfoViewController alloc] init];
-    c = [[CIFinalCustomerFormViewController alloc] init];
-
-    c.modalPresentationStyle = UIModalPresentationFormSheet;
-    c.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    [self presentViewController:c animated:YES completion:nil];
-//    c.view.superview.bounds = CGRectMake(0, 0, 200, 200);
-//    c.view.superview.center = CGPointMake(roundf(self.view.center.x), roundf(self.view.center.y));
-    return;
+//    static UIViewController *c;
+////    c = [[CIFinalCustomerInfoViewController alloc] init];
+//    c = [[CIFinalCustomerFormViewController alloc] init];
+//
+//    c.modalPresentationStyle = UIModalPresentationFormSheet;
+//    c.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+//    [self presentViewController:c animated:YES completion:nil];
+////    c.view.superview.bounds = CGRectMake(0, 0, 200, 200);
+////    c.view.superview.center = CGPointMake(roundf(self.view.center.x), roundf(self.view.center.y));
+//    return;
 
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CIOrderViewController" bundle:nil];
     CIOrderViewController *masterViewController = [storyboard instantiateInitialViewController];
@@ -249,6 +249,19 @@
     [[NSUserDefaults standardUserDefaults] setObject:self.email.text forKey:kSettingsUsernameKey];
     [[NSUserDefaults standardUserDefaults] setObject:self.password.text forKey:kSettingsPasswordKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
+
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        static UIViewController *c;
+//        //    c = [[CIFinalCustomerInfoViewController alloc] init];
+//        c = [[CIFinalCustomerFormViewController alloc] init];
+//
+//        c.modalPresentationStyle = UIModalPresentationFormSheet;
+//        c.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+////        [masterViewController presentViewController:c animated:YES completion:nil];
+////    c.view.superview.bounds = CGRectMake(0, 0, 200, 200);
+////    c.view.superview.center = CGPointMake(roundf(self.view.center.x), roundf(self.view.center.y));
+//        return;
+//    });
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {

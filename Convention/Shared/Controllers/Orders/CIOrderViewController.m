@@ -351,7 +351,9 @@ SG: The argument 'detail' is the selected order.
         slidingProductViewController = [[CISlidingProductViewController alloc] initWithTopViewController:productViewController];
     });
 
-    [self presentViewController:slidingProductViewController animated:NO completion:nil];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:slidingProductViewController];
+    navController.navigationBarHidden = YES;
+    [self presentViewController:navController animated:NO completion:nil];
 }
 
 - (CIProductViewController *)initializeCIProductViewController:(bool)newOrder customer:(NSDictionary *)customer {

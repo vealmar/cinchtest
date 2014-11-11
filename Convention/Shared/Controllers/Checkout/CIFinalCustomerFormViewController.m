@@ -11,6 +11,7 @@
 #import "SetupInfo.h"
 #import "CIAppDelegate.h"
 #import "CoreDataManager.h"
+#import "CoreDataUtil.h"
 
 
 @interface CIFinalCustomerFormViewController () {
@@ -62,18 +63,22 @@
 
     formDescriptor.assignFirstResponderOnShow = YES;
 
-    section = [XLFormSectionDescriptor formSectionWithTitle:@"Authorized By"];
+//    section = [XLFormSectionDescriptor formSectionWithTitle:@"Authorized By"];
+    section = [XLFormSectionDescriptor formSection];
     [formDescriptor addFormSection:section];
 
     self.authorizedByRow = [XLFormRowDescriptor formRowDescriptorWithTag:section.title
-                                                                 rowType:XLFormRowDescriptorTypeTextView];
+                                                                 rowType:XLFormRowDescriptorTypeTextView
+                                                                   title:@"Authorized by"];
     [section addFormRow:self.authorizedByRow];
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:@"Notes"];
+//    section = [XLFormSectionDescriptor formSectionWithTitle:@"Notes"];
+    section = [XLFormSectionDescriptor formSection];
     [formDescriptor addFormSection:section];
 
     self.notesRow = [XLFormRowDescriptor formRowDescriptorWithTag:section.title
-                                                          rowType:XLFormRowDescriptorTypeTextView];
+                                                          rowType:XLFormRowDescriptorTypeTextView
+                                                            title:@"Notes"];
     [section addFormRow:self.notesRow];
     
     self.formController = [[XLFormViewController alloc] initWithForm:formDescriptor];
@@ -125,41 +130,41 @@
 }
 
 - (void)submit:(id)sender {
-    NSString *authorizedByText = self.authorizedByRow.value;
-    if (authorizedByText && authorizedByText.length) {
-        [self updateSetting:@"authorizedBy" newValue:authorizedByText setupInfo:authorizedBy];
-        if (self.contactBeforeShippingConfig) {
-            [self updateSetting:@"ship_flag" newValue:self.contactBeforeShippingCB.isChecked ? @"YES" : @"NO" setupInfo:shipFlag];
-        }
-
-        self.order.notes = self.notesRow.value;
-        self.order.authorized = self.authorizedByRow.value;
-
-        Underscore.array(self.customFieldViews).each(^(id<OrderCustomFieldView> orderCustomFieldView) {
-            [self.order setCustomFieldValueFor:orderCustomFieldView.showCustomField value:orderCustomFieldView.value];
-        });
-
-        if (self.poNumberConfig) {
-            self.order.po_number = (NSString *) [NilUtil nilOrObject:self.poNumberTextField.text];
-        }
-        if (self.contactBeforeShippingConfig) {
-            self.order.ship_flag = self.contactBeforeShippingCB.isChecked ? @(1) : @(0);
-        }
-        if (self.cancelConfig) {
-            NSNumber *cancelByDays = [cancelDaysHelper valueAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
-            self.order.cancelByDays = (NSNumber *) [NilUtil nilOrObject:cancelByDays];
-        }
-        if (self.paymentTermsConfig) {
-            NSString *paymentTerms = [paymentTermsHelper valueAtIndex:[self.paymentTermsControl selectedSegmentIndex]];
-            self.order.payment_terms = (NSString *) [NilUtil nilOrObject:paymentTerms];
-        }
-
-        [self.delegate submit:nil];
-        [self.delegate dismissFinalCustomerViewController];
-    } else {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Authorized By Required!" message:@"Please fill out Authorized By field before submitting!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alert show];
-    }
+//    NSString *authorizedByText = self.authorizedByRow.value;
+//    if (authorizedByText && authorizedByText.length) {
+//        [self updateSetting:@"authorizedBy" newValue:authorizedByText setupInfo:authorizedBy];
+//        if (self.contactBeforeShippingConfig) {
+//            [self updateSetting:@"ship_flag" newValue:self.contactBeforeShippingCB.isChecked ? @"YES" : @"NO" setupInfo:shipFlag];
+//        }
+//
+//        self.order.notes = self.notesRow.value;
+//        self.order.authorized = self.authorizedByRow.value;
+//
+//        Underscore.array(self.customFieldViews).each(^(id<OrderCustomFieldView> orderCustomFieldView) {
+//            [self.order setCustomFieldValueFor:orderCustomFieldView.showCustomField value:orderCustomFieldView.value];
+//        });
+//
+//        if (self.poNumberConfig) {
+//            self.order.po_number = (NSString *) [NilUtil nilOrObject:self.poNumberTextField.text];
+//        }
+//        if (self.contactBeforeShippingConfig) {
+//            self.order.ship_flag = self.contactBeforeShippingCB.isChecked ? @(1) : @(0);
+//        }
+//        if (self.cancelConfig) {
+//            NSNumber *cancelByDays = [cancelDaysHelper valueAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
+//            self.order.cancelByDays = (NSNumber *) [NilUtil nilOrObject:cancelByDays];
+//        }
+//        if (self.paymentTermsConfig) {
+//            NSString *paymentTerms = [paymentTermsHelper valueAtIndex:[self.paymentTermsControl selectedSegmentIndex]];
+//            self.order.payment_terms = (NSString *) [NilUtil nilOrObject:paymentTerms];
+//        }
+//
+//        [self.delegate submit:nil];
+//        [self.delegate dismissFinalCustomerViewController];
+//    } else {
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Authorized By Required!" message:@"Please fill out Authorized By field before submitting!" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+//        [alert show];
+//    }
 }
 
 - (void)updateSetting:(NSString *)itemName newValue:(NSString *)newValue setupInfo:(SetupInfo *)setupInfo {
