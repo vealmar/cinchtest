@@ -15,6 +15,8 @@
 #import "PrinterSelectionViewController.h"
 #import "VendorViewController.h"
 #import "UIView+FindAndResignFirstResponder.h"
+#import "CISlidingProductViewController.h"
+
 
 @class CIViewController;
 @class Order;
@@ -43,7 +45,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 }
 
-@property (nonatomic, weak) id<CISlidingProductViewControllerDelegate> slidingProductViewControllerDelegate;
+@property (nonatomic, weak) CISlidingProductViewController *slidingProductViewControllerDelegate;
 @property(nonatomic, strong) IBOutlet UITableView *productsTableView;
 @property(nonatomic, strong) IBOutlet UIImageView *ciLogo;
 @property(nonatomic, strong) IBOutlet UITextField *hiddenTxt;

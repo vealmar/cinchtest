@@ -832,6 +832,7 @@
             [self closeCalendar];
         } else {
             [self toggleCartSelection:cart];
+            self.slidingProductViewControllerDelegate.shipDateController.workingCart = cart;
             [self.slidingProductViewControllerDelegate toggleShipDates:YES];
         }
 

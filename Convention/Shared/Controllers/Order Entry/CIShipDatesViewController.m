@@ -118,6 +118,8 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             }];
         }
     }
+
+    [self.tableView reloadData];
 }
 
 #pragma mark CKCalendarDelegate
@@ -180,7 +182,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 - (void)reloadSelectedDatesSection {
     [self.selectedShipDates sortUsingDescriptors:@[ [[NSSortDescriptor alloc] initWithKey:@"timeIntervalSince1970" ascending:YES] ]];
-    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:2] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)calendar:(CKCalendarView *)calendar configureDateItem:(CKDateItem *)dateItem forDate:(NSDate *)date {
@@ -244,47 +246,98 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 #pragma mark TableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 3;
 }
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 0) {
-        return 1;
-    } else {
-        return [self.selectedShipDates count] > 0 ? [self.selectedShipDates count] : 1;
+    switch (section) {
+        case 0: {
+            return 1;
+        }
+        case 1: {
+            return 1;
+        }
+        case 2: {
+            return [self.selectedShipDates count] > 0 ? [self.selectedShipDates count] : 1;
+        }
+        default: {
+            return 0;
+        }
     }
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    if (section == 0) {
-        return @"Calendar";
-    } else {
-        return @"Ship Dates";
+    switch (section) {
+        case 0: {
+            return nil;
+        }
+        case 1: {
+            return @"Calendar";
+        }
+        case 2: {
+            return @"Ship Dates";
+        }
+        default: {
+            return nil;
+        }
     }
 }
 
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.section == 0) {
-        return self.calendarView != nil ? self.calendarView.frame.size.height : 300;
-    } else {
-        return 40;
+    switch (indexPath.section) {
+        case 0: {
+            return 60;
+        }
+        case 1: {
+            return self.calendarView != nil ? self.calendarView.frame.size.height : 300;
+        }
+        case 2: {
+            return 40;
+        }
+        default: {
+            return 40;
+        }
     }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell;
-    if (indexPath.section == 0) {
-        if (nil == self.calendarCell) {
-            self.calendarCell = [self createCalendarCell];
+    UITableViewCell *cell = nil;
+
+    switch (indexPath.section) {
+        case 0: {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            cell.contentView.backgroundColor = tableView.backgroundColor;
+
+            UILabel *label = [[UILabel alloc] init];
+            label.frame = CGRectInset(cell.frame, 5, 5);
+            label.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+            label.backgroundColor = tableView.backgroundColor;
+            label.textColor = self.tableTextColor;
+            label.font = [UIFont fontWithName:kFontName size:14.0f];
+            label.text = self.workingCart.product.descr;
+            [cell.contentView addSubview:label];
+
+            break;
         }
-        cell = self.calendarCell;
-    } else {
-        cell = [self.tableView dequeueReusableCellWithIdentifier:dateCellIdentifier];
-        NSDate *selectedDate = [self.selectedShipDates count] == 0 ? nil : [self.selectedShipDates objectAtIndex:indexPath.row];
-        if (nil == cell) {
-            cell = [self createShipDateCellOn:selectedDate];
+        case 1: {
+            if (nil == self.calendarCell) {
+                self.calendarCell = [self createCalendarCell];
+            }
+            cell = self.calendarCell;
+            break;
+        }
+        case 2: {
+            cell = [self.tableView dequeueReusableCellWithIdentifier:dateCellIdentifier];
+            NSDate *selectedDate = [self.selectedShipDates count] == 0 ? nil : [self.selectedShipDates objectAtIndex:indexPath.row];
+            if (nil == cell) {
+                cell = [self createShipDateCellOn:selectedDate];
+            }
+            break;
+        }
+        default: {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+            break;
         }
     }
 

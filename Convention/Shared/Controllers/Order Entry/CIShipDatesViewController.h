@@ -7,11 +7,13 @@
 #import "CKCalendarView.h"
 
 @class Order;
+@class Cart;
 
 @interface CIShipDatesViewController : UITableViewController <CKCalendarDelegate, UITextFieldDelegate>
 
 //Working copy of selected or new order
 @property Order *workingOrder;
+@property Cart *workingCart;
 
 - (id)initWithWorkingOrder:(Order *)order;
 

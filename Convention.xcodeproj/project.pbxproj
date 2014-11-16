@@ -666,9 +666,9 @@
 		6DDC900E5C0DE5DC0D45681D /* Order Entry */ = {
 			isa = PBXGroup;
 			children = (
+				6DDC939A09FFFC9BF6AB7091 /* Store Quantities */,
 				6DDC91E4CBCE10A80C9B66D6 /* CICustomerInfoViewController.m */,
 				6DDC9397F54F2B73F6CDC158 /* CICustomerInfoViewController.h */,
-				6DDC939A09FFFC9BF6AB7091 /* Store Quantities */,
 				6DDC975CD42FF20487C7728A /* BulletinViewController.m */,
 				6DDC993FC0A9E16CF56D91F8 /* BulletinViewController.h */,
 				6DDC9C262778347168CA4141 /* CIProductViewController.m */,

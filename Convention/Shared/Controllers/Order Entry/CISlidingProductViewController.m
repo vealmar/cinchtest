@@ -5,12 +5,10 @@
 
 #import "CISlidingProductViewController.h"
 #import "CIProductViewController.h"
-#import "CIShipDatesViewController.h"
 #import "ShowConfigurations.h"
 
 @interface CISlidingProductViewController ()
 
-@property CIShipDatesViewController *shipDateController;
 @property UITapGestureRecognizer *productViewTapRecognizer;
 @property UITapGestureRecognizer *shipdateViewTapRecognizer;
 

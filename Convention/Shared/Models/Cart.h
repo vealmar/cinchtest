@@ -10,7 +10,10 @@
 #import <CoreData/CoreData.h>
 #import "EditableEntity.h"
 
-@class Order, Product, ShipDate;
+#import "Order.h"
+#import "Product.h"
+#import "ShipDate.h"
+
 
 @interface Cart : EditableEntity
 
