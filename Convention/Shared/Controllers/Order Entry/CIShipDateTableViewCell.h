@@ -14,4 +14,7 @@
 - (int)quantity;
 - (void)setQuantity:(int)quantity;
 
+@property (nonatomic, copy) void (^resignedFirstResponderBlock)(CIShipDateTableViewCell *cell);
+@property UITextField *quantityField;
+
 @end

@@ -13,7 +13,6 @@
 @interface CIShipDateTableViewCell ()
 
 @property NSMutableArray *selectedCarts;
-@property UITextField *quantityField;
 
 @end
 
@@ -103,6 +102,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
+
     return YES;
 }
 
@@ -122,6 +122,10 @@
     }];
 
     [[NSNotificationCenter defaultCenter] removeObserver:textField name:CartDeselectionNotification object:nil];
+
+    if (self.resignedFirstResponderBlock) {
+        self.resignedFirstResponderBlock(self);
+    }
 }
 
 @end

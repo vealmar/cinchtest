@@ -362,6 +362,15 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         [cell.contentView addGestureRecognizer:swipeRightGesture];
 
         cell.contentView.userInteractionEnabled = YES;
+
+        __weak typeof(cell) weakCell = cell;
+        [cell setResignedFirstResponderBlock:^(CIShipDateTableViewCell *c) {
+            NSIndexPath *indexPath = [self.tableView indexPathForCell:weakCell];
+            CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell(*))[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row+1 inSection:indexPath.section]];
+            if (nextCell) {
+                [nextCell.quantityField becomeFirstResponder];
+            }
+        }];
     }
 
     return cell;
