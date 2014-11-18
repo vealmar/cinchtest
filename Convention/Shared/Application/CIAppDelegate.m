@@ -114,8 +114,14 @@
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
 
+    NSDictionary *pragmaOptions = @{ @"synchronous": @"NORMAL",
+                                     @"journal_mode" : @"WAL" };
+    NSDictionary *storeOptions = @{ NSSQLitePragmasOption: pragmaOptions };
+
     if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType
-                                                   configuration:nil URL:storeURL options:nil error:&error]) {
+                                                   configuration:nil URL:storeURL
+                                                         options:storeOptions
+                                                           error:&error]) {
         /*
          Replace this implementation with code to handle the error appropriately.
          
