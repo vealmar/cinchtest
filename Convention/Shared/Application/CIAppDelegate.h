@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "ReachabilityDelegation.h"
+#import "APLSlideMenuViewController.h"
+
 
 @class CIViewController;
 
@@ -23,6 +25,8 @@
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
+
+@property (nonatomic, strong) APLSlideMenuViewController *slideMenu;
 
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;

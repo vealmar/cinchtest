@@ -33,6 +33,8 @@
 #import "DateUtil.h"
 #import "NotificationConstants.h"
 #import "CinchJSONAPIClient.h"
+#import "CIAppDelegate.h"
+
 
 @interface CIOrderViewController () {
     AnOrder *currentOrder;
@@ -107,6 +109,89 @@ CIOrderViewController
     [self loadOrders:YES highlightOrder:nil];
     helper = [[CIProductViewControllerHelper alloc] init];
     cancelDaysHelper = [[SegmentedControlHelper alloc] initForCancelByDays];
+
+    [self setupNavBar];
+}
+
+- (void)setupNavBar {
+    UINavigationController *navController = self.navigationController;
+    UINavigationItem *navItem = self.navigationItem;
+
+    navController.navigationBar.barTintColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
+
+    navItem.title = @"Orders";
+    [navController.navigationBar setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:24],
+                                                                       NSForegroundColorAttributeName: [UIColor whiteColor] }];
+
+    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf0c9" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        CIAppDelegate *appDelegate = (CIAppDelegate*)[UIApplication sharedApplication].delegate;
+        [appDelegate.slideMenu showLeftMenu:YES];
+    }];
+    [menuItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
+                                        NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+
+    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"   Search..." style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self setupNavBarSearch];
+    }];
+    [searchItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
+                                          NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] } forState:UIControlStateNormal];
+
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf067" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self AddNewOrder:nil];
+    }];
+    [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
+                                       NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+
+    navItem.leftBarButtonItems = @[menuItem, searchItem];
+    navItem.rightBarButtonItems = @[addItem];
+}
+
+- (void)setupNavBarSearch {
+    UINavigationController *navController = self.navigationController;
+    UINavigationItem *navItem = self.navigationItem;
+
+    navItem.title = nil;
+    navController.navigationBar.barTintColor = [UIColor colorWithRed:0.000 green:0.000 blue:0.000 alpha:1];
+
+    UITextField *searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 800, 40)];
+    searchTextField.font = [UIFont regularFontOfSize:24];
+    searchTextField.textColor = [UIColor whiteColor];
+    searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Search..."
+                                                                            attributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] }];
+    [searchTextField bk_addEventHandler:^(id sender) {
+        [self searchWithString:searchTextField.text];
+    } forControlEvents:UIControlEventEditingChanged];
+
+    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:searchTextField];
+
+    UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    dismissButton.frame = self.view.bounds;
+    dismissButton.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:dismissButton];
+
+    void (^exitSearchMode)() = ^() {
+        [dismissButton removeFromSuperview];
+        [searchTextField resignFirstResponder];
+        [self setupNavBar];
+    };
+
+    [dismissButton bk_addEventHandler:^(id sender) {
+        exitSearchMode();
+    } forControlEvents:UIControlEventTouchUpInside];
+
+    UIBarButtonItem *clearItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"Clear" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        exitSearchMode();
+    }];
+    [clearItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
+                                         NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+
+    navItem.leftBarButtonItems = @[searchItem];
+    navItem.rightBarButtonItems = @[clearItem];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [searchTextField becomeFirstResponder];
+        [self searchWithString:@""];
+    });
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -352,8 +437,8 @@ SG: The argument 'detail' is the selected order.
     });
 
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:slidingProductViewController];
-    navController.navigationBarHidden = YES;
-    [self presentViewController:navController animated:NO completion:nil];
+    navController.navigationBarHidden = NO;
+    [self presentViewController:navController animated:YES completion:nil];
 }
 
 - (CIProductViewController *)initializeCIProductViewController:(bool)newOrder customer:(NSDictionary *)customer {
@@ -1203,12 +1288,14 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (IBAction)searchOrders:(id)sender {
     if (![sender isKindOfClass:[UITextField class]])
         [self.searchText resignFirstResponder];
+}
 
+- (void)searchWithString:(NSString*)s {
     if (self.filteredOrders == nil|| [self.filteredOrders isKindOfClass:[NSNull class]]) {
         return;
     }
 
-    if ([self.searchText.text isEqualToString:@""]) {
+    if ([s isEqualToString:@""]) {
         self.filteredOrders = [self.allorders mutableCopy];
     } else {
         NSPredicate *pred = [NSPredicate predicateWithBlock:^BOOL(id obj, NSDictionary *bindings) {
@@ -1219,11 +1306,11 @@ SG: This method gets called when you swipe on an order in the order list and tap
             if ([authorized isKindOfClass:[NSNull class]])
                 authorized = @"";
             NSString *orderId = [anOrder.orderId stringValue];
-            NSString *test = [self.searchText.text uppercaseString];
+            NSString *test = [s uppercaseString];
             return [[storeName uppercaseString] contains:test]
-                    || [[custId uppercaseString] hasPrefix:test]
-                    || [[authorized uppercaseString] hasPrefix:test]
-                    || [orderId hasPrefix:test];
+            || [[custId uppercaseString] hasPrefix:test]
+            || [[authorized uppercaseString] hasPrefix:test]
+            || [orderId hasPrefix:test];
         }];
 
         self.filteredOrders = [[self.allorders filteredArrayUsingPredicate:pred] mutableCopy];

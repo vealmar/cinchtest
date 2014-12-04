@@ -66,6 +66,7 @@
 
 - (void)obtainShowConfigurationAndPresentLoginView {
     [[CinchJSONAPIClient sharedInstance] GET:ConfigUrl parameters:@{ } success:^(NSURLSessionDataTask *task, id JSON) {
+        NSLog(@"%@", JSON);
         [ShowConfigurations createInstanceFromJson:(NSDictionary *) JSON];
         [self performSelectorOnMainThread:@selector(presentLoginView) withObject:nil waitUntilDone:NO];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {

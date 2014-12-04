@@ -10,6 +10,7 @@
 #import "SettingsManager.h"
 #import "LaunchViewController.h"
 
+
 @implementation CIAppDelegate
 
 @synthesize managedObjectContext = _managedObjectContext;
@@ -158,6 +159,5 @@
 - (NSURL *)applicationDocumentsDirectory {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
-
 
 @end

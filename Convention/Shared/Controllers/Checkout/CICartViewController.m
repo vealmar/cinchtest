@@ -127,6 +127,37 @@
                                                  name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
                                                  name:UIKeyboardDidHideNotification object:nil];
+
+    [self setupNavBar];
+}
+
+- (void)setupNavBar {
+    UINavigationController *navController = self.navigationController;
+    UINavigationItem *navItem = self.navigationItem;
+
+    navController.navigationBar.barTintColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
+
+    if ([self.customer objectForKey:kBillName] != nil) {
+        navItem.title = [self.customer objectForKey:kBillName];
+    }
+
+    [navController.navigationBar setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:24],
+                                                           NSForegroundColorAttributeName: [UIColor whiteColor] }];
+
+    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf00d" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self Cancel:nil];
+    }];
+    [menuItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
+                                        NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf061" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self finishOrder:nil];
+    }];
+    [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
+                                       NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+
+    navItem.leftBarButtonItems = @[menuItem];
+    navItem.rightBarButtonItems = @[addItem];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

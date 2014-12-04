@@ -43,11 +43,17 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>BEBAS.ttf</string>
+		<string>fontawesome.ttf</string>
+		<string>OPENSANS-REGULAR_1.TTF</string>
+		<string>OPENSANS-SEMIBOLD_1.TTF</string>
+		<string>glyphicons.ttf</string>
 	</array>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIStatusBarHidden~ipad</key>
+	<true/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleBlackOpaque</string>
 	<key>UISupportedInterfaceOrientations</key>
@@ -62,6 +68,6 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true/>
+	<false/>
 </dict>
 </plist>

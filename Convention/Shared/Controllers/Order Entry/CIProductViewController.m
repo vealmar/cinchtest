@@ -100,6 +100,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    self.view.backgroundColor = [UIColor colorWithRed:0.133 green:0.129 blue:0.137 alpha:1];
+
     self.useShipDates = [ShowConfigurations instance].shipDates;
     self.allowPrinting = [ShowConfigurations instance].printing;
     self.contactBeforeShipping = [ShowConfigurations instance].contactBeforeShipping;
@@ -166,6 +169,91 @@
               options:0
               context:nil];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(resultData)) options:NSKeyValueObservingOptionNew context:NULL];
+
+    [self setupNavBar];
+}
+
+- (void)setupNavBar {
+    UINavigationController *navController = self.navigationController;
+    UINavigationItem *navItem = self.parentViewController.navigationItem;
+
+    navController.navigationBar.barTintColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
+
+    if ([self.customer objectForKey:kBillName] != nil) {
+        navItem.title = [self.customer objectForKey:kBillName];
+    }
+
+    [navController.navigationBar setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:24],
+                                                           NSForegroundColorAttributeName: [UIColor whiteColor] }];
+
+    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf00d" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self Cancel:nil];
+    }];
+    [menuItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
+                                        NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+
+    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"   Search..." style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self setupNavBarSearch];
+    }];
+    [searchItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
+                                          NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] } forState:UIControlStateNormal];
+
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf061" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self reviewCart:nil];
+    }];
+    [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
+                                       NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+
+    navItem.leftBarButtonItems = @[menuItem, searchItem];
+    navItem.rightBarButtonItems = @[addItem];
+}
+
+- (void)setupNavBarSearch {
+    UINavigationController *navController = self.navigationController;
+    UINavigationItem *navItem = self.parentViewController.navigationItem;
+
+    navItem.title = nil;
+    navController.navigationBar.barTintColor = [UIColor colorWithRed:0.000 green:0.000 blue:0.000 alpha:1];
+
+    UITextField *searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 800, 40)];
+    searchTextField.font = [UIFont regularFontOfSize:24];
+    searchTextField.textColor = [UIColor whiteColor];
+    searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Search..."
+                                                                            attributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] }];
+    [searchTextField bk_addEventHandler:^(id sender) {
+        [self searchProducts:searchTextField.text searchIsActive:YES];
+    } forControlEvents:UIControlEventEditingChanged];
+
+    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:searchTextField];
+
+    UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    dismissButton.frame = self.view.bounds;
+    dismissButton.backgroundColor = [UIColor clearColor];
+    [self.view addSubview:dismissButton];
+
+    void (^exitSearchMode)() = ^() {
+        [dismissButton removeFromSuperview];
+        [searchTextField resignFirstResponder];
+        [self setupNavBar];
+    };
+
+    [dismissButton bk_addEventHandler:^(id sender) {
+        exitSearchMode();
+    } forControlEvents:UIControlEventTouchUpInside];
+
+    UIBarButtonItem *clearItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"Clear" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        exitSearchMode();
+    }];
+    [clearItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
+                                         NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+
+    navItem.leftBarButtonItems = @[searchItem];
+    navItem.rightBarButtonItems = @[clearItem];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [searchTextField becomeFirstResponder];
+        [self searchProducts:@"" searchIsActive:YES];
+    });
 }
 
 - (void)viewDidAppear:(BOOL)animated {

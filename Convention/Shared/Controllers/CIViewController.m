@@ -21,6 +21,8 @@
 #import "CinchJSONAPIClient.h"
 #import "JSONResponseSerializerWithErrorData.h"
 #import "CIFinalCustomerFormViewController.h"
+#import "CIAppDelegate.h"
+#import "MenuViewController.h"
 
 
 @implementation CIViewController {
@@ -244,7 +246,26 @@
     masterViewController.authToken = authToken;
     masterViewController.vendorInfo = [vendorInfo copy];
     masterViewController.managedObjectContext = self.managedObjectContext;
-    [self presentViewController:masterViewController animated:YES completion:nil];
+
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:masterViewController];
+
+    CIAppDelegate *appDelegate = (CIAppDelegate*)[UIApplication sharedApplication].delegate;
+    appDelegate.slideMenu = [APLSlideMenuViewController new];
+    appDelegate.slideMenu.view.frame = [UIApplication sharedApplication].keyWindow.bounds;
+    appDelegate.slideMenu.menuWidth = 280;
+    appDelegate.slideMenu.contentViewController = nav;
+
+    MenuViewController *menuController = [MenuViewController new];
+    menuController.orderViewController = masterViewController;
+    appDelegate.slideMenu.leftMenuViewController = menuController;
+
+    nav.view.layer.shadowColor = [UIColor blackColor].CGColor;
+    nav.view.layer.shadowOffset = CGSizeMake(3, 3);
+    nav.view.layer.shadowRadius = 3;
+    nav.view.layer.shadowOpacity = 0.5;
+    nav.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:nav.view.bounds].CGPath;
+
+    [self presentViewController:appDelegate.slideMenu animated:YES completion:nil];
 
     [[NSUserDefaults standardUserDefaults] setObject:self.email.text forKey:kSettingsUsernameKey];
     [[NSUserDefaults standardUserDefaults] setObject:self.password.text forKey:kSettingsPasswordKey];
