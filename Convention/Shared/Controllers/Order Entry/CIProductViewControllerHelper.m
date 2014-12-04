@@ -284,25 +284,110 @@
             NSNumber *qtyNumber = [NSNumber numberWithInt:[CIProductViewControllerHelper getQuantity:cart.editableQty]];//takes care of resolving quantities for multi stores
             NSDecimalNumber *qty = [NSDecimalNumber decimalNumberWithString:[qtyNumber stringValue]];
 
+            if([qtyNumber intValue] == 1)
+            {
+                int a = 1;
+            }
+            if([qtyNumber intValue] == 3)
+            {
+                int a = 1;
+            }
+
+            int shipDatesCount = cart.order.ship_dates.count;
+
+            NSDecimalNumber *shipDates = shipDatesCount == 0 ? [NSDecimalNumber decimalNumberWithString:@"1"] :
+            [NSDecimalNumber decimalNumberWithString:[[NSNumber numberWithInt:shipDatesCount] stringValue]];
+
+
             ShowConfigurations *config = [ShowConfigurations instance];
-            int shipDatesCount = 0;
             if (config.shipDates) {
                 if ([config isLineItemShipDatesType]) {
                     shipDatesCount = cart.shipdates.count;
+                    if (shipDatesCount) {
+                        for (ShipDate *shipDate in cart.shipdates) {
+                            NSDate *actualShipDate = shipDate.shipdate;
+
+                            NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:actualShipDate];
+                            int aday = [components day];
+                            int amonth = [components month];
+                            int ayear = [components year];
+
+                            NSDictionary *shipdates = [NSJSONSerialization JSONObjectWithData:[cart.editableQty dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+
+                            int year = 9999;
+                            int month = 9999;
+                            int day = 9999;
+                            int quantity = 0;
+
+                            for (NSString *s in shipdates.allKeys) {
+                                NSArray *c = [s componentsSeparatedByString:@"T"];
+                                c = [c[0] componentsSeparatedByString:@"-"];
+
+                                int ty = [c[0] intValue];
+                                int tm = [c[1] intValue];
+                                int td = [c[2] intValue];
+
+                                if (ty == ayear && tm == amonth && td == aday) {
+                                    quantity = [shipdates[s] intValue];
+                                }
+
+                                if (ty < year) {
+                                    year = ty;
+                                    month = tm;
+                                    day = td;
+                                } else {
+                                    if (tm < month) {
+                                        month = tm;
+                                        day = td;
+                                    } else {
+                                        if (td < day) {
+                                            day = td;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            BOOL useAtOncePrice = NO;
+                            if (ayear == year && amonth == month && aday == day) {
+                                useAtOncePrice = YES;
+                            }
+
+
+                            if (config.isLineItemShipDatesType) {
+                                NSNumber *qq = [NSNumber numberWithInt:quantity];
+                                NSDecimalNumber *qqty = [NSDecimalNumber decimalNumberWithString:[qq stringValue]];
+                                NSNumber *price = nil;
+
+                                if (useAtOncePrice) {
+                                    price = shipDate.cart.product.showprc;
+                                } else {
+                                    price = shipDate.cart.product.regprc;
+                                }
+
+                                int iprice = [price intValue];
+                                price = [NSNumber numberWithDouble:iprice / 100.0];
+
+                                NSDecimalNumber *decPrice = [NSDecimalNumber decimalNumberWithDecimal:[price decimalValue]];
+                                grossTotal = [grossTotal decimalNumberByAdding:[qqty decimalNumberByMultiplyingBy:decPrice]];
+                                
+                                if ([qtyNumber intValue] > 0) {
+                                    NSLog(@"QTY %@ -- DATE %@ == UAP %d", qtyNumber, actualShipDate, useAtOncePrice);
+                                }
+                            }
+                        }
+                    }
                 } else if ([config isOrderShipDatesType]) {
-                    shipDatesCount = cart.order.ship_dates.count;
+
+                    NSNumber *priceNumber = [NSNumber numberWithDouble:[cart.editablePrice intValue] / 100.0];
+                    NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[priceNumber stringValue]];
+                    if (config.isLineItemShipDatesType) {
+                        grossTotal = [grossTotal decimalNumberByAdding:[qty decimalNumberByMultiplyingBy:price]];
+                    } else {
+                        grossTotal = [grossTotal decimalNumberByAdding:[[qty decimalNumberByMultiplyingBy:price] decimalNumberByMultiplyingBy:shipDates]];
+                    }
                 }
             }
-            NSDecimalNumber *shipDates = shipDatesCount == 0 ? [NSDecimalNumber decimalNumberWithString:@"1"] :
-                    [NSDecimalNumber decimalNumberWithString:[[NSNumber numberWithInt:shipDatesCount] stringValue]];
 
-            NSNumber *priceNumber = [NSNumber numberWithDouble:[cart.editablePrice intValue] / 100.0];
-            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[priceNumber stringValue]];
-            if (config.isLineItemShipDatesType) {
-                grossTotal = [grossTotal decimalNumberByAdding:[qty decimalNumberByMultiplyingBy:price]];
-            } else {
-                grossTotal = [grossTotal decimalNumberByAdding:[[qty decimalNumberByMultiplyingBy:price] decimalNumberByMultiplyingBy:shipDates]];
-            }
             if ([cart.editableVoucher intValue] != 0) {
                 //cart.editableVoucher will never be null. all number fields have a default value of 0 in core data. you can change the default if you want .
                 NSNumber *voucherNumber = [NSNumber numberWithDouble:[cart.editableVoucher intValue] / 100.0];
