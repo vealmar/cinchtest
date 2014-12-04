@@ -220,10 +220,27 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     }
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 30.0f;
-}
+//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+//    return 30.0f;
+//}
 
+// @todo added for ellett will revisit
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    switch (section) {
+        case 0: {
+            return 45.0f;
+        }
+        case 1: {
+            return 0; // @"Calendar" @todo make this configurable - hiding the calendar
+        }
+        case 2: {
+            return 35.0f;
+        }
+        default: {
+            return 0;
+        }
+    }
+}
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     UIView *headerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width, 30)];
@@ -256,7 +273,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             return 1;
         }
         case 1: {
-            return 1;
+            return 0; // @todo make this configurable - hiding the calendar
         }
         case 2: {
             return [self.selectedShipDates count] > 0 ? [self.selectedShipDates count] : 1;
@@ -273,7 +290,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             return nil;
         }
         case 1: {
-            return @"Calendar";
+            return nil; // @"Calendar" @todo make this configurable - hiding the calendar
         }
         case 2: {
             return @"Ship Dates";
@@ -287,16 +304,16 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case 0: {
-            return 60;
+            return 50.0f; // @todo reduced this from 60 to 30 for ellett, will revisit
         }
         case 1: {
-            return self.calendarView != nil ? self.calendarView.frame.size.height : 300;
+            return 0; // self.calendarView != nil ? self.calendarView.frame.size.height : 300;  @todo make this configurable - hiding the calendar
         }
         case 2: {
-            return 40;
+            return 40.0f;
         }
         default: {
-            return 40;
+            return 40.0f;
         }
     }
 }
