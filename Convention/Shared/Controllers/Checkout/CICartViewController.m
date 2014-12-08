@@ -138,7 +138,8 @@
     navController.navigationBar.barTintColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
 
     if ([self.customer objectForKey:kBillName] != nil) {
-        navItem.title = [self.customer objectForKey:kBillName];
+//        navItem.title = [self.customer objectForKey:kBillName];
+        navItem.title = [NSString stringWithFormat:@"Products in Cart - %@", [self.customer objectForKey:kCustID]];
     }
 
     [navController.navigationBar setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:24],
@@ -150,7 +151,7 @@
     [menuItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
                                         NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
 
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf061" style:UIBarButtonItemStylePlain handler:^(id sender) {
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-done"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
         [self finishOrder:nil];
     }];
     [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],

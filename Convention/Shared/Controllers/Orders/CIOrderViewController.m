@@ -34,6 +34,7 @@
 #import "NotificationConstants.h"
 #import "CinchJSONAPIClient.h"
 #import "CIAppDelegate.h"
+#import "VALabel.h"
 
 
 @interface CIOrderViewController () {
@@ -54,7 +55,28 @@
     __weak IBOutlet UILabel *sqLabel;
     __weak IBOutlet UILabel *quantityLabel;
 }
+@property (weak, nonatomic) IBOutlet UIView *orderDetailView;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailOrderNumberLabel;
+@property (weak, nonatomic) IBOutlet UIView *orderDetailCustomerView;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailCustomerLabel;
+@property (weak, nonatomic) IBOutlet UIView *orderDetailAuthorizedView;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailAuthorizedLabel;
+@property (weak, nonatomic) IBOutlet UIView *orderDetailPaymentTermsView;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailPaymentTermsLabel;
+@property (weak, nonatomic) IBOutlet UIView *orderDetailNotesView;
+@property (weak, nonatomic) IBOutlet VALabel *orderDetailNotesLabel;
 
+@property (weak, nonatomic) IBOutlet UIView *orderDetailTableParentView;
+@property (weak, nonatomic) IBOutlet UITableView *orderDetailTable;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailShippingLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailTotalLabel;
+
+
+@property (weak, nonatomic) IBOutlet UIView *orderDetailShipTotalView;
+
+@property (weak, nonatomic) IBOutlet UIButton *orderDetailSaveButton;
+@property (weak, nonatomic) IBOutlet UIButton *orderDetailEditButton;
+@property (weak, nonatomic) IBOutlet UIButton *orderDetailDeleteButton;
 @end
 
 @implementation
@@ -100,7 +122,7 @@ CIOrderViewController
     self.cancelDaysView.hidden = !showConfig.cancelOrder;
     unsavedChangesPresent = NO;
     [self adjustTotals];
-    self.OrderDetailScroll.hidden = YES;
+    self.orderDetailView.hidden = YES;
     [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
     if ([ShowConfigurations instance].printing) currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
     pull = [[PullToRefreshView alloc] initWithScrollView:self.sideTable];
@@ -110,7 +132,33 @@ CIOrderViewController
     helper = [[CIProductViewControllerHelper alloc] init];
     cancelDaysHelper = [[SegmentedControlHelper alloc] initForCancelByDays];
 
+//    self.sideTable.separatorColor = [UIColor colorWithRed:0.761 green:0.757 blue:0.780 alpha:1];
+    self.sideTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+
+    self.orderDetailTable.separatorColor = [UIColor colorWithRed:0.808 green:0.808 blue:0.827 alpha:1];
+    self.orderDetailTable.rowHeight = 40;
+
     [self setupNavBar];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+
+    if ([self.sideTable respondsToSelector:@selector(setSeparatorInset:)]) {
+        [self.sideTable setSeparatorInset:UIEdgeInsetsZero];
+    }
+
+    if ([self.sideTable respondsToSelector:@selector(setLayoutMargins:)]) {
+        [self.sideTable setLayoutMargins:UIEdgeInsetsZero];
+    }
+
+    if ([self.orderDetailTable respondsToSelector:@selector(setSeparatorInset:)]) {
+        [self.orderDetailTable setSeparatorInset:UIEdgeInsetsZero];
+    }
+
+    if ([self.orderDetailTable respondsToSelector:@selector(setLayoutMargins:)]) {
+        [self.orderDetailTable setLayoutMargins:UIEdgeInsetsZero];
+    }
 }
 
 - (void)setupNavBar {
@@ -136,7 +184,7 @@ CIOrderViewController
     [searchItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
                                           NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] } forState:UIControlStateNormal];
 
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf067" style:UIBarButtonItemStylePlain handler:^(id sender) {
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-add"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
         [self AddNewOrder:nil];
     }];
     [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
@@ -218,6 +266,7 @@ CIOrderViewController
 }
 
 - (void)adjustTotals {
+    return;
     NSMutableArray *visibleTotalFields = [[NSMutableArray alloc] init];
     if (!self.grossTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.grossTotal, @"label" : self.grossTotalLabel}];
     if (!self.discountTotal.hidden) [visibleTotalFields addObject:@{@"field" : self.discountTotal, @"label" : self.discountTotalLabel}];
@@ -244,7 +293,7 @@ CIOrderViewController
         currentOrder = nil;
         isLoadingOrders = YES;
         self.searchText.text = @"";
-        self.OrderDetailScroll.hidden = YES;
+        self.orderDetailView.hidden = YES;
         MBProgressHUD *hud;
         if (showLoadingIndicator) {  //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
             hud = [MBProgressHUD showHUDAddedTo:self.sideTable animated:YES];
@@ -298,11 +347,11 @@ CIOrderViewController
                 [self didSelectOrderAtIndexPath:currentOrderIndex];
             } else {
                 currentOrder = orderAtCurrentOrderIndex;
-                self.OrderDetailScroll.hidden = YES;
+                self.orderDetailView.hidden = YES;
             }
         } else {
             currentOrder = nil;
-            self.OrderDetailScroll.hidden = YES;
+            self.orderDetailView.hidden = YES;
         }
     }
 }
@@ -328,11 +377,69 @@ These partial orders then are put at the beginning of the self.orders array.
 
 #pragma mark - Order detail display
 
+- (IBAction)orderDetailSaveButtonTapped:(id)sender {
+    [self Save:nil];
+}
+
+- (IBAction)orderDetailEditButtonTapped:(id)sender {
+    [self getCustomerOfCurrentOrderAndLoadProductView];
+}
+
+- (IBAction)orderDetailDeleteButtonTapped:(id)sender {
+    [self Delete:nil];
+}
+
 /*
 SG: The argument 'detail' is the selected order.
 */
 - (void)displayOrderDetail:(AnOrder *)detail {
-    self.OrderDetailScroll.hidden = NO;
+    self.orderDetailView.hidden = NO;
+
+    self.orderDetailOrderNumberLabel.text = [NSString stringWithFormat:@"Order #%@", detail.orderId];
+    self.orderDetailCustomerLabel.text = ([detail.customer objectForKey:kBillName] == nil? @"(Unknown)" : [detail.customer objectForKey:kBillName]);
+
+    if (detail.authorized && detail.authorized.length) {
+        self.orderDetailAuthorizedView.hidden = NO;
+        self.orderDetailAuthorizedLabel.text = detail.authorized;
+        self.orderDetailCustomerView.frame = CGRectMake(0, 44, 331, 96);
+    } else {
+        self.orderDetailAuthorizedView.hidden = YES;
+        self.orderDetailCustomerView.frame = CGRectMake(0, 44, 670, 96);
+    }
+
+    if (detail.paymentTerms && detail.paymentTerms.length) {
+        self.orderDetailPaymentTermsLabel.text = detail.paymentTerms;
+    } else {
+        self.orderDetailPaymentTermsLabel.text = @"-";
+    }
+
+    float orderDetailTableOriginY = 0;
+    if (detail.notes && detail.notes.length) {
+        self.orderDetailNotesLabel.text = detail.notes;
+        self.orderDetailNotesView.hidden = NO;
+
+        orderDetailTableOriginY = self.orderDetailNotesView.frame.origin.y + self.orderDetailNotesView.frame.size.height + 8;
+    } else {
+        self.orderDetailNotesView.hidden = YES;
+        orderDetailTableOriginY = self.orderDetailPaymentTermsView.frame.origin.y + self.orderDetailPaymentTermsView.frame.size.height + 8;
+
+    }
+
+    self.orderDetailTableParentView.frame = CGRectMake(0, orderDetailTableOriginY, self.orderDetailTableParentView.frame.size.width, self.orderDetailShipTotalView.frame.origin.y - orderDetailTableOriginY);
+
+    if (showConfig.isOrderShipDatesType) {
+        self.orderDetailShippingLabel.text = @"Ship immediately.";
+        if (detail.shipDates.count > 0) {
+            self.orderDetailShippingLabel.text = [Underscore.array(detail.shipDates)
+                                                .map(^id(id obj) {
+                return [DateUtil convertDateToMmddyyyy:obj];
+            })
+                                                .unwrap componentsJoinedByString:@", "];
+            
+        }
+    }
+
+
     self.customer.text = @"";
     self.authorizer.text = @"";
     self.notes.text = @"";
@@ -420,6 +527,8 @@ SG: The argument 'detail' is the selected order.
 
         [self.itemsTable reloadData];
         [self UpdateTotal];
+
+        [self.orderDetailTable reloadData];
     }
 }
 
@@ -472,7 +581,29 @@ SG: The argument 'detail' is the selected order.
 
 #pragma mark - UITableView Datasource
 
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:UIEdgeInsetsZero];
+    }
+
+    if (tableView == self.orderDetailTable) return;
+
+    if(indexPath.row % 2 == 0) {
+        cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
+    } else {
+        cell.backgroundColor = [UIColor colorWithRed:1.000 green:1.000 blue:1.000 alpha:1];
+    }
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (tableView == self.orderDetailTable) {
+        return currentOrder.lineItems.count;
+    }
+
     if (tableView == self.sideTable) {
         return self.filteredOrders ? self.filteredOrders.count : 0;
     } else {
@@ -481,6 +612,94 @@ SG: The argument 'detail' is the selected order.
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (tableView == self.orderDetailTable) {
+        static NSString *odcId = @"odcId";
+
+        UILabel *citemLabel = nil;
+        UILabel *cdescriptionLabel = nil;
+        UILabel *csdLabel = nil;
+        UILabel *csqLabel = nil;
+        UILabel *cpriceLabel = nil;
+        UILabel *ctotalLabel = nil;
+
+        UITableViewCell *cell = [self.orderDetailTable dequeueReusableCellWithIdentifier:odcId];
+        if (cell == nil) {
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:odcId];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+            citemLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 112, 40)];
+            citemLabel.tag = 1001;
+            citemLabel.backgroundColor = [UIColor clearColor];
+            citemLabel.font = [UIFont regularFontOfSize:14];
+            citemLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+            citemLabel.numberOfLines = 0;
+            citemLabel.textAlignment = NSTextAlignmentLeft;
+            [cell.contentView addSubview:citemLabel];
+
+            cdescriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(135, 5, 197, 40)];
+            cdescriptionLabel.tag = 1002;
+            cdescriptionLabel.backgroundColor = [UIColor clearColor];
+            cdescriptionLabel.font = [UIFont regularFontOfSize:14];
+            cdescriptionLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+            cdescriptionLabel.numberOfLines = 0;
+            cdescriptionLabel.textAlignment = NSTextAlignmentLeft;
+            [cell.contentView addSubview:cdescriptionLabel];
+
+            csdLabel = [[UILabel alloc] initWithFrame:CGRectMake(340, 5, 64, 40)];
+            csdLabel.tag = 1003;
+            csdLabel.backgroundColor = [UIColor clearColor];
+            csdLabel.font = [UIFont regularFontOfSize:14];
+            csdLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+            csdLabel.numberOfLines = 0;
+            csdLabel.textAlignment = NSTextAlignmentLeft;
+            [cell.contentView addSubview:csdLabel];
+
+            csqLabel = [[UILabel alloc] initWithFrame:CGRectMake(412, 5, 67, 40)];
+            csqLabel.tag = 1004;
+            csqLabel.backgroundColor = [UIColor clearColor];
+            csqLabel.font = [UIFont regularFontOfSize:14];
+            csqLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+            csqLabel.numberOfLines = 0;
+            csqLabel.textAlignment = NSTextAlignmentLeft;
+            [cell.contentView addSubview:csqLabel];
+
+            cpriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(487, 5, 89, 40)];
+            cpriceLabel.tag = 1005;
+            cpriceLabel.backgroundColor = [UIColor clearColor];
+            cpriceLabel.font = [UIFont regularFontOfSize:14];
+            cpriceLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+            cpriceLabel.numberOfLines = 0;
+            cpriceLabel.textAlignment = NSTextAlignmentLeft;
+            [cell.contentView addSubview:cpriceLabel];
+
+            ctotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(582, 5, 80, 40)];
+            ctotalLabel.tag = 1006;
+            ctotalLabel.backgroundColor = [UIColor clearColor];
+            ctotalLabel.font = [UIFont semiboldFontOfSize:14];
+            ctotalLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+            ctotalLabel.numberOfLines = 0;
+            ctotalLabel.textAlignment = NSTextAlignmentLeft;
+            [cell.contentView addSubview:ctotalLabel];
+        } else {
+            citemLabel = (UILabel*)[cell.contentView viewWithTag:1001];
+            cdescriptionLabel = (UILabel*)[cell.contentView viewWithTag:1002];
+            csdLabel = (UILabel*)[cell.contentView viewWithTag:1003];
+            csqLabel = (UILabel*)[cell.contentView viewWithTag:1004];
+            cpriceLabel = (UILabel*)[cell.contentView viewWithTag:1005];
+            ctotalLabel = (UILabel*)[cell.contentView viewWithTag:1006];
+        }
+
+        ALineItem *lineItem = currentOrder.lineItems[indexPath.row];
+        citemLabel.text = [NSString stringWithFormat:@"#%@", lineItem.itemId];
+        cdescriptionLabel.text = [NSString stringWithFormat:@"%@", lineItem.desc];
+        csdLabel.text = [NSString stringWithFormat:@"%d", lineItem.shipDates.count];
+        csqLabel.text = [NSString stringWithFormat:@"%d", [lineItem totalQuantity]];
+        cpriceLabel.text = [NSString stringWithFormat:@"$%@", lineItem.price];
+        ctotalLabel.text = [NSString stringWithFormat:@"$%.02f", lineItem.totalQuantity * [lineItem.price floatValue]];
+
+        return cell;
+    }
+
     if (tableView == self.sideTable) {
         static NSString *CellIdentifier = @"CIOrderCell";
 
@@ -493,12 +712,16 @@ SG: The argument 'detail' is the selected order.
 
         AnOrder *data = [self.filteredOrders objectAtIndex:(NSUInteger) [indexPath row]];
 
-        cell.Customer.text = [data getCustomerDisplayName];
+        NSString *billName = [data.customer objectForKey:kBillName];
+        cell.Customer.text = billName == nil ? @"(Unknown)" : billName;
+
         if (data.authorized != nil) {
             cell.auth.text = data.authorized;
         }
-        else
+        else {
+            cell.Customer.center = CGPointMake(cell.Customer.center.x, cell.Customer.center.y + 7);
             cell.auth.text = @"";
+        }
 
         cell.numItems.text = [NSString stringWithFormat:@"%d Items", data.lineItems.count];
 
@@ -519,17 +742,29 @@ SG: The argument 'detail' is the selected order.
         else
             cell.tag = [data.orderId intValue];
 
+        cell.orderStatus.textColor = [UIColor whiteColor];
         if (data.status != nil) {
             cell.orderStatus.text = [data.status capitalizedString];
             NSString *orderStatus = [cell.orderStatus.text lowercaseString];
-            if ([orderStatus isEqualToString:kPartialOrder] || [orderStatus isEqualToString:@"pending"])
-                cell.orderStatus.textColor = [UIColor redColor];
-            else
-                cell.orderStatus.textColor = [UIColor blackColor];
+
+            if ([orderStatus isEqualToString:@"partial"] || [orderStatus isEqualToString:@"pending"]) {
+                cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.302 green:0.494 blue:0.729 alpha:1];
+            }
+
+            if ([orderStatus isEqualToString:@"locked"]) {
+                cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.902 green:0.573 blue:0.110 alpha:1];
+            }
+
+            if ([orderStatus rangeOfString:@"complete"].length > 0) {
+                cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.400 green:0.671 blue:0.373 alpha:1];
+            }
         } else {
             cell.orderStatus.text = @"Unknown";
-            cell.orderStatus.textColor = [UIColor orangeColor];
+            cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.749 green:0.239 blue:0.173 alpha:1];
         }
+
+        cell.orderStatus.layer.cornerRadius = 2;
+
 
         if (data.orderId != nil)
             cell.orderId.text = [data.orderId stringValue];
@@ -540,6 +775,16 @@ SG: The argument 'detail' is the selected order.
             cell.vouchersLabel.hidden = YES;
             cell.vouchers.hidden = YES;
         }
+
+        UIView *bgColorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
+        bgColorView.backgroundColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
+
+        UIView *bar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 50)];
+        bar.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        bar.backgroundColor = [UIColor colorWithRed:0.847 green:0.573 blue:0.098 alpha:1];
+        [bgColorView addSubview:bar];
+
+        [cell setSelectedBackgroundView:bgColorView];
 
         return cell;
     }
@@ -566,6 +811,8 @@ SG: The argument 'detail' is the selected order.
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSIndexPath *indexPathToReturn = indexPath;
+    if (tableView == self.orderDetailTable) return indexPath;
+
     if (tableView == self.sideTable) {
         if (currentOrder != nil && currentOrder != [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row] && unsavedChangesPresent) {
             indexPathToReturn = nil;
@@ -584,6 +831,8 @@ SG: The argument 'detail' is the selected order.
 
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (tableView == self.orderDetailTable) return;
+
     if (tableView == self.sideTable) {
 //        if (currentOrder != [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]) {
         [self didSelectOrderAtIndexPath:indexPath];
@@ -600,22 +849,22 @@ SG: The argument 'detail' is the selected order.
     NSString *status = [currentOrder.status lowercaseString];
     //SG: if this is a completed order, display the order details in the editor view
     //which appears to the right of the sideTable.
-    if (![status isEqualToString:kPartialOrder] && ![status isEqualToString:@"pending"]) {
+//    if (![status isEqualToString:kPartialOrder] && ![status isEqualToString:@"pending"]) {
         [self displayOrderDetail:[self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row]];//SG: itemsDB is loaded inside of displayOrderDetail.
-    } else {
-        self.OrderDetailScroll.hidden = YES;
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to edit this pending order?"
-                                                       delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Edit", nil];
-        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
-            if (buttonIndex == 1) {
-                [self getCustomerOfCurrentOrderAndLoadProductView];
-            } else {
-                NSIndexPath *selection = [self.sideTable indexPathForSelectedRow];
-                if (selection)
-                    [self.sideTable deselectRowAtIndexPath:selection animated:YES];
-            }
-        }];
-    }
+//    } else {
+//        self.orderDetailView.hidden = YES;
+//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Do you want to edit this pending order?"
+//                                                       delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Edit", nil];
+//        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+//            if (buttonIndex == 1) {
+//                [self getCustomerOfCurrentOrderAndLoadProductView];
+//            } else {
+//                NSIndexPath *selection = [self.sideTable indexPathForSelectedRow];
+//                if (selection)
+//                    [self.sideTable deselectRowAtIndexPath:selection animated:YES];
+//            }
+//        }];
+//    }
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -644,6 +893,10 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (tableView == self.orderDetailTable) {
+        return 50;
+    }
+
     if (tableView == self.sideTable)
         return 114;
     else {
@@ -714,6 +967,8 @@ SG: This method gets called when you swipe on an order in the order list and tap
         self.discountTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:-discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
         self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal - discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
         self.voucherTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];//SG: displayed next to Voucher label. This must be the voucher total.
+
+        self.orderDetailTotalLabel.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal - discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
     }
 }
 
@@ -1143,7 +1398,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.5]; // if you want to slide up the view
 
-    CGRect rect = self.OrderDetailScroll.frame;
+    CGRect rect = self.orderDetailView.frame;
     if (movedUp) {
         // 1. move the view's origin up so that the text field that will be hidden come above the keyboard 
         // 2. increase the size of the view so that the area behind the keyboard is covered up.
@@ -1154,7 +1409,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         // revert back to the normal state.
         rect.origin.y = 0;
     }
-    self.OrderDetailScroll.contentOffset = CGPointMake(0, rect.origin.y);
+//    self.orderDetailView.contentOffset = CGPointMake(0, rect.origin.y);
 
     [UIView commitAnimations];
 }
@@ -1242,7 +1497,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
                 if (coreDataOrder != nil)[[CoreDataUtil sharedManager] deleteObject:coreDataOrder];
                 [self deleteRowFromOrderListAtIndex:rowToDelete];
                 if (currentOrder && currentOrder.orderId == orderToDelete.orderId) {
-                    self.OrderDetailScroll.hidden = YES;
+                    self.orderDetailView.hidden = YES;
                     currentOrder = nil;
                 }
                 [deleteHUD hide:NO];

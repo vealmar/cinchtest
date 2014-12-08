@@ -251,6 +251,27 @@
 		6E118607145F2FB100568ED1 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E118603145F2FB100568ED1 /* MobileCoreServices.framework */; };
 		6E118608145F2FB100568ED1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E118604145F2FB100568ED1 /* SystemConfiguration.framework */; };
 		C713AFAC1656E45100E151EA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C713AFAB1656E45100E151EA /* QuartzCore.framework */; };
+		D811F7DC1A350B38003536C6 /* ico-add.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7D61A350B38003536C6 /* ico-add.png */; };
+		D811F7DD1A350B38003536C6 /* ico-add@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7D71A350B38003536C6 /* ico-add@2x.png */; };
+		D811F7DE1A350B38003536C6 /* ico-search.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7D81A350B38003536C6 /* ico-search.png */; };
+		D811F7DF1A350B38003536C6 /* ico-search@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7D91A350B38003536C6 /* ico-search@2x.png */; };
+		D811F7E01A350B38003536C6 /* ico-title.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7DA1A350B38003536C6 /* ico-title.png */; };
+		D811F7E11A350B38003536C6 /* ico-title@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7DB1A350B38003536C6 /* ico-title@2x.png */; };
+		D811F7EC1A352613003536C6 /* ico-bar-add.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7E21A352613003536C6 /* ico-bar-add.png */; };
+		D811F7ED1A352613003536C6 /* ico-bar-add@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7E31A352613003536C6 /* ico-bar-add@2x.png */; };
+		D811F7EE1A352613003536C6 /* ico-bar-cart.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7E41A352613003536C6 /* ico-bar-cart.png */; };
+		D811F7EF1A352613003536C6 /* ico-bar-cart@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7E51A352613003536C6 /* ico-bar-cart@2x.png */; };
+		D811F7F01A352613003536C6 /* ico-bar-done.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7E61A352613003536C6 /* ico-bar-done.png */; };
+		D811F7F11A352613003536C6 /* ico-bar-done@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7E71A352613003536C6 /* ico-bar-done@2x.png */; };
+		D811F7F21A352613003536C6 /* ico-bar-filter-selected.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7E81A352613003536C6 /* ico-bar-filter-selected.png */; };
+		D811F7F31A352613003536C6 /* ico-bar-filter-selected@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7E91A352613003536C6 /* ico-bar-filter-selected@2x.png */; };
+		D811F7F41A352613003536C6 /* ico-bar-filters-normal.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7EA1A352613003536C6 /* ico-bar-filters-normal.png */; };
+		D811F7F51A352613003536C6 /* ico-bar-filters-normal@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7EB1A352613003536C6 /* ico-bar-filters-normal@2x.png */; };
+		D811F7FA1A355506003536C6 /* ico-authorized.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7F61A355506003536C6 /* ico-authorized.png */; };
+		D811F7FB1A355506003536C6 /* ico-authorized@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7F71A355506003536C6 /* ico-authorized@2x.png */; };
+		D811F7FC1A355506003536C6 /* ico-customer.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7F81A355506003536C6 /* ico-customer.png */; };
+		D811F7FD1A355506003536C6 /* ico-customer@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D811F7F91A355506003536C6 /* ico-customer@2x.png */; };
+		D811F8001A355FAD003536C6 /* VALabel.m in Sources */ = {isa = PBXBuildFile; fileRef = D811F7FF1A355FAD003536C6 /* VALabel.m */; };
 		D824847A1A2465880016932A /* fontawesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D82484771A2465880016932A /* fontawesome.ttf */; };
 		D824847B1A2465880016932A /* OPENSANS-REGULAR_1.TTF in Resources */ = {isa = PBXBuildFile; fileRef = D82484781A2465880016932A /* OPENSANS-REGULAR_1.TTF */; };
 		D824847C1A2465880016932A /* OPENSANS-SEMIBOLD_1.TTF in Resources */ = {isa = PBXBuildFile; fileRef = D82484791A2465880016932A /* OPENSANS-SEMIBOLD_1.TTF */; };
@@ -478,7 +499,7 @@
 		6DDC98BE98AA0E002305B36F /* CIViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIViewController.m; sourceTree = "<group>"; };
 		6DDC98D6A08CE29ABE34D4D8 /* searchbar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchbar.png; sourceTree = "<group>"; };
 		6DDC99046486101BD60D8CBD /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
-		6DDC990D06D9A0FBEA4E10F1 /* CICustomerInfoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CICustomerInfoViewController.xib; sourceTree = "<group>"; };
+		6DDC990D06D9A0FBEA4E10F1 /* CICustomerInfoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = CICustomerInfoViewController.xib; path = ../../../iPad/CICustomerInfoViewController.xib; sourceTree = "<group>"; };
 		6DDC990E0F42599369B92356 /* SynchronousRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronousRequestUtil.m; sourceTree = "<group>"; };
 		6DDC990ED9EAF63ED53A20DA /* vender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vender.h; sourceTree = "<group>"; };
 		6DDC9910746F998E77CFF1A5 /* NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberUtil.m; sourceTree = "<group>"; };
@@ -536,7 +557,7 @@
 		6DDC9B5C54AB10C64390D0C6 /* itemcode.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = itemcode.png; sourceTree = "<group>"; };
 		6DDC9B7AA96777E00E47A4C2 /* VendorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VendorViewController.h; sourceTree = "<group>"; };
 		6DDC9B81015AC47C5E8A8866 /* PrinterSelectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterSelectionViewController.m; sourceTree = "<group>"; };
-		6DDC9BA2B0FB7FCB61E3A0B5 /* CIOrderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CIOrderCell.xib; sourceTree = "<group>"; };
+		6DDC9BA2B0FB7FCB61E3A0B5 /* CIOrderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = CIOrderCell.xib; path = ../../../iPad/CIOrderCell.xib; sourceTree = "<group>"; };
 		6DDC9BB780FD2D0D2178AA0B /* OrderShipDateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderShipDateViewController.h; sourceTree = "<group>"; };
 		6DDC9BC453500DB43A36392F /* EditButton-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "EditButton-out.png"; sourceTree = "<group>"; };
 		6DDC9BCB2E429C258AC4DF29 /* NISignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NISignatureView.h; sourceTree = "<group>"; };
@@ -640,6 +661,28 @@
 		840E6E4E6A54AF653F49031A /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		B8DB35D00377269B92AEA423 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		C713AFAB1656E45100E151EA /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		D811F7D61A350B38003536C6 /* ico-add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-add.png"; sourceTree = "<group>"; };
+		D811F7D71A350B38003536C6 /* ico-add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-add@2x.png"; sourceTree = "<group>"; };
+		D811F7D81A350B38003536C6 /* ico-search.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-search.png"; sourceTree = "<group>"; };
+		D811F7D91A350B38003536C6 /* ico-search@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-search@2x.png"; sourceTree = "<group>"; };
+		D811F7DA1A350B38003536C6 /* ico-title.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-title.png"; sourceTree = "<group>"; };
+		D811F7DB1A350B38003536C6 /* ico-title@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-title@2x.png"; sourceTree = "<group>"; };
+		D811F7E21A352613003536C6 /* ico-bar-add.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-add.png"; sourceTree = "<group>"; };
+		D811F7E31A352613003536C6 /* ico-bar-add@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-add@2x.png"; sourceTree = "<group>"; };
+		D811F7E41A352613003536C6 /* ico-bar-cart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-cart.png"; sourceTree = "<group>"; };
+		D811F7E51A352613003536C6 /* ico-bar-cart@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-cart@2x.png"; sourceTree = "<group>"; };
+		D811F7E61A352613003536C6 /* ico-bar-done.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-done.png"; sourceTree = "<group>"; };
+		D811F7E71A352613003536C6 /* ico-bar-done@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-done@2x.png"; sourceTree = "<group>"; };
+		D811F7E81A352613003536C6 /* ico-bar-filter-selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-filter-selected.png"; sourceTree = "<group>"; };
+		D811F7E91A352613003536C6 /* ico-bar-filter-selected@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-filter-selected@2x.png"; sourceTree = "<group>"; };
+		D811F7EA1A352613003536C6 /* ico-bar-filters-normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-filters-normal.png"; sourceTree = "<group>"; };
+		D811F7EB1A352613003536C6 /* ico-bar-filters-normal@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-bar-filters-normal@2x.png"; sourceTree = "<group>"; };
+		D811F7F61A355506003536C6 /* ico-authorized.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-authorized.png"; sourceTree = "<group>"; };
+		D811F7F71A355506003536C6 /* ico-authorized@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-authorized@2x.png"; sourceTree = "<group>"; };
+		D811F7F81A355506003536C6 /* ico-customer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-customer.png"; sourceTree = "<group>"; };
+		D811F7F91A355506003536C6 /* ico-customer@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-customer@2x.png"; sourceTree = "<group>"; };
+		D811F7FE1A355FAD003536C6 /* VALabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VALabel.h; sourceTree = "<group>"; };
+		D811F7FF1A355FAD003536C6 /* VALabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VALabel.m; sourceTree = "<group>"; };
 		D82484771A2465880016932A /* fontawesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = fontawesome.ttf; sourceTree = "<group>"; };
 		D82484781A2465880016932A /* OPENSANS-REGULAR_1.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OPENSANS-REGULAR_1.TTF"; sourceTree = "<group>"; };
 		D82484791A2465880016932A /* OPENSANS-SEMIBOLD_1.TTF */ = {isa = PBXFileReference; lastKnownFileType = file; path = "OPENSANS-SEMIBOLD_1.TTF"; sourceTree = "<group>"; };
@@ -711,8 +754,9 @@
 				6DDC9165B71E6B2FCA5252C6 /* CIProductViewController.h */,
 				6DDC9C262778347168CA4141 /* CIProductViewController.m */,
 				6DDC9E86A471335D39203D8F /* CIProductViewController.xib */,
-				6DDC91E4CBCE10A80C9B66D6 /* CICustomerInfoViewController.m */,
 				6DDC9397F54F2B73F6CDC158 /* CICustomerInfoViewController.h */,
+				6DDC91E4CBCE10A80C9B66D6 /* CICustomerInfoViewController.m */,
+				6DDC990D06D9A0FBEA4E10F1 /* CICustomerInfoViewController.xib */,
 				6DDC975CD42FF20487C7728A /* BulletinViewController.m */,
 				6DDC993FC0A9E16CF56D91F8 /* BulletinViewController.h */,
 				6DDC9499EB2C65D9E71F560D /* CISlidingProductViewController.m */,
@@ -810,13 +854,11 @@
 				6DDC9FE4119B8E46DC86C044 /* FarrisCartViewCell.xib */,
 				6DDC905A126D9C4A0A9A522D /* CISignatureViewController.xib */,
 				6DDC939DE42B2DF11923B948 /* CIFinalCustomerInfoViewController.xib */,
-				6DDC990D06D9A0FBEA4E10F1 /* CICustomerInfoViewController.xib */,
 				6DDC9703259FF9640E837104 /* CIStoreQtyCell.xib */,
 				6DDC9C65EF62C428F02C6E1B /* CIStoreQtyTableViewController.xib */,
 				6DDC94A55870A44EAD06A630 /* FarrisProductCell.xib */,
 				6DDC93DFD4D5F67F5075E74C /* BulletinViewController.xib */,
 				6DDC9A9020D8B94E9ED41731 /* VendorViewController.xib */,
-				6DDC9BA2B0FB7FCB61E3A0B5 /* CIOrderCell.xib */,
 				6DDC92DADAECBA62ACC19651 /* CIItemEditCell.xib */,
 				6DDC95BD0791D041ABFF7139 /* PrinterSelectionViewController.xib */,
 				6DDC9720F22E12D690A1C88C /* OrderShipDateViewController.xib */,
@@ -1211,6 +1253,7 @@
 				6DDC9AC079181C953CA680FF /* CIOrderViewController.storyboard */,
 				6DDC91DEAFE92BA8B44D129A /* CIOrderCell.h */,
 				6DDC9EE660AEAF11368458AF /* CIOrderCell.m */,
+				6DDC9BA2B0FB7FCB61E3A0B5 /* CIOrderCell.xib */,
 				6DDC914A762F0D181170380B /* CIItemEditCell.h */,
 				6DDC9C00B9AE2AAF06D2A7EF /* CIItemEditCell.m */,
 				6DDC98144F86BC726D29DCE1 /* ItemEditDelegate.h */,
@@ -1238,6 +1281,8 @@
 			children = (
 				D832D5441A24BC4500A0EBBF /* FXBlurView.h */,
 				D832D5451A24BC4500A0EBBF /* FXBlurView.m */,
+				D811F7FE1A355FAD003536C6 /* VALabel.h */,
+				D811F7FF1A355FAD003536C6 /* VALabel.m */,
 				6DDC9F127D848306AAE6D436 /* Application */,
 				6DDC9895E9A0E8F48889B357 /* Controllers */,
 				6DDC938CC4C33325296DB5E8 /* Library */,
@@ -1501,6 +1546,26 @@
 				D832D5571A24BF1700A0EBBF /* background-logout@2x.png */,
 				D832D5581A24BF1700A0EBBF /* background-neworder.png */,
 				D832D5591A24BF1700A0EBBF /* background-neworder@2x.png */,
+				D811F7D61A350B38003536C6 /* ico-add.png */,
+				D811F7D71A350B38003536C6 /* ico-add@2x.png */,
+				D811F7D81A350B38003536C6 /* ico-search.png */,
+				D811F7D91A350B38003536C6 /* ico-search@2x.png */,
+				D811F7DA1A350B38003536C6 /* ico-title.png */,
+				D811F7DB1A350B38003536C6 /* ico-title@2x.png */,
+				D811F7E21A352613003536C6 /* ico-bar-add.png */,
+				D811F7E31A352613003536C6 /* ico-bar-add@2x.png */,
+				D811F7E41A352613003536C6 /* ico-bar-cart.png */,
+				D811F7E51A352613003536C6 /* ico-bar-cart@2x.png */,
+				D811F7E61A352613003536C6 /* ico-bar-done.png */,
+				D811F7E71A352613003536C6 /* ico-bar-done@2x.png */,
+				D811F7E81A352613003536C6 /* ico-bar-filter-selected.png */,
+				D811F7E91A352613003536C6 /* ico-bar-filter-selected@2x.png */,
+				D811F7EA1A352613003536C6 /* ico-bar-filters-normal.png */,
+				D811F7EB1A352613003536C6 /* ico-bar-filters-normal@2x.png */,
+				D811F7F61A355506003536C6 /* ico-authorized.png */,
+				D811F7F71A355506003536C6 /* ico-authorized@2x.png */,
+				D811F7F81A355506003536C6 /* ico-customer.png */,
+				D811F7F91A355506003536C6 /* ico-customer@2x.png */,
 			);
 			name = "New Images";
 			sourceTree = "<group>";
@@ -1566,12 +1631,14 @@
 			files = (
 				335A4307164D7529007B872A /* Settings.bundle in Resources */,
 				6DDC9E498E93ADA136846FC1 /* bump_build_on_archive.sh in Resources */,
+				D811F7ED1A352613003536C6 /* ico-bar-add@2x.png in Resources */,
 				6DDC98650DAAE73DCFC13553 /* bump_build_number.sh in Resources */,
 				6DDC9A2B88D52AF93957E6D8 /* arrow.png in Resources */,
 				6DDC9BD24F16CF4E135C45C1 /* arrow@2x.png in Resources */,
 				6DDC9F9A48B9ABBD0F56F7D4 /* LICENSE in Resources */,
 				6DDC9A2B7AF38DB77B8EBCB9 /* README in Resources */,
 				D832D55F1A24BF1700A0EBBF /* background-logout@2x.png in Resources */,
+				D811F7DF1A350B38003536C6 /* ico-search@2x.png in Resources */,
 				6DDC9B8D2E5121310AC0F688 /* cart-cancelin.png in Resources */,
 				D832D5601A24BF1700A0EBBF /* background-neworder.png in Resources */,
 				6DDC9AA18DD22292453BF908 /* cart-cancelout.png in Resources */,
@@ -1588,6 +1655,7 @@
 				6DDC9CAE496398D4969E464F /* continuein.png in Resources */,
 				6DDC912A966512C2CAE58D2E /* continueout.png in Resources */,
 				6DDC9AF2273EF16720649082 /* customerBG.png in Resources */,
+				D811F7E11A350B38003536C6 /* ico-title@2x.png in Resources */,
 				6DDC92102889DA6CFCB2E7ED /* deletein.png in Resources */,
 				6DDC9E4092B7388A9358BE4D /* deleteout.png in Resources */,
 				6DDC9ACC872F454F247630BE /* Detail.png in Resources */,
@@ -1597,6 +1665,7 @@
 				6DDC908EF654B940F6CB2955 /* lightbar.png in Resources */,
 				6DDC9FE1151498C2D196E425 /* logoutin.png in Resources */,
 				6DDC9989D5C7619C1F43AED8 /* logoutout.png in Resources */,
+				D811F7DC1A350B38003536C6 /* ico-add.png in Resources */,
 				6DDC9DDEBA61797E6E161262 /* neworderin.png in Resources */,
 				6DDC9FD333DA64CF09F0CDD4 /* neworderout.png in Resources */,
 				6DDC955E336312BFBD92F5C5 /* printin.png in Resources */,
@@ -1607,15 +1676,19 @@
 				6DDC9F9EADA9CAEDFEFA906F /* loginBG.png in Resources */,
 				6DDC985D1C46FDC647017957 /* loginin.png in Resources */,
 				D824847A1A2465880016932A /* fontawesome.ttf in Resources */,
+				D811F7EE1A352613003536C6 /* ico-bar-cart.png in Resources */,
 				6DDC951BF14DA3D0A33A8A9A /* loginout.png in Resources */,
 				6DDC97C2888C77EB69B1F9E7 /* password.png in Resources */,
 				6DDC949EFD547602A8FA8574 /* username.png in Resources */,
 				6DDC9845FD2A0A5E6421C7BF /* addcart.png in Resources */,
+				D811F7E01A350B38003536C6 /* ico-title.png in Resources */,
 				D832D5611A24BF1700A0EBBF /* background-neworder@2x.png in Resources */,
 				6DDC95F90AE8FEBCEFF72C91 /* calendar.png in Resources */,
 				6DDC9D2D82E0E73B1455AC0D /* cancel.png in Resources */,
+				D811F7FA1A355506003536C6 /* ico-authorized.png in Resources */,
 				D832D5631A24CF9300A0EBBF /* glyphicons.ttf in Resources */,
 				6DDC97F34B2B43930318B682 /* magnify.png in Resources */,
+				D811F7F01A352613003536C6 /* ico-bar-done.png in Resources */,
 				6DDC940B6D9CC7CECB27963E /* orderBG.png in Resources */,
 				6DDC9EA8FA966E44CEAF08A0 /* FarrisBrosWhiteLogo.png in Resources */,
 				6DDC9CADDBCB38A73E59C145 /* FBLogin.png in Resources */,
@@ -1646,16 +1719,24 @@
 				6DDC9A4A3FD32D112948316A /* CIStoreQtyTableViewController.xib in Resources */,
 				6DDC99C6481FD17806FBC580 /* FarrisProductCell.xib in Resources */,
 				6DDC9F23838326AB285A8CD6 /* BulletinViewController.xib in Resources */,
+				D811F7EF1A352613003536C6 /* ico-bar-cart@2x.png in Resources */,
 				6DDC9AF08F437B75A053476F /* CIProductViewController.xib in Resources */,
 				6DDC92577909154C834B3BCF /* VendorViewController.xib in Resources */,
 				6DDC9C7F22DE14BEF62690B1 /* CIOrderViewController.storyboard in Resources */,
 				6DDC9EE115DFBF412D40FEAC /* CIOrderCell.xib in Resources */,
 				6DDC941585490C08063C2569 /* CIItemEditCell.xib in Resources */,
+				D811F7F31A352613003536C6 /* ico-bar-filter-selected@2x.png in Resources */,
 				6DDC9BD488EDB6761A87D4A2 /* PrinterSelectionViewController.xib in Resources */,
+				D811F7F41A352613003536C6 /* ico-bar-filters-normal.png in Resources */,
+				D811F7F21A352613003536C6 /* ico-bar-filter-selected.png in Resources */,
+				D811F7F51A352613003536C6 /* ico-bar-filters-normal@2x.png in Resources */,
+				D811F7FC1A355506003536C6 /* ico-customer.png in Resources */,
 				6DDC9BED027D3FD5F049686E /* OrderShipDateViewController.xib in Resources */,
 				6DDC9C1CC75A34C21B751875 /* LaunchViewController.storyboard in Resources */,
 				6DDC96AACC064AE8DB0F5E65 /* addtocartbutton.png in Resources */,
 				6DDC9DEC3D7CBB0BF34D09F1 /* afc-logo.png in Resources */,
+				D811F7FD1A355506003536C6 /* ico-customer@2x.png in Resources */,
+				D811F7F11A352613003536C6 /* ico-bar-done@2x.png in Resources */,
 				6DDC9B4E9111D0F5071DEEB3 /* AccDisclosure.png in Resources */,
 				6DDC9A43351765654224B88D /* backbutton.png in Resources */,
 				6DDC9538CBD1875B748C48FD /* app_bg.png in Resources */,
@@ -1665,11 +1746,13 @@
 				6DDC90FFBEB199836BB465B3 /* clear-button-in.png in Resources */,
 				6DDC9601DA680CE720580CA6 /* bluebutton.png in Resources */,
 				6DDC93C8ED55335C24AD6E56 /* checkbox_flat_not_ticked.png in Resources */,
+				D811F7DD1A350B38003536C6 /* ico-add@2x.png in Resources */,
 				6DDC9E8A9BF9A02D326FC68E /* ci_red.png in Resources */,
 				6DDC947DC2348219943A019A /* CI_144logo.png in Resources */,
 				6DDC9A839430432C0912B8FB /* clear-button-out.png in Resources */,
 				6DDC9020BA0E4F40B39F013C /* CI_72logo.png in Resources */,
 				6DDC9E88895E8236776AD24C /* checkbox_flat_ticked.png in Resources */,
+				D811F7FB1A355506003536C6 /* ico-authorized@2x.png in Resources */,
 				6DDC9B867BF9913441FE0C12 /* CI-Logo.png in Resources */,
 				6DDC9D163A7D5AE74327C3C0 /* cancelbutton.png in Resources */,
 				6DDC9F7661E91B066394EA7D /* blue-textbox.png in Resources */,
@@ -1683,6 +1766,7 @@
 				6DDC9F288AA62CA7E70DB5D8 /* customerlistNOBACKGROUND.png in Resources */,
 				6DDC9EB07F8903C139A45601 /* launch_bg.png in Resources */,
 				6DDC94B66E53D35806DD4060 /* loginscreenback.jpg in Resources */,
+				D811F7EC1A352613003536C6 /* ico-bar-add.png in Resources */,
 				6DDC973439A12AB922E399B4 /* itemcode.png in Resources */,
 				6DDC9FC4268783C29BB186B7 /* SaveButton-out.png in Resources */,
 				6DDC997B92CEB765800F2BF9 /* submit-button-out-green.png in Resources */,
@@ -1714,6 +1798,7 @@
 				6DDC918D955F5D3035430E95 /* orangebutton.png in Resources */,
 				6DDC974CDC666FA439F5DE27 /* OrdersBg.png in Resources */,
 				6DDC9E94661C97B61C75A4BC /* BEBAS.ttf in Resources */,
+				D811F7DE1A350B38003536C6 /* ico-search.png in Resources */,
 				6DDC9AEFD65DD50520514D9B /* Futura Medium.ttf in Resources */,
 				6DDC9C95449ED84B583E6E3A /* InfoPlist.strings in Resources */,
 			);
@@ -1823,6 +1908,7 @@
 				6DDC9D1ED36CF90E14CF839C /* UIAlertViewDelegateWithBlock.m in Sources */,
 				6DDC92CB3456424BA9C0BA16 /* DateRange.m in Sources */,
 				6DDC970AE75B07563C126618 /* ShowCustomField.m in Sources */,
+				D811F8001A355FAD003536C6 /* VALabel.m in Sources */,
 				6DDC99491FABEEE66B06638E /* ShowConfigurations.m in Sources */,
 				6DDC91683800E384B47955FE /* SettingsManager.m in Sources */,
 				6DDC93C7114E4D301B24C9BF /* SynchronousRequestUtil.m in Sources */,

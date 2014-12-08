@@ -180,7 +180,8 @@
     navController.navigationBar.barTintColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
 
     if ([self.customer objectForKey:kBillName] != nil) {
-        navItem.title = [self.customer objectForKey:kBillName];
+//        navItem.title = [self.customer objectForKey:kBillName];
+        navItem.title = [NSString stringWithFormat:@"All Products - %@", [self.customer objectForKey:kCustID]];
     }
 
     [navController.navigationBar setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:24],
@@ -198,14 +199,19 @@
     [searchItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
                                           NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] } forState:UIControlStateNormal];
 
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf061" style:UIBarButtonItemStylePlain handler:^(id sender) {
+    UIBarButtonItem *filterItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-filters-selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
+    }];
+    [filterItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
+                                       NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-cart"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
         [self reviewCart:nil];
     }];
     [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
                                        NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
 
     navItem.leftBarButtonItems = @[menuItem, searchItem];
-    navItem.rightBarButtonItems = @[addItem];
+    navItem.rightBarButtonItems = @[filterItem, addItem];
 }
 
 - (void)setupNavBarSearch {
