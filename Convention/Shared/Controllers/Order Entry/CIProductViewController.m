@@ -170,10 +170,10 @@
               context:nil];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(resultData)) options:NSKeyValueObservingOptionNew context:NULL];
 
-    [self setupNavBar];
+    [self setupNavBar:nil];
 }
 
-- (void)setupNavBar {
+- (void)setupNavBar:(NSString*)searchText {
     UINavigationController *navController = self.navigationController;
     UINavigationItem *navItem = self.parentViewController.navigationItem;
 
@@ -193,8 +193,13 @@
     [menuItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
                                         NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
 
-    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"   Search..." style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [self setupNavBarSearch];
+    NSString *term = @"Search...";
+    if (searchText && searchText.length) {
+        term = searchText;
+    }
+
+    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:[NSString stringWithFormat:@"   %@", term] style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self setupNavBarSearch:searchText];
     }];
     [searchItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
                                           NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] } forState:UIControlStateNormal];
@@ -214,7 +219,7 @@
     navItem.rightBarButtonItems = @[filterItem, addItem];
 }
 
-- (void)setupNavBarSearch {
+- (void)setupNavBarSearch:(NSString*)searchText {
     UINavigationController *navController = self.navigationController;
     UINavigationItem *navItem = self.parentViewController.navigationItem;
 
@@ -230,6 +235,10 @@
         [self searchProducts:searchTextField.text searchIsActive:YES];
     } forControlEvents:UIControlEventEditingChanged];
 
+    if (searchText && searchText.length) {
+        searchTextField.text = searchText;
+    }
+
     UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:searchTextField];
 
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -240,7 +249,7 @@
     void (^exitSearchMode)() = ^() {
         [dismissButton removeFromSuperview];
         [searchTextField resignFirstResponder];
-        [self setupNavBar];
+        [self setupNavBar:searchTextField.text];
     };
 
     [dismissButton bk_addEventHandler:^(id sender) {
@@ -248,6 +257,9 @@
     } forControlEvents:UIControlEventTouchUpInside];
 
     UIBarButtonItem *clearItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"Clear" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        searchTextField.text = nil;
+        [self searchProducts:searchTextField.text searchIsActive:YES];
+
         exitSearchMode();
     }];
     [clearItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
@@ -258,7 +270,7 @@
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [searchTextField becomeFirstResponder];
-        [self searchProducts:@"" searchIsActive:YES];
+        [self searchProducts:searchTextField.text searchIsActive:YES];
     });
 }
 

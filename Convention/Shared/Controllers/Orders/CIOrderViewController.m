@@ -138,7 +138,7 @@ CIOrderViewController
     self.orderDetailTable.separatorColor = [UIColor colorWithRed:0.808 green:0.808 blue:0.827 alpha:1];
     self.orderDetailTable.rowHeight = 40;
 
-    [self setupNavBar];
+    [self setupNavBar:nil];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -161,7 +161,7 @@ CIOrderViewController
     }
 }
 
-- (void)setupNavBar {
+- (void)setupNavBar:(NSString*)searchText {
     UINavigationController *navController = self.navigationController;
     UINavigationItem *navItem = self.navigationItem;
 
@@ -178,8 +178,13 @@ CIOrderViewController
     [menuItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
                                         NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
 
-    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"   Search..." style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [self setupNavBarSearch];
+    NSString *term = @"Search...";
+    if (searchText && searchText.length) {
+        term = searchText;
+    }
+
+    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:[NSString stringWithFormat:@"   %@", term] style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self setupNavBarSearch:searchText];
     }];
     [searchItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
                                           NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] } forState:UIControlStateNormal];
@@ -194,7 +199,7 @@ CIOrderViewController
     navItem.rightBarButtonItems = @[addItem];
 }
 
-- (void)setupNavBarSearch {
+- (void)setupNavBarSearch:(NSString*)searchText {
     UINavigationController *navController = self.navigationController;
     UINavigationItem *navItem = self.navigationItem;
 
@@ -210,6 +215,10 @@ CIOrderViewController
         [self searchWithString:searchTextField.text];
     } forControlEvents:UIControlEventEditingChanged];
 
+    if (searchText && searchText.length) {
+        searchTextField.text = searchText;
+    }
+
     UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:searchTextField];
 
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -220,7 +229,7 @@ CIOrderViewController
     void (^exitSearchMode)() = ^() {
         [dismissButton removeFromSuperview];
         [searchTextField resignFirstResponder];
-        [self setupNavBar];
+        [self setupNavBar:searchTextField.text];
     };
 
     [dismissButton bk_addEventHandler:^(id sender) {
@@ -228,6 +237,9 @@ CIOrderViewController
     } forControlEvents:UIControlEventTouchUpInside];
 
     UIBarButtonItem *clearItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"Clear" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        searchTextField.text = nil;
+        [self searchWithString:searchTextField.text];
+
         exitSearchMode();
     }];
     [clearItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
@@ -238,7 +250,7 @@ CIOrderViewController
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [searchTextField becomeFirstResponder];
-        [self searchWithString:@""];
+        [self searchWithString:searchTextField.text];
     });
 }
 
@@ -719,7 +731,7 @@ SG: The argument 'detail' is the selected order.
             cell.auth.text = data.authorized;
         }
         else {
-            cell.Customer.center = CGPointMake(cell.Customer.center.x, cell.Customer.center.y + 7);
+            cell.Customer.center = CGPointMake(cell.Customer.center.x, cell.contentView.center.y);
             cell.auth.text = @"";
         }
 
