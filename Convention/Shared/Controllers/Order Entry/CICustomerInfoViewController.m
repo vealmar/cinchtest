@@ -17,6 +17,11 @@
 #import "NotificationConstants.h"
 #import "CinchJSONAPIClient.h"
 
+
+@interface CICustomerInfoViewController ()
+@property (strong, nonatomic) UITapGestureRecognizer *outsideTapRecognizer;
+@end
+
 @implementation CICustomerInfoViewController {
     NSString *selectedCustomer;
     PullToRefreshView *pull;
@@ -48,6 +53,53 @@
     [pull setDelegate:self];
     [self.custTable addSubview:pull];
 
+    UIView *paddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
+    self.searchText.leftView = paddingView;
+    self.searchText.leftViewMode = UITextFieldViewModeAlways;
+    self.searchText.layer.borderColor = [UIColor colorWithRed:0.820 green:0.816 blue:0.835 alpha:1].CGColor;
+    self.searchText.layer.borderWidth = 1.0;
+
+    self.custTable.separatorColor = [UIColor colorWithRed:0.820 green:0.816 blue:0.835 alpha:1];
+    self.custTable.rowHeight = 56.0;
+}
+
+- (void)handleTapBehind:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        CGPoint l = [sender locationInView:self.view];
+
+        if (![self.view pointInside:l withEvent:nil]) {
+            [self.view.window removeGestureRecognizer:self.outsideTapRecognizer];
+            self.outsideTapRecognizer = nil;
+
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self dismissViewControllerAnimated:YES completion:nil];
+            });
+        }
+    }
+}
+
+- (IBAction)buttonAddTapped:(id)sender {
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [self.view.window removeGestureRecognizer:self.outsideTapRecognizer];
+    self.outsideTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapBehind:)];
+    [self.outsideTapRecognizer setNumberOfTapsRequired:1];
+    self.outsideTapRecognizer.cancelsTouchesInView = NO;
+    self.outsideTapRecognizer.delegate = self;
+    [self.view.window addGestureRecognizer:self.outsideTapRecognizer];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
+
+    if ([self.custTable respondsToSelector:@selector(setSeparatorInset:)]) {
+        [self.custTable setSeparatorInset:UIEdgeInsetsZero];
+    }
+
+    if ([self.custTable respondsToSelector:@selector(setLayoutMargins:)]) {
+        [self.custTable setLayoutMargins:UIEdgeInsetsZero];
+    }
 }
 
 - (void)setCustomerData:(NSArray *)customerData {
@@ -109,6 +161,9 @@
                 [alert show];
             }
             else {
+                [self.view.window removeGestureRecognizer:self.outsideTapRecognizer];
+                self.outsideTapRecognizer = nil;
+
                 [self dismissViewControllerAnimated:YES completion:^{
                     [self.delegate customerSelected:results];
                 }];
@@ -121,7 +176,31 @@
     }
 }
 
+#pragma mark - UIGestureRecognizer Delegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    return YES;
+}
+
 #pragma mark - Table stuff
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:UIEdgeInsetsZero];
+    }
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
@@ -137,6 +216,8 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    cell.textLabel.font = [UIFont regularFontOfSize:16];
+    cell.textLabel.textColor = [UIColor colorWithRed:0.086 green:0.082 blue:0.086 alpha:1];
     cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [[self.filteredtableData objectAtIndex:(NSUInteger) [indexPath row]] objectForKey:kBillName], [[self.filteredtableData objectAtIndex:(NSUInteger) [indexPath row]] objectForKey:kCustID]];
     cell.tag = [[[self.filteredtableData objectAtIndex:(NSUInteger) [indexPath row]] objectForKey:kID] intValue];
     return cell;
@@ -145,6 +226,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     selectedCustomer = [[self.filteredtableData objectAtIndex:(NSUInteger) [indexPath row]] objectForKey:kCustID];
     [searchText resignFirstResponder];
+    [self submit:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

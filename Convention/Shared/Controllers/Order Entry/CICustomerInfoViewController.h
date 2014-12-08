@@ -15,7 +15,7 @@
 
 @end
 
-@interface CICustomerInfoViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, PullToRefreshViewDelegate>
+@interface CICustomerInfoViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, PullToRefreshViewDelegate, UIGestureRecognizerDelegate>
 @property(unsafe_unretained, nonatomic) IBOutlet UIView *tablelayer;
 @property(unsafe_unretained, nonatomic) IBOutlet UITableView *custTable;
 @property(strong, nonatomic) IBOutlet UIView *custView;
