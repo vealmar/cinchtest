@@ -451,6 +451,18 @@ SG: The argument 'detail' is the selected order.
         }
     }
 
+    NSString *orderStatus = [detail.status lowercaseString];
+    if ([orderStatus rangeOfString:@"complete"].length > 0 || [orderStatus rangeOfString:@"submit"].length > 0) {
+        self.orderDetailEditButton.userInteractionEnabled = NO;
+        self.orderDetailEditButton.backgroundColor = [UIColor colorWithRed:0.916 green:0.700 blue:0.433 alpha:1];
+        self.orderDetailSaveButton.userInteractionEnabled = NO;
+        self.orderDetailSaveButton.backgroundColor = [UIColor colorWithRed:0.916 green:0.700 blue:0.433 alpha:1];
+    } else {
+        self.orderDetailEditButton.userInteractionEnabled = YES;
+        self.orderDetailEditButton.backgroundColor = [UIColor colorWithRed:0.816 green:0.600 blue:0.333 alpha:1];
+        self.orderDetailSaveButton.userInteractionEnabled = YES;
+        self.orderDetailSaveButton.backgroundColor = [UIColor colorWithRed:0.816 green:0.600 blue:0.333 alpha:1];
+    }
 
     self.customer.text = @"";
     self.authorizer.text = @"";
@@ -767,7 +779,7 @@ SG: The argument 'detail' is the selected order.
                 cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.902 green:0.573 blue:0.110 alpha:1];
             }
 
-            if ([orderStatus rangeOfString:@"complete"].length > 0) {
+            if ([orderStatus rangeOfString:@"complete"].length > 0 || [orderStatus rangeOfString:@"submit"].length > 0) {
                 cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.400 green:0.671 blue:0.373 alpha:1];
             }
         } else {
