@@ -10,6 +10,10 @@
 #import "config.h"
 
 
+@interface CIOrderCell ()
+@property (strong, nonatomic) UIColor *savedStatusColor;
+@end
+
 @implementation CIOrderCell
 @synthesize Customer;
 @synthesize auth;
@@ -53,6 +57,8 @@
                 }
             }
         }
+
+        self.orderStatus.backgroundColor = [UIColor colorWithRed:0.161 green:0.173 blue:0.173 alpha:1];
     } else {
         for (UILabel *l in self.contentView.subviews) {
             if ([l isKindOfClass:[UILabel class]]) {
@@ -65,10 +71,14 @@
                 }
             }
         }
+
+        if (!wasSelected) {
+            self.savedStatusColor = self.orderStatus.backgroundColor;
+        }
+        self.orderStatus.backgroundColor = self.savedStatusColor;
     }
 
     self.orderStatus.textColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-    self.orderStatus.backgroundColor = c;
 
     // Configure the view for the selected state
 }

@@ -124,6 +124,8 @@
         self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     }
     if (![ShowConfigurations instance].isOrderShipDatesType) self.btnSelectShipDates.hidden = YES;
+
+    self.productsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -307,6 +309,8 @@
 }
 
 - (void)loadOrder:(int)orderRecoverySelection {
+    orderRecoverySelection = OrderRecoverySelectionYes;
+
     Order *coreDataOrder = self.selectedOrder.coreDataOrder;//CIOrderViewController supplies the coredata order in the selectedorder when it is a partial order i.e. does not exist on the server.
     if (coreDataOrder == nil && self.selectedOrder.orderId != nil && [self.selectedOrder.orderId intValue] != 0) {//Must be a pending order i.e. exists on server.
         coreDataOrder = [CoreDataManager getOrder:self.selectedOrder.orderId managedObjectContext:self.managedObjectContext];
@@ -578,6 +582,12 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
     [helper updateCellBackground:cell order:self.coreDataOrder cart:[self.coreDataOrder findCartForProductId:productId]];
+
+    if(indexPath.row % 2 == 0) {
+        cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
+    } else {
+        cell.backgroundColor = [UIColor colorWithRed:1.000 green:1.000 blue:1.000 alpha:1];
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

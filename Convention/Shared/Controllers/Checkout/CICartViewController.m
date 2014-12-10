@@ -111,6 +111,8 @@
             ![customer[kBillName] isKindOfClass:[NSNull class]] ? customer[kBillName] : @"";
     self.vendorLabel.text = [helper displayNameForVendor:self.selectedVendorId];
     self.unsavedChangesPresent = NO;
+
+    self.productsUITableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -276,6 +278,12 @@
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
         Cart *cart = [self.coreDataOrder findCartForProductId:productId];
         [helper updateCellBackground:cell order:self.coreDataOrder cart:cart];
+    }
+
+    if(indexPath.row % 2 == 0) {
+        cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
+    } else {
+        cell.backgroundColor = [UIColor colorWithRed:1.000 green:1.000 blue:1.000 alpha:1];
     }
 }
 
