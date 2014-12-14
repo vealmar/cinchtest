@@ -290,6 +290,8 @@
 		D832D5601A24BF1700A0EBBF /* background-neworder.png in Resources */ = {isa = PBXBuildFile; fileRef = D832D5581A24BF1700A0EBBF /* background-neworder.png */; };
 		D832D5611A24BF1700A0EBBF /* background-neworder@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D832D5591A24BF1700A0EBBF /* background-neworder@2x.png */; };
 		D832D5631A24CF9300A0EBBF /* glyphicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D832D5621A24CF9300A0EBBF /* glyphicons.ttf */; };
+		D85502A41A3B360F002CE84F /* ico-cell-header-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = D85502A21A3B360F002CE84F /* ico-cell-header-icon.png */; };
+		D85502A51A3B360F002CE84F /* ico-cell-header-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D85502A31A3B360F002CE84F /* ico-cell-header-icon@2x.png */; };
 		D8C7055A1A037E6A00D395AE /* CIFinalCustomerFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */; };
 		EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD10188851810004ABB6 /* GLKit.framework */; };
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
@@ -705,6 +707,8 @@
 		D832D5581A24BF1700A0EBBF /* background-neworder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background-neworder.png"; sourceTree = "<group>"; };
 		D832D5591A24BF1700A0EBBF /* background-neworder@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background-neworder@2x.png"; sourceTree = "<group>"; };
 		D832D5621A24CF9300A0EBBF /* glyphicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = glyphicons.ttf; sourceTree = "<group>"; };
+		D85502A21A3B360F002CE84F /* ico-cell-header-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-cell-header-icon.png"; sourceTree = "<group>"; };
+		D85502A31A3B360F002CE84F /* ico-cell-header-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-cell-header-icon@2x.png"; sourceTree = "<group>"; };
 		D8C705571A037E6A00D395AE /* CIFinalCustomerFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIFinalCustomerFormViewController.h; sourceTree = "<group>"; };
 		D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIFinalCustomerFormViewController.m; sourceTree = "<group>"; };
 		EB5BBD10188851810004ABB6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
@@ -1566,6 +1570,8 @@
 				D811F7F71A355506003536C6 /* ico-authorized@2x.png */,
 				D811F7F81A355506003536C6 /* ico-customer.png */,
 				D811F7F91A355506003536C6 /* ico-customer@2x.png */,
+				D85502A21A3B360F002CE84F /* ico-cell-header-icon.png */,
+				D85502A31A3B360F002CE84F /* ico-cell-header-icon@2x.png */,
 			);
 			name = "New Images";
 			sourceTree = "<group>";
@@ -1653,6 +1659,7 @@
 				6DDC968120D8ED81B68EE9A4 /* customer-cancelin.png in Resources */,
 				6DDC913A3DECF793C4D605D9 /* customer-cancelout.png in Resources */,
 				6DDC9CAE496398D4969E464F /* continuein.png in Resources */,
+				D85502A51A3B360F002CE84F /* ico-cell-header-icon@2x.png in Resources */,
 				6DDC912A966512C2CAE58D2E /* continueout.png in Resources */,
 				6DDC9AF2273EF16720649082 /* customerBG.png in Resources */,
 				D811F7E11A350B38003536C6 /* ico-title@2x.png in Resources */,
@@ -1786,6 +1793,7 @@
 				6DDC97DD5698A183E12FAD11 /* mainpage_back.jpg in Resources */,
 				6DDC9DE8616CBF3A03488E60 /* signature-area.png in Resources */,
 				6DDC906FD8C1951566A59ECC /* zero_vouchers_button.png in Resources */,
+				D85502A41A3B360F002CE84F /* ico-cell-header-icon.png in Resources */,
 				6DDC9965CC129DFCFDBB4618 /* refresh.png in Resources */,
 				D832D55E1A24BF1700A0EBBF /* background-logout.png in Resources */,
 				6DDC9F2160531AEF09D963AF /* neworderback.jpg in Resources */,

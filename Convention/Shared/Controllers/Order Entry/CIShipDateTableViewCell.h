@@ -17,4 +17,7 @@
 @property (nonatomic, copy) void (^resignedFirstResponderBlock)(CIShipDateTableViewCell *cell);
 @property UITextField *quantityField;
 
+@property (strong, nonatomic) UIView *lineTotalBackgroundView;
+@property (strong, nonatomic) UILabel *lineTotalLabel;
+
 @end
