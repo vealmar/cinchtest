@@ -13,6 +13,7 @@
 @interface CIShipDateTableViewCell ()
 
 @property NSMutableArray *selectedCarts;
+@property (strong, nonatomic) UILabel *xLabel;
 
 @end
 
@@ -43,7 +44,7 @@
         self.textLabel.textColor = [UIColor whiteColor];
         self.textLabel.font = [UIFont fontWithName:kFontName size:14.0f];
         if (useQuantity) {
-            self.quantityField = [[UITextField alloc] initWithFrame:CGRectMake(260, 10, 40, 20)];
+            self.quantityField = [[UITextField alloc] initWithFrame:CGRectMake(190, 10, 40, 20)];
             self.quantityField.textAlignment = NSTextAlignmentCenter;
             self.quantityField.font = [UIFont systemFontOfSize:14.0f];
             self.quantityField.borderStyle = UITextBorderStyleRoundedRect;
@@ -58,6 +59,25 @@
                 Cart *cart = [self.selectedCarts objectAtIndex:0];
                 self.quantity = [cart getQuantityForShipDate:shipDate];
             }
+
+            self.xLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x-15, self.quantityField.frame.origin.y, 20, self.quantityField.frame.size.height)];
+            self.xLabel.font = [UIFont systemFontOfSize:14.0f];
+            self.xLabel.textColor = [UIColor whiteColor];
+            self.xLabel.text = @"x";
+            [self addSubview:self.xLabel];
+
+            self.lineTotalBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x+ 50, self.quantityField.frame.origin.y, 75, self.quantityField.frame.size.height)];
+            self.lineTotalBackgroundView.backgroundColor = [UIColor colorWithRed:0.161 green:0.169 blue:0.169 alpha:1];
+            self.lineTotalBackgroundView.layer.cornerRadius = 3;
+            [self addSubview:self.lineTotalBackgroundView];
+
+            self.lineTotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x+ 50, self.quantityField.frame.origin.y, 70, self.quantityField.frame.size.height)];
+            self.lineTotalLabel.font = [UIFont systemFontOfSize:13.0f];
+            self.lineTotalLabel.textColor = [UIColor whiteColor];
+            self.lineTotalLabel.text = @"$0.00";
+            self.lineTotalLabel.textAlignment = NSTextAlignmentRight;
+            self.lineTotalLabel.backgroundColor = [UIColor clearColor];
+            [self addSubview:self.lineTotalLabel];
         }
 
         UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cellTapped:)];
