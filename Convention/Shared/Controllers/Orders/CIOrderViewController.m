@@ -69,8 +69,7 @@
 
 @property (weak, nonatomic) IBOutlet UIView *orderDetailTableParentView;
 @property (weak, nonatomic) IBOutlet UITableView *orderDetailTable;
-@property (weak, nonatomic) IBOutlet UILabel *orderDetailShippingLabel;
-@property (weak, nonatomic) IBOutlet UILabel *orderDetailTotalLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailLabel;
 
 
 @property (weak, nonatomic) IBOutlet UIView *orderDetailShipTotalView;
@@ -78,6 +77,10 @@
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailSaveButton;
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailEditButton;
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailDeleteButton;
+
+@property (assign) float totalGross;
+@property (assign) float totalDiscounts;
+@property (assign) float totalFinal;
 @end
 
 @implementation
@@ -430,18 +433,48 @@ SG: The argument 'detail' is the selected order.
     } else {
         self.orderDetailNotesView.hidden = YES;
         orderDetailTableOriginY = self.orderDetailPaymentTermsView.frame.origin.y + self.orderDetailPaymentTermsView.frame.size.height + 8;
-
     }
 
-    self.orderDetailTableParentView.frame = CGRectMake(0, orderDetailTableOriginY, self.orderDetailTableParentView.frame.size.width, self.orderDetailShipTotalView.frame.origin.y - orderDetailTableOriginY);
+    CoreDataUtil *coreDataUtil = [CoreDataUtil sharedManager];
+    NSMutableDictionary *dateProducts = [NSMutableDictionary dictionary];
+    NSMutableArray *orderedDates = [NSMutableArray array];
+
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+
+    [dateFormatter setLocale:enUSPOSIXLocale];
+    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.000Z'"];
+    [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+
+    for (ALineItem *line in detail.lineItems) {
+        Product *product = (Product *) [coreDataUtil fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", line.productId]];
+
+        NSDictionary *quantities = [NSJSONSerialization JSONObjectWithData:[line.quantity dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+        if ([quantities isKindOfClass:[NSDictionary class]]) {
+            for (NSString *d in quantities.allKeys) {
+                NSDate *date = [dateFormatter dateFromString:d];
+                int quantity = [quantities[d] intValue];
+
+                if(quantity) {
+                    NSMutableArray *products = [dateProducts objectForKey:date];
+                    if (!products) {
+                        products = [NSMutableArray array];
+                        dateProducts[date] = products;
+                        [orderedDates addObject:date];
+                    }
+                    [products addObject:@[product, @(quantity)]];
+                }
+            }
+        }
+    }
 
     if (showConfig.isOrderShipDatesType) {
-        self.orderDetailShippingLabel.text = @"Ship immediately.";
+//        self.orderDetailShippingLabel.text = @"Ship immediately.";
         if (detail.shipDates.count > 0) {
-            self.orderDetailShippingLabel.text = [Underscore.array(detail.shipDates)
-                    .map(^id(id obj) {
-                        return [DateUtil convertNSDateToApiDate:obj];
-                    }).unwrap componentsJoinedByString:@", "];
+//            self.orderDetailShippingLabel.text = [Underscore.array(detail.shipDates)
+//                    .map(^id(id obj) {
+//                        return [DateUtil convertNSDateToApiDate:obj];
+//                    }).unwrap componentsJoinedByString:@", "];
         }
     }
 
@@ -547,6 +580,75 @@ SG: The argument 'detail' is the selected order.
 
         [self.orderDetailTable reloadData];
     }
+
+    dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"dd/MM/yyyy"];
+    [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+
+    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+    paragraph.alignment = NSTextAlignmentRight;
+    paragraph.lineSpacing = 5;
+    paragraph.tabStops = @[[[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
+                                                           location:self.orderDetailLabel.bounds.size.width - 400
+                                                            options:nil],
+                           [[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
+                                                           location:self.orderDetailLabel.bounds.size.width - 200
+                                                            options:nil]];
+
+    NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
+
+    [orderedDates sortUsingSelector:@selector(compare:)];
+    for (int i = 0; i < orderedDates.count; i++) {
+        NSDate *date = (NSDate*)[orderedDates objectAtIndex:i];
+
+        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"Shipping on %@\t", [dateFormatter stringFromDate:date]]
+                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:13], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+
+        float total = 0;
+        for (NSArray *pair in dateProducts[date]) {
+            Product *product = pair[0];
+            int quantity = [pair[1] intValue];
+
+            if (i == 0) {
+                total += quantity * [product.showprc intValue];
+            } else {
+                total += quantity * [product.regprc intValue];
+            }
+        }
+
+        NSString *priceString = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:total / 100.0] numberStyle:NSNumberFormatterCurrencyStyle];
+
+        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:priceString
+                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:15], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+    }
+
+    NSString *s = nil;
+    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
+    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"SUBTOTAL\t%@", s]
+                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+
+    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:fabsf(self.totalDiscounts)] numberStyle:NSNumberFormatterCurrencyStyle];
+    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"DISCOUNT\t%@", s]
+                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+
+    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
+    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"TOTAL\t"]
+                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@", s]
+                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont semiboldFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+
+    self.orderDetailLabel.attributedText = attributedString;
+    self.orderDetailLabel.textAlignment = NSTextAlignmentRight;
+    [self.orderDetailLabel sizeToFit];
+    self.orderDetailShipTotalView.frame = CGRectMake(0, 632 - self.orderDetailLabel.frame.size.height, 670, self.orderDetailLabel.frame.size.height - 5);
+    self.orderDetailLabel.frame = CGRectMake(0, 5, self.orderDetailShipTotalView.bounds.size.width - 10, self.orderDetailShipTotalView.bounds.size.height);
+
+    self.orderDetailTableParentView.frame = CGRectMake(0, orderDetailTableOriginY, self.orderDetailTableParentView.frame.size.width, self.orderDetailShipTotalView.frame.origin.y - orderDetailTableOriginY);
+
 }
 
 #pragma mark - Load Product View Conroller
@@ -980,12 +1082,9 @@ SG: This method gets called when you swipe on an order in the order list and tap
             sctotal += [[self.itemsVouchers objectAtIndex:(NSUInteger) i] doubleValue] * qty * numShipDates;
         }
 
-        self.grossTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal] numberStyle:NSNumberFormatterCurrencyStyle];  //SG: displayed next to Total label
-        self.discountTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:-discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
-        self.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal - discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
-        self.voucherTotal.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:sctotal] numberStyle:NSNumberFormatterCurrencyStyle];//SG: displayed next to Voucher label. This must be the voucher total.
-
-        self.orderDetailTotalLabel.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:ttotal - discountTotal] numberStyle:NSNumberFormatterCurrencyStyle];
+        self.totalGross = ttotal;
+        self.totalDiscounts = -discountTotal;
+        self.totalFinal = ttotal - discountTotal;
     }
 }
 
