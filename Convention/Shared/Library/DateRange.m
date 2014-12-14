@@ -41,7 +41,7 @@
 }
 
 - (NSDate *)parseDate:(NSString *)dateString {
-    return [DateUtil convertYyyymmddthhmmsszToDate:dateString];
+    return [DateUtil convertApiDateTimeToNSDate:dateString];
 }
 
 - (NSArray *)fixedDates {

@@ -16,31 +16,19 @@
 
 - (id)init;
 
-+ (NSString *)userDateFormat;
-
-+ (NSDateFormatter *)createFormatter;
-
 + (NSDateFormatter *)createFormatter:(NSString *)format;
 
-+ (NSDate *)parseDate:(NSString *)dateString;
++ (NSDateFormatter *)newApiDateTimeFormatter;
 
-+ (NSString *)stringFromGMTDate:(NSDate *)date;
++ (NSDateFormatter *)newApiDateFormatter;
 
-+ (NSDate *)processJSDate:(NSString *)value;
++ (NSArray *)convertNSDateArrayToApiDateArray:(NSArray *)nsdates;
 
-+ (NSString *)stringDate;
++ (NSArray *)convertApiDateArrayToNSDateArray:(NSArray *)jsonDateArray;
 
-+ (NSString *)convertDateToYyyymmdd:(NSDate *)nsDate;
++ (NSDate *)convertApiDateTimeToNSDate:(NSString *)jsonDate;
 
-+ (NSDate *)convertYyyymmddToDate:(NSString *)jsonDate;
++ (NSString *)convertNSDateToApiDate:(NSDate *)nsDate;
 
-+ (NSArray *)convertDateArrayToYyyymmddArray:(NSArray *)nsdates;
-
-+ (NSArray *)convertYyyymmddArrayToDateArray:(NSArray *)jsonDateArray;
-
-+ (NSDate *)convertYyyymmddthhmmsszToDate:(NSString *)jsonDate;
-
-+ (NSString *)convertDateToMmddyyyy:(NSDate *)nsDate;
-
-+ (NSString *)convertDateToYyyymmddthhmmssz:(NSDate *)nsDate;
++ (NSString *)convertNSDateToApiDateTime:(NSDate *)nsDate;
 @end

@@ -58,8 +58,9 @@
         self.editableQty = quantity;
         self.shipdates = [[NSMutableOrderedSet alloc] init];
         if (lineItemShipDates && lineItemShipDates.count > 0) {
+            NSDateFormatter *df = [DateUtil newApiDateFormatter];
             for (NSString *jsonDate in lineItemShipDates) {
-                NSDate *shipDate = [DateUtil convertYyyymmddToDate:jsonDate];
+                NSDate *shipDate = [df dateFromString:jsonDate];
                 [self addShipDate:shipDate];
             }
         }
@@ -70,8 +71,9 @@
 - (NSArray *)shipDatesAsStringArray {
     NSMutableArray *shipDates = [[NSMutableArray alloc] init];
     if ([self.shipdates count] > 0) {
+        NSDateFormatter *df = [DateUtil newApiDateFormatter];
         for (ShipDate *sd in self.shipdates) {
-            [shipDates addObject:[DateUtil convertDateToYyyymmdd:sd.shipdate]];
+            [shipDates addObject:[df stringFromDate:sd.shipdate]];
         }
     }
     return shipDates;
@@ -89,7 +91,7 @@
 
 - (int)getQuantityForShipDate:(NSDate *)date {
     NSMutableDictionary *quantities = [self.editableQty objectFromJSONString];
-    return [[quantities valueForKey:[date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'Z'"]] intValue];
+    return [[quantities valueForKey:[date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"]] intValue];
 }
 
 - (int)totalQuantity {
@@ -112,7 +114,7 @@
     if (quantities == nil) {
         quantities = [NSMutableDictionary dictionary];
     }
-    [quantities setValue:[NSNumber numberWithInt:quantity] forKey:[date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'Z'"]];
+    [quantities setValue:[NSNumber numberWithInt:quantity] forKey:[date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"]];
     self.editableQty = [quantities JSONString];
 
     dispatch_async(dispatch_get_main_queue(), ^{

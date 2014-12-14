@@ -35,9 +35,9 @@
         self.note1 = (NSString *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinNote1]];
         self.note2 = (NSString *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinNote2]];
         NSString *datestr = (NSString *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinShipDate1]];
-        self.shipdate1 = datestr ? [DateUtil convertYyyymmddthhmmsszToDate:datestr] : nil;
+        self.shipdate1 = datestr ? [DateUtil convertApiDateTimeToNSDate:datestr] : nil;
         datestr = (NSString *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinShipDate2]];
-        self.shipdate2 = datestr ? [DateUtil convertYyyymmddthhmmsszToDate:datestr] : nil;
+        self.shipdate2 = datestr ? [DateUtil convertApiDateTimeToNSDate:datestr] : nil;
         self.vendor_id = (NSNumber *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinVendorId]];
         self.show_id = (NSNumber *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinShowId]];
         self.status = (NSString *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinStatus]];
@@ -59,9 +59,9 @@
     if (self.note2)
         [dictionary setObject:self.note2 forKey:kBulletinNote2];
     if (self.shipdate1)
-        [dictionary setObject:[DateUtil convertDateToYyyymmddthhmmssz:self.shipdate1] forKey:kBulletinShipDate1];
+        [dictionary setObject:[DateUtil convertNSDateToApiDateTime:self.shipdate1] forKey:kBulletinShipDate1];
     if (self.shipdate2)
-        [dictionary setObject:[DateUtil convertDateToYyyymmddthhmmssz:self.shipdate2] forKey:kBulletinShipDate2];
+        [dictionary setObject:[DateUtil convertNSDateToApiDateTime:self.shipdate2] forKey:kBulletinShipDate2];
     if (self.vendor_id)
         [dictionary setObject:self.vendor_id forKey:kBulletinVendorId];
     if (self.show_id)

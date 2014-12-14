@@ -24,17 +24,17 @@
         self.shipDate = shipDate;
         self.selectedCarts = selectedCartsParam;
         if (shipDate != nil) {
-            NSString *label = shipDate == nil ? @"No dates selected, ship immediately." : [DateUtil convertDateToMmddyyyy:shipDate];
+            NSString *label = shipDate == nil ? @"No dates selected, ship immediately." : [DateUtil convertNSDateToApiDate:shipDate];
             self.textLabel.text = label;
         }
 
         if ([ShowConfigurations instance].isLineItemShipDatesType && shipDate != nil) {
-            self.textLabel.text = [DateUtil convertDateToMmddyyyy:shipDate];
+            self.textLabel.text = [DateUtil convertNSDateToApiDate:shipDate];
         } else if ([ShowConfigurations instance].isOrderShipDatesType) {
             if (shipDate == nil) {
                 self.textLabel.text = @"No dates selected, ship immediately.";
             } else {
-                self.textLabel.text = [DateUtil convertDateToMmddyyyy:shipDate];
+                self.textLabel.text = [DateUtil convertNSDateToApiDate:shipDate];
             }
         }
 

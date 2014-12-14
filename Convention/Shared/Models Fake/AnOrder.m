@@ -35,7 +35,7 @@
         self.cancelByDays = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"cancel_by_days"]];
         self.poNumber = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"po_number"]];
         self.paymentTerms = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"payment_terms"]];
-        self.shipDates = [DateUtil convertYyyymmddArrayToDateArray:[NilUtil objectOrEmptyArray:[JSON objectForKey:@"ship_dates"]]];
+        self.shipDates = [DateUtil convertApiDateArrayToNSDateArray:[NilUtil objectOrEmptyArray:[JSON objectForKey:@"ship_dates"]]];
         self.customFields = [JSON objectForKey:@"custom_fields"];
         self.customer = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
         self.warnings = (NSArray *) [NilUtil nilOrObject:[JSON objectForKey:@"warnings"]];

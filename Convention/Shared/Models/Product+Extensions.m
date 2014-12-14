@@ -61,10 +61,10 @@
         self.category = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductCategory]];
         NSString *shipdate1Str = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShipDate1]];
         if (shipdate1Str)
-            self.shipdate1 = [DateUtil convertYyyymmddthhmmsszToDate:shipdate1Str];
+            self.shipdate1 = [DateUtil convertApiDateTimeToNSDate:shipdate1Str];
         NSString *shipdate2Str = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShipDate2]];
         if (shipdate2Str)
-            self.shipdate2 = [DateUtil convertYyyymmddthhmmsszToDate:shipdate2Str];
+            self.shipdate2 = [DateUtil convertApiDateTimeToNSDate:shipdate2Str];
         self.editable = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductEditable]];
     }
     return self;

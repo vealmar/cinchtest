@@ -194,7 +194,7 @@
                                                                         [NilUtil objectOrNSNull:self.printer], kOrderPrinter,
                                                                         [NilUtil objectOrNSNull:self.po_number], kOrderPoNumber,
                                                                         [NilUtil objectOrNSNull:self.payment_terms], kOrderPaymentTerms,
-                                                                        [NilUtil objectOrNSNull:[DateUtil convertDateArrayToYyyymmddArray:self.ship_dates]], kOrderShipDates,
+                                                                        [NilUtil objectOrNSNull:[DateUtil convertNSDateArrayToApiDateArray:self.ship_dates]], kOrderShipDates,
                                                                         [NSArray arrayWithArray:self.customFields], kCustomFields,
                                                                         nil];
     return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];

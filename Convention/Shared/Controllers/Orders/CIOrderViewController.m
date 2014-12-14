@@ -444,7 +444,7 @@ SG: The argument 'detail' is the selected order.
         if (detail.shipDates.count > 0) {
             self.orderDetailShippingLabel.text = [Underscore.array(detail.shipDates)
                                                 .map(^id(id obj) {
-                return [DateUtil convertDateToMmddyyyy:obj];
+                return [DateUtil convertNSDateToApiDate:obj];
             })
                                                 .unwrap componentsJoinedByString:@", "];
             
@@ -483,7 +483,7 @@ SG: The argument 'detail' is the selected order.
         if (detail.shipDates.count > 0) {
             self.orderShipDatesTextView.text = [Underscore.array(detail.shipDates)
                     .map(^id(id obj) {
-                        return [DateUtil convertDateToMmddyyyy:obj];
+                        return [DateUtil convertNSDateToApiDate:obj];
                     })
                     .unwrap componentsJoinedByString:@", "];
 
@@ -530,8 +530,7 @@ SG: The argument 'detail' is the selected order.
 
                 NSArray *raw = dict.shipDates;
                 NSMutableArray *dates = [NSMutableArray array];
-                NSDateFormatter *df = [[NSDateFormatter alloc] init];
-                [df setDateFormat:@"yyyy-MM-dd"];//@"yyyy-MM-dd'T'HH:mm:ss'Z'"
+                NSDateFormatter *df = [DateUtil newApiDateFormatter];
                 for (NSString *str in raw) {
                     NSDate *date = [df dateFromString:str];
                     [dates addObject:date];
@@ -1041,8 +1040,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 - (void)ShipDatesTouchForIndex:(int)idx {
     CICalendarViewController *calView = [[CICalendarViewController alloc] initWithNibName:@"CICalendarViewController" bundle:nil];
-    NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
 
     NSDate *startDate;
     NSDate *endDate;
@@ -1243,8 +1240,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
             NSArray *dates = [self.itemsShipDates objectAtIndex:(NSUInteger) i];
             NSMutableArray *strs = [NSMutableArray array];
-            NSDateFormatter *df = [[NSDateFormatter alloc] init];
-            [df setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
+            NSDateFormatter *df = [DateUtil newApiDateFormatter];
             for (NSDate *date in dates) {
                 NSString *str = [df stringFromDate:date];
                 [strs addObject:str];
