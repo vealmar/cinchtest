@@ -35,6 +35,7 @@
 #import "CinchJSONAPIClient.h"
 #import "CIAppDelegate.h"
 #import "VALabel.h"
+#import "ThemeUtil.h"
 
 
 @interface CIOrderViewController () {
@@ -132,8 +133,7 @@ CIOrderViewController
     helper = [[CIProductViewControllerHelper alloc] init];
     cancelDaysHelper = [[SegmentedControlHelper alloc] initForCancelByDays];
 
-//    self.sideTable.separatorColor = [UIColor colorWithRed:0.761 green:0.757 blue:0.780 alpha:1];
-    self.sideTable.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.sideTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
 
     self.orderDetailTable.separatorColor = [UIColor colorWithRed:0.808 green:0.808 blue:0.827 alpha:1];
     self.orderDetailTable.rowHeight = 40;
@@ -165,18 +165,15 @@ CIOrderViewController
     UINavigationController *navController = self.navigationController;
     UINavigationItem *navItem = self.navigationItem;
 
-    navController.navigationBar.barTintColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
-
-    navItem.title = @"Orders";
-    [navController.navigationBar setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:24],
-                                                                       NSForegroundColorAttributeName: [UIColor whiteColor] }];
-
+    navController.navigationBar.translucent = NO;
+    navController.navigationBar.barTintColor = [ThemeUtil navigationBarTintColor];
+    navItem.titleView = [ThemeUtil navigationTitleFor:@"%s", @"Orders"];
+    
     UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf0c9" style:UIBarButtonItemStylePlain handler:^(id sender) {
         CIAppDelegate *appDelegate = (CIAppDelegate*)[UIApplication sharedApplication].delegate;
         [appDelegate.slideMenu showLeftMenu:YES];
     }];
-    [menuItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
-                                        NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+    [menuItem setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
 
     NSString *term = @"Search...";
     if (searchText && searchText.length) {
@@ -186,14 +183,12 @@ CIOrderViewController
     UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:[NSString stringWithFormat:@"   %@", term] style:UIBarButtonItemStylePlain handler:^(id sender) {
         [self setupNavBarSearch:searchText];
     }];
-    [searchItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
-                                          NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] } forState:UIControlStateNormal];
+    [searchItem setTitleTextAttributes:[ThemeUtil navigationSearchLabelTextAttributes] forState:UIControlStateNormal];
 
     UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-add"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
         [self AddNewOrder:nil];
     }];
-    [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
-                                       NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+    [addItem setTitleTextAttributes:[ThemeUtil navigationRightActionButtonTextAttributes] forState:UIControlStateNormal];
 
     navItem.leftBarButtonItems = @[menuItem, searchItem];
     navItem.rightBarButtonItems = @[addItem];
@@ -203,8 +198,9 @@ CIOrderViewController
     UINavigationController *navController = self.navigationController;
     UINavigationItem *navItem = self.navigationItem;
 
-    navItem.title = nil;
-    navController.navigationBar.barTintColor = [UIColor colorWithRed:0.000 green:0.000 blue:0.000 alpha:1];
+    navItem.titleView = nil;
+    [navController.navigationBar setBackgroundImage:nil forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+    navController.navigationBar.barTintColor = [UIColor blackColor];
 
     UITextField *searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 800, 40)];
     searchTextField.font = [UIFont regularFontOfSize:24];
@@ -443,11 +439,9 @@ SG: The argument 'detail' is the selected order.
         self.orderDetailShippingLabel.text = @"Ship immediately.";
         if (detail.shipDates.count > 0) {
             self.orderDetailShippingLabel.text = [Underscore.array(detail.shipDates)
-                                                .map(^id(id obj) {
-                return [DateUtil convertNSDateToApiDate:obj];
-            })
-                                                .unwrap componentsJoinedByString:@", "];
-            
+                    .map(^id(id obj) {
+                        return [DateUtil convertNSDateToApiDate:obj];
+                    }).unwrap componentsJoinedByString:@", "];
         }
     }
 

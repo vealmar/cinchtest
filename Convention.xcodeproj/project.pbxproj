@@ -238,6 +238,7 @@
 		6DDC9FC4268783C29BB186B7 /* SaveButton-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9DEB05675DB9A6E1755B /* SaveButton-out.png */; };
 		6DDC9FD0061B7925CE6FF9A6 /* homeBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC94A77A9C5C23E31B5BC2 /* homeBG.png */; };
 		6DDC9FD333DA64CF09F0CDD4 /* neworderout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC97AA00D90F9760E1C6D3 /* neworderout.png */; };
+		6DDC9FDF1ED931FCC6D17041 /* ThemeUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC99B2A95F9584C4BF4A22 /* ThemeUtil.m */; };
 		6DDC9FE1151498C2D196E425 /* logoutin.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC93532B3FC06C7D0AACCE /* logoutin.png */; };
 		6DDC9FEF3B555C1D48914C07 /* saveout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9F0E03DAD116731304E5 /* saveout.png */; };
 		6DDC9FEF40185848D0E16589 /* CIItemEditCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9C00B9AE2AAF06D2A7EF /* CIItemEditCell.m */; };
@@ -513,6 +514,7 @@
 		6DDC99A1B452662069354324 /* StringManipulation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringManipulation.m; sourceTree = "<group>"; };
 		6DDC99AAB74C8DCDA9915BEF /* loginscreenback.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = loginscreenback.jpg; sourceTree = "<group>"; };
 		6DDC99AEE41ED5ADF4848C0C /* CGContext+Boost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CGContext+Boost.h"; sourceTree = "<group>"; };
+		6DDC99B2A95F9584C4BF4A22 /* ThemeUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThemeUtil.m; sourceTree = "<group>"; };
 		6DDC99C1FFF29E6881E530B3 /* MICheckBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MICheckBox.m; sourceTree = "<group>"; };
 		6DDC99C347BF19514B3DDA0E /* CICalendarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICalendarViewController.h; sourceTree = "<group>"; };
 		6DDC99CF25BAB9F88B9F8C39 /* submitin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = submitin.png; sourceTree = "<group>"; };
@@ -646,6 +648,7 @@
 		6DDC9FA9C637030F992AC114 /* ShowCustomField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowCustomField.m; sourceTree = "<group>"; };
 		6DDC9FAB13E136E8F7FEB1A3 /* Detail2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Detail2.png; sourceTree = "<group>"; };
 		6DDC9FBE9BFC9E3F0CD961CC /* square-paper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "square-paper.png"; sourceTree = "<group>"; };
+		6DDC9FC241C8BA61916E3E8D /* ThemeUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeUtil.h; sourceTree = "<group>"; };
 		6DDC9FE4119B8E46DC86C044 /* FarrisCartViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FarrisCartViewCell.xib; sourceTree = "<group>"; };
 		6DDC9FEBA535DC13F4905E42 /* username.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = username.png; sourceTree = "<group>"; };
 		6DDC9FF3BD81E3B3F848313C /* finalsubmit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = finalsubmit.png; sourceTree = "<group>"; };
@@ -1197,6 +1200,8 @@
 				6DDC9BCB2E429C258AC4DF29 /* NISignatureView.h */,
 				6DDC9E7001F01194A67EB3BE /* NISignatureView.m */,
 				6DDC9E0123A7B1D1579F6FE8 /* Custom Fields */,
+				6DDC99B2A95F9584C4BF4A22 /* ThemeUtil.m */,
+				6DDC9FC241C8BA61916E3E8D /* ThemeUtil.h */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1959,6 +1964,7 @@
 				6DDC9C63A47A83096376C62F /* CartViewCell.m in Sources */,
 				6DDC94652169E4D9403CB612 /* FarrisCartViewCell.m in Sources */,
 				6DDC91AA1E6C096F0A8D0E4B /* OrderShipDateViewController.m in Sources */,
+				6DDC9FDF1ED931FCC6D17041 /* ThemeUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
