@@ -187,6 +187,7 @@ CIOrderViewController
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
                                                  name:UIKeyboardDidHideNotification object:self.view.window];
 
+    [self loadOrders:NO highlightOrder:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
