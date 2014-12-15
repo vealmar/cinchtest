@@ -23,7 +23,6 @@
             <string>OpenSans</string>
             <string>OpenSans</string>
             <string>OpenSans</string>
-            <string>OpenSans</string>
         </mutableArray>
         <mutableArray key="OPENSANS-SEMIBOLD_1.TTF">
             <string>OpenSans-Semibold</string>
@@ -194,7 +193,7 @@
                                         </connections>
                                     </button>
                                     <view contentMode="scaleToFill" id="edG-jd-O4g">
-                                        <rect key="frame" x="0.0" y="276" width="670" height="320"/>
+                                        <rect key="frame" x="0.0" y="276" width="670" height="354"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <subviews>
                                             <view contentMode="scaleToFill" id="iBx-05-iRh">
@@ -215,7 +214,7 @@
                                                         <color key="textColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="coZ-Vg-hZV">
+                                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="coZ-Vg-hZV">
                                                         <rect key="frame" x="340" y="5" width="64" height="21"/>
                                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                         <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
@@ -247,7 +246,7 @@
                                                 <color key="backgroundColor" red="0.23529411764705882" green="0.24705882352941178" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </view>
                                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="YnO-ye-7jz">
-                                                <rect key="frame" x="0.0" y="32" width="670" height="288"/>
+                                                <rect key="frame" x="0.0" y="32" width="670" height="322"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <connections>
@@ -257,20 +256,6 @@
                                             </tableView>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    </view>
-                                    <view contentMode="scaleToFill" id="foe-6u-JUa">
-                                        <rect key="frame" x="0.0" y="596" width="670" height="36"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="BeB-1x-TOs">
-                                                <rect key="frame" x="8" y="0.0" width="649" height="36"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
-                                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="14"/>
-                                                <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                        <color key="backgroundColor" red="0.97647058823529409" green="0.97647058823529409" blue="0.97647058823529409" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -299,14 +284,12 @@
                         <outlet property="orderDetailCustomerView" destination="ut5-uZ-9Na" id="gkk-SK-xgI"/>
                         <outlet property="orderDetailDeleteButton" destination="Xke-LG-Y6x" id="CAt-Zh-eqx"/>
                         <outlet property="orderDetailEditButton" destination="Lkc-Wc-nOa" id="Oom-sz-XaE"/>
-                        <outlet property="orderDetailLabel" destination="BeB-1x-TOs" id="daJ-3I-PNA"/>
                         <outlet property="orderDetailNotesLabel" destination="ES7-qA-HWv" id="ugD-7d-dky"/>
                         <outlet property="orderDetailNotesView" destination="zg4-kn-PPz" id="SxC-sg-KFO"/>
                         <outlet property="orderDetailOrderNumberLabel" destination="I2n-wZ-9VN" id="O0T-Xf-tJO"/>
                         <outlet property="orderDetailPaymentTermsLabel" destination="wWN-xg-dsC" id="Atz-kG-MaN"/>
                         <outlet property="orderDetailPaymentTermsView" destination="3YC-yt-zYg" id="SLw-e2-g12"/>
                         <outlet property="orderDetailSaveButton" destination="Cng-qZ-sWf" id="Mow-wJ-efh"/>
-                        <outlet property="orderDetailShipTotalView" destination="foe-6u-JUa" id="8Ot-jw-qUb"/>
                         <outlet property="orderDetailTable" destination="YnO-ye-7jz" id="XYO-ZU-6g6"/>
                         <outlet property="orderDetailTableParentView" destination="edG-jd-O4g" id="fuJ-Ol-dop"/>
                         <outlet property="orderDetailView" destination="89b-In-fVe" id="isr-9S-Bv9"/>
