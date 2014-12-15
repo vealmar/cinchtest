@@ -37,4 +37,6 @@
 
 - (NSString *)getCustomerDisplayName;
 
+- (float)adjustedTotal;
+
 @end

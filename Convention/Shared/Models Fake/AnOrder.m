@@ -14,6 +14,7 @@
 #import "NilUtil.h"
 #import "CIProductViewControllerHelper.h"
 #import "DateUtil.h"
+#import "CoreDataUtil.h"
 
 @implementation AnOrder {
 
@@ -89,6 +90,69 @@
 
 - (NSString *)getCustomerDisplayName {
     return [NSString stringWithFormat:@"%@ - %@", ([self.customer objectForKey:kBillName] == nil? @"(Unknown)" : [self.customer objectForKey:kBillName]), ([self.customer objectForKey:kCustID] == nil? @"(Unknown)" : [self.customer objectForKey:kCustID])];
+}
+
+- (float)adjustedTotal {
+    CoreDataUtil *coreDataUtil = [CoreDataUtil sharedManager];
+    NSMutableDictionary *dateProducts = [NSMutableDictionary dictionary];
+    NSMutableArray *orderedDates = [NSMutableArray array];
+
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
+
+    [dateFormatter setLocale:enUSPOSIXLocale];
+    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.000Z'"];
+    [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+
+    NSDate *earliestDate = nil;
+
+    for (ALineItem *line in self.lineItems) {
+        Product *product = (Product *) [coreDataUtil fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", line.productId]];
+
+        NSDictionary *quantities = [NSJSONSerialization JSONObjectWithData:[line.quantity dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+        if ([quantities isKindOfClass:[NSDictionary class]]) {
+            for (NSString *d in quantities.allKeys) {
+                NSDate *date = [dateFormatter dateFromString:d];
+                int quantity = [quantities[d] intValue];
+
+                if (earliestDate == nil) {
+                    earliestDate = date;
+                } else {
+                    earliestDate = [earliestDate earlierDate:date];
+                }
+
+                if(quantity) {
+                    NSMutableArray *products = [dateProducts objectForKey:date];
+                    if (!products) {
+                        products = [NSMutableArray array];
+                        dateProducts[date] = products;
+                        [orderedDates addObject:date];
+                    }
+                    [products addObject:@[product, @(quantity)]];
+                }
+            }
+        }
+    }
+
+    float grossTotal = 0;
+    for (int i = 0; i < orderedDates.count; i++) {
+        NSDate *date = (NSDate*)[orderedDates objectAtIndex:i];
+
+        float total = 0;
+        for (NSArray *pair in dateProducts[date]) {
+            Product *product = pair[0];
+            int quantity = [pair[1] intValue];
+
+            if (date == earliestDate) {
+                total += quantity * [product.showprc intValue];
+            } else {
+                total += quantity * [product.regprc intValue];
+            }
+        }
+        grossTotal += total;
+    }
+
+    return grossTotal / 100.0;
 }
 
 @end
