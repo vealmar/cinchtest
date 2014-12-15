@@ -370,9 +370,9 @@
                                 NSDecimalNumber *decPrice = [NSDecimalNumber decimalNumberWithDecimal:[price decimalValue]];
                                 grossTotal = [grossTotal decimalNumberByAdding:[qqty decimalNumberByMultiplyingBy:decPrice]];
                                 
-                                if ([qtyNumber intValue] > 0) {
-                                    NSLog(@"QTY %@ -- DATE %@ == UAP %d", qtyNumber, actualShipDate, useAtOncePrice);
-                                }
+//                                if ([qtyNumber intValue] > 0) {
+//                                    NSLog(@"QTY %@ -- DATE %@ == UAP %d", qtyNumber, actualShipDate, useAtOncePrice);
+//                                }
                             }
                         }
                     }

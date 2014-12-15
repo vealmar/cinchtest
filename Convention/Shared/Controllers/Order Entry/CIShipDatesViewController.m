@@ -187,6 +187,17 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:self.tableView.numberOfSections - 1] withRowAnimation:UITableViewRowAnimationNone];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    NSLog(@"app");
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
+        if (nextCell) {
+            [nextCell.quantityField becomeFirstResponder];
+        }
+    });
+}
+
 - (void)calendar:(CKCalendarView *)calendar configureDateItem:(CKDateItem *)dateItem forDate:(NSDate *)date {
     if ([self.selectedShipDates containsObject:date]) {
         dateItem.selectedBackgroundColor = self.dateSelectedBackgroundColor;
