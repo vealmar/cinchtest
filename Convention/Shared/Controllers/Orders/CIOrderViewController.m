@@ -514,6 +514,7 @@ SG: The argument 'detail' is the selected order.
 
     [orderedDates sortUsingSelector:@selector(compare:)];
 
+    float grossTotal = 0;
     NSMutableArray *line = nil;
     for (int i = 0; i < orderedDates.count; i++) {
         NSDate *date = (NSDate*)[orderedDates objectAtIndex:i];
@@ -532,6 +533,7 @@ SG: The argument 'detail' is the selected order.
                 total += quantity * [product.regprc intValue];
             }
         }
+        grossTotal += total;
 
         NSString *priceString = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:total / 100.0] numberStyle:NSNumberFormatterCurrencyStyle];
 
@@ -540,16 +542,19 @@ SG: The argument 'detail' is the selected order.
     }
 
     NSString *s = nil;
+    float total = grossTotal / 100.0;
 
     if (self.totalDiscounts > 0) {
-        s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
+        s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:total] numberStyle:NSNumberFormatterCurrencyStyle];
         [self.subtotalLines addObject:@[@"SUBTOTAL", s]];
 
         s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:fabsf(self.totalDiscounts)] numberStyle:NSNumberFormatterCurrencyStyle];
         [self.subtotalLines addObject:@[@"DISCOUNT", s]];
+
+        total -= self.totalDiscounts;
     }
 
-    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
+    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:total] numberStyle:NSNumberFormatterCurrencyStyle];
     [self.subtotalLines addObject:@[@"TOTAL", s]];
 
     [self.orderDetailTable reloadData];
@@ -840,7 +845,7 @@ SG: The argument 'detail' is the selected order.
         cell.numItems.text = [NSString stringWithFormat:@"%d Items", data.lineItems.count];
 
         if (data.total != nil) {
-            cell.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[data.total doubleValue]] numberStyle:NSNumberFormatterCurrencyStyle];
+            cell.total.text = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:[data adjustedTotal]] numberStyle:NSNumberFormatterCurrencyStyle];
         }
         else
             cell.total.text = @"$?";
