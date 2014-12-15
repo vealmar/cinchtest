@@ -150,7 +150,7 @@ CIOrderViewController
     self.orderDetailDeleteButton.layer.borderColor = [UIColor colorWithRed:0.906 green:0.298 blue:0.235 alpha:1.000].CGColor;
     self.orderDetailDeleteButton.backgroundColor = [UIColor colorWithRed:0.937 green:0.541 blue:0.502 alpha:1.000];
 
-    CINavViewManager *navViewManager = [[CINavViewManager alloc] init];
+    CINavViewManager *navViewManager = [[CINavViewManager alloc] init:YES];
     navViewManager.delegate = self;
     navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Orders"];
     [navViewManager setupNavBar];

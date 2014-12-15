@@ -31,8 +31,8 @@
 @synthesize min;
 @synthesize quantity;
 @synthesize qtyLbl;
-@synthesize regPrice;
-@synthesize showPrice;
+@synthesize price2;
+@synthesize price1;
 
 - (void)initializeWithDiscount:(DiscountLineItem *)discount tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
@@ -44,9 +44,9 @@
     self.quantity.hidden = YES;
     self.qtyLbl.font = discountFont;
     self.qtyLbl.hidden = NO;
-    self.regPrice.text = @"";
-    self.showPrice.text = [NumberUtil formatCentsAsCurrency:discount.price];
-    self.showPrice.font = discountFont;
+    self.price2.text = @"";
+    self.price1.text = [NumberUtil formatCentsAsCurrency:discount.price];
+    self.price1.font = discountFont;
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
@@ -61,14 +61,14 @@
     [self setDescription:cart.product.descr withSubtext:cart.product.descr2];
     NSNumber *minNumber = (NSNumber *) [NilUtil nilOrObject:cart.product.min];
     self.min.text = minNumber ? [minNumber stringValue] : @"";
-    self.regPrice.text = [NumberUtil formatCentsAsCurrency:cart.product.regprc];
-    self.showPrice.text = [NumberUtil formatCentsAsCurrency:cart.product.showprc];
+    self.price1.text = [NumberUtil formatCentsAsCurrency:cart.product.showprc];
+    self.price2.text = [NumberUtil formatCentsAsCurrency:cart.product.regprc];
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     self.numOfShipDates.text = cart.shipdates && cart.shipdates.count > 0 ? [NSString stringWithFormat:@"%d", cart.shipdates.count] : @"";
     if (cart.product.editable && cart.product.editable.intValue == 1) {
-        self.showPrice.text = [NumberUtil formatCentsAsCurrency:cart.editablePrice];
+        self.price1.text = [NumberUtil formatCentsAsCurrency:cart.editablePrice];
     }
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
         self.qtyLbl.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];

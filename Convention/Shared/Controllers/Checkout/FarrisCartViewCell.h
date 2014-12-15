@@ -22,8 +22,8 @@
 @property(weak, nonatomic) IBOutlet UILabel *min;
 @property(weak, nonatomic) IBOutlet UITextField *quantity;
 @property(weak, nonatomic) IBOutlet UILabel *qtyLbl;
-@property(weak, nonatomic) IBOutlet UILabel *regPrice;
-@property(weak, nonatomic) IBOutlet UILabel *showPrice;
+@property(weak, nonatomic) IBOutlet UILabel *price1;
+@property(weak, nonatomic) IBOutlet UILabel *price2;
 @property(weak, nonatomic) IBOutlet UILabel *numOfShipDates;
 
 - (IBAction)quantityChanged:(id)sender;

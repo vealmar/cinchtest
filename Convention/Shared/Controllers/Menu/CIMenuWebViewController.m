@@ -26,7 +26,7 @@
         self.searchQuery = @"";
         self.view = self.uiWebView = [[UIWebView alloc] initWithFrame:[UIScreen mainScreen].bounds];
         self.uiWebView.delegate = self;
-        self.navViewManager = [[CINavViewManager alloc] init];
+        self.navViewManager = [[CINavViewManager alloc] init:YES];
         self.navViewManager.delegate = self;
     }
     return self;

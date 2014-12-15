@@ -28,6 +28,8 @@
 @property (nonatomic, weak) id <CINavViewManagerDelegate> delegate;
 @property NSAttributedString *title;
 
+- (id)init:(BOOL)searchable;
+
 - (void)setupNavBar;
 
 @end

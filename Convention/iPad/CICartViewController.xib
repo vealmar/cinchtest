@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="6250" systemVersion="13F34" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CICartViewController">
@@ -15,6 +15,8 @@
                 <outlet property="tableHeaderFarris" destination="102" id="111"/>
                 <outlet property="tableHeaderMinColumn" destination="108" id="Zcm-nQ-1x2"/>
                 <outlet property="tableHeaderPigglyWiggly" destination="63" id="110"/>
+                <outlet property="tableHeaderPrice1Label" destination="106" id="Nqx-yI-gPJ"/>
+                <outlet property="tableHeaderPrice2Label" destination="105" id="5Az-tR-Oyc"/>
                 <outlet property="view" destination="14" id="29"/>
             </connections>
         </placeholder>

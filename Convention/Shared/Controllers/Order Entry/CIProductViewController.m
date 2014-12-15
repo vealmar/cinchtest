@@ -179,7 +179,7 @@
               context:nil];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(resultData)) options:NSKeyValueObservingOptionNew context:NULL];
 
-    CINavViewManager *navViewManager = self.navViewManager = [[CINavViewManager alloc] init];
+    CINavViewManager *navViewManager = self.navViewManager = [[CINavViewManager alloc] init:YES];
     navViewManager.delegate = self;
     [navViewManager setupNavBar];
     [self updateNavigationTitle];

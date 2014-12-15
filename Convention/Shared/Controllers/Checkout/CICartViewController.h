@@ -11,6 +11,7 @@
 #import "CIStoreQtyTableViewController.h"
 #import "CISignatureViewController.h"
 #import "ProductCellDelegate.h"
+#import "CINavViewManager.h"
 
 @class Cart;
 @class ALineItem;
@@ -25,7 +26,7 @@
 
 @end
 
-@interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate, SignatureDelegate>
+@interface CICartViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, ProductCellDelegate, SignatureDelegate, CINavViewManagerDelegate>
 
 @property(nonatomic, strong) IBOutlet UITableView *productsUITableView;
 @property(nonatomic, strong) NSDictionary *customer;
@@ -42,6 +43,8 @@
 @property(nonatomic, assign) id <CICartViewDelegate> delegate;
 @property(weak, nonatomic) IBOutlet UIButton *zeroVouchers;
 
+@property(weak, nonatomic) IBOutlet UILabel *tableHeaderPrice1Label;
+@property(weak, nonatomic) IBOutlet UILabel *tableHeaderPrice2Label;
 @property(weak, nonatomic) IBOutlet UILabel *lblShipDate1;
 @property(weak, nonatomic) IBOutlet UILabel *lblShipDate2;
 @property(weak, nonatomic) IBOutlet UILabel *lblShipDateCount;

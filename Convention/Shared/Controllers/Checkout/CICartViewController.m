@@ -21,6 +21,7 @@
 #import "Product+Extensions.h"
 #import "DiscountLineItem.h"
 #import "ALineItem.h"
+#import "ThemeUtil.h"
 
 
 @interface CICartViewController ()
@@ -119,6 +120,9 @@
             customer[kBillName] != nil &&
             ![customer[kBillName] isKindOfClass:[NSNull class]] ? customer[kBillName] : @"";
     self.vendorLabel.text = [helper displayNameForVendor:self.selectedVendorId];
+    self.tableHeaderPrice1Label.text = [[ShowConfigurations instance] price1Label];
+    self.tableHeaderPrice2Label.text = [[ShowConfigurations instance] price2Label];
+
     self.unsavedChangesPresent = NO;
 
     self.productsUITableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -139,37 +143,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
                                                  name:UIKeyboardDidHideNotification object:nil];
 
-    [self setupNavBar];
-}
-
-- (void)setupNavBar {
-    UINavigationController *navController = self.navigationController;
-    UINavigationItem *navItem = self.navigationItem;
-
-    navController.navigationBar.barTintColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
-
-    if ([self.customer objectForKey:kBillName] != nil) {
-//        navItem.title = [self.customer objectForKey:kBillName];
-        navItem.title = [NSString stringWithFormat:@"Products in Cart - %@", [self.customer objectForKey:kCustID]];
-    }
-
-    [navController.navigationBar setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:24],
-                                                           NSForegroundColorAttributeName: [UIColor whiteColor] }];
-
-    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf00d" style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [self Cancel:nil];
-    }];
-    [menuItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
-                                        NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
-
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-done"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [self finishOrder:nil];
-    }];
-    [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
-                                       NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
-
-    navItem.leftBarButtonItems = @[menuItem];
-    navItem.rightBarButtonItems = @[addItem];
+    CINavViewManager *navViewManager = [[CINavViewManager alloc] init:NO];
+    navViewManager.delegate = self;
+    [navViewManager setupNavBar];
+    navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s - %b", @"Order Summary", [self.customer objectForKey:kBillName]];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -644,5 +621,32 @@
     keyboardUp = NO;
     [UIView commitAnimations];
 }
+
+#pragma mark - CINavViewManagerDelegate
+
+- (UINavigationController *)navigationControllerForNavViewManager {
+    return self.navigationController;
+}
+
+- (UINavigationItem *)navigationItemForNavViewManager {
+    return self.navigationItem;
+}
+
+- (NSArray *)leftActionItems {
+    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf00d" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self Cancel:nil];
+    }];
+
+    return @[ menuItem ];
+}
+
+- (NSArray *)rightActionItems {
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-done"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self finishOrder:nil];
+    }];
+
+    return @[ addItem ];
+}
+
 
 @end

@@ -11,10 +11,19 @@
 @interface CINavViewManager()
 
 @property UITextField *searchTextField;
+@property BOOL searchable;
 
 @end
 
 @implementation CINavViewManager
+
+- (id)init:(BOOL)searchable {
+    self = [super init];
+    if (self) {
+        self.searchable = searchable;
+    }
+    return self;
+}
 
 - (void)setupNavBar {
     [self setupNavBar:nil];
@@ -45,11 +54,6 @@
         term = searchText;
     }
 
-    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:[NSString stringWithFormat:@"   %@", term] style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [self setupNavBarSearch:searchText];
-    }];
-    [searchItem setTitleTextAttributes:[ThemeUtil navigationSearchLabelTextAttributes] forState:UIControlStateNormal];
-
     NSArray *leftBarButtonItems = self.leftBarButtonItems;
     Underscore.array(leftBarButtonItems).each(^(UIBarButtonItem *item) {
         [item setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
@@ -60,7 +64,15 @@
         [item setTitleTextAttributes:[ThemeUtil navigationRightActionButtonTextAttributes] forState:UIControlStateNormal];
     });
 
-    navItem.leftBarButtonItems = [leftBarButtonItems arrayByAddingObject:searchItem];
+    if (self.searchable) {
+        UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:[NSString stringWithFormat:@"   %@", term] style:UIBarButtonItemStylePlain handler:^(id sender) {
+            [self setupNavBarSearch:searchText];
+        }];
+        [searchItem setTitleTextAttributes:[ThemeUtil navigationSearchLabelTextAttributes] forState:UIControlStateNormal];
+        leftBarButtonItems = [leftBarButtonItems arrayByAddingObject:searchItem];
+    }
+
+    navItem.leftBarButtonItems = leftBarButtonItems;
     navItem.rightBarButtonItems = rightBarButtonItems;
 }
 
