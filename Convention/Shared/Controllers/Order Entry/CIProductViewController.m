@@ -35,6 +35,8 @@
 #import "CinchJSONAPIClient.h"
 #import "BulletinViewController.h"
 #import "EditableEntity+Extensions.h"
+#import "JMStaticContentTableViewController.h"
+#import "Aspects.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
@@ -51,6 +53,10 @@
 @property(strong, nonatomic) AnOrder *savedOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
 @property ProductSearchQueue *productSearchQueue;
+
+@property (strong, nonatomic) UIBarButtonItem *filterBarButtonItem;
+@property (strong, nonatomic) JMStaticContentTableViewController *filterStaticController;
+@property (strong, nonatomic) UISwitch *filterCartSwitch;
 @end
 
 @implementation CIProductViewController
@@ -206,9 +212,10 @@
     [searchItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
                                           NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] } forState:UIControlStateNormal];
 
-    UIBarButtonItem *filterItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-filters-selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
+    self.filterBarButtonItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-filter-selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self showVendorView];
     }];
-    [filterItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
+    [self.filterBarButtonItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
                                        NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
 
     UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-cart"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
@@ -218,7 +225,7 @@
                                        NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
 
     navItem.leftBarButtonItems = @[menuItem, searchItem];
-    navItem.rightBarButtonItems = @[filterItem, addItem];
+    navItem.rightBarButtonItems = @[addItem, self.filterBarButtonItem];
 }
 
 - (void)setupNavBarSearch:(NSString*)searchText {
@@ -379,12 +386,22 @@
         Product *product = (Product *) obj;
         NSNumber *vendorId = product.vendor_id;
         if (currentVendor == 0 || (vendorId && [vendorId integerValue] == currentVendor)) {
-            NSNumber *productId = product.productId;
-            [self.vendorProductIds addObject:productId];
-            [self.vendorProducts addObject:[[AProduct alloc] initWithCoreDataProduct:product]];
-            NSNumber *bulletinId = product.bulletin_id;
-            if (currentBulletin == 0 || (bulletinId && [bulletinId integerValue] == currentBulletin))
-                [products addObject:product];
+
+            BOOL addProduct = YES;
+
+            if (self.filterCartSwitch.on) {
+                Cart *cart = [self.coreDataOrder findOrCreateCartForId:product.productId context:self.managedObjectContext];
+                addProduct = (cart.totalQuantity > 0);
+            }
+
+            if (addProduct) {
+                NSNumber *productId = product.productId;
+                [self.vendorProductIds addObject:productId];
+                [self.vendorProducts addObject:[[AProduct alloc] initWithCoreDataProduct:product]];
+                NSNumber *bulletinId = product.bulletin_id;
+                if (currentBulletin == 0 || (bulletinId && [bulletinId integerValue] == currentBulletin))
+                    [products addObject:product];
+            }
         }
     }];
     NSArray *sortedProducts = [helper sortProductsByinvtId:products];
@@ -525,36 +542,150 @@
     });
 }
 
-#pragma mark - Other Views
+#pragma mark - VendorViewDelegate
+
+- (void)setVendor:(NSInteger)vendorId {
+    currentVendor = vendorId;
+    currentBulletin = 0;
+    [((UINavigationController*)self.poController.contentViewController) popViewControllerAnimated:YES];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.filterStaticController.tableView reloadData];
+    });
+
+    [self loadProductsForCurrentVendorAndBulletin];
+}
+
+- (void)setBulletin:(NSInteger)bulletinId {
+    currentBulletin = bulletinId;
+    [((UINavigationController*)self.poController.contentViewController) popViewControllerAnimated:YES];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.filterStaticController.tableView reloadData];
+    });
+
+    [self loadProductsForCurrentVendorAndBulletin];
+}
+
+- (void)dismissVendorPopover {
+    return;
+    
+    if ([self.poController isPopoverVisible])
+        [self.poController dismissPopoverAnimated:YES];
+    [self loadProductsForCurrentVendorAndBulletin];
+}
+
+- (void)filterCartSwitchChanged {
+    [self loadProductsForCurrentVendorAndBulletin];
+}
 
 /**
 * SG: This is the Bulletins drop down.
 */
 - (void)showVendorView {
+    self.filterStaticController = [[JMStaticContentTableViewController alloc] initWithStyle:UITableViewStylePlain];
+
+    self.filterCartSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
+    self.filterCartSwitch.on = NO;
+    [self.filterCartSwitch addTarget:self action:@selector(filterCartSwitchChanged) forControlEvents:UIControlEventValueChanged];
+
+    __weak typeof(self) weakSelf = self;
+    [self.filterStaticController addSection:^(JMStaticContentTableViewSection *section, NSUInteger sectionIndex) {
+        [section addCell:^(JMStaticContentTableViewCell *staticContentCell, UITableViewCell *cell, NSIndexPath *indexPath) {
+            staticContentCell.reuseIdentifier = @"UIControlCell";
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+            cell.textLabel.text = @"In Cart";
+            cell.accessoryView = weakSelf.filterCartSwitch;
+        }];
+
+        [section addCell:^(JMStaticContentTableViewCell *staticContentCell, UITableViewCell *cell, NSIndexPath *indexPath) {
+            staticContentCell.cellStyle = UITableViewCellStyleValue1;
+            staticContentCell.reuseIdentifier = @"DetailTextCell";
+
+            cell.textLabel.text = @"Vendor";
+
+            if (currentVendor == 0) {
+                cell.detailTextLabel.text = @"All";
+            } else {
+                for (NSDictionary *vendor in vendorsData) {
+                    if ([vendor[@"id"] intValue] == currentVendor) {
+                        cell.detailTextLabel.text = vendor[@"name"];
+                        break;
+                    }
+                }
+            }
+        } whenSelected:^(NSIndexPath *indexPath) {
+            VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
+            vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
+            if (bulletins != nil) vendorViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
+            vendorViewController.delegate = self;
+
+            [self.filterStaticController.navigationController pushViewController:vendorViewController animated:YES];
+        }];
+
+        [section addCell:^(JMStaticContentTableViewCell *staticContentCell, UITableViewCell *cell, NSIndexPath *indexPath) {
+            staticContentCell.cellStyle = UITableViewCellStyleValue1;
+            staticContentCell.reuseIdentifier = @"DetailTextCell";
+
+            cell.textLabel.text = @"Brand";
+
+            if (currentBulletin == 0) {
+                cell.detailTextLabel.text = @"All";
+            } else {
+                if (currentVendor == 0) {
+                    cell.detailTextLabel.text = @"All";
+                } else {
+                    NSArray *items = bulletins[@(currentVendor)];
+                    for (NSDictionary *item in items) {
+                        if ([item[@"id"] intValue] == currentBulletin) {
+                            cell.detailTextLabel.text = item[@"name"];
+                            break;
+                        }
+                    }
+                }
+            }
+
+        } whenSelected:^(NSIndexPath *indexPath) {
+            BulletinViewController *bulletinViewController = [[BulletinViewController alloc] initWithNibName:@"BulletinViewController" bundle:nil];
+            bulletinViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
+            bulletinViewController.currentVendId = currentVendor;
+            bulletinViewController.delegate = self;
+
+            [self.filterStaticController.navigationController pushViewController:bulletinViewController animated:YES];
+        }];
+    }];
+
+    [self.filterStaticController aspect_hookSelector:@selector(viewWillAppear:) withOptions:AspectPositionAfter usingBlock:^(id instance, NSArray *args) {
+        self.filterStaticController.tableView.separatorColor = [UIColor colorWithRed:0.839 green:0.839 blue:0.851 alpha:1];
+//        self.filterStaticController.view.frame = CGRectMake(0, 0, 100, 100);
+//        self.filterStaticController.navigationController.view.frame = CGRectMake(0, 0, 100, 100);
+        self.filterStaticController.navigationController.navigationBarHidden = YES;
+
+        self.poController.popoverContentSize = CGSizeMake(320, 133);
+        NSLog(@"appears");
+    } error:nil];
+
+    [self.filterStaticController aspect_hookSelector:@selector(viewWillDisappear:) withOptions:AspectPositionAfter usingBlock:^(id instance, NSArray *args) {
+        [self.poController setPopoverContentSize:CGSizeMake(320, 480) animated:YES];
+        NSLog(@"disapp");
+    } error:nil];
+
+
+/*
     UIViewController *rootDropdownController;
-    if ([ShowConfigurations instance].vendorMode) {
-        BulletinViewController *bulletinViewController = [[BulletinViewController alloc] initWithNibName:@"BulletinViewController" bundle:nil];
-        bulletinViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
-        bulletinViewController.delegate = self;
-        rootDropdownController = bulletinViewController;
-    } else {
-        VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
-        vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
-        if (bulletins != nil) vendorViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
-        vendorViewController.delegate = self;
-        rootDropdownController = vendorViewController;
-    }
+//    if ([ShowConfigurations instance].vendorMode) {
+//    } else {
+//    }
 
-    CGRect frame = self.vendorDropdown.frame;
-    frame = CGRectOffset(frame, 0, 0);
-
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:rootDropdownController];
+*/
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:self.filterStaticController];
     nav.navigationBarHidden = NO;
     UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:nil action:nil];
     nav.navigationItem.backBarButtonItem = backButton;
 
     self.poController = [[UIPopoverController alloc] initWithContentViewController:nav];
-    [self.poController presentPopoverFromRect:frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    [self.poController presentPopoverFromBarButtonItem:self.filterBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 - (void)closeCalendar {
@@ -1002,22 +1133,6 @@
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
     [self reloadProducts];
-}
-
-#pragma mark - VendorViewDelegate
-
-- (void)setVendor:(NSInteger)vendorId {
-    currentVendor = vendorId;
-}
-
-- (void)setBulletin:(NSInteger)bulletinId {
-    currentBulletin = bulletinId;
-}
-
-- (void)dismissVendorPopover {
-    if ([self.poController isPopoverVisible])
-        [self.poController dismissPopoverAnimated:YES];
-    [self loadProductsForCurrentVendorAndBulletin];
 }
 
 #pragma CICartViewDelegate

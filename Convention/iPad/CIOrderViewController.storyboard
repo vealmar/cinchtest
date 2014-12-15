@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="13F34" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="L2z-Wh-GlW">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="L2z-Wh-GlW">
     <dependencies>
         <deployment identifier="iOS"/>
         <development version="5000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <customFonts key="customFonts">
         <mutableArray key="OPENSANS-REGULAR_1.TTF">
@@ -26,7 +26,6 @@
             <string>OpenSans</string>
         </mutableArray>
         <mutableArray key="OPENSANS-SEMIBOLD_1.TTF">
-            <string>OpenSans-Semibold</string>
             <string>OpenSans-Semibold</string>
             <string>OpenSans-Semibold</string>
         </mutableArray>
@@ -263,18 +262,11 @@
                                         <rect key="frame" x="0.0" y="596" width="670" height="36"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="BeB-1x-TOs">
-                                                <rect key="frame" x="8" y="0.0" width="465" height="36"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="BeB-1x-TOs">
+                                                <rect key="frame" x="8" y="0.0" width="649" height="36"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                                 <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="14"/>
                                                 <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$272.45" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="UtY-ey-pph">
-                                                <rect key="frame" x="474" y="0.0" width="189" height="36"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" name="OpenSans-Semibold" family="Open Sans" pointSize="14"/>
-                                                <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -307,6 +299,7 @@
                         <outlet property="orderDetailCustomerView" destination="ut5-uZ-9Na" id="gkk-SK-xgI"/>
                         <outlet property="orderDetailDeleteButton" destination="Xke-LG-Y6x" id="CAt-Zh-eqx"/>
                         <outlet property="orderDetailEditButton" destination="Lkc-Wc-nOa" id="Oom-sz-XaE"/>
+                        <outlet property="orderDetailLabel" destination="BeB-1x-TOs" id="daJ-3I-PNA"/>
                         <outlet property="orderDetailNotesLabel" destination="ES7-qA-HWv" id="ugD-7d-dky"/>
                         <outlet property="orderDetailNotesView" destination="zg4-kn-PPz" id="SxC-sg-KFO"/>
                         <outlet property="orderDetailOrderNumberLabel" destination="I2n-wZ-9VN" id="O0T-Xf-tJO"/>
@@ -314,10 +307,8 @@
                         <outlet property="orderDetailPaymentTermsView" destination="3YC-yt-zYg" id="SLw-e2-g12"/>
                         <outlet property="orderDetailSaveButton" destination="Cng-qZ-sWf" id="Mow-wJ-efh"/>
                         <outlet property="orderDetailShipTotalView" destination="foe-6u-JUa" id="8Ot-jw-qUb"/>
-                        <outlet property="orderDetailShippingLabel" destination="BeB-1x-TOs" id="MBe-5K-XwD"/>
                         <outlet property="orderDetailTable" destination="YnO-ye-7jz" id="XYO-ZU-6g6"/>
                         <outlet property="orderDetailTableParentView" destination="edG-jd-O4g" id="fuJ-Ol-dop"/>
-                        <outlet property="orderDetailTotalLabel" destination="UtY-ey-pph" id="dX1-GN-6Ae"/>
                         <outlet property="orderDetailView" destination="89b-In-fVe" id="isr-9S-Bv9"/>
                         <outlet property="sideTable" destination="ceu-CP-TsE" id="td3-fS-fB8"/>
                     </connections>

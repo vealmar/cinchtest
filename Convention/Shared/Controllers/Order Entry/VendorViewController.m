@@ -97,6 +97,9 @@
         UITableViewCell *cell = [self tableView:tableView cellForRowAtIndexPath:indexPath];
         int currentVendor = cell.tag;
         [self.delegate setVendor:currentVendor];
+
+        return;
+
         if (currentVendor != 0) {
             int currentVendId = 0;
             NSUInteger index = [vendors indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {

@@ -299,6 +299,11 @@
 		D832D5631A24CF9300A0EBBF /* glyphicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D832D5621A24CF9300A0EBBF /* glyphicons.ttf */; };
 		D85502A41A3B360F002CE84F /* ico-cell-header-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = D85502A21A3B360F002CE84F /* ico-cell-header-icon.png */; };
 		D85502A51A3B360F002CE84F /* ico-cell-header-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D85502A31A3B360F002CE84F /* ico-cell-header-icon@2x.png */; };
+		D8B385241A3E0022007FA957 /* JMStaticContentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D8B3851D1A3E0022007FA957 /* JMStaticContentTableViewCell.m */; };
+		D8B385251A3E0022007FA957 /* JMStaticContentTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8B3851F1A3E0022007FA957 /* JMStaticContentTableViewController.m */; };
+		D8B385261A3E0022007FA957 /* JMStaticContentTableViewSection.m in Sources */ = {isa = PBXBuildFile; fileRef = D8B385211A3E0022007FA957 /* JMStaticContentTableViewSection.m */; };
+		D8B385271A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D8B385231A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.m */; };
+		D8B3852A1A3E02FF007FA957 /* Aspects.m in Sources */ = {isa = PBXBuildFile; fileRef = D8B385291A3E02FE007FA957 /* Aspects.m */; };
 		D8C7055A1A037E6A00D395AE /* CIFinalCustomerFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */; };
 		EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD10188851810004ABB6 /* GLKit.framework */; };
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
@@ -729,6 +734,17 @@
 		D832D5621A24CF9300A0EBBF /* glyphicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = glyphicons.ttf; sourceTree = "<group>"; };
 		D85502A21A3B360F002CE84F /* ico-cell-header-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-cell-header-icon.png"; sourceTree = "<group>"; };
 		D85502A31A3B360F002CE84F /* ico-cell-header-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ico-cell-header-icon@2x.png"; sourceTree = "<group>"; };
+		D8B3851B1A3E0022007FA957 /* JMStaticContentTableViewBlocks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JMStaticContentTableViewBlocks.h; sourceTree = "<group>"; };
+		D8B3851C1A3E0022007FA957 /* JMStaticContentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JMStaticContentTableViewCell.h; sourceTree = "<group>"; };
+		D8B3851D1A3E0022007FA957 /* JMStaticContentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JMStaticContentTableViewCell.m; sourceTree = "<group>"; };
+		D8B3851E1A3E0022007FA957 /* JMStaticContentTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JMStaticContentTableViewController.h; sourceTree = "<group>"; };
+		D8B3851F1A3E0022007FA957 /* JMStaticContentTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JMStaticContentTableViewController.m; sourceTree = "<group>"; };
+		D8B385201A3E0022007FA957 /* JMStaticContentTableViewSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JMStaticContentTableViewSection.h; sourceTree = "<group>"; };
+		D8B385211A3E0022007FA957 /* JMStaticContentTableViewSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JMStaticContentTableViewSection.m; sourceTree = "<group>"; };
+		D8B385221A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JMStaticContentTextFieldTableViewCell.h; sourceTree = "<group>"; };
+		D8B385231A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JMStaticContentTextFieldTableViewCell.m; sourceTree = "<group>"; };
+		D8B385281A3E02FE007FA957 /* Aspects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Aspects.h; sourceTree = "<group>"; };
+		D8B385291A3E02FE007FA957 /* Aspects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Aspects.m; sourceTree = "<group>"; };
 		D8C705571A037E6A00D395AE /* CIFinalCustomerFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIFinalCustomerFormViewController.h; sourceTree = "<group>"; };
 		D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIFinalCustomerFormViewController.m; sourceTree = "<group>"; };
 		EB5BBD10188851810004ABB6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
@@ -1543,6 +1559,9 @@
 		6E11856B145F2F2200568ED1 /* Convention */ = {
 			isa = PBXGroup;
 			children = (
+				D8B385281A3E02FE007FA957 /* Aspects.h */,
+				D8B385291A3E02FE007FA957 /* Aspects.m */,
+				D8B3851A1A3E0022007FA957 /* JMStaticContentTableViewController */,
 				6DDC94B86463E7827BFC472C /* Supporting Files */,
 				6DDC9B7C71A0E8E110122F8D /* Shared */,
 				6DDC9C5F6EC4922D84897CB1 /* iPhone */,
@@ -1615,6 +1634,22 @@
 				D85502A31A3B360F002CE84F /* ico-cell-header-icon@2x.png */,
 			);
 			name = "New Images";
+			sourceTree = "<group>";
+		};
+		D8B3851A1A3E0022007FA957 /* JMStaticContentTableViewController */ = {
+			isa = PBXGroup;
+			children = (
+				D8B3851B1A3E0022007FA957 /* JMStaticContentTableViewBlocks.h */,
+				D8B3851C1A3E0022007FA957 /* JMStaticContentTableViewCell.h */,
+				D8B3851D1A3E0022007FA957 /* JMStaticContentTableViewCell.m */,
+				D8B3851E1A3E0022007FA957 /* JMStaticContentTableViewController.h */,
+				D8B3851F1A3E0022007FA957 /* JMStaticContentTableViewController.m */,
+				D8B385201A3E0022007FA957 /* JMStaticContentTableViewSection.h */,
+				D8B385211A3E0022007FA957 /* JMStaticContentTableViewSection.m */,
+				D8B385221A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.h */,
+				D8B385231A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.m */,
+			);
+			path = JMStaticContentTableViewController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1918,9 +1953,11 @@
 				6DDC9404B973A09EDCC1FA45 /* NSString+Boost.m in Sources */,
 				6DDC9306DF4A4FB7E372CA17 /* UIColor+Boost.m in Sources */,
 				6DDC9B0980CCE368184AE84E /* UIImage+Boost.m in Sources */,
+				D8B3852A1A3E02FF007FA957 /* Aspects.m in Sources */,
 				6DDC94215F42823BC94981E6 /* UIView+Boost.m in Sources */,
 				6DDC9354BD4C61382EE09331 /* DayButton.m in Sources */,
 				6DDC9D3D8CFBF2021A71B3F8 /* DDCalendarView.m in Sources */,
+				D8B385261A3E0022007FA957 /* JMStaticContentTableViewSection.m in Sources */,
 				6DDC9B5B35DE149FABF28D94 /* MBProgressHUD.m in Sources */,
 				6DDC99B941D8CCC2697FC208 /* CKCalendarView.m in Sources */,
 				6DDC95E10F9DA00CDC26B22B /* CIAppDelegate.m in Sources */,
@@ -1929,8 +1966,10 @@
 				6DDC9BB4D582A0B0C54DF78B /* CIOrderViewController.m in Sources */,
 				6DDC962E7A74B52F7554E4D9 /* CIOrderCell.m in Sources */,
 				6DDC9FEF40185848D0E16589 /* CIItemEditCell.m in Sources */,
+				D8B385241A3E0022007FA957 /* JMStaticContentTableViewCell.m in Sources */,
 				6DDC995940F5A5035A4BB228 /* PrinterSelectionViewController.m in Sources */,
 				6DDC95B18B894B04EE3F114E /* CICustomerInfoViewController.m in Sources */,
+				D8B385251A3E0022007FA957 /* JMStaticContentTableViewController.m in Sources */,
 				6DDC96BA2C8E301C734D7E1F /* CIStoreQtyTableViewController.m in Sources */,
 				6DDC901DAD87534EFA576872 /* CIStoreQtyCell.m in Sources */,
 				6DDC9A2956150B005FFA756A /* BulletinViewController.m in Sources */,
@@ -1968,6 +2007,7 @@
 				6DDC999204AECDD7139DFBC6 /* ProductCart.xcdatamodeld in Sources */,
 				6DDC99151D613B6F5063F10B /* AProduct.m in Sources */,
 				6DDC9DD56296AA3D69F9CBD7 /* GroupedObject.m in Sources */,
+				D8B385271A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.m in Sources */,
 				6DDC9BBCC5B783A610FAA155 /* ProductCart.xcmappingmodel in Sources */,
 				6DDC9BCDEEB70A3EA5BBE625 /* Cart+Extensions.m in Sources */,
 				6DDC99E4EAC13717CDA53BFD /* vender.m in Sources */,
