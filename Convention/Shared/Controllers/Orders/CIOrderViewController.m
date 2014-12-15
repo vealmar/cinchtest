@@ -565,7 +565,7 @@ SG: The argument 'detail' is the selected order.
     BOOL orderAccessible = NO;
     if (currentOrder) {
         NSString *orderStatus = [currentOrder.status lowercaseString];
-        if (![orderStatus rangeOfString:@"complete"].length > 0 || [orderStatus rangeOfString:@"submit"].length > 0) {
+        if (![orderStatus rangeOfString:@"submit"].length > 0) {
             orderAccessible = YES;
         }
     }
