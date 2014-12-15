@@ -35,13 +35,12 @@
 @property(nonatomic, strong) NSArray *discountsInCart;
 @property(nonatomic) BOOL initialized;
 
-@property (strong, nonatomic) IBOutlet UIView *totalsView;
-@property (strong, nonatomic) IBOutlet UILabel *totalsLabel;
-
 @property (strong, nonatomic) AnOrder *workingOrder;
 @property (assign) float totalGross;
 @property (assign) float totalDiscounts;
 @property (assign) float totalFinal;
+
+@property (strong, nonatomic) NSMutableArray *subtotalLines;
 @end
 
 @implementation CICartViewController {
@@ -251,6 +250,8 @@
 
     NSDate *earliestDate = nil;
 
+    self.subtotalLines = [NSMutableArray array];
+
     for (ALineItem *line in self.workingOrder.lineItems) {
         Product *product = (Product *) [coreDataUtil fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", line.productId]];
 
@@ -283,24 +284,14 @@
     [dateFormatter setDateFormat:@"dd/MM/yyyy"];
     [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
 
-    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
-    paragraph.alignment = NSTextAlignmentRight;
-    paragraph.lineSpacing = 5;
-    paragraph.tabStops = @[[[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
-                                                           location:self.totalsLabel.bounds.size.width - 700
-                                                            options:nil],
-                           [[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
-                                                           location:self.totalsLabel.bounds.size.width - 200
-                                                            options:nil]];
-
-    NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
-
     [orderedDates sortUsingSelector:@selector(compare:)];
+
+    NSMutableArray *line = nil;
     for (int i = 0; i < orderedDates.count; i++) {
         NSDate *date = (NSDate*)[orderedDates objectAtIndex:i];
 
-        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"Shipping on %@\t", [dateFormatter stringFromDate:date]]
-                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:13], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+        line = [NSMutableArray array];
+        [line addObject:[NSString stringWithFormat:@"Shipping on %@", [dateFormatter stringFromDate:date]]];
 
         float total = 0;
         for (NSArray *pair in dateProducts[date]) {
@@ -316,36 +307,24 @@
 
         NSString *priceString = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:total / 100.0] numberStyle:NSNumberFormatterCurrencyStyle];
 
-        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:priceString
-                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:15], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+        [line addObject:priceString];
+        [self.subtotalLines addObject:line];
     }
 
     NSString *s = nil;
+
+    if (self.totalDiscounts > 0) {
+        s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
+        [self.subtotalLines addObject:@[@"SUBTOTAL", s]];
+
+        s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:fabsf(self.totalDiscounts)] numberStyle:NSNumberFormatterCurrencyStyle];
+        [self.subtotalLines addObject:@[@"DISCOUNT", s]];
+    }
+
     s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"SUBTOTAL\t%@", s]
-                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+    [self.subtotalLines addObject:@[@"TOTAL", s]];
 
-    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:fabsf(self.totalDiscounts)] numberStyle:NSNumberFormatterCurrencyStyle];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"DISCOUNT\t%@", s]
-                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
-
-    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"TOTAL\t"]
-                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@", s]
-                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont semiboldFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
-
-    self.totalsLabel.attributedText = attributedString;
-    self.totalsLabel.textAlignment = NSTextAlignmentRight;
-    [self.totalsLabel sizeToFit];
-    self.totalsView.frame = CGRectMake(0, self.view.frame.size.height - self.totalsLabel.frame.size.height + 5, self.view.frame.size.width, self.totalsLabel.frame.size.height - 5);
-    self.totalsLabel.frame = CGRectMake(0, 0, self.totalsView.bounds.size.width - 10, self.totalsView.bounds.size.height);
-
-    self.productsUITableView.frame = CGRectMake(0, 85, 1024, 683 - self.totalsView.frame.size.height);
+    [self.productsUITableView reloadData];
 }
 
 - (void)dismissSelf {
@@ -364,27 +343,89 @@
 
 #pragma mark - Table stuff
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
-    return section == 0 ? self.productsInCart.count : self.discountsInCart.count;
+    switch (section) {
+        case 0: {
+            return self.productsInCart.count;
+        }
+        case 1: {
+            return self.discountsInCart.count;
+        }
+        case 2: {
+            return self.subtotalLines.count + 1;
+        }
+    }
+    return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([indexPath section] == 0) { //product items
-        NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-        [cell initializeWithCart:cart tag:[indexPath row] ProductCellDelegate:self];
-        return cell;
-    } else { //discount items
-        NSNumber *lineItemId = self.discountsInCart[(NSUInteger) [indexPath row]];
-        DiscountLineItem *discountLineItem = [self.coreDataOrder findDiscountForLineItemId:lineItemId];
-        FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-        [cell initializeWithDiscount:discountLineItem tag:[indexPath row] ProductCellDelegate:self];
-        return cell;
+    switch (indexPath.section) {
+        case 0: {
+            NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
+            Cart *cart = [self.coreDataOrder findCartForProductId:productId];
+            FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
+            [cell initializeWithCart:cart tag:[indexPath row] ProductCellDelegate:self];
+            return cell;
+        }
+        case 1: {
+            NSNumber *lineItemId = self.discountsInCart[(NSUInteger) [indexPath row]];
+            DiscountLineItem *discountLineItem = [self.coreDataOrder findDiscountForLineItemId:lineItemId];
+            FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
+            [cell initializeWithDiscount:discountLineItem tag:[indexPath row] ProductCellDelegate:self];
+            return cell;
+        }
+        case 2: {
+            static NSString *odcId = @"stlId";
+
+            int index = indexPath.row - 1;
+
+            UILabel *cleftLabel = nil;
+            UILabel *crightLabel = nil;
+
+            UITableViewCell *cell = [myTableView dequeueReusableCellWithIdentifier:odcId];
+            if (cell == nil) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:odcId];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+                cleftLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 850, 44)];
+                cleftLabel.tag = 1001;
+                cleftLabel.backgroundColor = [UIColor clearColor];
+                cleftLabel.font = [UIFont regularFontOfSize:14];
+                cleftLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                cleftLabel.numberOfLines = 0;
+                cleftLabel.textAlignment = NSTextAlignmentRight;
+                [cell.contentView addSubview:cleftLabel];
+
+                crightLabel = [[UILabel alloc] initWithFrame:CGRectMake(930, 5, 80, 40)];
+                crightLabel.tag = 1002;
+                crightLabel.backgroundColor = [UIColor clearColor];
+                crightLabel.font = [UIFont semiboldFontOfSize:14];
+                crightLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                crightLabel.numberOfLines = 0;
+                crightLabel.textAlignment = NSTextAlignmentLeft;
+                [cell.contentView addSubview:crightLabel];
+            } else {
+                cleftLabel = (UILabel*)[cell.contentView viewWithTag:1001];
+                crightLabel = (UILabel*)[cell.contentView viewWithTag:1002];
+            }
+
+            if (index >= 0) {
+                NSArray *subtotalLine = self.subtotalLines[index];
+                cleftLabel.text = subtotalLine[0];
+                crightLabel.text = subtotalLine[1];
+            } else {
+                cleftLabel.text = @"";
+                crightLabel.text = @"";
+            }
+
+            return cell;
+        }
     }
+
+    return nil;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -408,6 +449,14 @@
         cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
     } else {
         cell.backgroundColor = [UIColor colorWithRed:1.000 green:1.000 blue:1.000 alpha:1];
+    }
+
+    if(indexPath.section == 2) {
+        if (indexPath.row > 0) {
+            cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
+        } else {
+            cell.backgroundColor = [UIColor whiteColor];
+        }
     }
 }
 
