@@ -16,12 +16,13 @@
 * Construct a set of UIBarButtonItem for the nav bar.
 */
 - (NSArray *)actionItems;
-- (void)navViewDidSearch:(NSString *)searchTerm;
+
+- (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted;
 
 @end
 
 
-@interface CINavViewManager : NSObject
+@interface CINavViewManager : NSObject <UITextFieldDelegate>
 
 @property (nonatomic, weak) id <CINavViewManagerDelegate> delegate;
 @property NSAttributedString *title;

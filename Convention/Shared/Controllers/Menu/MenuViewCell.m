@@ -17,18 +17,22 @@
 
 @implementation MenuViewCell
 
+static int iconX = 18;
+static int labelX = 18 + 25;
+static int selectedX = 8;
+
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"MenuViewCell"];
     if (self) {
         self.backgroundView = nil;
         self.selected = NO;
 
-        self.labelIcon = [[UILabel alloc] initWithFrame:CGRectMake(18, 0, 20, 44)];
+        self.labelIcon = [[UILabel alloc] initWithFrame:CGRectMake(iconX, 0, 20, 44)];
         self.labelIcon.font = [UIFont iconAltFontOfSize:14];
         self.labelIcon.textColor = [UIColor colorWithRed:0.576 green:0.592 blue:0.600 alpha:1];
         [self addSubview:self.labelIcon];
 
-        self.label = [[UILabel alloc] initWithFrame:CGRectMake(18 + 25, 0, 200, 44)];
+        self.label = [[UILabel alloc] initWithFrame:CGRectMake(labelX, 0, 200, 44)];
         self.label.font = [UIFont lightFontOfSize:16];
         self.label.textColor = [UIColor whiteColor];
         [self addSubview:self.label];
@@ -52,14 +56,18 @@
 
 -(void)selectCell {
     self.highlightCell.visible = YES;
-    self.labelIcon.textColor = [UIColor whiteColor];
     self.backgroundColor = [ThemeUtil blackColor];
+    self.labelIcon.textColor = [UIColor whiteColor];
+    self.labelIcon.frame = CGRectMake(iconX + selectedX, 0, 20, 44);
+    self.label.frame = CGRectMake(labelX + selectedX, 0, 200, 44);
 }
 
 -(void)unselectCell {
     self.highlightCell.visible = NO;
-    self.labelIcon.textColor = [UIColor colorWithRed:0.576 green:0.592 blue:0.600 alpha:1];
     self.backgroundColor = [UIColor clearColor];
+    self.labelIcon.textColor = [UIColor colorWithRed:0.576 green:0.592 blue:0.600 alpha:1];
+    self.labelIcon.frame = CGRectMake(iconX, 0, 20, 44);
+    self.label.frame = CGRectMake(labelX, 0, 200, 44);
 }
 
 -(void)prepareForDisplay:(MenuLink)menuLink {

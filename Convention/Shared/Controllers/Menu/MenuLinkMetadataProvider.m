@@ -39,7 +39,7 @@ static MenuLinkMetadataProvider *provider = nil;
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkOrderWriter;
-        m.iconCharacter = @"\ue149";
+        m.iconCharacter = @"\ue145";
         m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s", @"Order Writer"];
         [builder addObject:m];
 
@@ -69,18 +69,18 @@ static MenuLinkMetadataProvider *provider = nil;
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkReportSalesByProduct;
-        m.iconCharacter = @"\ue203";
+        m.iconCharacter = @"\ue453";
         m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l %s", @"Sales by", @"Product"];
         m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b", @"Sales by", @"Product"];
-        m.relativeUrl = @"/reports/customer_sales";
+        m.relativeUrl = @"/reports/product_sales";
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkReportSalesByCustomer;
-        m.iconCharacter = @"\ue453";
+        m.iconCharacter = @"\ue203";
         m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l %s", @"Sales by", @"Customer"];
         m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%l %s", @"Sales by", @"Customer"];
-        m.relativeUrl = @"/reports/product_sales";
+        m.relativeUrl = @"/reports/customer_sales";
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];

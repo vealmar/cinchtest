@@ -7,6 +7,7 @@
 #import "config.h"
 #import "CurrentSession.h"
 #import "CINavViewManager.h"
+#import "MBProgressHUD.h"
 
 @interface CIMenuWebViewController() <CINavViewManagerDelegate>
 
@@ -24,6 +25,7 @@
     if (self) {
         self.searchQuery = @"";
         self.view = self.uiWebView = [[UIWebView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        self.uiWebView.delegate = self;
         self.navViewManager = [[CINavViewManager alloc] init];
         self.navViewManager.delegate = self;
     }
@@ -50,12 +52,23 @@
 -(void)navigateTo:(NSURL *)url titled:(NSAttributedString *)title {
     self.navViewManager.title = title;
     NSURL *urlWithSearchQuery = [NSURL URLWithString:[self addQueryStringToUrlString:url.absoluteString withDictionary:@{
-            @"q": self.searchQuery,
             kAuthToken: [CurrentSession instance].authToken
     }]];
     NSURLRequest *request = [NSURLRequest requestWithURL:urlWithSearchQuery];
-    self.currentUrl = urlWithSearchQuery;
+    self.currentUrl = url;
     [self.uiWebView loadRequest:request];
+}
+
+-(void)issueSearchQuery:(NSString *)query {
+    if (self.currentUrl && ![self.searchQuery isEqualToString:query]) {
+        NSURL *urlWithSearchQuery = [NSURL URLWithString:[self addQueryStringToUrlString:self.currentUrl.absoluteString withDictionary:@{
+                @"q": query,
+                kAuthToken: [CurrentSession instance].authToken
+        }]];
+        NSURLRequest *request = [NSURLRequest requestWithURL:urlWithSearchQuery];
+        [self.uiWebView loadRequest:request];
+        self.searchQuery = query;
+    }
 }
 
 -(NSString*)urlEscapeString:(NSString *)unencodedString {
@@ -79,6 +92,34 @@
         }
     }
     return urlWithQuerystring;
+}
+
+#pragma mark - NavViewManagerDelegate
+
+- (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
+    if (inputCompleted) {
+        [self issueSearchQuery:searchTerm];
+    }
+}
+
+
+#pragma mark - UIWebViewDelegate
+
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    return YES;
+}
+
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+    hud.labelText = @"Loading Page...";
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [MBProgressHUD hideHUDForView:self.view animated:NO];
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+
 }
 
 

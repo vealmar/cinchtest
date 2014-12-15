@@ -1482,7 +1482,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     return @[addItem];
 }
 
-- (void)navViewDidSearch:(NSString *)searchTerm {
+- (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
     [self searchWithString:searchTerm];
 }
 

@@ -23,9 +23,8 @@
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 
 @property (weak, nonatomic) IBOutlet UIView *topContentView;
-@property (weak, nonatomic) IBOutlet UIImageView *vendorLogo;
+@property (weak, nonatomic) IBOutlet UIImageView *backgroundImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *vendorBackgroundImageView;
-@property (weak, nonatomic) IBOutlet FXBlurView *blurView;
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
 @property (weak, nonatomic) IBOutlet UILabel *subtitleLabel;
 
@@ -44,13 +43,41 @@
 
     self.topContentView.backgroundColor = [UIColor clearColor];
 
-    self.logoImageView.backgroundColor = [UIColor colorWithRed:0.161 green:0.169 blue:0.169 alpha:1];
-    self.logoImageView.contentMode = UIViewContentModeScaleAspectFit;
-    self.logoImageView.image = [NilUtil objectOrDefault:[ShowConfigurations instance].logo defaultObject:[UIImage imageNamed:@"background-brand"]];
+    self.logoImageView.image = [ShowConfigurations instance].logo;
+    self.vendorBackgroundImageView.clipsToBounds = YES;
+    self.vendorBackgroundImageView.contentMode = UIViewContentModeTopLeft;
+    CGImageRef imageRef = CGImageCreateWithImageInRect([[ShowConfigurations instance].loginScreen CGImage], CGRectMake(0, 0, self.vendorBackgroundImageView.frame.size.width, self.vendorBackgroundImageView.frame.size.height));
+    UIImage *croppedLoginImage = [UIImage imageWithCGImage:imageRef];
+    self.vendorBackgroundImageView.image = [croppedLoginImage blurredImageWithRadius:2.5f iterations:1 tintColor:[UIColor blackColor]];
+    CGImageRelease(imageRef);
+
+    CAGradientLayer *gradientLayerBottom = [CAGradientLayer layer];
+    gradientLayerBottom.frame = CGRectMake(
+            self.vendorBackgroundImageView.bounds.origin.x,
+            self.vendorBackgroundImageView.bounds.origin.y + self.vendorBackgroundImageView.bounds.size.height - 10.0f,
+            self.vendorBackgroundImageView.bounds.size.width,
+            10.0f
+    );
+    gradientLayerBottom.colors = [NSArray arrayWithObjects:
+            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.1f] CGColor],
+            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.7f] CGColor], nil];
+    [self.vendorBackgroundImageView.layer addSublayer:gradientLayerBottom];
+
+    CAGradientLayer *gradientLayerTop = [CAGradientLayer layer];
+    gradientLayerTop.frame = CGRectMake(
+            self.vendorBackgroundImageView.bounds.origin.x,
+            self.vendorBackgroundImageView.bounds.origin.y,
+            self.vendorBackgroundImageView.bounds.size.width,
+            10.0f
+    );
+    gradientLayerTop.colors = [NSArray arrayWithObjects:
+            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.7f] CGColor],
+            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.1f] CGColor], nil];
+    [self.vendorBackgroundImageView.layer addSublayer:gradientLayerTop];
 
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 5, 5)];
+    self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
 
     [self updateTitles:nil];
@@ -69,6 +96,13 @@
     self.menuWebViewController = [[CIMenuWebViewController alloc] init];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+    if (!selectedIndexPath) {
+        [self.tableView selectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] animated:NO scrollPosition:UITableViewScrollPositionTop];
+    }
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -81,16 +115,16 @@
     NSString *vendorName = [NilUtil objectOrEmptyString:session.vendorInfo[@"name"]];
     NSString *showName = [NilUtil objectOrEmptyString:session.vendorInfo[@"current_show"][@"title"]];
     self.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:vendorName attributes:@{
-            NSFontAttributeName: [UIFont semiboldFontOfSize:18],
+            NSFontAttributeName: [UIFont semiboldFontOfSize:20],
             NSForegroundColorAttributeName: [UIColor whiteColor],
             NSShadowAttributeName: shadow,
             NSKernAttributeName: @(-0.5f)
     }];
     self.subtitleLabel.attributedText = [[NSAttributedString alloc] initWithString:showName attributes:@{
-            NSFontAttributeName: [UIFont semiboldFontOfSize:14],
+            NSFontAttributeName: [UIFont semiboldFontOfSize:16],
             NSForegroundColorAttributeName: [UIColor whiteColor],
             NSShadowAttributeName: shadow,
-            NSKernAttributeName: @(-1.0f)
+            NSKernAttributeName: @(-0.75f)
     }];
 }
 
@@ -117,7 +151,13 @@
     if (nil == cell) {
         cell = [[MenuViewCell alloc] init];
     }
-    [cell prepareForDisplay:[self menuLinkFromIndexPath:indexPath]];
+    MenuLink menuLink = [self menuLinkFromIndexPath:indexPath];
+    [cell prepareForDisplay:menuLink];
+
+    if (menuLink == self.activeMenuLink) {
+        cell.selected = YES;
+    }
+        
     return cell;
 }
 
@@ -143,10 +183,10 @@
                     return MenuLinkReportSalesByBrand;
                 }
                 case 1: {
-                    return MenuLinkReportSalesByCustomer;
+                    return MenuLinkReportSalesByProduct;
                 }
                 case 2: {
-                    return MenuLinkReportSalesByProduct;
+                    return MenuLinkReportSalesByCustomer;
                 }
             }
             break;
@@ -164,6 +204,8 @@
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    if (0 == section) return nil;
+
     UIView *v = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 50)];
     v.backgroundColor = [UIColor clearColor];
 
@@ -175,9 +217,6 @@
     [v addSubview:l];
 
     switch (section) {
-        case 0: {
-            return nil;
-        }
         case 1: {
             l.text = @"GENERAL INFORMATION";
             return v;

@@ -7,7 +7,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MenuViewController">
             <connections>
-                <outlet property="blurView" destination="ncX-fV-yms" id="isQ-EQ-ABM"/>
+                <outlet property="backgroundImageView" destination="Q3n-oq-cCf" id="zsK-t8-DZ4"/>
                 <outlet property="helpButton" destination="vdR-3I-ibr" id="qZA-Zh-59h"/>
                 <outlet property="logoImageView" destination="0od-wM-ASY" id="wlm-ez-nww"/>
                 <outlet property="logoutButton" destination="aBZ-oR-WGY" id="lwZ-RT-C6y"/>
@@ -15,8 +15,7 @@
                 <outlet property="tableView" destination="STQ-ls-nsB" id="4kA-GX-Dqa"/>
                 <outlet property="titleLabel" destination="heD-Dd-ZnE" id="hHP-tZ-6Jg"/>
                 <outlet property="topContentView" destination="6GG-wm-3Ns" id="cf4-qu-47m"/>
-                <outlet property="vendorBackgroundImageView" destination="Q3n-oq-cCf" id="zsK-t8-DZ4"/>
-                <outlet property="vendorLogo" destination="LYG-nK-bJf" id="fxj-f0-MNk"/>
+                <outlet property="vendorBackgroundImageView" destination="ncX-fV-yms" id="isQ-EQ-ABM"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -34,15 +33,15 @@
                     </subviews>
                     <color key="backgroundColor" red="0.15686274509803921" green="0.17254901960784313" blue="0.17254901960784313" alpha="1" colorSpace="calibratedRGB"/>
                 </view>
-                <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6GG-wm-3Ns">
+                <view clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6GG-wm-3Ns">
                     <rect key="frame" x="0.0" y="45" width="280" height="260"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q3n-oq-cCf"/>
-                        <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ncX-fV-yms" customClass="FXBlurView">
+                        <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ncX-fV-yms" customClass="UIImageView">
                             <rect key="frame" x="0.0" y="140" width="280" height="120"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heD-Dd-ZnE">
-                                    <rect key="frame" x="0.0" y="43" width="280" height="35"/>
+                                    <rect key="frame" x="0.0" y="44" width="280" height="35"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
@@ -58,8 +57,8 @@
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="background-brand.png" translatesAutoresizingMaskIntoConstraints="NO" id="0od-wM-ASY">
                             <rect key="frame" x="45" y="14" width="190" height="160"/>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LYG-nK-bJf"/>
                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vdR-3I-ibr">
                             <rect key="frame" x="5" y="106" width="75" height="68"/>
                             <state key="normal" backgroundImage="background-help.png">
@@ -75,8 +74,8 @@
                     </subviews>
                     <color key="backgroundColor" red="1" green="0.51210118010000005" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
-                        <constraint firstAttribute="bottom" secondItem="ncX-fV-yms" secondAttribute="bottom" id="7Y5-0Z-9mx"/>
                         <constraint firstItem="ncX-fV-yms" firstAttribute="top" secondItem="6GG-wm-3Ns" secondAttribute="top" constant="140" id="gIW-66-iDr"/>
+                        <constraint firstAttribute="bottom" secondItem="ncX-fV-yms" secondAttribute="bottom" id="xK4-jd-PKq"/>
                     </constraints>
                 </view>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="STQ-ls-nsB">

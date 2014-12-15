@@ -8,6 +8,12 @@
 #import "ThemeUtil.h"
 #import "CIAppDelegate.h"
 
+@interface CINavViewManager()
+
+@property UITextField *searchTextField;
+
+@end
+
 @implementation CINavViewManager
 
 - (void)setupNavBar {
@@ -41,7 +47,7 @@
     [menuItem setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
 
     NSString *term = @"Search...";
-    if (searchText && searchText.length) {
+    if (searchText && searchText.length > 0) {
         term = searchText;
     }
 
@@ -68,15 +74,19 @@
     [navController.navigationBar setBackgroundImage:nil forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     navController.navigationBar.barTintColor = [UIColor blackColor];
 
-    UITextField *searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 800, 40)];
+    UITextField *searchTextField = self.searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 800, 40)];
     searchTextField.font = [UIFont regularFontOfSize:24];
     searchTextField.textColor = [UIColor whiteColor];
-    searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Search..."
-                                                                            attributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] }];
+    searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Search..." attributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] }];
+    searchTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    searchTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+    searchTextField.delegate = self;
     [searchTextField bk_addEventHandler:^(id sender) {
-        [self searchWithString:searchTextField.text];
+        [self searchWithString:searchTextField.text inputCompleted:NO];
     } forControlEvents:UIControlEventEditingChanged];
-
+    [searchTextField bk_addEventHandler:^(id sender) {
+        [self searchWithString:searchTextField.text inputCompleted:YES];
+    } forControlEvents:UIControlEventEditingDidEnd];
     if (searchText && searchText.length) {
         searchTextField.text = searchText;
     }
@@ -84,7 +94,7 @@
     UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:searchTextField];
 
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    dismissButton.frame = self.delegate.navigationController.view.bounds;
+    dismissButton.frame = CGRectMake(0.0f, 44.0f, self.delegate.navigationController.view.bounds.size.width, self.delegate.navigationController.view.bounds.size.height - 44.0f);
     dismissButton.backgroundColor = [UIColor clearColor];
     [self.delegate.navigationController.view addSubview:dismissButton];
 
@@ -99,9 +109,8 @@
     } forControlEvents:UIControlEventTouchUpInside];
 
     UIBarButtonItem *clearItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"Clear" style:UIBarButtonItemStylePlain handler:^(id sender) {
-        searchTextField.text = nil;
-        [self searchWithString:searchTextField.text];
-
+        searchTextField.text = @"";
+        [self searchWithString:searchTextField.text inputCompleted:YES];
         exitSearchMode();
     }];
     [clearItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
@@ -112,13 +121,13 @@
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [searchTextField becomeFirstResponder];
-        [self searchWithString:searchTextField.text];
+        [self searchWithString:searchTextField.text inputCompleted:NO];
     });
 }
 
--(void)searchWithString:(NSString *)searchTerm {
-    if ([self.delegate respondsToSelector:@selector(navViewDidSearch:)]) {
-        [self.delegate navViewDidSearch:searchTerm];
+-(void)searchWithString:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
+    if ([self.delegate respondsToSelector:@selector(navViewDidSearch:inputCompleted:)]) {
+        [self.delegate navViewDidSearch:searchTerm inputCompleted:inputCompleted];
     }
 }
 
@@ -128,6 +137,13 @@
     } else {
         return @[ ];
     }
+}
+
+#pragma mark - UITextFieldDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return NO;
 }
 
 @end

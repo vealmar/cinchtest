@@ -39,7 +39,7 @@ static ShowConfigurations *showConfigurations = nil;
         NSString *loginScreenUrl = ((NSString *) [json objectForKey:@"iosLoginScreen"]);
         showConfigurations.loginScreen = [ShowConfigurations imageFromUrl:loginScreenUrl defaultImage:@"loginBG.png"];
         NSString *logoUrl = ((NSString *) [json objectForKey:@"iosLogo"]);
-        showConfigurations.logo = [ShowConfigurations imageFromUrl:logoUrl defaultImage:@"ci_green.png"];
+        showConfigurations.logo = [ShowConfigurations imageFromUrl:logoUrl defaultImage:@"background-brand"];
         NSString *dateString = ((NSString *) [json objectForKey:@"boothPaymentsDate"]);
         NSDate *date = nil;
         if (![dateString isKindOfClass:[NSNull class]] && [dateString length] > 0) {
