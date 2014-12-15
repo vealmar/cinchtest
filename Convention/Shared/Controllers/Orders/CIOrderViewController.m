@@ -8,6 +8,7 @@
 
 #import <Underscore.m/Underscore.h>
 #import <JSONKit/JSONKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import "CIOrderViewController.h"
 #import "CIOrderCell.h"
 #import "config.h"
@@ -48,7 +49,6 @@
     NSIndexPath *selectedItemRowIndexPath;
     NSMutableArray *partialOrders;
     NSMutableArray *persistentOrders;
-    BOOL unsavedChangesPresent;
     CIProductViewControllerHelper *helper;
     SegmentedControlHelper *cancelDaysHelper;
     ShowConfigurations *showConfig;
@@ -56,6 +56,9 @@
     __weak IBOutlet UILabel *sqLabel;
     __weak IBOutlet UILabel *quantityLabel;
 }
+
+@property BOOL unsavedChangesPresent;
+
 @property (weak, nonatomic) IBOutlet UIView *orderDetailView;
 @property (weak, nonatomic) IBOutlet UILabel *orderDetailOrderNumberLabel;
 @property (weak, nonatomic) IBOutlet UIView *orderDetailCustomerView;
@@ -122,7 +125,7 @@ CIOrderViewController
     }
     self.printButton.hidden = !showConfig.printing;
     self.cancelDaysView.hidden = !showConfig.cancelOrder;
-    unsavedChangesPresent = NO;
+    self.unsavedChangesPresent = NO;
     [self adjustTotals];
     self.orderDetailView.hidden = YES;
     if ([ShowConfigurations instance].printing) currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
@@ -137,6 +140,15 @@ CIOrderViewController
 
     self.orderDetailTable.separatorColor = [UIColor colorWithRed:0.808 green:0.808 blue:0.827 alpha:1];
     self.orderDetailTable.rowHeight = 40;
+
+    self.orderDetailEditButton.layer.borderWidth = 1.0f;
+    self.orderDetailEditButton.layer.cornerRadius = 3.0f;
+    self.orderDetailSaveButton.layer.borderWidth = 1.0f;
+    self.orderDetailSaveButton.layer.cornerRadius = 3.0f;
+    self.orderDetailDeleteButton.layer.cornerRadius = 3.0f;
+    self.orderDetailDeleteButton.layer.borderWidth = 1.0f;
+    self.orderDetailDeleteButton.layer.borderColor = [UIColor colorWithRed:0.906 green:0.298 blue:0.235 alpha:1.000].CGColor;
+    self.orderDetailDeleteButton.backgroundColor = [UIColor colorWithRed:0.937 green:0.541 blue:0.502 alpha:1.000];
 
     CINavViewManager *navViewManager = [[CINavViewManager alloc] init];
     navViewManager.delegate = self;
@@ -186,6 +198,12 @@ CIOrderViewController
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return UIInterfaceOrientationIsLandscape(interfaceOrientation); //we only support landscape orientation.
 }
+
+- (void)setUnsavedChangesPresent:(BOOL)unsavedChangesPresent {
+    _unsavedChangesPresent = unsavedChangesPresent;
+    [self updateOrderActions];
+}
+
 
 - (void)adjustTotals {
     return;
@@ -400,19 +418,6 @@ SG: The argument 'detail' is the selected order.
         }
     }
 
-    NSString *orderStatus = [detail.status lowercaseString];
-    if ([orderStatus rangeOfString:@"complete"].length > 0 || [orderStatus rangeOfString:@"submit"].length > 0) {
-        self.orderDetailEditButton.userInteractionEnabled = NO;
-        self.orderDetailEditButton.backgroundColor = [UIColor colorWithRed:0.916 green:0.700 blue:0.433 alpha:1];
-        self.orderDetailSaveButton.userInteractionEnabled = NO;
-        self.orderDetailSaveButton.backgroundColor = [UIColor colorWithRed:0.916 green:0.700 blue:0.433 alpha:1];
-    } else {
-        self.orderDetailEditButton.userInteractionEnabled = YES;
-        self.orderDetailEditButton.backgroundColor = [UIColor colorWithRed:0.816 green:0.600 blue:0.333 alpha:1];
-        self.orderDetailSaveButton.userInteractionEnabled = YES;
-        self.orderDetailSaveButton.backgroundColor = [UIColor colorWithRed:0.816 green:0.600 blue:0.333 alpha:1];
-    }
-
     self.customer.text = @"";
     self.authorizer.text = @"";
     self.notes.text = @"";
@@ -548,6 +553,37 @@ SG: The argument 'detail' is the selected order.
     [self.subtotalLines addObject:@[@"TOTAL", s]];
 
     [self.orderDetailTable reloadData];
+    [self updateOrderActions];
+}
+
+- (void)updateOrderActions {
+    BOOL orderAccessible = NO;
+    if (currentOrder) {
+        NSString *orderStatus = [currentOrder.status lowercaseString];
+        if (![orderStatus rangeOfString:@"complete"].length > 0 || [orderStatus rangeOfString:@"submit"].length > 0) {
+            orderAccessible = YES;
+        }
+    }
+
+    if (orderAccessible) {
+        self.orderDetailEditButton.userInteractionEnabled = YES;
+        self.orderDetailEditButton.layer.borderColor = [UIColor colorWithRed:0.902 green:0.494 blue:0.129 alpha:1.000].CGColor;
+        self.orderDetailEditButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.647 blue:0.416 alpha:1.000];
+    } else {
+        self.orderDetailEditButton.userInteractionEnabled = NO;
+        self.orderDetailEditButton.layer.borderColor = [UIColor colorWithRed:0.922 green:0.800 blue:0.682 alpha:1.000].CGColor;
+        self.orderDetailEditButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.800 blue:0.682 alpha:1.000];
+    }
+
+    if (orderAccessible && self.unsavedChangesPresent) {
+        self.orderDetailSaveButton.userInteractionEnabled = YES;
+        self.orderDetailSaveButton.layer.borderColor = [UIColor colorWithRed:0.902 green:0.494 blue:0.129 alpha:1.000].CGColor;
+        self.orderDetailSaveButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.647 blue:0.416 alpha:1.000];
+    } else {
+        self.orderDetailSaveButton.userInteractionEnabled = NO;
+        self.orderDetailSaveButton.layer.borderColor = [UIColor colorWithRed:0.922 green:0.800 blue:0.682 alpha:1.000].CGColor;
+        self.orderDetailSaveButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.800 blue:0.682 alpha:1.000];
+    }
 }
 
 #pragma mark - Load Product View Conroller
@@ -889,7 +925,7 @@ SG: The argument 'detail' is the selected order.
     if (tableView == self.orderDetailTable) return indexPath;
 
     if (tableView == self.sideTable) {
-        if (currentOrder != nil && currentOrder != [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row] && unsavedChangesPresent) {
+        if (currentOrder != nil && currentOrder != [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row] && self.unsavedChangesPresent) {
             indexPathToReturn = nil;
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Exit Without Saving?" message:@"Do you want to exit without saving your changes?"
                                                                delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
@@ -919,7 +955,7 @@ SG: The argument 'detail' is the selected order.
 }
 
 - (void)didSelectOrderAtIndexPath:(NSIndexPath *)indexPath {
-    unsavedChangesPresent = NO;
+    self.unsavedChangesPresent = NO;
     currentOrder = [self.filteredOrders objectAtIndex:(NSUInteger) indexPath.row];
     NSString *status = [currentOrder.status lowercaseString];
     //SG: if this is a completed order, display the order details in the editor view
@@ -1053,19 +1089,19 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)setVoucher:(NSString *)voucher atIndex:(int)idx {
     [self.itemsVouchers removeObjectAtIndex:(NSUInteger) idx];
     [self.itemsVouchers insertObject:voucher atIndex:(NSUInteger) idx];
-    unsavedChangesPresent = YES;
+    self.unsavedChangesPresent = YES;
 }
 
 - (void)setPrice:(NSString *)prc atIndex:(int)idx {
     [self.itemsPrice removeObjectAtIndex:(NSUInteger) idx];
     [self.itemsPrice insertObject:prc atIndex:(NSUInteger) idx];
-    unsavedChangesPresent = YES;
+    self.unsavedChangesPresent = YES;
 }
 
 - (void)setQuantity:(NSString *)qty atIndex:(int)idx {
     [self.itemsQty removeObjectAtIndex:(NSUInteger) idx];
     [self.itemsQty insertObject:qty atIndex:(NSUInteger) idx];
-    unsavedChangesPresent = YES;
+    self.unsavedChangesPresent = YES;
 }
 
 - (void)QtyTouchForIndex:(int)idx {
@@ -1139,7 +1175,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
         [calViewW dismissViewControllerAnimated:YES completion:nil];
 
         [self.itemsTable reloadData];
-        unsavedChangesPresent = YES;
+        self.unsavedChangesPresent = YES;
         [self UpdateTotal];
     };
 
@@ -1330,7 +1366,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     NSDictionary *parameters = @{ kOrder: order, kAuthToken: self.authToken };
     NSString *url = kDBORDEREDITS([currentOrder.orderId intValue]);
     void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-        unsavedChangesPresent = NO;
+        self.unsavedChangesPresent = NO;
         AnOrder *savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
         [self persistentOrderUpdated:savedOrder];
         [sender setSelected:NO];
@@ -1504,7 +1540,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     [self.itemsQty removeObjectAtIndex:(NSUInteger) idx];
     [self.itemsQty insertObject:JSON atIndex:(NSUInteger) idx];
     [self.itemsTable reloadData];
-    unsavedChangesPresent = YES;
+    self.unsavedChangesPresent = YES;
     [self UpdateTotal];
 }
 
@@ -1603,12 +1639,12 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (IBAction)cancelByDaysChanged:(UISegmentedControl *)sender {
-    unsavedChangesPresent = YES;
+    self.unsavedChangesPresent = YES;
 }
 
 #pragma mark - UITextFieldDelegate
 - (void)textViewDidChange:(UITextView *)sender {
-    unsavedChangesPresent = YES;
+    self.unsavedChangesPresent = YES;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
