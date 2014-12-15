@@ -1580,9 +1580,17 @@ SG: This method gets called when you swipe on an order in the order list and tap
     return NO;
 }
 
-#pragma mark - CINavViewDelegate
+#pragma mark - CINavViewManagerDelegate
 
-- (NSArray *)actionItems {
+- (UINavigationController *)navigationControllerForNavViewManager {
+    return self.navigationController;
+}
+
+- (UINavigationItem *)navigationItemForNavViewManager {
+    return self.navigationItem;
+}
+
+- (NSArray *)rightActionItems {
     UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-add"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
         [self AddNewOrder:nil];
     }];

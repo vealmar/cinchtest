@@ -7,15 +7,16 @@
 
 @protocol CINavViewManagerDelegate <NSObject>
 
-- (UINavigationController *)navigationController;
-- (UINavigationItem *)navigationItem;
+- (UINavigationController *)navigationControllerForNavViewManager;
+- (UINavigationItem *)navigationItemForNavViewManager;
 
 @optional
 
+- (NSArray *)leftActionItems;
 /**
 * Construct a set of UIBarButtonItem for the nav bar.
 */
-- (NSArray *)actionItems;
+- (NSArray *)rightActionItems;
 
 - (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted;
 

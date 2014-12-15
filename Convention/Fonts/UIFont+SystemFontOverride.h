@@ -16,6 +16,7 @@
 
 + (UIFont*)regularFontOfSize:(CGFloat)fontSize;
 + (UIFont*)semiboldFontOfSize:(CGFloat)fontSize;
++ (UIFont*)boldFontOfSize:(CGFloat)fontSize;
 + (UIFont*)lightFontOfSize:(CGFloat)fontSize;
 
 @end

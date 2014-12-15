@@ -9,6 +9,7 @@
 #import "config.h"
 #import "NotificationConstants.h"
 #import "ShowConfigurations.h"
+#import "ThemeUtil.h"
 
 @interface CIShipDateTableViewCell ()
 
@@ -60,18 +61,18 @@
                 self.quantity = [cart getQuantityForShipDate:shipDate];
             }
 
-            self.xLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x-15, self.quantityField.frame.origin.y, 20, self.quantityField.frame.size.height)];
+            self.xLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x - 13, self.quantityField.frame.origin.y, 20, self.quantityField.frame.size.height)];
             self.xLabel.font = [UIFont systemFontOfSize:14.0f];
             self.xLabel.textColor = [UIColor whiteColor];
             self.xLabel.text = @"x";
             [self addSubview:self.xLabel];
 
-            self.lineTotalBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x+ 50, self.quantityField.frame.origin.y, 75, self.quantityField.frame.size.height)];
-            self.lineTotalBackgroundView.backgroundColor = [UIColor colorWithRed:0.161 green:0.169 blue:0.169 alpha:1];
+            self.lineTotalBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x + 45, self.quantityField.frame.origin.y, 75, self.quantityField.frame.size.height)];
+            self.lineTotalBackgroundView.backgroundColor = [ThemeUtil blackColor];
             self.lineTotalBackgroundView.layer.cornerRadius = 3;
             [self addSubview:self.lineTotalBackgroundView];
 
-            self.lineTotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x+ 50, self.quantityField.frame.origin.y, 70, self.quantityField.frame.size.height)];
+            self.lineTotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x+ 45, self.quantityField.frame.origin.y, 70, self.quantityField.frame.size.height)];
             self.lineTotalLabel.font = [UIFont systemFontOfSize:13.0f];
             self.lineTotalLabel.textColor = [UIColor whiteColor];
             self.lineTotalLabel.text = @"$0.00";
@@ -121,10 +122,8 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
-
-    return YES;
+    return NO;
 }
-
 
 // This text field is the quantity field on each ship date cell.
 - (void)textFieldDidEndEditing:(UITextField *)textField {

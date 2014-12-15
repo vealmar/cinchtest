@@ -96,6 +96,14 @@
 
 #pragma mark - NavViewManagerDelegate
 
+- (UINavigationController *)navigationControllerForNavViewManager {
+    return self.navigationController;
+}
+
+- (UINavigationItem *)navigationItemForNavViewManager {
+    return self.navigationItem;
+}
+
 - (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
     if (inputCompleted) {
         [self issueSearchQuery:searchTerm];

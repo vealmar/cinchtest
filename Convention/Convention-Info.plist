@@ -47,6 +47,7 @@
         <string>OPENSANS-REGULAR_1.TTF</string>
 		<string>OPENSANS-SEMIBOLD_1.TTF</string>
         <string>OpenSans-Light.TTF</string>
+        <string>OpenSans-Bold.TTF</string>
 		<string>glyphicons.ttf</string>
 	</array>
 	<key>UIRequiredDeviceCapabilities</key>

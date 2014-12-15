@@ -26,6 +26,7 @@ static ShowConfigurations *showConfigurations = nil;
 + (void)createInstanceFromJson:(NSDictionary *)json {
     showConfigurations = [[[self class] alloc] init];
     if (showConfigurations) {
+        showConfigurations.atOncePricing = [[json objectForKey:@"atOncePricing"] boolValue];
         showConfigurations.discounts = [[json objectForKey:@"discounts"] boolValue];
         NSString *shipDatesValue = [NilUtil objectOrEmptyString:[json objectForKey:@"shipDates"]];
         showConfigurations.shipDates = [shipDatesValue isEqualToString:@"required"] || [shipDatesValue isEqualToString:@"optional"];
@@ -101,4 +102,19 @@ static ShowConfigurations *showConfigurations = nil;
     }).unwrap;
 }
 
+- (NSString *)price1Label {
+    if (self.atOncePricing) {
+        return @"At Once";
+    } else {
+        return @"Show";
+    }
+}
+
+- (NSString *)price2Label {
+    if (self.atOncePricing) {
+        return @"Future";
+    } else {
+        return @"Regular";
+    }
+}
 @end

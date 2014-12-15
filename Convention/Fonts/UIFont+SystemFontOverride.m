@@ -23,11 +23,15 @@
 }
 
 + (UIFont*)regularFontOfSize:(CGFloat)fontSize {
-    return [UIFont fontWithName:@"Open Sans" size:fontSize];
+    return [UIFont fontWithName:@"OpenSans" size:fontSize];
 }
 
 + (UIFont*)semiboldFontOfSize:(CGFloat)fontSize {
     return [UIFont fontWithName:@"OpenSans-Semibold" size:fontSize];
+}
+
++ (UIFont*)boldFontOfSize:(CGFloat)fontSize {
+    return [UIFont fontWithName:@"OpenSans-Bold" size:fontSize];
 }
 
 + (UIFont*)lightFontOfSize:(CGFloat)fontSize {
