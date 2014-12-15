@@ -30,6 +30,10 @@
     return [UIFont fontWithName:@"OpenSans-Semibold" size:fontSize];
 }
 
++ (UIFont*)lightFontOfSize:(CGFloat)fontSize {
+    return [UIFont fontWithName:@"OpenSans-Light" size:fontSize];
+}
+
 #pragma clang diagnostic pop
 
 @end

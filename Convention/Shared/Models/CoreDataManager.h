@@ -33,6 +33,8 @@
 
 + (NSUInteger)getProductCount;
 
++ (NSUInteger)getCustomerCount;
+
 + (NSArray *)getProductIdsMatching:(ProductSearch *)search;
 
 + (SetupInfo *)getSetupInfo:(NSString *)itemName;

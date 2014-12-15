@@ -11,6 +11,7 @@
 @class DateRange;
 
 @interface ShowConfigurations : NSObject
+
 @property BOOL discounts;
 @property BOOL shipDates; //uses or requires shipdates
 @property BOOL shipDatesRequired;

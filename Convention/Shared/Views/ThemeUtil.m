@@ -10,12 +10,32 @@
 
 @implementation ThemeUtil
 
-+ (NSDictionary *)navigationTitleTextAttributes {
++ (UIColor *)offBlackColor {
+    return [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1.000];
+}
+
++ (UIColor *)blackColor {
+    return [UIColor colorWithRed:0.157 green:0.173 blue:0.173 alpha:1.000];
+}
+
++ (UIColor *)orangeColor {
+    return [UIColor colorWithRed:0.992 green:0.545 blue:0.145 alpha:1.000];
+}
+
++ (UIColor *)blueColor {
+    return [UIColor colorWithRed:0.161 green:0.502 blue:0.725 alpha:1.000];
+}
+
++ (UIColor *)greenColor {
+    return [UIColor colorWithRed:0.153 green:0.682 blue:0.376 alpha:1.000];
+}
+
++ (NSDictionary *)navigationTitleTextAttributes:(int)size {
     NSShadow *shadow = [NSShadow new];
     shadow.shadowColor = [UIColor blackColor];
     shadow.shadowOffset = CGSizeMake(0, 1.0f);
     return @{
-        NSFontAttributeName: [UIFont regularFontOfSize:18],
+        NSFontAttributeName: [UIFont regularFontOfSize:size],
         NSForegroundColorAttributeName: [UIColor whiteColor],
         NSShadowAttributeName: shadow
     };
@@ -24,9 +44,9 @@
 /*
 Generates a title label based on the format parameter.
 
-@param format Format defining two tokens, %s the text, %b for bolded text.
+@param format Format defining two tokens, %s the text, %l for light text, and %b for bolded text.
  */
-+ (UILabel *)navigationTitleFor:(NSString *)format, ... {
++ (NSAttributedString *)titleTextWithFontSize:(int)size format:(NSString *)format, ... {
     NSMutableAttributedString *builder = [[NSMutableAttributedString alloc] initWithString:format];
     NSRange visibleTextRange = NSMakeRange(0, format.length);
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\%\\w" options:NSRegularExpressionCaseInsensitive error:nil];
@@ -38,10 +58,14 @@ Generates a title label based on the format parameter.
     for (NSTextCheckingResult *match in matches) {
         NSRange matchRange = match.range;
         NSString* content = va_arg(args, NSString*);
-        NSDictionary *attrs = [ThemeUtil navigationTitleTextAttributes];
+        NSDictionary *attrs = [ThemeUtil navigationTitleTextAttributes:size];
         if ([[format substringWithRange:matchRange] contains:@"b"]) {
             NSMutableDictionary *boldAttrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
-            boldAttrs[NSFontAttributeName] = [UIFont semiboldFontOfSize:18];
+            boldAttrs[NSFontAttributeName] = [UIFont semiboldFontOfSize:size];
+            attrs = boldAttrs;
+        } else if ([[format substringWithRange:matchRange] contains:@"l"]) {
+            NSMutableDictionary *boldAttrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
+            boldAttrs[NSFontAttributeName] = [UIFont lightFontOfSize:size];
             attrs = boldAttrs;
         }
         NSAttributedString *attributedContent = [[NSAttributedString alloc] initWithString:content attributes:attrs];
@@ -50,11 +74,7 @@ Generates a title label based on the format parameter.
     }
     va_end(args);
 
-    CGRect totalHeightRect = [builder boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(512.0f - floor(totalHeightRect.size.width / 2.0f), 5.0f, totalHeightRect.size.width, totalHeightRect.size.height)];
-    titleLabel.attributedText = builder;
-
-    return titleLabel;
+    return builder;
 }
 
 + (NSDictionary *)navigationSearchLabelTextAttributes {
@@ -80,12 +100,6 @@ Generates a title label based on the format parameter.
         NSFontAttributeName: [UIFont iconFontOfSize:14],
         NSForegroundColorAttributeName: [UIColor whiteColor]
     };
-}
-
-+ (UIColor *)navigationBarTintColor {
-    return [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1.000];
-
-//    return [UIColor colorWithRed:60.0f/255.0f green:63.0f/255.0f blue:64.0f/255.0f alpha:1];
 }
 
 @end

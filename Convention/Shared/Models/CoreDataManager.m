@@ -25,6 +25,7 @@
 #import "JSONResponseSerializerWithErrorData.h"
 #import "AFURLConnectionOperation.h"
 #import "CinchJSONAPIClient.h"
+#import "NotificationConstants.h"
 
 
 @implementation CoreDataManager {
@@ -168,6 +169,7 @@
 
             NSLog(@"Execution Time: %f", executionTime);
         }
+        [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
         if (successBlock) successBlock(JSON);
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         id JSON = error.userInfo[JSONResponseSerializerWithErrorDataKey];
@@ -199,7 +201,22 @@
     NSUInteger count = [context countForFetchRequest:request error:&err];
     if (count == NSNotFound) {
         NSLog([NSString stringWithFormat:@"An error occurred when fetching product count. %@", err == nil? @"" : [err localizedDescription]]);
-        return 0; //todo: handle error
+        return 0;
+    }
+    return count;
+}
+
++ (NSUInteger)getCustomerCount {
+    CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
+    NSManagedObjectContext *context = delegate.managedObjectContext;
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:[NSEntityDescription entityForName:@"Customer" inManagedObjectContext:context]];
+    [request setIncludesSubentities:NO];
+    NSError *err;
+    NSUInteger count = [context countForFetchRequest:request error:&err];
+    if (count == NSNotFound) {
+        NSLog([NSString stringWithFormat:@"An error occurred when fetching product count. %@", err == nil? @"" : [err localizedDescription]]);
+        return 0;
     }
     return count;
 }

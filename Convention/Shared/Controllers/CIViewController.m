@@ -23,6 +23,9 @@
 #import "CIFinalCustomerFormViewController.h"
 #import "CIAppDelegate.h"
 #import "MenuViewController.h"
+#import "APLSlideMenuViewController.h"
+#import "CurrentSession.h"
+#import "NotificationConstants.h"
 
 
 @implementation CIViewController {
@@ -114,6 +117,9 @@
         if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
             authToken = [JSON objectForKey:kAuthToken];
             vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
+            [CurrentSession instance].authToken = authToken;
+            [CurrentSession instance].vendorInfo = vendorInfo;
+            [[CurrentSession instance] dispatchSessionDidChange];
             [self loadCustomers];
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -148,6 +154,7 @@
             }
             [[CoreDataUtil sharedManager] saveObjects];
         }
+        [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
         [hud hide:NO];
         [self loadProducts];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -243,8 +250,8 @@
 
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CIOrderViewController" bundle:nil];
     CIOrderViewController *masterViewController = [storyboard instantiateInitialViewController];
-    masterViewController.authToken = authToken;
-    masterViewController.vendorInfo = [vendorInfo copy];
+    masterViewController.authToken = [CurrentSession instance].authToken;
+    masterViewController.vendorInfo = [[CurrentSession instance].vendorInfo copy];
     masterViewController.managedObjectContext = self.managedObjectContext;
 
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:masterViewController];

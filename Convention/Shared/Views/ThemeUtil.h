@@ -8,12 +8,18 @@
 
 @interface ThemeUtil : NSObject
 
++ (UIColor *)offBlackColor;
++ (UIColor *)blackColor;
++ (UIColor *)orangeColor;
++ (UIColor *)blueColor;
++ (UIColor *)greenColor;
+
 /*
     Generates a title label based on the format parameter.
 
     @param format Format defining two tokens, %s the text, %b for bolded text.
  */
-+ (UILabel *)navigationTitleFor:(NSString *)components, ... NS_REQUIRES_NIL_TERMINATION;
++ (NSAttributedString *)titleTextWithFontSize:(int)size format:(NSString *)format, ... NS_REQUIRES_NIL_TERMINATION;
 
 + (NSDictionary *)navigationSearchLabelTextAttributes;
 
@@ -22,7 +28,5 @@
 + (NSDictionary *)navigationLeftActionButtonTextAttributes;
 
 + (NSDictionary *)navigationRightActionButtonTextAttributes;
-
-+ (UIColor *)navigationBarTintColor;
 
 @end

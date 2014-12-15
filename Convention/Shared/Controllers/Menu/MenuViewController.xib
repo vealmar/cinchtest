@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A388a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
@@ -9,9 +9,8 @@
             <connections>
                 <outlet property="blurView" destination="ncX-fV-yms" id="isQ-EQ-ABM"/>
                 <outlet property="helpButton" destination="vdR-3I-ibr" id="qZA-Zh-59h"/>
-                <outlet property="logoImageView" destination="mXr-NE-dXm" id="rDJ-UL-NZO"/>
+                <outlet property="logoImageView" destination="0od-wM-ASY" id="wlm-ez-nww"/>
                 <outlet property="logoutButton" destination="aBZ-oR-WGY" id="lwZ-RT-C6y"/>
-                <outlet property="orderButton" destination="QPx-f0-xfi" id="fw4-hA-Q83"/>
                 <outlet property="subtitleLabel" destination="TlN-Ma-0vu" id="edL-vi-VFg"/>
                 <outlet property="tableView" destination="STQ-ls-nsB" id="4kA-GX-Dqa"/>
                 <outlet property="titleLabel" destination="heD-Dd-ZnE" id="hHP-tZ-6Jg"/>
@@ -26,16 +25,20 @@
             <rect key="frame" x="0.0" y="0.0" width="280" height="768"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="mXr-NE-dXm">
+                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZiY-1R-NCF">
                     <rect key="frame" x="0.0" y="0.0" width="280" height="44"/>
-                </imageView>
-                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6GG-wm-3Ns">
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="sidemenu-cinch-logo" translatesAutoresizingMaskIntoConstraints="NO" id="mXr-NE-dXm">
+                            <rect key="frame" x="109" y="12" width="66" height="22"/>
+                        </imageView>
+                    </subviews>
+                    <color key="backgroundColor" red="0.15686274509803921" green="0.17254901960784313" blue="0.17254901960784313" alpha="1" colorSpace="calibratedRGB"/>
+                </view>
+                <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6GG-wm-3Ns">
                     <rect key="frame" x="0.0" y="45" width="280" height="260"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q3n-oq-cCf">
-                            <rect key="frame" x="0.0" y="140" width="280" height="120"/>
-                        </imageView>
-                        <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ncX-fV-yms" customClass="FXBlurView">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q3n-oq-cCf"/>
+                        <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ncX-fV-yms" customClass="FXBlurView">
                             <rect key="frame" x="0.0" y="140" width="280" height="120"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heD-Dd-ZnE">
@@ -56,9 +59,7 @@
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="background-brand.png" translatesAutoresizingMaskIntoConstraints="NO" id="0od-wM-ASY">
                             <rect key="frame" x="45" y="14" width="190" height="160"/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LYG-nK-bJf">
-                            <rect key="frame" x="78" y="41" width="124" height="105"/>
-                        </imageView>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LYG-nK-bJf"/>
                         <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vdR-3I-ibr">
                             <rect key="frame" x="5" y="106" width="75" height="68"/>
                             <state key="normal" backgroundImage="background-help.png">
@@ -73,16 +74,17 @@
                         </button>
                     </subviews>
                     <color key="backgroundColor" red="1" green="0.51210118010000005" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="ncX-fV-yms" secondAttribute="bottom" id="7Y5-0Z-9mx"/>
+                        <constraint firstItem="ncX-fV-yms" firstAttribute="top" secondItem="6GG-wm-3Ns" secondAttribute="top" constant="140" id="gIW-66-iDr"/>
+                    </constraints>
                 </view>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QPx-f0-xfi">
-                    <rect key="frame" x="0.0" y="306" width="286" height="49"/>
-                    <state key="normal" backgroundImage="background-neworder.png">
-                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                    </state>
-                </button>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="STQ-ls-nsB">
-                    <rect key="frame" x="0.0" y="356" width="280" height="412"/>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="STQ-ls-nsB">
+                    <rect key="frame" x="0.0" y="305" width="280" height="200"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="280" id="zIk-aD-CSy"/>
+                    </constraints>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="DUW-P9-4gj"/>
                         <outlet property="delegate" destination="-1" id="5rj-LX-sXh"/>
@@ -90,6 +92,10 @@
                 </tableView>
             </subviews>
             <color key="backgroundColor" red="0.72855548469999998" green="0.242630125" blue="0.3468680744" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="STQ-ls-nsB" secondAttribute="bottom" id="Kef-sA-zFO"/>
+                <constraint firstItem="STQ-ls-nsB" firstAttribute="top" secondItem="6GG-wm-3Ns" secondAttribute="bottom" id="f0v-2q-EeN"/>
+            </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
         </view>
@@ -98,6 +104,6 @@
         <image name="background-brand.png" width="190" height="160"/>
         <image name="background-help.png" width="75" height="68"/>
         <image name="background-logout.png" width="75" height="68"/>
-        <image name="background-neworder.png" width="286" height="49"/>
+        <image name="sidemenu-cinch-logo" width="190" height="160"/>
     </resources>
 </document>

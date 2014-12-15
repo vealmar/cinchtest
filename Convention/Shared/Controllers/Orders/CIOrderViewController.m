@@ -124,7 +124,6 @@ CIOrderViewController
     unsavedChangesPresent = NO;
     [self adjustTotals];
     self.orderDetailView.hidden = YES;
-    [self.searchText addTarget:self action:@selector(searchTextUpdated:) forControlEvents:UIControlEventEditingChanged];
     if ([ShowConfigurations instance].printing) currentPrinter = [[SettingsManager sharedManager] lookupSettingByString:@"printer"];
     pull = [[PullToRefreshView alloc] initWithScrollView:self.sideTable];
     [pull setDelegate:self];
@@ -138,7 +137,10 @@ CIOrderViewController
     self.orderDetailTable.separatorColor = [UIColor colorWithRed:0.808 green:0.808 blue:0.827 alpha:1];
     self.orderDetailTable.rowHeight = 40;
 
-    [self setupNavBar:nil];
+    CINavViewManager *navViewManager = [[CINavViewManager alloc] init];
+    navViewManager.delegate = self;
+    navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Orders"];
+    [navViewManager setupNavBar];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -159,95 +161,6 @@ CIOrderViewController
     if ([self.orderDetailTable respondsToSelector:@selector(setLayoutMargins:)]) {
         [self.orderDetailTable setLayoutMargins:UIEdgeInsetsZero];
     }
-}
-
-- (void)setupNavBar:(NSString*)searchText {
-    UINavigationController *navController = self.navigationController;
-    UINavigationItem *navItem = self.navigationItem;
-
-    navController.navigationBar.translucent = NO;
-    navController.navigationBar.barTintColor = [ThemeUtil navigationBarTintColor];
-    navItem.titleView = [ThemeUtil navigationTitleFor:@"%s", @"Orders"];
-    
-    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf0c9" style:UIBarButtonItemStylePlain handler:^(id sender) {
-        CIAppDelegate *appDelegate = (CIAppDelegate*)[UIApplication sharedApplication].delegate;
-        [appDelegate.slideMenu showLeftMenu:YES];
-    }];
-    [menuItem setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
-
-    NSString *term = @"Search...";
-    if (searchText && searchText.length) {
-        term = searchText;
-    }
-
-    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:[NSString stringWithFormat:@"   %@", term] style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [self setupNavBarSearch:searchText];
-    }];
-    [searchItem setTitleTextAttributes:[ThemeUtil navigationSearchLabelTextAttributes] forState:UIControlStateNormal];
-
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-add"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [self AddNewOrder:nil];
-    }];
-    [addItem setTitleTextAttributes:[ThemeUtil navigationRightActionButtonTextAttributes] forState:UIControlStateNormal];
-
-    navItem.leftBarButtonItems = @[menuItem, searchItem];
-    navItem.rightBarButtonItems = @[addItem];
-}
-
-- (void)setupNavBarSearch:(NSString*)searchText {
-    UINavigationController *navController = self.navigationController;
-    UINavigationItem *navItem = self.navigationItem;
-
-    navItem.titleView = nil;
-    [navController.navigationBar setBackgroundImage:nil forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
-    navController.navigationBar.barTintColor = [UIColor blackColor];
-
-    UITextField *searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 800, 40)];
-    searchTextField.font = [UIFont regularFontOfSize:24];
-    searchTextField.textColor = [UIColor whiteColor];
-    searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Search..."
-                                                                            attributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] }];
-    [searchTextField bk_addEventHandler:^(id sender) {
-        [self searchWithString:searchTextField.text];
-    } forControlEvents:UIControlEventEditingChanged];
-
-    if (searchText && searchText.length) {
-        searchTextField.text = searchText;
-    }
-
-    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:searchTextField];
-
-    UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    dismissButton.frame = self.view.bounds;
-    dismissButton.backgroundColor = [UIColor clearColor];
-    [self.view addSubview:dismissButton];
-
-    void (^exitSearchMode)() = ^() {
-        [dismissButton removeFromSuperview];
-        [searchTextField resignFirstResponder];
-        [self setupNavBar:searchTextField.text];
-    };
-
-    [dismissButton bk_addEventHandler:^(id sender) {
-        exitSearchMode();
-    } forControlEvents:UIControlEventTouchUpInside];
-
-    UIBarButtonItem *clearItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"Clear" style:UIBarButtonItemStylePlain handler:^(id sender) {
-        searchTextField.text = nil;
-        [self searchWithString:searchTextField.text];
-
-        exitSearchMode();
-    }];
-    [clearItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
-                                         NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
-
-    navItem.leftBarButtonItems = @[searchItem];
-    navItem.rightBarButtonItems = @[clearItem];
-
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [searchTextField becomeFirstResponder];
-        [self searchWithString:searchTextField.text];
-    });
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -300,7 +213,6 @@ CIOrderViewController
     if (!isLoadingOrders) {
         currentOrder = nil;
         isLoadingOrders = YES;
-        self.searchText.text = @"";
         self.orderDetailView.hidden = YES;
         MBProgressHUD *hud;
         if (showLoadingIndicator) {  //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
@@ -760,28 +672,25 @@ SG: The argument 'detail' is the selected order.
             cell.tag = [data.orderId intValue];
 
         cell.orderStatus.textColor = [UIColor whiteColor];
+        cell.orderStatus.font = [UIFont semiboldFontOfSize:12.0];
         if (data.status != nil) {
             cell.orderStatus.text = [data.status capitalizedString];
             NSString *orderStatus = [cell.orderStatus.text lowercaseString];
 
             if ([orderStatus isEqualToString:@"partial"] || [orderStatus isEqualToString:@"pending"]) {
-                cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.302 green:0.494 blue:0.729 alpha:1];
-            }
-
-            if ([orderStatus isEqualToString:@"locked"]) {
-                cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.902 green:0.573 blue:0.110 alpha:1];
-            }
-
-            if ([orderStatus rangeOfString:@"complete"].length > 0 || [orderStatus rangeOfString:@"submit"].length > 0) {
-                cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.400 green:0.671 blue:0.373 alpha:1];
+                cell.orderStatus.backgroundColor = [ThemeUtil blueColor];
+            } else if ([orderStatus isEqualToString:@"locked"]) {
+                cell.orderStatus.backgroundColor = [ThemeUtil orangeColor];
+            } else if ([orderStatus rangeOfString:@"complete"].length > 0 || [orderStatus rangeOfString:@"submit"].length > 0) {
+                cell.orderStatus.backgroundColor = [ThemeUtil greenColor];
             }
         } else {
             cell.orderStatus.text = @"Unknown";
             cell.orderStatus.backgroundColor = [UIColor colorWithRed:0.749 green:0.239 blue:0.173 alpha:1];
         }
 
-        cell.orderStatus.layer.cornerRadius = 2;
-
+        cell.orderStatus.attributedText = [[NSAttributedString alloc] initWithString:cell.orderStatus.text attributes: @{ NSKernAttributeName : @(-0.5f) }];
+        cell.orderStatus.layer.cornerRadius = 3.0f;
 
         if (data.orderId != nil)
             cell.orderId.text = [data.orderId stringValue];
@@ -798,7 +707,7 @@ SG: The argument 'detail' is the selected order.
 
         UIView *bar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 50)];
         bar.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        bar.backgroundColor = [UIColor colorWithRed:0.847 green:0.573 blue:0.098 alpha:1];
+        bar.backgroundColor = [ThemeUtil orangeColor];
         [bgColorView addSubview:bar];
 
         [cell setSelectedBackgroundView:bgColorView];
@@ -1156,7 +1065,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
 - (void)reloadSideTable {
     self.allorders = [partialOrders mutableCopy];
     [self.allorders addObjectsFromArray:persistentOrders];
-    self.searchText.text = @"";
     self.filteredOrders = [self.allorders mutableCopy];
     [self.sideTable reloadData];
     self.NoOrdersLabel.hidden = [self.filteredOrders count] > 0;
@@ -1548,15 +1456,34 @@ SG: This method gets called when you swipe on an order in the order list and tap
     [self printOrder];
 }
 
-#pragma mark - Search orders
-
-- (void)searchTextUpdated:(UITextField *)textField {
-    [self searchOrders:textField];
+- (IBAction)cancelByDaysChanged:(UISegmentedControl *)sender {
+    unsavedChangesPresent = YES;
 }
 
-- (IBAction)searchOrders:(id)sender {
-    if (![sender isKindOfClass:[UITextField class]])
-        [self.searchText resignFirstResponder];
+#pragma mark - UITextFieldDelegate
+- (void)textViewDidChange:(UITextView *)sender {
+    unsavedChangesPresent = YES;
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if ([textField.restorationIdentifier isEqualToString:@"SearchField"]) {
+        [self.view endEditing:YES];
+    }
+
+    return NO;
+}
+
+#pragma mark - CINavViewDelegate
+
+- (NSArray *)actionItems {
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-add"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
+        [self AddNewOrder:nil];
+    }];
+    return @[addItem];
+}
+
+- (void)navViewDidSearch:(NSString *)searchTerm {
+    [self searchWithString:searchTerm];
 }
 
 - (void)searchWithString:(NSString*)s {
@@ -1577,9 +1504,9 @@ SG: This method gets called when you swipe on an order in the order list and tap
             NSString *orderId = [anOrder.orderId stringValue];
             NSString *test = [s uppercaseString];
             return [[storeName uppercaseString] contains:test]
-            || [[custId uppercaseString] hasPrefix:test]
-            || [[authorized uppercaseString] hasPrefix:test]
-            || [orderId hasPrefix:test];
+                    || [[custId uppercaseString] hasPrefix:test]
+                    || [[authorized uppercaseString] hasPrefix:test]
+                    || [orderId hasPrefix:test];
         }];
 
         self.filteredOrders = [[self.allorders filteredArrayUsingPredicate:pred] mutableCopy];
@@ -1587,21 +1514,5 @@ SG: This method gets called when you swipe on an order in the order list and tap
     [self.sideTable reloadData];
 }
 
-- (IBAction)cancelByDaysChanged:(UISegmentedControl *)sender {
-    unsavedChangesPresent = YES;
-}
-
-#pragma mark - UITextFieldDelegate
-- (void)textViewDidChange:(UITextView *)sender {
-    unsavedChangesPresent = YES;
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    if ([textField.restorationIdentifier isEqualToString:@"SearchField"]) {
-        [self.view endEditing:YES];
-    }
-
-    return NO;
-}
 
 @end

@@ -269,6 +269,7 @@
             [pull finishedLoading];
         else
             [hud hide:NO];
+        [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         [self setCustomerData:nil];
         if (triggeredByPullToRefresh)
