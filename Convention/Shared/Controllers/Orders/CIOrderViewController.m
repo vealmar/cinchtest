@@ -507,18 +507,6 @@ SG: The argument 'detail' is the selected order.
     [dateFormatter setDateFormat:@"dd/MM/yyyy"];
     [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
 
-//    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
-//    paragraph.alignment = NSTextAlignmentRight;
-//    paragraph.lineSpacing = 5;
-//    paragraph.tabStops = @[[[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
-//                                                           location:self.orderDetailLabel.bounds.size.width - 400
-//                                                            options:nil],
-//                           [[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
-//                                                           location:self.orderDetailLabel.bounds.size.width - 200
-//                                                            options:nil]];
-//
-//    NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
-
     [orderedDates sortUsingSelector:@selector(compare:)];
 
     NSMutableArray *line = nil;
@@ -527,9 +515,6 @@ SG: The argument 'detail' is the selected order.
 
         line = [NSMutableArray array];
         [line addObject:[NSString stringWithFormat:@"Shipping on %@", [dateFormatter stringFromDate:date]]];
-
-//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"Shipping on %@\t", [dateFormatter stringFromDate:date]]
-//                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:13], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
 
         float total = 0;
         for (NSArray *pair in dateProducts[date]) {
@@ -547,9 +532,6 @@ SG: The argument 'detail' is the selected order.
 
         [line addObject:priceString];
         [self.subtotalLines addObject:line];
-//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:priceString
-//                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:15], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
     }
 
     NSString *s = nil;
@@ -557,30 +539,13 @@ SG: The argument 'detail' is the selected order.
     if (self.totalDiscounts > 0) {
         s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
         [self.subtotalLines addObject:@[@"SUBTOTAL", s]];
-//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"SUBTOTAL\t%@", s]
-//                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
 
         s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:fabsf(self.totalDiscounts)] numberStyle:NSNumberFormatterCurrencyStyle];
         [self.subtotalLines addObject:@[@"DISCOUNT", s]];
-//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"DISCOUNT\t%@", s]
-//                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
     }
 
     s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
     [self.subtotalLines addObject:@[@"TOTAL", s]];
-//    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"TOTAL\t"]
-//                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-//    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@", s]
-//                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont semiboldFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-//    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
-
-//    self.orderDetailLabel.attributedText = attributedString;
-//    self.orderDetailLabel.textAlignment = NSTextAlignmentRight;
-//    [self.orderDetailLabel sizeToFit];
-//    self.orderDetailShipTotalView.frame = CGRectMake(0, 632 - self.orderDetailLabel.frame.size.height, 670, self.orderDetailLabel.frame.size.height - 5);
-//    self.orderDetailLabel.frame = CGRectMake(0, 5, self.orderDetailShipTotalView.bounds.size.width - 10, self.orderDetailShipTotalView.bounds.size.height);
 
     [self.orderDetailTable reloadData];
 }
@@ -723,7 +688,6 @@ SG: The argument 'detail' is the selected order.
                 crightLabel.text = @"";
             }
 
-            cell.backgroundColor = [UIColor greenColor];
             return cell;
         } else {
             static NSString *odcId = @"odcId";
