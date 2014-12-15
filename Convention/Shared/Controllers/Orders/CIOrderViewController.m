@@ -446,6 +446,8 @@ SG: The argument 'detail' is the selected order.
     [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.000Z'"];
     [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
 
+    NSDate *earliestDate = nil;
+
     for (ALineItem *line in detail.lineItems) {
         Product *product = (Product *) [coreDataUtil fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", line.productId]];
 
@@ -454,6 +456,12 @@ SG: The argument 'detail' is the selected order.
             for (NSString *d in quantities.allKeys) {
                 NSDate *date = [dateFormatter dateFromString:d];
                 int quantity = [quantities[d] intValue];
+
+                if (earliestDate == nil) {
+                    earliestDate = date;
+                } else {
+                    earliestDate = [earliestDate earlierDate:date];
+                }
 
                 if(quantity) {
                     NSMutableArray *products = [dateProducts objectForKey:date];
@@ -609,7 +617,7 @@ SG: The argument 'detail' is the selected order.
             Product *product = pair[0];
             int quantity = [pair[1] intValue];
 
-            if (i == 0) {
+            if (date == earliestDate) {
                 total += quantity * [product.showprc intValue];
             } else {
                 total += quantity * [product.regprc intValue];
