@@ -16,6 +16,7 @@
 #import "VendorViewController.h"
 #import "UIView+FindAndResignFirstResponder.h"
 #import "CISlidingProductViewController.h"
+#import "CINavViewManager.h"
 
 
 @class CIViewController;
@@ -41,7 +42,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
         UIAlertViewDelegate, ProductCellDelegate,
         CIFinalCustomerDelegate, CICartViewDelegate, CIStoreQtyTableDelegate,
         UIPrinterSelectedDelegate, VendorViewDelegate, PullToRefreshViewDelegate,
-        CISlidingProductViewControllerDelegate> {
+        CISlidingProductViewControllerDelegate, CINavViewManagerDelegate> {
 
 }
 
@@ -64,11 +65,13 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(weak, nonatomic) IBOutlet UILabel *lblShipDateCount;
 @property(weak, nonatomic) IBOutlet UIButton *btnSelectShipDates;
 @property(weak, nonatomic) IBOutlet UILabel *totalCost;
-@property(weak, nonatomic) IBOutlet UIView *tableHeaderPigglyWiggly;
-@property(weak, nonatomic) IBOutlet UIView *tableHeaderFarris;
-@property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumnLabel;
 
-@property(weak, nonatomic) IBOutlet UILabel *bulletinVendorLabel;
+@property(weak, nonatomic) IBOutlet UIView *tableHeader;
+@property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumnLabel;
+@property(weak, nonatomic) IBOutlet UILabel *tableHeaderPrice1Label;
+@property(weak, nonatomic) IBOutlet UILabel *tableHeaderPrice2Label;
+
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *keyboardHeight; // used on bottom of Toolbar
 
 - (IBAction)Cancel:(id)sender;
 

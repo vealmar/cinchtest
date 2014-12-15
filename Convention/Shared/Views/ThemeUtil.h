@@ -10,6 +10,7 @@
 
 + (UIColor *)offBlackColor;
 + (UIColor *)blackColor;
++ (UIColor *)noteColor;
 + (UIColor *)orangeColor;
 + (UIColor *)blueColor;
 + (UIColor *)greenColor;

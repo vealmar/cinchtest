@@ -31,7 +31,7 @@
         self.min.text = product.min != nil ? [product.min stringValue] : @"";
         self.regPrice.text = [NumberUtil formatCentsAsCurrency:product.regprc];
         self.showPrice.text = [NumberUtil formatCentsAsCurrency:product.showprc];
-        if ([product.showprc isEqual:product.regprc]) {
+        if ([product.showprc isEqual:product.regprc] && ![ShowConfigurations instance].atOncePricing) {
             self.showPrice.text = @"";
         }
     } else {

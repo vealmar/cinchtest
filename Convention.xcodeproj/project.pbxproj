@@ -39,6 +39,7 @@
 		6DDC91C7919DC637C15C5C9C /* CIMenuWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9A27FBB0A14FE323BD3C /* CIMenuWebViewController.m */; };
 		6DDC92102889DA6CFCB2E7ED /* deletein.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9C9A3548F1E8C66FFB19 /* deletein.png */; };
 		6DDC9227037013689DCB27C9 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC968C21B202D075591F13 /* MenuViewController.m */; };
+		6DDC923E446CEF97D100A10D /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9D51E09668770848DFA1 /* OpenSans-Bold.ttf */; };
 		6DDC92420B79FB64B0F3DCE2 /* FarrisProductCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9BF483E026C1DE2D1475 /* FarrisProductCell.m */; };
 		6DDC924A7A1A913FBFAE7BAC /* printbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9B446F4D960E38446A94 /* printbutton.png */; };
 		6DDC92577909154C834B3BCF /* VendorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9A9020D8B94E9ED41731 /* VendorViewController.xib */; };
@@ -160,6 +161,7 @@
 		6DDC9A8DD908C9C820A9C02A /* square-paper@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9685C0D2A47D5ADC249C /* square-paper@2x.png */; };
 		6DDC9A9ED104ED467046F189 /* ALineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9FF55F0DEEF1AB6B5421 /* ALineItem.m */; };
 		6DDC9AA18DD22292453BF908 /* cart-cancelout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC938DC1B03DAD2A25CE7D /* cart-cancelout.png */; };
+		6DDC9AAFEEE854D2C161B69D /* CIKeyboardUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9FE781BAB3E770AFEBCD /* CIKeyboardUtil.m */; };
 		6DDC9AC1F7F6F371F932F73D /* NotificationConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9F9C0D8D7055357A5516 /* NotificationConstants.m */; };
 		6DDC9ACC872F454F247630BE /* Detail.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC920F635806F4C6CC71FC /* Detail.png */; };
 		6DDC9AEEADCAE5DF9A81C58C /* CIShipDatesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9E1853A304C500293445 /* CIShipDatesViewController.m */; };
@@ -564,6 +566,7 @@
 		6DDC9A955C27A66FE720A200 /* NSString+Boost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Boost.h"; sourceTree = "<group>"; };
 		6DDC9AA5DFCCB2AC96173BC9 /* Product.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Product.h; sourceTree = "<group>"; };
 		6DDC9AAFFADD118393647A06 /* right-arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right-arrow.png"; sourceTree = "<group>"; };
+		6DDC9AB131D1415C79E563A6 /* CIKeyboardUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIKeyboardUtil.h; sourceTree = "<group>"; };
 		6DDC9AB69E23511C50B9380E /* StringOrderCustomFieldView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StringOrderCustomFieldView.m; sourceTree = "<group>"; };
 		6DDC9ABCE9D70A4A3785193E /* blue-textbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "blue-textbox.png"; sourceTree = "<group>"; };
 		6DDC9AC079181C953CA680FF /* CIOrderViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = CIOrderViewController.storyboard; path = ../../../iPad/CIOrderViewController.storyboard; sourceTree = "<group>"; };
@@ -620,6 +623,7 @@
 		6DDC9D38FCAF92C25EED4DA6 /* NSMutableArray+Boost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+Boost.m"; sourceTree = "<group>"; };
 		6DDC9D39B5696C4021ADDC71 /* Vendor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Vendor.m; sourceTree = "<group>"; };
 		6DDC9D3AE25CA200878738A9 /* Bulletin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bulletin.h; sourceTree = "<group>"; };
+		6DDC9D51E09668770848DFA1 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; path = "OpenSans-Bold.ttf"; sourceTree = "<group>"; };
 		6DDC9D571B83F7283725E804 /* checkbox_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_ticked.png; sourceTree = "<group>"; };
 		6DDC9D5C85AFC1E4F0E83C47 /* deleteout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = deleteout.png; sourceTree = "<group>"; };
 		6DDC9D68210A7C596A703261 /* CIShipDatesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIShipDatesViewController.h; sourceTree = "<group>"; };
@@ -681,6 +685,7 @@
 		6DDC9FBE9BFC9E3F0CD961CC /* square-paper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "square-paper.png"; sourceTree = "<group>"; };
 		6DDC9FC241C8BA61916E3E8D /* ThemeUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeUtil.h; sourceTree = "<group>"; };
 		6DDC9FE4119B8E46DC86C044 /* FarrisCartViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FarrisCartViewCell.xib; sourceTree = "<group>"; };
+		6DDC9FE781BAB3E770AFEBCD /* CIKeyboardUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIKeyboardUtil.m; sourceTree = "<group>"; };
 		6DDC9FEBA535DC13F4905E42 /* username.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = username.png; sourceTree = "<group>"; };
 		6DDC9FF3BD81E3B3F848313C /* finalsubmit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = finalsubmit.png; sourceTree = "<group>"; };
 		6DDC9FF55F0DEEF1AB6B5421 /* ALineItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ALineItem.m; sourceTree = "<group>"; };
@@ -986,6 +991,8 @@
 				6DDC92D41E12CBC9589244F3 /* ProductCache.h */,
 				6DDC90D822B18750FFE5445D /* CurrentSession.m */,
 				6DDC9B34375C2DA0DA2C9EE1 /* CurrentSession.h */,
+				6DDC9FE781BAB3E770AFEBCD /* CIKeyboardUtil.m */,
+				6DDC9AB131D1415C79E563A6 /* CIKeyboardUtil.h */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -1595,6 +1602,7 @@
 				D82484781A2465880016932A /* OPENSANS-REGULAR_1.TTF */,
 				D82484791A2465880016932A /* OPENSANS-SEMIBOLD_1.TTF */,
 				6DDC9DBC0E5E24C354EF95C3 /* OpenSans-Light.ttf */,
+				6DDC9D51E09668770848DFA1 /* OpenSans-Bold.ttf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -1886,6 +1894,7 @@
 				6DDC9C95449ED84B583E6E3A /* InfoPlist.strings in Resources */,
 				6DDC9F4A26DD138B942BC2F2 /* MenuViewController.xib in Resources */,
 				6DDC90CBE43C362BA7DB6342 /* OpenSans-Light.ttf in Resources */,
+				6DDC923E446CEF97D100A10D /* OpenSans-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2055,6 +2064,7 @@
 				6DDC9403E8305EF8F997FEF9 /* CINavViewManager.m in Sources */,
 				6DDC9DF1174AE86E3FAB650B /* CurrentSession.m in Sources */,
 				6DDC99DABDBB108322BFC5EE /* MenuLinkMetadataProvider.m in Sources */,
+				6DDC9AAFEEE854D2C161B69D /* CIKeyboardUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

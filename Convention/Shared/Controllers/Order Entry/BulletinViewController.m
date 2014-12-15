@@ -41,7 +41,7 @@
 }
 
 - (NSArray *)currentBulletins {
-    if ([ShowConfigurations instance].vendorMode) {
+    if ([ShowConfigurations instance].vendorMode || 0 == currentVendId) {
         NSMutableArray *combinedBulletins = [Underscore.array([bulletins allValues]).flatten.filter(^BOOL(NSDictionary *dictionary) {
             return ![[dictionary valueForKey:@"id"] isEqual:@(0)];
         }).sort(^NSComparisonResult(NSDictionary *a, NSDictionary *b) {

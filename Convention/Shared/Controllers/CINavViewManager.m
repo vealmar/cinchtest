@@ -24,27 +24,21 @@
     CGRect totalHeightRect = [title boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(512.0f - floor(totalHeightRect.size.width / 2.0f), 5.0f, totalHeightRect.size.width, totalHeightRect.size.height)];
     titleLabel.attributedText = title;
-    UINavigationItem *navItem = self.delegate.navigationItem;
+    UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
     navItem.titleView = titleLabel;
 }
 
 -(NSAttributedString *)title {
-    UINavigationItem *navItem = self.delegate.navigationItem;
+    UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
     return ((UILabel *) navItem.titleView).attributedText;
 }
 
 - (void)setupNavBar:(NSString*)searchText {
-    UINavigationController *navController = self.delegate.navigationController;
-    UINavigationItem *navItem = self.delegate.navigationItem;
+    UINavigationController *navController = self.delegate.navigationControllerForNavViewManager;
+    UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
 
     navController.navigationBar.translucent = NO;
     navController.navigationBar.barTintColor = [ThemeUtil offBlackColor];
-
-    CIAppDelegate *appDelegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
-    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf0c9" style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [appDelegate.slideMenu showLeftMenu:YES];
-    }];
-    [menuItem setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
 
     NSString *term = @"Search...";
     if (searchText && searchText.length > 0) {
@@ -56,19 +50,23 @@
     }];
     [searchItem setTitleTextAttributes:[ThemeUtil navigationSearchLabelTextAttributes] forState:UIControlStateNormal];
 
+    NSArray *leftBarButtonItems = self.leftBarButtonItems;
+    Underscore.array(leftBarButtonItems).each(^(UIBarButtonItem *item) {
+        [item setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
+    });
 
-    NSArray *actionItems = self.constructActionItems;
-    Underscore.array(actionItems).each(^(UIBarButtonItem *item) {
+    NSArray *rightBarButtonItems = self.rightBarButtonItems;
+    Underscore.array(rightBarButtonItems).each(^(UIBarButtonItem *item) {
         [item setTitleTextAttributes:[ThemeUtil navigationRightActionButtonTextAttributes] forState:UIControlStateNormal];
     });
 
-    navItem.leftBarButtonItems = @[menuItem, searchItem];
-    navItem.rightBarButtonItems = actionItems;
+    navItem.leftBarButtonItems = [leftBarButtonItems arrayByAddingObject:searchItem];
+    navItem.rightBarButtonItems = rightBarButtonItems;
 }
 
 - (void)setupNavBarSearch:(NSString*)searchText {
-    UINavigationController *navController = self.delegate.navigationController;
-    UINavigationItem *navItem = self.delegate.navigationItem;
+    UINavigationController *navController = self.delegate.navigationControllerForNavViewManager;
+    UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
 
     navItem.titleView = nil;
     [navController.navigationBar setBackgroundImage:nil forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
@@ -94,9 +92,9 @@
     UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:searchTextField];
 
     UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    dismissButton.frame = CGRectMake(0.0f, 44.0f, self.delegate.navigationController.view.bounds.size.width, self.delegate.navigationController.view.bounds.size.height - 44.0f);
+    dismissButton.frame = CGRectMake(0.0f, 44.0f, self.delegate.navigationControllerForNavViewManager.view.bounds.size.width, self.delegate.navigationControllerForNavViewManager.view.bounds.size.height - 44.0f);
     dismissButton.backgroundColor = [UIColor clearColor];
-    [self.delegate.navigationController.view addSubview:dismissButton];
+    [self.delegate.navigationControllerForNavViewManager.view addSubview:dismissButton];
 
     void (^exitSearchMode)() = ^() {
         [dismissButton removeFromSuperview];
@@ -131,9 +129,22 @@
     }
 }
 
--(NSArray *)constructActionItems {
-    if ([self.delegate respondsToSelector:@selector(actionItems)]) {
-        return [self.delegate actionItems];
+-(NSArray *)leftBarButtonItems {
+    if ([self.delegate respondsToSelector:@selector(leftActionItems)]) {
+        return [self.delegate leftActionItems];
+    } else {
+        CIAppDelegate *appDelegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
+        UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf0c9" style:UIBarButtonItemStylePlain handler:^(id sender) {
+            [appDelegate.slideMenu showLeftMenu:YES];
+        }];
+        [menuItem setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
+        return @[ menuItem ];
+    }
+}
+
+-(NSArray *)rightBarButtonItems {
+    if ([self.delegate respondsToSelector:@selector(rightActionItems)]) {
+        return [self.delegate rightActionItems];
     } else {
         return @[ ];
     }

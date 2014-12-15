@@ -18,6 +18,10 @@
     return [UIColor colorWithRed:0.157 green:0.173 blue:0.173 alpha:1.000];
 }
 
++ (UIColor *)noteColor {
+    return [UIColor colorWithRed:0.467 green:0.467 blue:0.500 alpha:1.000];
+}
+
 + (UIColor *)orangeColor {
     return [UIColor colorWithRed:0.992 green:0.545 blue:0.145 alpha:1.000];
 }
@@ -47,7 +51,7 @@ Generates a title label based on the format parameter.
 @param format Format defining two tokens, %s the text, %l for light text, and %b for bolded text.
  */
 + (NSAttributedString *)titleTextWithFontSize:(int)size format:(NSString *)format, ... {
-    NSMutableAttributedString *builder = [[NSMutableAttributedString alloc] initWithString:format];
+    NSMutableAttributedString *builder = [[NSMutableAttributedString alloc] initWithString:format attributes:[ThemeUtil navigationTitleTextAttributes:size]];
     NSRange visibleTextRange = NSMakeRange(0, format.length);
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\%\\w" options:NSRegularExpressionCaseInsensitive error:nil];
     NSArray *matches = [regex matchesInString:format options:NSMatchingReportProgress range:visibleTextRange];
@@ -64,9 +68,9 @@ Generates a title label based on the format parameter.
             boldAttrs[NSFontAttributeName] = [UIFont semiboldFontOfSize:size];
             attrs = boldAttrs;
         } else if ([[format substringWithRange:matchRange] contains:@"l"]) {
-            NSMutableDictionary *boldAttrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
-            boldAttrs[NSFontAttributeName] = [UIFont lightFontOfSize:size];
-            attrs = boldAttrs;
+            NSMutableDictionary *lightAttrs = [NSMutableDictionary dictionaryWithDictionary:attrs];
+            lightAttrs[NSFontAttributeName] = [UIFont lightFontOfSize:size];
+            attrs = lightAttrs;
         }
         NSAttributedString *attributedContent = [[NSAttributedString alloc] initWithString:content attributes:attrs];
         [builder replaceCharactersInRange:NSMakeRange(matchRange.location + offset, matchRange.length) withAttributedString:attributedContent];

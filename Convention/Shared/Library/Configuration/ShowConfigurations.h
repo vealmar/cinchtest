@@ -12,6 +12,7 @@
 
 @interface ShowConfigurations : NSObject
 
+@property BOOL atOncePricing;
 @property BOOL discounts;
 @property BOOL shipDates; //uses or requires shipdates
 @property BOOL shipDatesRequired;
@@ -41,4 +42,7 @@
 
 - (NSArray *)orderCustomFields;
 
+- (NSString *)price1Label;
+
+- (NSString *)price2Label;
 @end
