@@ -500,8 +500,13 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 
         __weak typeof(cell) weakCell = cell;
+        __weak typeof(cell) weakShipDate = shipDate;
         [cell.quantityField setBk_didBeginEditingBlock:^(UITextField *field) {
             NSIndexPath *cellIndexPath = [self.tableView indexPathForCell:weakCell];
+
+            UITextRange *textRange = [field textRangeFromPosition:field.beginningOfDocument toPosition:field.endOfDocument];
+            [field setSelectedTextRange:textRange];
+
             Underscore.array([self.tableView indexPathsForVisibleRows]).each(^(NSIndexPath *indexPath) {
                 if (indexPath.section == 2 && cellIndexPath.section == indexPath.section && cellIndexPath.row != indexPath.row) {
                     CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
@@ -515,27 +520,9 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         [cell.quantityField setBk_didEndEditingBlock:^(UITextField *field) {
             NSIndexPath *indexPath = [self.tableView indexPathForCell:weakCell];
             NSLog(@"%d %d", indexPath.section, indexPath.row);
-
-            int quantity = [weakCell.quantityField.text intValue];
-            float price = 0;
-            if (indexPath.row == 0) {
-                price = [self.workingCart.product.showprc intValue] / 100.0;
-            } else {
-                price = [self.workingCart.product.regprc intValue] / 100.0;
-            }
-            float total = quantity * price;
-
-            NSNumberFormatter *formatter = [NSNumberFormatter new];
-            [formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
-
-            weakCell.lineTotalLabel.text = [formatter stringFromNumber:@(total)];
-
-            if (quantity > 0) {
-                weakCell.lineTotalBackgroundView.backgroundColor = [ThemeUtil orangeColor];
-            } else {
-                weakCell.lineTotalBackgroundView.backgroundColor = [ThemeUtil blackColor];
-            }
+            [self calculateLineTotal:weakCell on:weakShipDate];
         }];
+        [self calculateLineTotal:cell on:shipDate];
 
         [cell.quantityField setBk_shouldReturnBlock:^BOOL(UITextField *field) {
             NSIndexPath *indexPath = [self.tableView indexPathForCell:weakCell];
@@ -548,6 +535,34 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     }
 
     return cell;
+}
+
+- (void)calculateLineTotal:(CIShipDateTableViewCell *)cell on:(NSDate *)shipDate{
+    int quantity = [cell.quantityField.text intValue];
+    float price = 0;
+
+    if ([ShowConfigurations instance].atOncePricing) {
+        if ([[[ShowConfigurations instance] orderShipDates].fixedDates.firstObject isEqual:shipDate]) {
+            price = [self.workingCart.product.showprc intValue] / 100.0;
+        } else {
+            price = [self.workingCart.product.regprc intValue] / 100.0;
+        }
+    } else {
+        price = [self.workingCart.product.showprc intValue] / 100.0;
+    }
+
+    float total = quantity * price;
+
+    NSNumberFormatter *formatter = [NSNumberFormatter new];
+    [formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+
+    cell.lineTotalLabel.text = [formatter stringFromNumber:@(total)];
+
+    if (quantity > 0) {
+        cell.lineTotalBackgroundView.backgroundColor = [ThemeUtil orangeColor];
+    } else {
+        cell.lineTotalBackgroundView.backgroundColor = [ThemeUtil blackColor];
+    }
 }
 
 - (void)incrementQuantity:(UISwipeGestureRecognizer *)recognizer {
