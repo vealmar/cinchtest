@@ -72,10 +72,6 @@
 
 @property (weak, nonatomic) IBOutlet UIView *orderDetailTableParentView;
 @property (weak, nonatomic) IBOutlet UITableView *orderDetailTable;
-@property (weak, nonatomic) IBOutlet UILabel *orderDetailLabel;
-
-
-@property (weak, nonatomic) IBOutlet UIView *orderDetailShipTotalView;
 
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailSaveButton;
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailEditButton;
@@ -84,6 +80,8 @@
 @property (assign) float totalGross;
 @property (assign) float totalDiscounts;
 @property (assign) float totalFinal;
+
+@property (strong, nonatomic) NSMutableArray *subtotalLines;
 @end
 
 @implementation
@@ -365,6 +363,10 @@ SG: The argument 'detail' is the selected order.
         orderDetailTableOriginY = self.orderDetailPaymentTermsView.frame.origin.y + self.orderDetailPaymentTermsView.frame.size.height + 8;
     }
 
+    self.orderDetailTableParentView.frame = CGRectMake(0, orderDetailTableOriginY, self.orderDetailTableParentView.frame.size.width, 630 - orderDetailTableOriginY);
+
+    self.subtotalLines = [NSMutableArray array];
+
     CoreDataUtil *coreDataUtil = [CoreDataUtil sharedManager];
     NSMutableDictionary *dateProducts = [NSMutableDictionary dictionary];
     NSMutableArray *orderedDates = [NSMutableArray array];
@@ -510,24 +512,29 @@ SG: The argument 'detail' is the selected order.
     [dateFormatter setDateFormat:@"dd/MM/yyyy"];
     [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
 
-    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
-    paragraph.alignment = NSTextAlignmentRight;
-    paragraph.lineSpacing = 5;
-    paragraph.tabStops = @[[[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
-                                                           location:self.orderDetailLabel.bounds.size.width - 400
-                                                            options:nil],
-                           [[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
-                                                           location:self.orderDetailLabel.bounds.size.width - 200
-                                                            options:nil]];
-
-    NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
+//    NSMutableParagraphStyle *paragraph = [[NSMutableParagraphStyle alloc] init];
+//    paragraph.alignment = NSTextAlignmentRight;
+//    paragraph.lineSpacing = 5;
+//    paragraph.tabStops = @[[[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
+//                                                           location:self.orderDetailLabel.bounds.size.width - 400
+//                                                            options:nil],
+//                           [[NSTextTab alloc] initWithTextAlignment:NSTextAlignmentRight
+//                                                           location:self.orderDetailLabel.bounds.size.width - 200
+//                                                            options:nil]];
+//
+//    NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
 
     [orderedDates sortUsingSelector:@selector(compare:)];
+
+    NSMutableArray *line = nil;
     for (int i = 0; i < orderedDates.count; i++) {
         NSDate *date = (NSDate*)[orderedDates objectAtIndex:i];
 
-        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"Shipping on %@\t", [dateFormatter stringFromDate:date]]
-                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:13], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+        line = [NSMutableArray array];
+        [line addObject:[NSString stringWithFormat:@"Shipping on %@", [dateFormatter stringFromDate:date]]];
+
+//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"Shipping on %@\t", [dateFormatter stringFromDate:date]]
+//                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:13], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
 
         float total = 0;
         for (NSArray *pair in dateProducts[date]) {
@@ -543,37 +550,44 @@ SG: The argument 'detail' is the selected order.
 
         NSString *priceString = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:total / 100.0] numberStyle:NSNumberFormatterCurrencyStyle];
 
-        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:priceString
-                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:15], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+        [line addObject:priceString];
+        [self.subtotalLines addObject:line];
+//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:priceString
+//                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:15], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
     }
 
     NSString *s = nil;
+
+    if (self.totalDiscounts > 0) {
+        s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
+        [self.subtotalLines addObject:@[@"SUBTOTAL", s]];
+//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"SUBTOTAL\t%@", s]
+//                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+
+        s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:fabsf(self.totalDiscounts)] numberStyle:NSNumberFormatterCurrencyStyle];
+        [self.subtotalLines addObject:@[@"DISCOUNT", s]];
+//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"DISCOUNT\t%@", s]
+//                                                                                 attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+//        [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+    }
+
     s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"SUBTOTAL\t%@", s]
-                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+    [self.subtotalLines addObject:@[@"TOTAL", s]];
+//    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"TOTAL\t"]
+//                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+//    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@", s]
+//                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont semiboldFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
+//    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
 
-    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:fabsf(self.totalDiscounts)] numberStyle:NSNumberFormatterCurrencyStyle];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"DISCOUNT\t%@", s]
-                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:16], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
+//    self.orderDetailLabel.attributedText = attributedString;
+//    self.orderDetailLabel.textAlignment = NSTextAlignmentRight;
+//    [self.orderDetailLabel sizeToFit];
+//    self.orderDetailShipTotalView.frame = CGRectMake(0, 632 - self.orderDetailLabel.frame.size.height, 670, self.orderDetailLabel.frame.size.height - 5);
+//    self.orderDetailLabel.frame = CGRectMake(0, 5, self.orderDetailShipTotalView.bounds.size.width - 10, self.orderDetailShipTotalView.bounds.size.height);
 
-    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"TOTAL\t"]
-                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont regularFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@"%@", s]
-                                                                             attributes:@{ NSParagraphStyleAttributeName: paragraph, NSFontAttributeName : [UIFont semiboldFontOfSize:18], NSForegroundColorAttributeName: [UIColor colorWithRed:0.165 green:0.176 blue:0.180 alpha:1] }]];
-    [attributedString appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:nil]];
-
-    self.orderDetailLabel.attributedText = attributedString;
-    self.orderDetailLabel.textAlignment = NSTextAlignmentRight;
-    [self.orderDetailLabel sizeToFit];
-    self.orderDetailShipTotalView.frame = CGRectMake(0, 632 - self.orderDetailLabel.frame.size.height, 670, self.orderDetailLabel.frame.size.height - 5);
-    self.orderDetailLabel.frame = CGRectMake(0, 5, self.orderDetailShipTotalView.bounds.size.width - 10, self.orderDetailShipTotalView.bounds.size.height);
-
-    self.orderDetailTableParentView.frame = CGRectMake(0, orderDetailTableOriginY, self.orderDetailTableParentView.frame.size.width, self.orderDetailShipTotalView.frame.origin.y - orderDetailTableOriginY);
-
+    [self.orderDetailTable reloadData];
     [self updateOrderActions];
 }
 
@@ -665,114 +679,175 @@ SG: The argument 'detail' is the selected order.
         [cell setLayoutMargins:UIEdgeInsetsZero];
     }
 
-    if (tableView == self.orderDetailTable) return;
-
-    if(indexPath.row % 2 == 0) {
-        cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
+    if (tableView == self.orderDetailTable) {
+        int rows = currentOrder && currentOrder.lineItems ? currentOrder.lineItems.count : 0;
+        if (indexPath.row > rows) {
+            cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
+        } else {
+            cell.backgroundColor = [UIColor whiteColor];
+        }
     } else {
-        cell.backgroundColor = [UIColor colorWithRed:1.000 green:1.000 blue:1.000 alpha:1];
+        if(indexPath.row % 2 == 0) {
+            cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
+        } else {
+            cell.backgroundColor = [UIColor colorWithRed:1.000 green:1.000 blue:1.000 alpha:1];
+        }
     }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (tableView == self.orderDetailTable) {
-        return currentOrder.lineItems.count;
+        int rows = currentOrder && currentOrder.lineItems ? currentOrder.lineItems.count : 0;
+        if (rows) {
+            rows += 1 + self.subtotalLines.count;
+        }
+        return rows;
     }
 
     if (tableView == self.sideTable) {
         return self.filteredOrders ? self.filteredOrders.count : 0;
-    } else {
-        return currentOrder && currentOrder.lineItems ? currentOrder.lineItems.count : 0;
     }
+
+    return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView == self.orderDetailTable) {
-        static NSString *odcId = @"odcId";
+        int rows = currentOrder && currentOrder.lineItems ? currentOrder.lineItems.count : 0;
 
-        UILabel *citemLabel = nil;
-        UILabel *cdescriptionLabel = nil;
-        UILabel *csdLabel = nil;
-        UILabel *csqLabel = nil;
-        UILabel *cpriceLabel = nil;
-        UILabel *ctotalLabel = nil;
+        if (indexPath.row >= rows) {
+            static NSString *odcId = @"stlId";
 
-        UITableViewCell *cell = [self.orderDetailTable dequeueReusableCellWithIdentifier:odcId];
-        if (cell == nil) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:odcId];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            int index = indexPath.row - rows - 1;
 
-            citemLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 112, 40)];
-            citemLabel.tag = 1001;
-            citemLabel.backgroundColor = [UIColor clearColor];
-            citemLabel.font = [UIFont regularFontOfSize:14];
-            citemLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-            citemLabel.numberOfLines = 0;
-            citemLabel.textAlignment = NSTextAlignmentLeft;
-            [cell.contentView addSubview:citemLabel];
+            UILabel *cleftLabel = nil;
+            UILabel *crightLabel = nil;
 
-            cdescriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(135, 5, 197, 40)];
-            cdescriptionLabel.tag = 1002;
-            cdescriptionLabel.backgroundColor = [UIColor clearColor];
-            cdescriptionLabel.font = [UIFont regularFontOfSize:14];
-            cdescriptionLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-            cdescriptionLabel.numberOfLines = 0;
-            cdescriptionLabel.textAlignment = NSTextAlignmentLeft;
-            [cell.contentView addSubview:cdescriptionLabel];
+            UITableViewCell *cell = [self.orderDetailTable dequeueReusableCellWithIdentifier:odcId];
+            if (cell == nil) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:odcId];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-            csdLabel = [[UILabel alloc] initWithFrame:CGRectMake(340, 5, 64, 40)];
-            csdLabel.tag = 1003;
-            csdLabel.backgroundColor = [UIColor clearColor];
-            csdLabel.font = [UIFont regularFontOfSize:14];
-            csdLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-            csdLabel.numberOfLines = 0;
-            csdLabel.textAlignment = NSTextAlignmentLeft;
-            [cell.contentView addSubview:csdLabel];
+                cleftLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 500, 44)];
+                cleftLabel.tag = 1001;
+                cleftLabel.backgroundColor = [UIColor clearColor];
+                cleftLabel.font = [UIFont regularFontOfSize:14];
+                cleftLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                cleftLabel.numberOfLines = 0;
+                cleftLabel.textAlignment = NSTextAlignmentRight;
+                [cell.contentView addSubview:cleftLabel];
 
-            csqLabel = [[UILabel alloc] initWithFrame:CGRectMake(412, 5, 67, 40)];
-            csqLabel.tag = 1004;
-            csqLabel.backgroundColor = [UIColor clearColor];
-            csqLabel.font = [UIFont regularFontOfSize:14];
-            csqLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-            csqLabel.numberOfLines = 0;
-            csqLabel.textAlignment = NSTextAlignmentLeft;
-            [cell.contentView addSubview:csqLabel];
+                crightLabel = [[UILabel alloc] initWithFrame:CGRectMake(582, 5, 80, 40)];
+                crightLabel.tag = 1002;
+                crightLabel.backgroundColor = [UIColor clearColor];
+                crightLabel.font = [UIFont semiboldFontOfSize:14];
+                crightLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                crightLabel.numberOfLines = 0;
+                crightLabel.textAlignment = NSTextAlignmentLeft;
+                [cell.contentView addSubview:crightLabel];
+            } else {
+                cleftLabel = (UILabel*)[cell.contentView viewWithTag:1001];
+                crightLabel = (UILabel*)[cell.contentView viewWithTag:1002];
+            }
 
-            cpriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(487, 5, 89, 40)];
-            cpriceLabel.tag = 1005;
-            cpriceLabel.backgroundColor = [UIColor clearColor];
-            cpriceLabel.font = [UIFont regularFontOfSize:14];
-            cpriceLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-            cpriceLabel.numberOfLines = 0;
-            cpriceLabel.textAlignment = NSTextAlignmentLeft;
-            [cell.contentView addSubview:cpriceLabel];
+            if (index >= 0) {
+                NSArray *subtotalLine = self.subtotalLines[index];
+                cleftLabel.text = subtotalLine[0];
+                crightLabel.text = subtotalLine[1];
+            } else {
+                cleftLabel.text = @"";
+                crightLabel.text = @"";
+            }
 
-            ctotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(582, 5, 80, 40)];
-            ctotalLabel.tag = 1006;
-            ctotalLabel.backgroundColor = [UIColor clearColor];
-            ctotalLabel.font = [UIFont semiboldFontOfSize:14];
-            ctotalLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-            ctotalLabel.numberOfLines = 0;
-            ctotalLabel.textAlignment = NSTextAlignmentLeft;
-            [cell.contentView addSubview:ctotalLabel];
+            cell.backgroundColor = [UIColor greenColor];
+            return cell;
         } else {
-            citemLabel = (UILabel*)[cell.contentView viewWithTag:1001];
-            cdescriptionLabel = (UILabel*)[cell.contentView viewWithTag:1002];
-            csdLabel = (UILabel*)[cell.contentView viewWithTag:1003];
-            csqLabel = (UILabel*)[cell.contentView viewWithTag:1004];
-            cpriceLabel = (UILabel*)[cell.contentView viewWithTag:1005];
-            ctotalLabel = (UILabel*)[cell.contentView viewWithTag:1006];
+            static NSString *odcId = @"odcId";
+
+            UILabel *citemLabel = nil;
+            UILabel *cdescriptionLabel = nil;
+            UILabel *csdLabel = nil;
+            UILabel *csqLabel = nil;
+            UILabel *cpriceLabel = nil;
+            UILabel *ctotalLabel = nil;
+
+            UITableViewCell *cell = [self.orderDetailTable dequeueReusableCellWithIdentifier:odcId];
+            if (cell == nil) {
+                cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:odcId];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+
+                citemLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 112, 40)];
+                citemLabel.tag = 1001;
+                citemLabel.backgroundColor = [UIColor clearColor];
+                citemLabel.font = [UIFont regularFontOfSize:14];
+                citemLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                citemLabel.numberOfLines = 0;
+                citemLabel.textAlignment = NSTextAlignmentLeft;
+                [cell.contentView addSubview:citemLabel];
+
+                cdescriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(135, 5, 197, 40)];
+                cdescriptionLabel.tag = 1002;
+                cdescriptionLabel.backgroundColor = [UIColor clearColor];
+                cdescriptionLabel.font = [UIFont regularFontOfSize:14];
+                cdescriptionLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                cdescriptionLabel.numberOfLines = 0;
+                cdescriptionLabel.textAlignment = NSTextAlignmentLeft;
+                [cell.contentView addSubview:cdescriptionLabel];
+
+                csdLabel = [[UILabel alloc] initWithFrame:CGRectMake(340, 5, 64, 40)];
+                csdLabel.tag = 1003;
+                csdLabel.backgroundColor = [UIColor clearColor];
+                csdLabel.font = [UIFont regularFontOfSize:14];
+                csdLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                csdLabel.numberOfLines = 0;
+                csdLabel.textAlignment = NSTextAlignmentLeft;
+                [cell.contentView addSubview:csdLabel];
+
+                csqLabel = [[UILabel alloc] initWithFrame:CGRectMake(412, 5, 67, 40)];
+                csqLabel.tag = 1004;
+                csqLabel.backgroundColor = [UIColor clearColor];
+                csqLabel.font = [UIFont regularFontOfSize:14];
+                csqLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                csqLabel.numberOfLines = 0;
+                csqLabel.textAlignment = NSTextAlignmentLeft;
+                [cell.contentView addSubview:csqLabel];
+
+                cpriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(487, 5, 89, 40)];
+                cpriceLabel.tag = 1005;
+                cpriceLabel.backgroundColor = [UIColor clearColor];
+                cpriceLabel.font = [UIFont regularFontOfSize:14];
+                cpriceLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                cpriceLabel.numberOfLines = 0;
+                cpriceLabel.textAlignment = NSTextAlignmentLeft;
+                [cell.contentView addSubview:cpriceLabel];
+
+                ctotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(582, 5, 80, 40)];
+                ctotalLabel.tag = 1006;
+                ctotalLabel.backgroundColor = [UIColor clearColor];
+                ctotalLabel.font = [UIFont semiboldFontOfSize:14];
+                ctotalLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                ctotalLabel.numberOfLines = 0;
+                ctotalLabel.textAlignment = NSTextAlignmentLeft;
+                [cell.contentView addSubview:ctotalLabel];
+            } else {
+                citemLabel = (UILabel*)[cell.contentView viewWithTag:1001];
+                cdescriptionLabel = (UILabel*)[cell.contentView viewWithTag:1002];
+                csdLabel = (UILabel*)[cell.contentView viewWithTag:1003];
+                csqLabel = (UILabel*)[cell.contentView viewWithTag:1004];
+                cpriceLabel = (UILabel*)[cell.contentView viewWithTag:1005];
+                ctotalLabel = (UILabel*)[cell.contentView viewWithTag:1006];
+            }
+
+            ALineItem *lineItem = currentOrder.lineItems[indexPath.row];
+            citemLabel.text = [NSString stringWithFormat:@"#%@", lineItem.itemId];
+            cdescriptionLabel.text = [NSString stringWithFormat:@"%@", lineItem.desc];
+            csdLabel.text = @"";//[NSString stringWithFormat:@"%d", lineItem.shipDates.count];
+            csqLabel.text = [NSString stringWithFormat:@"%d", [lineItem totalQuantity]];
+            cpriceLabel.text = [NSString stringWithFormat:@"$%@", lineItem.price];
+            ctotalLabel.text = [NSString stringWithFormat:@"$%.02f", lineItem.totalQuantity * [lineItem.price floatValue]];
+            
+            return cell;
         }
-
-        ALineItem *lineItem = currentOrder.lineItems[indexPath.row];
-        citemLabel.text = [NSString stringWithFormat:@"#%@", lineItem.itemId];
-        cdescriptionLabel.text = [NSString stringWithFormat:@"%@", lineItem.desc];
-        csdLabel.text = [NSString stringWithFormat:@"%d", lineItem.shipDates.count];
-        csqLabel.text = [NSString stringWithFormat:@"%d", [lineItem totalQuantity]];
-        cpriceLabel.text = [NSString stringWithFormat:@"$%@", lineItem.price];
-        ctotalLabel.text = [NSString stringWithFormat:@"$%.02f", lineItem.totalQuantity * [lineItem.price floatValue]];
-
-        return cell;
     }
 
     if (tableView == self.sideTable) {
