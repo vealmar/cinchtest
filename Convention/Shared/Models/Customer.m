@@ -15,7 +15,6 @@
 @dynamic customer_id;
 @dynamic billname;
 @dynamic email;
-@dynamic initial_show;
 @dynamic stores;
 @dynamic custid;
 
@@ -26,7 +25,6 @@
         self.custid = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerCustId]];
         self.billname = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerBillName]];
         self.email = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerEmail]];
-        self.initial_show = (NSNumber *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerInitialShow]];
         NSArray *storesArray = (NSArray *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerStores]];
         self.stores = storesArray && storesArray.count > 0 ? [storesArray componentsJoinedByString:@","] : nil;
     }
@@ -43,8 +41,6 @@
         [dictionary setObject:self.billname forKey:kCustomerBillName];
     if (self.email)
         [dictionary setObject:self.email forKey:kCustomerEmail];
-    if (self.initial_show)
-        [dictionary setObject:self.initial_show forKey:kCustomerInitialShow];
     if (self.stores) {
         NSArray *storesStrArray = [self.stores componentsSeparatedByString:@","];
         NSMutableArray *storesNumArray = [[NSMutableArray alloc] init];

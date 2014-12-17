@@ -27,7 +27,6 @@
         <attribute name="custid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="customer_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="initial_show" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="stores" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="DiscountLineItem" representedClassName="DiscountLineItem" syncable="YES">
@@ -152,7 +151,7 @@
     <elements>
         <element name="Bulletin" positionX="0" positionY="0" width="128" height="195"/>
         <element name="Cart" positionX="0" positionY="0" width="128" height="165"/>
-        <element name="Customer" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="Customer" positionX="0" positionY="0" width="128" height="118"/>
         <element name="DiscountLineItem" positionX="0" positionY="0" width="128" height="180"/>
         <element name="EditableEntity" positionX="0" positionY="0" width="128" height="73"/>
         <element name="Error" positionX="0" positionY="0" width="128" height="58"/>
