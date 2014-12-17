@@ -143,7 +143,6 @@
 		6DDC99C6481FD17806FBC580 /* FarrisProductCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC94A55870A44EAD06A630 /* FarrisProductCell.xib */; };
 		6DDC99DABDBB108322BFC5EE /* MenuLinkMetadataProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC949704A165F36DC911C5 /* MenuLinkMetadataProvider.m */; };
 		6DDC99E10168419081BD680F /* CIViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC98BE98AA0E002305B36F /* CIViewController.m */; };
-		6DDC99E4EAC13717CDA53BFD /* vender.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC99D52477F3F3FE81CE57 /* vender.m */; };
 		6DDC9A070A218E9BEC7DFCA2 /* CISignatureViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC905A126D9C4A0A9A522D /* CISignatureViewController.xib */; };
 		6DDC9A16ED108E933F199485 /* StringOrderCustomFieldView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9AB69E23511C50B9380E /* StringOrderCustomFieldView.m */; };
 		6DDC9A227C81B5BD5CD2E6AC /* ProductSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9645717BEEDCEE0297AF /* ProductSearch.m */; };
@@ -527,7 +526,6 @@
 		6DDC99046486101BD60D8CBD /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
 		6DDC990D06D9A0FBEA4E10F1 /* CICustomerInfoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = CICustomerInfoViewController.xib; path = ../../../iPad/CICustomerInfoViewController.xib; sourceTree = "<group>"; };
 		6DDC990E0F42599369B92356 /* SynchronousRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronousRequestUtil.m; sourceTree = "<group>"; };
-		6DDC990ED9EAF63ED53A20DA /* vender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vender.h; sourceTree = "<group>"; };
 		6DDC9910746F998E77CFF1A5 /* NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberUtil.m; sourceTree = "<group>"; };
 		6DDC99305AB529C2BF79C40A /* CinchJSONAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CinchJSONAPIClient.m; sourceTree = "<group>"; };
 		6DDC993FC0A9E16CF56D91F8 /* BulletinViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinViewController.h; sourceTree = "<group>"; };
@@ -544,7 +542,6 @@
 		6DDC99C1FFF29E6881E530B3 /* MICheckBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MICheckBox.m; sourceTree = "<group>"; };
 		6DDC99C347BF19514B3DDA0E /* CICalendarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICalendarViewController.h; sourceTree = "<group>"; };
 		6DDC99CF25BAB9F88B9F8C39 /* submitin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = submitin.png; sourceTree = "<group>"; };
-		6DDC99D52477F3F3FE81CE57 /* vender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = vender.m; sourceTree = "<group>"; };
 		6DDC99DE657250F5452F0326 /* password.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = password.png; sourceTree = "<group>"; };
 		6DDC99EA750F431FBB1E3F24 /* SegmentedControlHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SegmentedControlHelper.m; sourceTree = "<group>"; };
 		6DDC99ECC9968D902933A8D4 /* Order+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Order+Extensions.h"; sourceTree = "<group>"; };
@@ -925,7 +922,6 @@
 				6DDC97364100A01A2F5A0CA4 /* ProductCart.xcmappingmodel */,
 				6DDC9BDED30ACB1B0D4ABABF /* Cart+Extensions.m */,
 				6DDC9F229ABB32B773CEBDE0 /* Vendor.h */,
-				6DDC99D52477F3F3FE81CE57 /* vender.m */,
 				6DDC9747F84E3A42E403EDF4 /* CoreDataManager.h */,
 				6DDC92E5206B36621CC1ADE3 /* SetupInfo.m */,
 				6DDC94633EDE2372CA667F02 /* Cart.h */,
@@ -947,7 +943,6 @@
 				6DDC9782EF2038C429515D66 /* DiscountLineItem.m */,
 				6DDC986552B48CFFFCDD4A0C /* Customer.m */,
 				6DDC918D0777239D3FD5B8A9 /* Product+Extensions.h */,
-				6DDC990ED9EAF63ED53A20DA /* vender.h */,
 				6DDC95BDD2ACC0E4660CE6A5 /* SetupInfo.h */,
 				6DDC9A2B35AAA4B6BD5C8B57 /* Cart.m */,
 				6DDC95E84BEC02ACCBC3CD23 /* CoreDataUtil.h */,
@@ -2019,7 +2014,6 @@
 				D8B385271A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.m in Sources */,
 				6DDC9BBCC5B783A610FAA155 /* ProductCart.xcmappingmodel in Sources */,
 				6DDC9BCDEEB70A3EA5BBE625 /* Cart+Extensions.m in Sources */,
-				6DDC99E4EAC13717CDA53BFD /* vender.m in Sources */,
 				6DDC9E88FC9AE8063896378C /* SetupInfo.m in Sources */,
 				6DDC9ECAD7F607EC8E416D54 /* Error.m in Sources */,
 				6DDC92A9AE80B57662B26FFD /* Order+Extensions.m in Sources */,
