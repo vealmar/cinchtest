@@ -258,11 +258,15 @@
         Product *product1 = [a isKindOfClass:[Product class]] ? a : [Product findProduct:a];
         Product *product2 = [b isKindOfClass:[Product class]] ? b : [Product findProduct:b];
 
-        NSString *firstSequence = (NSString *) [NilUtil nilOrObject:product1.sequence];
-        NSString *secondSequence = (NSString *) [NilUtil nilOrObject:product2.sequence];
+        NSNumber *firstSequence = (NSNumber *) [NilUtil nilOrObject:product1.sequence];
+        NSNumber *secondSequence = (NSNumber *) [NilUtil nilOrObject:product2.sequence];
 
-        if (firstSequence && secondSequence && ![firstSequence isEqual:secondSequence]) {
+        if (firstSequence && ![firstSequence isEqualToNumber:@(0)] && secondSequence && ![secondSequence isEqualToNumber:@(0)] && ![firstSequence isEqual:secondSequence]) {
             return [firstSequence compare:secondSequence];
+        } else if (![firstSequence isEqualToNumber:@(0)]) {
+            return NSOrderedAscending;
+        } else if (![secondSequence isEqualToNumber:@(0)]) {
+            return NSOrderedDescending;
         } else {
             NSString *firstInvtid = (NSString *) [NilUtil nilOrObject:product1.invtid];
             NSString *secondInvtid = (NSString *) [NilUtil nilOrObject:product2.invtid];
