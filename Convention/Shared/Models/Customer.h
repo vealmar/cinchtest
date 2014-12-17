@@ -14,7 +14,6 @@
 
 @property(nonatomic, retain) NSNumber *customer_id;
 @property(nonatomic, retain) NSString *billname;
-@property(nonatomic, retain) NSNumber *import_id;
 @property(nonatomic, retain) NSString *email;
 @property(nonatomic, retain) NSNumber *initial_show;
 @property(nonatomic, retain) NSString *stores;

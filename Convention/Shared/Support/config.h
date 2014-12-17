@@ -50,7 +50,6 @@
 #define kVendorEmail @"email"
 #define kVendorHideWSPrice @"hidewsprice"
 #define kVendorHideSHPrice @"hideshprice"
-#define kVendorImportID @"import_id"
 #define kVendorVendorGroupId @"vendorgroup_id"
 #define kVendorInitialShow @"initial_show"
 #define kVendorIsle @"isle"
@@ -128,7 +127,6 @@
 #define kProductDiscount @"discount"
 #define kProductUniqueId @"unique_product_id"
 #define kProductCompany @"company"
-#define kProductImportID @"import_id"
 #define kProductInitialShow @"initial_show"
 #define kProductVendID @"vendid"
 #define kProductVendorID @"vendor_id"
@@ -152,7 +150,6 @@
 #define kCustomerId @"id"
 #define kCustomerCustId @"custid"
 #define kCustomerBillName @"billname"
-#define kCustomerImportId @"import_id"
 #define kCustomerEmail @"email"
 #define kCustomerInitialShow @"initial_show"
 #define kCustomerStores @"stores"
@@ -167,7 +164,6 @@
 #define kBulletinVendorId @"vendor_id"
 #define kBulletinShowId @"show_id"
 #define kBulletinStatus @"status"
-#define kBulletinImportId @"import_id"
 
 #define kErrors @"errors"
 

@@ -24,7 +24,6 @@
         self.dirship = product.dirship;
         self.discount = product.discount;
         self.idx = product.idx;
-        self.import_id = product.import_id;
         self.initial_show = product.initial_show;
         self.invtid = product.invtid;
         self.linenbr = product.sequence;

@@ -26,7 +26,6 @@
 @property(nonatomic, retain) NSString *dlybill;
 @property(nonatomic, retain) NSNumber *lines;
 @property(nonatomic, retain) NSString *username;
-@property(nonatomic, retain) NSNumber *import_id;
 @property(nonatomic, retain) NSNumber *vendorgroup_id;
 @property(nonatomic, retain) NSNumber *initial_show;
 @property(nonatomic, retain) NSString *isle;

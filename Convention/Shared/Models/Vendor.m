@@ -10,7 +10,6 @@
 #import "NilUtil.h"
 #import "config.h"
 
-
 @implementation Vendor
 
 @dynamic vendorId;
@@ -27,7 +26,6 @@
 @dynamic dlybill;
 @dynamic lines;
 @dynamic username;
-@dynamic import_id;
 @dynamic vendorgroup_id;
 @dynamic initial_show;
 @dynamic isle;
@@ -53,7 +51,6 @@
         self.dlybill = (NSString *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorDlybill]];
         self.lines = (NSNumber *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorLines]];
         self.username = (NSString *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorUsername]];
-        self.import_id = (NSNumber *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorImportID]];
         self.vendorgroup_id = (NSNumber *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorVendorGroupId]];
         self.initial_show = (NSNumber *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorInitialShow]];
         self.isle = (NSString *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorIsle]];
@@ -95,8 +92,6 @@
         [dictionary setObject:self.lines forKey:kVendorLines];
     if (self.username)
         [dictionary setObject:self.username forKey:kVendorUsername];
-    if (self.import_id)
-        [dictionary setObject:self.import_id forKey:kVendorImportID];
     if (self.vendorgroup_id)
         [dictionary setObject:self.vendorgroup_id forKey:kVendorVendorGroupId];
     if (self.initial_show)

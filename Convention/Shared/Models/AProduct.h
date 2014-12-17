@@ -20,7 +20,6 @@
 @property(nonatomic, retain) NSNumber *dirship;
 @property(nonatomic, retain) NSString *discount;
 @property(nonatomic, retain) NSNumber *idx;
-@property(nonatomic, retain) NSNumber *import_id;
 @property(nonatomic, retain) NSNumber *initial_show;
 @property(nonatomic, retain) NSString *invtid;
 @property(nonatomic, retain) NSString *linenbr;

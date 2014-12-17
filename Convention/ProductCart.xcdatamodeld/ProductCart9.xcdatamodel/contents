@@ -2,7 +2,6 @@
 <model userDefinedModelVersionIdentifier="9" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="13F34" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Bulletin" representedClassName="Bulletin" syncable="YES">
         <attribute name="bulletinId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="note1" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="note2" optional="YES" attributeType="String" syncable="YES"/>
@@ -28,7 +27,6 @@
         <attribute name="custid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="customer_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="initial_show" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="stores" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
@@ -86,7 +84,6 @@
         <attribute name="discount" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="editable" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="idx" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="initial_show" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="invtid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="min" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -139,7 +136,6 @@
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="hideshprice" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="hidewsprice" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="initial_show" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="isle" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="lines" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -154,16 +150,16 @@
     </entity>
     <fetchRequest name="getSetupItem" entity="SetupInfo" predicateString="item == $ITEMNAME"/>
     <elements>
-        <element name="Bulletin" positionX="0" positionY="0" width="128" height="210"/>
+        <element name="Bulletin" positionX="0" positionY="0" width="128" height="195"/>
         <element name="Cart" positionX="0" positionY="0" width="128" height="165"/>
-        <element name="Customer" positionX="0" positionY="0" width="128" height="150"/>
+        <element name="Customer" positionX="0" positionY="0" width="128" height="135"/>
         <element name="DiscountLineItem" positionX="0" positionY="0" width="128" height="180"/>
         <element name="EditableEntity" positionX="0" positionY="0" width="128" height="73"/>
         <element name="Error" positionX="0" positionY="0" width="128" height="58"/>
         <element name="Order" positionX="0" positionY="0" width="128" height="360"/>
-        <element name="Product" positionX="0" positionY="0" width="128" height="510"/>
+        <element name="Product" positionX="0" positionY="0" width="128" height="493"/>
         <element name="SetupInfo" positionX="0" positionY="0" width="128" height="75"/>
         <element name="ShipDate" positionX="0" positionY="0" width="128" height="75"/>
-        <element name="Vendor" positionX="0" positionY="0" width="128" height="375"/>
+        <element name="Vendor" positionX="0" positionY="0" width="128" height="360"/>
     </elements>
 </model>

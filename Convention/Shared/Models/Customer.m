@@ -14,7 +14,6 @@
 @implementation Customer
 @dynamic customer_id;
 @dynamic billname;
-@dynamic import_id;
 @dynamic email;
 @dynamic initial_show;
 @dynamic stores;
@@ -26,7 +25,6 @@
         self.customer_id = (NSNumber *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerId]];
         self.custid = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerCustId]];
         self.billname = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerBillName]];
-        self.import_id = (NSNumber *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerImportId]];
         self.email = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerEmail]];
         self.initial_show = (NSNumber *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerInitialShow]];
         NSArray *storesArray = (NSArray *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerStores]];
@@ -43,8 +41,6 @@
         [dictionary setObject:self.custid forKey:kCustomerCustId];
     if (self.billname)
         [dictionary setObject:self.billname forKey:kCustomerBillName];
-    if (self.import_id)
-        [dictionary setObject:self.import_id forKey:kCustomerImportId];
     if (self.email)
         [dictionary setObject:self.email forKey:kCustomerEmail];
     if (self.initial_show)

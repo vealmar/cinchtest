@@ -22,7 +22,6 @@
 @property(nonatomic, retain) NSNumber *vendor_id;
 @property(nonatomic, retain) NSNumber *show_id;
 @property(nonatomic, retain) NSString *status;
-@property(nonatomic, retain) NSNumber *import_id;
 
 - (id)initWithBulletinFromServer:(NSDictionary *)bulletinFromServer context:(NSManagedObjectContext *)context;
 

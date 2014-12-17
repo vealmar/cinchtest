@@ -22,7 +22,6 @@
 @dynamic dirship;
 @dynamic discount;
 @dynamic idx;
-@dynamic import_id;
 @dynamic initial_show;
 @dynamic invtid;
 @dynamic sequence;

@@ -24,7 +24,6 @@
 @dynamic vendor_id;
 @dynamic show_id;
 @dynamic status;
-@dynamic import_id;
 
 - (id)initWithBulletinFromServer:(NSDictionary *)bulletinFromServer context:(NSManagedObjectContext *)context {
     self = [super initWithEntity:[NSEntityDescription entityForName:@"Bulletin" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
@@ -41,7 +40,6 @@
         self.vendor_id = (NSNumber *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinVendorId]];
         self.show_id = (NSNumber *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinShowId]];
         self.status = (NSString *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinStatus]];
-        self.import_id = (NSNumber *) [NilUtil nilOrObject:[bulletinFromServer objectForKey:kBulletinImportId]];
     }
     return self;
 }
@@ -68,8 +66,6 @@
         [dictionary setObject:self.show_id forKey:kBulletinShowId];
     if (self.status)
         [dictionary setObject:self.status forKey:kBulletinStatus];
-    if (self.import_id)
-        [dictionary setObject:self.import_id forKey:kBulletinImportId];
     return dictionary;
 }
 @end
