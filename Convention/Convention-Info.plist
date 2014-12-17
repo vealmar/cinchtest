@@ -37,17 +37,17 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>142</string>
+	<string>145</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>BEBAS.ttf</string>
 		<string>fontawesome.ttf</string>
-        <string>OPENSANS-REGULAR_1.TTF</string>
+		<string>OPENSANS-REGULAR_1.TTF</string>
 		<string>OPENSANS-SEMIBOLD_1.TTF</string>
-        <string>OpenSans-Light.TTF</string>
-        <string>OpenSans-Bold.TTF</string>
+		<string>OpenSans-Light.ttf</string>
+		<string>OpenSans-Bold.ttf</string>
 		<string>glyphicons.ttf</string>
 	</array>
 	<key>UIRequiredDeviceCapabilities</key>

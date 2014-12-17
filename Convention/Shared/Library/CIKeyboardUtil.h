@@ -8,6 +8,8 @@
 
 @interface CIKeyboardUtil : NSObject
 
++ (void)keyboardWillShow:(NSNotification *)notification adjustView:(UIView *)view;
+
 + (void)keyboardWillShow:(NSNotification *)notification adjustConstraint:(NSLayoutConstraint *)constraint in:(UIView *)view;
 
 + (void)keyboardWillHide:(NSNotification *)notification adjustConstraint:(NSLayoutConstraint *)constraint in:(UIView *)view;

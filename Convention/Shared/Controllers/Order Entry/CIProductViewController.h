@@ -71,7 +71,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderPrice1Label;
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderPrice2Label;
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *keyboardHeight; // used on bottom of Toolbar
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *keyboardHeightFooter; // used on bottom of Toolbar
 
 - (IBAction)Cancel:(id)sender;
 

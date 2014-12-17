@@ -35,7 +35,7 @@
                loggedInVendorGroupId:(NSString *)loggedInVendorGroupId
                 managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
-- (NSArray *)sortProductsByinvtId:(NSArray *)productIdsOrProducts;
+- (NSArray *)sortProductsBySequenceAndInvtId:(NSArray *)productIdsOrProducts;
 
 - (NSArray *)sortDiscountsByLineItemId:(NSArray *)lineItemIds;
 

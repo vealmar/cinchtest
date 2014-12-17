@@ -27,7 +27,7 @@
         self.import_id = product.import_id;
         self.initial_show = product.initial_show;
         self.invtid = product.invtid;
-        self.linenbr = product.linenbr;
+        self.linenbr = product.sequence;
         self.min = product.min;
         self.partnbr = product.partnbr;
         self.productId = product.productId;

@@ -238,7 +238,7 @@
     if (search.currentBulletin > 0) {
         [predicates addObject:[NSPredicate predicateWithFormat:@"bulletin_id = %d", search.currentBulletin]];
     }
-    [predicates addObject:[NSPredicate predicateWithFormat:@"invtid CONTAINS[cd] %@ or descr CONTAINS[cd] %@ or descr2 CONTAINS[cd] %@", search.queryString, search.queryString, search.queryString]];
+    [predicates addObject:[NSPredicate predicateWithFormat:@"invtid CONTAINS[cd] %@ or partnbr CONTAINS[cd] %@ or descr CONTAINS[cd] %@ or descr2 CONTAINS[cd] %@", search.queryString, search.queryString, search.queryString, search.queryString]];
     fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
     NSError *error = nil;
     NSArray *fetchedObjects = [search.context executeFetchRequest:fetchRequest error:&error];

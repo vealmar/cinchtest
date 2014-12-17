@@ -12,7 +12,7 @@
 			<key>Key</key>
 			<string>host</string>
 			<key>DefaultValue</key>
-			<string>Remington</string>
+			<string>Ellett</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -26,7 +26,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>http://uc-dev.cinchsales.com</string>
+			<string>http://ellett.cinchsales.com</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -46,7 +46,7 @@
 			<key>Key</key>
 			<string>show</string>
 			<key>DefaultValue</key>
-			<string>27</string>
+			<string>28</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>

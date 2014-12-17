@@ -27,9 +27,9 @@
 @property(nonatomic, retain) NSNumber *import_id;
 @property(nonatomic, retain) NSNumber *initial_show;
 @property(nonatomic, retain) NSString *invtid;
-@property(nonatomic, retain) NSString *linenbr;
+@property(nonatomic, retain) NSNumber *sequence;
 @property(nonatomic, retain) NSNumber *min;
-@property(nonatomic, retain) NSString *partnbr;
+@property(nonatomic, retain) NSString *partnbr; // used for manufacturer_no
 @property(nonatomic, retain) NSNumber *productId;
 @property(nonatomic, retain) NSNumber *regprc;
 @property(nonatomic, retain) NSDate *shipdate1;

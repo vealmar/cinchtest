@@ -306,7 +306,7 @@
             }
         }
     }];
-    NSArray *sortedProducts = [helper sortProductsByinvtId:products];
+    NSArray *sortedProducts = [helper sortProductsBySequenceAndInvtId:products];
     NSMutableArray *sortedProductIds = [NSMutableArray array];
     for (Product *product in sortedProducts) {
         [sortedProductIds addObject:product.productId];
@@ -792,22 +792,7 @@
 #pragma mark Keyboard Adjustments
 
 - (void)keyboardWillShow:(NSNotification *)note {
-    [CIKeyboardUtil keyboardWillShow:note adjustConstraint:self.keyboardHeight in:self.view];
-
-    // Reducing the frame height by 300 causes it to end above the keyboard, so the keyboard cannot overlap any content. 300 is the height occupied by the keyboard.
-    // In addition scroll the selected row into view.
-    NSDictionary *info = [note userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-    //todo maybe we should be scrolling the parent view of the table (put table and totals view inside a view and that will be the parent we scroll?)
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    [UIView setAnimationDuration:0.3f];
-    [self addInsetToTable:kbSize.width - 69];//width because landscape. 69 is height of the view that contains totals at the end of the table.
-    if (selectedItemRowIndexPath && [self.resultData count] > [selectedItemRowIndexPath row]) //while you are editing quantity and typing in search field fast, you can reach a situation where selectedItemRowIndexPath is no longer valid.
-        [self.productsTableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-    keyboardUp = YES;
-    keyboardHeight = kbSize.width;
-    [UIView commitAnimations];
+    [CIKeyboardUtil keyboardWillShow:note adjustConstraint:self.keyboardHeightFooter in:self.view];
 }
 
 - (void)addInsetToTable:(float)insetHeight {
@@ -817,16 +802,7 @@
 }
 
 - (void)keyboardDidHide:(NSNotification *)note {
-    [CIKeyboardUtil keyboardWillHide:note adjustConstraint:self.keyboardHeight in:self.view];
-
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    [UIView setAnimationDuration:0.3f];
-    UIEdgeInsets contentInsets = UIEdgeInsetsZero;
-    self.productsTableView.contentInset = contentInsets;
-    self.productsTableView.scrollIndicatorInsets = contentInsets;
-    keyboardUp = NO;
-    [UIView commitAnimations];
+    [CIKeyboardUtil keyboardWillHide:note adjustConstraint:self.keyboardHeightFooter in:self.view];
 }
 
 - (void)sendOrderToServer:(BOOL)printThisOrder {
@@ -866,9 +842,10 @@
     [self adjustTableInset];
 }
 
+// @todo deprecated
 - (void)adjustTableInset {
     if (keyboardUp) {
-        [self addInsetToTable:keyboardHeight - 69];//width because landscape. 69 is height of the view that contains totals at the end of the table.
+        //[self addInsetToTable:keyboardHeightFooter - 69];//width because landscape. 69 is height of the view that contains totals at the end of the table.
     }
 }
 

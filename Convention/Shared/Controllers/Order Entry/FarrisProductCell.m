@@ -52,6 +52,7 @@
             self.editableShowPrice.text = @"";
 
     }
+    self.quantity.autocorrectionType = UITextAutocorrectionTypeNo;
     if (cart != nil && cart.editableQty != nil) {
         self.quantity.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
         if (product)

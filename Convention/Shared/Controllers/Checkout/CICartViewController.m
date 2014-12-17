@@ -189,7 +189,7 @@
 }
 
 - (void)refreshView {
-    self.productsInCart = [helper sortProductsByinvtId:[self.coreDataOrder productIds]];
+    self.productsInCart = [helper sortProductsBySequenceAndInvtId:[self.coreDataOrder productIds]];
     self.discountsInCart = [helper sortDiscountsByLineItemId:[self.coreDataOrder discountLineItemIds]];
     [self reloadTable];
     [self updateTotals];

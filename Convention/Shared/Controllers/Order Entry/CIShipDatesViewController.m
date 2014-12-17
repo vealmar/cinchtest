@@ -19,6 +19,7 @@
 #import "CIShipDateTableViewCell.h"
 #import "NSArray+Boost.h"
 #import "ThemeUtil.h"
+#import "CIKeyboardUtil.h"
 
 @interface CIShipDatesViewController()
 
@@ -36,6 +37,7 @@
 @property UIColor *dateSelectableTextColor;
 
 @property CGRect originalFrame;
+@property BOOL first;
 
 @property NSMutableArray *selectedCarts;
 
@@ -48,6 +50,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 - (id)initWithWorkingOrder:(Order *)workingOrder {
     self = [super init];
     if (self) {
+        self.first = NO;
         self.workingOrder = workingOrder;
         self.selectedCarts = [NSMutableArray array];
         self.selectedShipDates = [NSMutableArray array];
@@ -75,11 +78,12 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     if (CGRectEqualToRect(self.originalFrame, CGRectZero)) {
         self.originalFrame = self.tableView.frame;
         [self.tableView superview].backgroundColor = self.tableBackgroundColor;
+
+        self.tableView.frame = CGRectMake(self.originalFrame.origin.x + 10.0f,
+                self.originalFrame.origin.y,
+                self.originalFrame.size.width - 10.0f,
+                724.0f);
     }
-    self.tableView.frame = CGRectMake(self.originalFrame.origin.x + 10.0f,
-            self.originalFrame.origin.y,
-            self.originalFrame.size.width - 10.0f,
-            self.originalFrame.size.height);
 }
 
 - (UIStatusBarStyle) preferredStatusBarStyle {
@@ -88,6 +92,20 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 - (void)viewDidLoad {
     [self.tableView setSeparatorColor:[UIColor colorWithWhite:1.0 alpha:0.2]];
+    if (!self.first) {
+        [self observeKeyboard];
+        self.first = YES;
+    }
+//    [self observeKeyboard];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
+        if (nextCell) {
+            [nextCell.quantityField becomeFirstResponder];
+        }
+    });
 }
 
 - (void)dealloc {
@@ -187,15 +205,6 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:self.tableView.numberOfSections - 1] withRowAnimation:UITableViewRowAnimationNone];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
-        if (nextCell) {
-            [nextCell.quantityField becomeFirstResponder];
-        }
-    });
-}
-
 - (void)calendar:(CKCalendarView *)calendar configureDateItem:(CKDateItem *)dateItem forDate:(NSDate *)date {
     if ([self.selectedShipDates containsObject:date]) {
         dateItem.selectedBackgroundColor = self.dateSelectedBackgroundColor;
@@ -232,10 +241,6 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         [self.calendarView selectDate:date makeVisible:false];
     }
 }
-
-//- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-//    return 30.0f;
-//}
 
 // @todo added for ellett will revisit
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -295,6 +300,9 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         case 2: {
             return [self.selectedShipDates count] > 0 ? [self.selectedShipDates count] : 1;
         }
+        case 3: {
+            return 0;
+        }
         default: {
             return 0;
         }
@@ -311,6 +319,9 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         }
         case 2: {
             return @"Ship Dates";
+        }
+        case 3: {
+            return nil;
         }
         default: {
             return nil;
@@ -332,6 +343,9 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         }
         case 2: {
             return 40;
+        }
+        case 3: {
+            return 600.0f;
         }
         default: {
             return 40.0f;
@@ -513,6 +527,8 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         [cell.quantityField setBk_didBeginEditingBlock:^(UITextField *field) {
             NSIndexPath *cellIndexPath = [self.tableView indexPathForCell:weakCell];
 
+//            [self.tableView scrollToRowAtIndexPath:cellIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+
             UITextRange *textRange = [field textRangeFromPosition:field.beginningOfDocument toPosition:field.endOfDocument];
             [field setSelectedTextRange:textRange];
 
@@ -598,6 +614,32 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     self.calendarView.delegate = self;
 
     return cell;
+}
+
+#pragma mark Keyboard Adjustments
+
+- (void)observeKeyboard {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+// The callback for frame-changing of keyboard
+- (void)keyboardWillShow:(NSNotification *)notification {
+    if (self.tableView.frame.size.height != 350.0f) {
+        self.tableView.frame = CGRectMake(self.originalFrame.origin.x + 10.0f,
+            self.originalFrame.origin.y,
+            self.originalFrame.size.width - 10.0f,
+            350.0f);
+    }
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification {
+    if (self.tableView.frame.size.height != 724.0f) {
+        self.tableView.frame = CGRectMake(self.originalFrame.origin.x + 10.0f,
+                                          self.originalFrame.origin.y,
+                                          self.originalFrame.size.width - 10.0f,
+                                          724.0f);
+    }
 }
 
 @end

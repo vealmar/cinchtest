@@ -119,7 +119,7 @@
 #define kProductUom @"uom"
 #define kProductCaseQty @"caseqty"
 #define kProductDirShip @"dirship"
-#define kProductLineNbr @"linenbr"
+#define kProductSequence @"sequence"
 #define kProductAdv @"adv"
 #define kProductRegPrc @"regprc"
 #define kProductShipDate1 @"shipdate1"
@@ -136,6 +136,7 @@
 #define kProductBulletinId @"bulletin_id"
 #define kProductMin @"min"
 #define kProductStatus @"status"
+#define kProductManufacturerNo @"manufacturer_no"
 #define kProductCategory @"category"
 #define kProductEditable @"editable"
 

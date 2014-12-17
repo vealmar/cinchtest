@@ -25,7 +25,7 @@
 @dynamic import_id;
 @dynamic initial_show;
 @dynamic invtid;
-@dynamic linenbr;
+@dynamic sequence;
 @dynamic min;
 @dynamic partnbr;
 @dynamic productId;

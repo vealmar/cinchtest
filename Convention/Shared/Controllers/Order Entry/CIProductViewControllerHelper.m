@@ -252,14 +252,22 @@
     return coreDataOrder;
 }
 
-- (NSArray *)sortProductsByinvtId:(NSArray *)productIdsOrProducts {
+- (NSArray *)sortProductsBySequenceAndInvtId:(NSArray *)productIdsOrProducts {
     NSArray *sortedArray;
     sortedArray = [productIdsOrProducts sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
         Product *product1 = [a isKindOfClass:[Product class]] ? a : [Product findProduct:a];
         Product *product2 = [b isKindOfClass:[Product class]] ? b : [Product findProduct:b];
-        NSString *first = (NSString *) [NilUtil nilOrObject:product1.invtid];
-        NSString *second = (NSString *) [NilUtil nilOrObject:product2.invtid];
-        return [first compare:second];
+
+        NSString *firstSequence = (NSString *) [NilUtil nilOrObject:product1.sequence];
+        NSString *secondSequence = (NSString *) [NilUtil nilOrObject:product2.sequence];
+
+        if (firstSequence && secondSequence && ![firstSequence isEqual:secondSequence]) {
+            return [firstSequence compare:secondSequence];
+        } else {
+            NSString *firstInvtid = (NSString *) [NilUtil nilOrObject:product1.invtid];
+            NSString *secondInvtid = (NSString *) [NilUtil nilOrObject:product2.invtid];
+            return [firstInvtid compare:secondInvtid];
+        }
     }];
     return sortedArray;
 }

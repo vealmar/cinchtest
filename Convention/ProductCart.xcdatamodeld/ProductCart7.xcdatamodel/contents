@@ -104,7 +104,7 @@
         <attribute name="import_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="initial_show" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="invtid" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="linenbr" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sequence" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="min" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="new" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="partnbr" optional="YES" attributeType="String" syncable="YES"/>
