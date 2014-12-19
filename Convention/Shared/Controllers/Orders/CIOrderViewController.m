@@ -293,6 +293,15 @@ CIOrderViewController
             currentOrder = nil;
             self.orderDetailView.hidden = YES;
         }
+    } else {
+        NSLog(@"asdsada");
+        if (self.filteredOrders && self.filteredOrders.count) {
+            NSLog(@"aaaaaaaaaa");
+            NSIndexPath *path = [NSIndexPath indexPathForRow:0 inSection:0];
+            [self.sideTable selectRowAtIndexPath:path animated:NO scrollPosition:UITableViewScrollPositionNone];
+            currentOrder = self.filteredOrders[0];
+            [self displayOrderDetail:currentOrder];
+        }
     }
 }
 
