@@ -5,6 +5,7 @@
 
 #import "CurrentSession.h"
 #import "NotificationConstants.h"
+#import "config.h"
 
 
 @implementation CurrentSession
@@ -16,6 +17,11 @@ static CurrentSession *currentSession = nil;
         currentSession = [CurrentSession new];
     }
     return currentSession;
+}
+
+- (NSNumber *)loggedInVendorGroupId {
+    NSNumber *vendorgroupId = (NSNumber *) [self.vendorInfo objectForKey:kVendorGroupID];
+    return vendorgroupId;
 }
 
 - (void)dispatchSessionDidChange {

@@ -34,6 +34,10 @@
     return [UIColor colorWithRed:0.153 green:0.682 blue:0.376 alpha:1.000];
 }
 
++ (UIColor *)tableAltRowColor {
+    return [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
+}
+
 + (NSDictionary *)navigationTitleTextAttributes:(int)size {
     NSShadow *shadow = [NSShadow new];
     shadow.shadowColor = [UIColor blackColor];

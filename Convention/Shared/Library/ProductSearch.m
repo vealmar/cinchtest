@@ -16,9 +16,13 @@
 
 @implementation ProductSearch
 
-+ (ProductSearch *)searchFor:(NSString *)query inBulletin:(NSInteger *)bulletin forVendor:(NSInteger *)vendor limitResultSize:(NSInteger *)limit usingContext:(NSManagedObjectContext *)context {
++ (ProductSearch *)searchFor:(NSString *)query inBulletin:(NSInteger)bulletin forVendor:(NSInteger)vendor limitResultSize:(NSInteger)limit usingContext:(NSManagedObjectContext *)context {
     ProductSearch *search = [[ProductSearch alloc] init];
-    search.queryString = [query stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (query) {
+        search.queryString = [query stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    } else {
+        search.queryString = @"";
+    }
     search.currentBulletin = bulletin;
     search.currentVendor = vendor;
     search.limit = limit;
@@ -37,7 +41,10 @@
 }
 
 - (NSArray *)sortDescriptors {
-    return @[[NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]];
+    return @[
+            [NSSortDescriptor sortDescriptorWithKey:@"sequence" ascending:YES],
+            [NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]
+    ];
 }
 
 - (NSArray *)split:(NSString *)separator {

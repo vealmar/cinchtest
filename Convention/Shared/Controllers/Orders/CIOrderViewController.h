@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "CIItemEditCell.h"
 #import "CIProductViewController.h"
-#import "CIStoreQtyTableViewController.h"
 #import "PullToRefreshView.h"
 #import "PrinterSelectionViewController.h"
 #import "CINavViewManager.h"
@@ -17,8 +16,8 @@
 @class AnOrder;
 
 @interface CIOrderViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate,
-        UITextViewDelegate, UIAlertViewDelegate, ItemEditDelegate, CIProductViewDelegate, CIStoreQtyTableDelegate,
-        CIStoreQtyDelegate, PullToRefreshViewDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate, CICustomerDelegate,
+        UITextViewDelegate, UIAlertViewDelegate, ItemEditDelegate, CIProductViewDelegate,
+        PullToRefreshViewDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate, CICustomerDelegate,
         CINavViewManagerDelegate> {
 }
 
@@ -33,7 +32,6 @@
 @property(nonatomic, strong) NSMutableArray *itemsShipDates;
 @property(nonatomic, strong) NSMutableArray *itemsDiscounts;
 @property(nonatomic, strong) UIPopoverController *poController;
-@property(nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 @property(nonatomic, weak) NSManagedObjectContext *managedObjectContext;
 
 @property(weak, nonatomic) IBOutlet UITableView *sideTable;

@@ -1120,22 +1120,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (void)QtyTouchForIndex:(int)idx {
-    if ([self.poController isPopoverVisible]) {
-        [self.poController dismissPopoverAnimated:YES];
-    } else {
-        if (!self.storeQtysPO) {
-            self.storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
-        }
-
-        NSMutableDictionary *dict = [[[self.itemsQty objectAtIndex:(NSUInteger) idx] objectFromJSONString] mutableCopy];
-        self.storeQtysPO.stores = dict;
-        self.storeQtysPO.tag = idx;
-        self.storeQtysPO.delegate = self;
-        CGRect frame = [self.itemsTable rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-        frame = CGRectOffset(frame, 0, 0);
-        self.poController = [[UIPopoverController alloc] initWithContentViewController:self.storeQtysPO];
-        [self.poController presentPopoverFromRect:frame inView:self.itemsTable permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    }
+    
 }
 
 - (void)ShipDatesTouchForIndex:(int)idx {
@@ -1546,17 +1531,6 @@ SG: This method gets called when you swipe on an order in the order list and tap
     } else {
         [self setViewMovedUp:NO];
     }
-}
-
-- (void)QtyTableChange:(NSMutableDictionary *)qty forIndex:(int)idx {
-    NSString *JSON = [qty JSONString];
-    CIItemEditCell *cell = (CIItemEditCell *) [self.itemsTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:1]];
-    cell.qty.text = JSON;
-    [self.itemsQty removeObjectAtIndex:(NSUInteger) idx];
-    [self.itemsQty insertObject:JSON atIndex:(NSUInteger) idx];
-    [self.itemsTable reloadData];
-    self.unsavedChangesPresent = YES;
-    [self UpdateTotal];
 }
 
 #pragma mark - PullToRefreshViewDelegate

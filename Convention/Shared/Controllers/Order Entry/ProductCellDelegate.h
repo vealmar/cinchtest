@@ -8,19 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
+@class Order;
+
 @protocol ProductCellDelegate <NSObject>
 @required
-// deprecated, was part of voucher handling for PWProductCell
-- (void)VoucherChange:(double)price forIndex:(int)idx;
 
 // farris product cell
-- (void)ShowPriceChange:(double)price forIndex:(int)idx;
+- (void)ShowPriceChange:(double)price productId:(NSNumber *)productId;
 
 // farris product cell
-- (void)QtyTouchForIndex:(int)idx;
+- (void)QtyTouchForIndex:(NSNumber *)productId;
 
-// CartViewCell, triggered off textFieldShouldBeginEditing
-// FarrisProductCell, triggered off textFieldShouldBeginEditing
-- (void)setSelectedRow:(NSIndexPath *)index;
+- (Order *)currentOrderForCell;
 
 @end

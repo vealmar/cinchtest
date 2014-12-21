@@ -47,7 +47,6 @@
 @implementation CICartViewController {
     __weak IBOutlet UILabel *customerInfoLabel;
     __weak IBOutlet UIImageView *logo;
-    NSIndexPath *selectedItemRowIndexPath;
     CIProductViewControllerHelper *helper;
     BOOL keyboardUp;
     float keyboardHeight;
@@ -64,7 +63,6 @@
 @synthesize finishTheOrder;
 @synthesize multiStore;
 @synthesize popoverController;
-@synthesize storeQtysPO;
 @synthesize lblShipDate1, lblShipDate2, lblShipDateCount;
 @synthesize tableHeaderPigglyWiggly, tableHeaderFarris;
 
@@ -504,14 +502,7 @@
     }
 }
 
-- (void)VoucherChange:(double)voucherPrice forIndex:(int)idx {
-    NSNumber *productId = self.productsInCart[(NSUInteger) idx];
-    [self.coreDataOrder updateItemVoucher:@(voucherPrice) productId:productId context:self.managedObjectContext];
-    self.unsavedChangesPresent = YES;
-}
-
-- (void)ShowPriceChange:(double)price forIndex:(int)idx {
-    NSNumber *productId = self.productsInCart[(NSUInteger) idx];
+- (void)ShowPriceChange:(double)price productId:(NSNumber *)productId {
     [self.coreDataOrder updateItemShowPrice:@(price) productId:productId context:self.managedObjectContext];
     self.unsavedChangesPresent = YES;
 }
@@ -525,24 +516,12 @@
     [helper updateCellBackground:cell order:self.coreDataOrder cart:cart];
 }
 
-- (void)QtyTouchForIndex:(int)idx {
-    if ([popoverController isPopoverVisible]) {
-        [popoverController dismissPopoverAnimated:YES];
-    } else {
-        if (!storeQtysPO) {
-            storeQtysPO = [[CIStoreQtyTableViewController alloc] initWithNibName:@"CIStoreQtyTableViewController" bundle:nil];
-        }
-        NSNumber *productId = self.productsInCart[(NSUInteger) idx];
-        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        storeQtysPO.stores = [[cart.editableQty objectFromJSONString] mutableCopy];
-        storeQtysPO.tag = idx;
-        storeQtysPO.editable = NO;
-        storeQtysPO.delegate = (id <CIStoreQtyTableDelegate>) self;
-        CGRect frame = [self.productsUITableView rectForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-        frame = CGRectOffset(frame, 750, 0);
-        popoverController = [[UIPopoverController alloc] initWithContentViewController:storeQtysPO];
-        [popoverController presentPopoverFromRect:frame inView:self.productsUITableView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    }
+- (void)QtyTouchForIndex:(NSNumber *)productId {
+
+}
+
+- (Order *)currentOrderForCell {
+    return self.coreDataOrder;
 }
 
 #pragma signature
@@ -568,10 +547,6 @@
 
 #pragma Keyboard
 
-- (void)setSelectedRow:(NSIndexPath *)index {
-    selectedItemRowIndexPath = index;
-}
-
 - (void)keyboardWillShow:(NSNotification *)note {
     // Reducing the frame height by 300 causes it to end above the keyboard, so the keyboard cannot overlap any content. 300 is the height occupied by the keyboard.
     // In addition scroll the selected row into view.
@@ -590,7 +565,6 @@
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
     [self addInsetToTable:kbSize.width - 95]; //width because landscape. 95 is height of the view that contains totals at the end of the table.
-    [self.productsUITableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
     keyboardUp = YES;
     keyboardHeight = kbSize.width;
     [UIView commitAnimations];

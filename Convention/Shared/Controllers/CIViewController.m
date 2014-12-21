@@ -119,6 +119,7 @@
             vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
             [CurrentSession instance].authToken = authToken;
             [CurrentSession instance].vendorInfo = vendorInfo;
+            [CurrentSession instance].managedObjectContext = managedObjectContext;
             [[CurrentSession instance] dispatchSessionDidChange];
             [self loadCustomers];
         }
@@ -180,7 +181,7 @@
     };
 
     [CoreDataManager reloadProducts:self.authToken
-                      vendorGroupId:[[self.vendorInfo objectForKey:kVendorGroupID] stringValue]
+                      vendorGroupId:[self.vendorInfo objectForKey:kVendorGroupID]
                managedObjectContext:self.managedObjectContext
                           onSuccess:successBlock
                           onFailure:failureBlock];

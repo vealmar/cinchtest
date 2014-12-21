@@ -9,11 +9,11 @@
 @interface ProductSearch : NSObject
 
 @property NSString *queryString;
-@property NSInteger *currentBulletin;
-@property NSInteger *currentVendor;
-@property NSInteger *limit;
+@property NSInteger currentBulletin;
+@property NSInteger currentVendor;
+@property NSInteger limit;
 
-+ (ProductSearch *) searchFor:(NSString *)query inBulletin:(NSInteger *)bulletin forVendor:(NSInteger *)vendor limitResultSize:(NSInteger *)limit usingContext:(NSManagedObjectContext *)context;
++ (ProductSearch *) searchFor:(NSString *)query inBulletin:(NSInteger)bulletin forVendor:(NSInteger)vendor limitResultSize:(NSInteger)limit usingContext:(NSManagedObjectContext *)context;
 - (NSArray *) sortDescriptors;
 - (NSArray *) split:(NSString *)separator;
 - (NSManagedObjectContext *)context;

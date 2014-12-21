@@ -116,11 +116,11 @@
         return fetchedObjects;
 }
 
-+ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSString *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext
++ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSNumber *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext
              onSuccess:(void (^)(id JSON))successBlock
              onFailure:(void (^)())failureBlock {
 
-    [[CinchJSONAPIClient sharedInstance] GET:kDBGETPRODUCTS parameters:@{ kAuthToken: authToken, kVendorGroupID: vendorGroupId } success:^(NSURLSessionDataTask *task, id JSON) {
+    [[CinchJSONAPIClient sharedInstance] GET:kDBGETPRODUCTS parameters:@{ kAuthToken: authToken, kVendorGroupID: [NSString stringWithFormat:@"%@", vendorGroupId] } success:^(NSURLSessionDataTask *task, id JSON) {
         if (JSON && ([(NSArray *) JSON count] > 0)) {
             [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
             NSArray *products = (NSArray *) JSON;
@@ -222,9 +222,23 @@
 }
 
 + (NSArray *)getProductsMatching:(ProductSearch *)search addToCache:(BOOL)addToCache {
+    NSFetchRequest *fetchRequest = [self buildProductFetch:search];
+    NSError *error = nil;
+    NSArray *fetchedObjects = [search.context executeFetchRequest:fetchRequest error:&error];
+    if (error) {
+        NSLog(@"%@ Error fetching products matching query string '%@'. %@", [self class], search.queryString, [error localizedDescription]);
+        return [NSArray array];
+    } else {
+        if (addToCache) [[ProductCache sharedCache] addRecentlyQueriedProducts:fetchedObjects];
+        return fetchedObjects;
+    }
+}
+
++ (NSFetchRequest *)buildProductFetch:(ProductSearch *)search {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:search.context]];
     [fetchRequest setIncludesSubentities:NO];
+    [fetchRequest setFetchBatchSize:200];
     if (search.limit > 0) {
         [fetchRequest setFetchLimit:search.limit];
     }
@@ -238,17 +252,11 @@
     if (search.currentBulletin > 0) {
         [predicates addObject:[NSPredicate predicateWithFormat:@"bulletin_id = %d", search.currentBulletin]];
     }
-    [predicates addObject:[NSPredicate predicateWithFormat:@"invtid CONTAINS[cd] %@ or partnbr CONTAINS[cd] %@ or descr CONTAINS[cd] %@ or descr2 CONTAINS[cd] %@", search.queryString, search.queryString, search.queryString, search.queryString]];
-    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
-    NSError *error = nil;
-    NSArray *fetchedObjects = [search.context executeFetchRequest:fetchRequest error:&error];
-    if (error) {
-        NSLog(@"%@ Error fetching products matching query string '%@'. %@", [self class], search.queryString, [error localizedDescription]);
-        return [NSArray array];
-    } else {
-        if (addToCache) [[ProductCache sharedCache] addRecentlyQueriedProducts:fetchedObjects];
-        return fetchedObjects;
+    if (search.queryString.length > 0) {
+        [predicates addObject:[NSPredicate predicateWithFormat:@"invtid CONTAINS[cd] %@ or partnbr CONTAINS[cd] %@ or descr CONTAINS[cd] %@ or descr2 CONTAINS[cd] %@", search.queryString, search.queryString, search.queryString, search.queryString]];
     }
+    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
+    return fetchRequest;
 }
 
 + (NSArray *)getProductIdsMatching:(ProductSearch *)search {

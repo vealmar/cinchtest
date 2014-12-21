@@ -19,11 +19,7 @@
                 <outlet property="hiddenTxt" destination="92" id="93"/>
                 <outlet property="indicator" destination="79" id="80"/>
                 <outlet property="keyboardHeightFooter" destination="vBg-YY-Ysd" id="2jn-ge-u3z"/>
-                <outlet property="productsTableView" destination="27" id="28"/>
-                <outlet property="tableHeader" destination="397" id="406"/>
-                <outlet property="tableHeaderMinColumnLabel" destination="401" id="Dak-1M-jSo"/>
-                <outlet property="tableHeaderPrice1Label" destination="403" id="HIH-7q-kbO"/>
-                <outlet property="tableHeaderPrice2Label" destination="404" id="5gf-xz-o0F"/>
+                <outlet property="productTableViewController" destination="aTh-7M-3Mn" id="dpZ-q9-XCL"/>
                 <outlet property="totalCost" destination="408" id="410"/>
                 <outlet property="view" destination="14" id="29"/>
             </connections>
@@ -33,70 +29,26 @@
             <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view hidden="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="397" userLabel="Farris Header">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="397" userLabel="Table Header" customClass="CITableViewHeader">
                     <rect key="frame" x="0.0" y="0.0" width="1024" height="44"/>
-                    <subviews>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Item #" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="398">
-                            <rect key="frame" x="20" y="11" width="43" height="21"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Description" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="399">
-                            <rect key="frame" x="216" y="11" width="594" height="21"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Min" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="401">
-                            <rect key="frame" x="615" y="11" width="42" height="21"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Quantity" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="402">
-                            <rect key="frame" x="586" y="11" width="60" height="21"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Price 1" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="403">
-                            <rect key="frame" x="734" y="11" width="112" height="21"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Price 2" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="404">
-                            <rect key="frame" x="866" y="11" width="112" height="21"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Dates" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DU5-Bm-E5X">
-                            <rect key="frame" x="940" y="12" width="40" height="21"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                    </subviews>
                     <color key="backgroundColor" red="0.82352941180000006" green="0.83921568629999999" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="44" id="Ees-ky-GoO"/>
                         <constraint firstAttribute="width" constant="1024" id="Uyy-ID-DDW"/>
                     </constraints>
                 </view>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="27">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="UPi-rS-jlA" userLabel="Products Table">
                     <rect key="frame" x="0.0" y="44" width="1024" height="674"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="1024" id="2hr-N8-TTV"/>
+                        <constraint firstAttribute="width" constant="1024" id="IKi-Op-ggG"/>
                     </constraints>
                     <connections>
-                        <outlet property="dataSource" destination="-1" id="30"/>
-                        <outlet property="delegate" destination="-1" id="31"/>
+                        <outlet property="dataSource" destination="aTh-7M-3Mn" id="chL-3P-xag"/>
+                        <outlet property="delegate" destination="aTh-7M-3Mn" id="4qm-Mp-nYn"/>
                     </connections>
                 </tableView>
-                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="407">
+                <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="407" userLabel="Summary View">
                     <rect key="frame" x="0.0" y="718" width="1024" height="50"/>
                     <subviews>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="408">
@@ -122,6 +74,7 @@
                         </textView>
                     </subviews>
                     <color key="backgroundColor" red="0.82352941180000006" green="0.83921568629999999" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
+                    <accessibility key="accessibilityConfiguration" label=""/>
                     <constraints>
                         <constraint firstAttribute="height" constant="50" id="TDk-Zo-Exj"/>
                         <constraint firstAttribute="width" constant="1024" id="w8q-5c-aj3"/>
@@ -139,17 +92,24 @@
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <gestureRecognizers/>
             <constraints>
-                <constraint firstItem="407" firstAttribute="top" secondItem="27" secondAttribute="bottom" id="1Vs-3v-2PN"/>
                 <constraint firstItem="397" firstAttribute="top" secondItem="14" secondAttribute="top" id="FL6-Gw-BYa"/>
-                <constraint firstItem="27" firstAttribute="leading" secondItem="14" secondAttribute="leading" id="Wu7-72-SWt"/>
-                <constraint firstItem="27" firstAttribute="top" secondItem="14" secondAttribute="top" constant="44" id="iAs-EC-7sm"/>
-                <constraint firstAttribute="bottom" secondItem="407" secondAttribute="bottom" id="vBg-YY-Ysd"/>
+                <constraint firstItem="407" firstAttribute="top" secondItem="UPi-rS-jlA" secondAttribute="bottom" id="XTt-Yt-HEX"/>
+                <constraint firstItem="UPi-rS-jlA" firstAttribute="leading" secondItem="14" secondAttribute="leading" id="a7Y-fw-Qe9"/>
+                <constraint firstItem="397" firstAttribute="leading" secondItem="14" secondAttribute="leading" id="baE-t9-DwI"/>
+                <constraint firstAttribute="bottom" secondItem="407" secondAttribute="bottom" id="vBg-YY-Ysd" userLabel="Keyboard Height"/>
+                <constraint firstItem="UPi-rS-jlA" firstAttribute="top" secondItem="397" secondAttribute="bottom" id="zbe-x7-i2W"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
         </view>
+        <tableViewController id="aTh-7M-3Mn" customClass="CIProductTableViewController">
+            <connections>
+                <outlet property="header" destination="397" id="J6d-9n-11c"/>
+                <outlet property="view" destination="UPi-rS-jlA" id="yP9-KM-oow"/>
+            </connections>
+        </tableViewController>
         <tapGestureRecognizer cancelsTouchesInView="NO" id="421">
             <connections>
                 <action selector="handleTap:" destination="-1" id="423"/>

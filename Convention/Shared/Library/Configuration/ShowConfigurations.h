@@ -12,6 +12,7 @@
 
 @interface ShowConfigurations : NSObject
 
+@property BOOL productEnableManufacturerNo;
 @property BOOL atOncePricing;
 @property BOOL discounts;
 @property BOOL shipDates; //uses or requires shipdates

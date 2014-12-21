@@ -41,22 +41,18 @@
 #import "CINavViewManager.h"
 #import "ThemeUtil.h"
 #import "CIKeyboardUtil.h"
+#import "CIProductTableViewController.h"
 
 @interface CIProductViewController () {
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
     int currentBulletin; //Bulletin selected in the bulletin drop down
     NSArray *vendorsData; //Vendors belonging to the same vendor group as the logged in vendors. These vendors are displayed in the bulletins drop down.
     NSDictionary *bulletins;
-    NSIndexPath *selectedItemRowIndexPath;
     CIProductViewControllerHelper *helper;
-    PullToRefreshView *pull;
-    BOOL keyboardUp;
-    float keyboardHeight;
     CIFinalCustomerInfoViewController *customerInfoViewController;
 }
 @property(strong, nonatomic) AnOrder *savedOrder;
 @property(nonatomic) BOOL unsavedChangesPresent;
-@property ProductSearchQueue *productSearchQueue;
 @property CINavViewManager *navViewManager;
 
 @property (strong, nonatomic) UIBarButtonItem *filterBarButtonItem;
@@ -100,14 +96,11 @@
     currentBulletin = 0;
     self.vendorProductIds = [NSMutableArray array];
     self.vendorProducts = [NSMutableArray array];
-    self.multiStore = NO;
     self.orderSubmitted = NO;
     self.selectedPrintStationId = 0;
     self.unsavedChangesPresent = NO;
-    keyboardUp = NO;
     self.selectedCarts = [NSMutableSet set];
 }
-
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -116,27 +109,19 @@
 
     self.useShipDates = [ShowConfigurations instance].shipDates;
     self.allowPrinting = [ShowConfigurations instance].printing;
-    self.contactBeforeShipping = [ShowConfigurations instance].contactBeforeShipping;
-    self.cancelOrderConfig = [ShowConfigurations instance].cancelOrder;
-    self.poNumberConfig = [ShowConfigurations instance].poNumber;
-    self.paymentTermsConfig = [ShowConfigurations instance].paymentTerms;
-    self.useOrderBasedShipDates = self.useShipDates && [[ShowConfigurations instance] isOrderShipDatesType];
-    self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
-    pull = [[PullToRefreshView alloc] initWithScrollView:self.productsTableView];
-    [pull setDelegate:self];
-    [self.productsTableView addSubview:pull];
+
     currentVendor = ![ShowConfigurations instance].vendorMode && self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
     self.tableHeader.hidden = NO;
     self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     self.tableHeaderPrice1Label.text = [[ShowConfigurations instance] price1Label];
     self.tableHeaderPrice2Label.text = [[ShowConfigurations instance] price2Label];
     if (![ShowConfigurations instance].isOrderShipDatesType) self.btnSelectShipDates.hidden = YES;
-
-    self.productsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     if (!self.viewInitialized) {
+        [self.productTableViewController prepareForDisplay:self];
+
         if (self.coreDataOrder == nil) {
             if (self.newOrder)
                 [self createNewOrder];
@@ -151,19 +136,12 @@
     } else {
         [self deserializeOrder];
     }
-    if (keyboardUp) {
-        //if the frame size was decreased to accomodate the keyboard right before cart was launched,
-        //when the view reappears, the keyboard would have been hidden (without keyboard hide notification being sent out it seems)
-        //so it is important to undo the frame resize at this point.
-        [self keyboardDidHide:nil];
-    }
 
     self.vendorLabel.text = [[NSUserDefaults standardUserDefaults] objectForKey:kSettingsUsernameKey];
 
     [self.vendorTable reloadData];
     [self updateErrorsView];
 
-    self.productSearchQueue = [[ProductSearchQueue alloc] initWithProductController:self];
     if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
 
     // notifications
@@ -177,7 +155,6 @@
            forKeyPath:[NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(coreDataOrder)), NSStringFromSelector(@selector(ship_dates))]
               options:0
               context:nil];
-    [self addObserver:self forKeyPath:NSStringFromSelector(@selector(resultData)) options:NSKeyValueObservingOptionNew context:NULL];
 
     CINavViewManager *navViewManager = self.navViewManager = [[CINavViewManager alloc] init:YES];
     navViewManager.delegate = self;
@@ -192,13 +169,10 @@
     }
 }
 
-
 - (void)viewWillDisappear:(BOOL)animated {
-    self.productSearchQueue = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder))];
     [self removeObserver:self forKeyPath:[NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(coreDataOrder)), NSStringFromSelector(@selector(ship_dates))]];
-    [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(resultData))];
 }
 
 # pragma mark - Initialization
@@ -253,65 +227,8 @@
     }
 }
 
-- (void)reloadProducts {
-
-    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    submit.removeFromSuperViewOnHide = YES;
-    submit.labelText = @"Loading Products";
-    [submit show:NO];
-
-    void (^successBlock)(id) = ^(id json) {
-        [self loadProductsForCurrentVendorAndBulletin];//this method includes a call to reloadtable
-        [pull finishedLoading];
-        [self adjustTableInset]; //pull.finishedLoading resets the content offsets
-        [submit hide:NO];
-    };
-    void (^failureBlock)() = ^() {
-        [pull finishedLoading];
-        [self adjustTableInset]; //pull.finishedLoading resets the content offsets
-        [submit hide:NO];
-    };
-
-    [CoreDataManager reloadProducts:self.authToken
-                      vendorGroupId:self.loggedInVendorGroupId
-               managedObjectContext:self.managedObjectContext
-                          onSuccess:successBlock
-                          onFailure:failureBlock];
-
-}
-
 - (void)loadProductsForCurrentVendorAndBulletin {
-    NSMutableArray *products = [[NSMutableArray alloc] init];
-    self.vendorProductIds = [[NSMutableArray alloc] init];
-    self.vendorProducts = [[NSMutableArray alloc] init];
-    [[CoreDataManager getProducts:self.managedObjectContext] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        Product *product = (Product *) obj;
-        NSNumber *vendorId = product.vendor_id;
-        if (currentVendor == 0 || (vendorId && [vendorId integerValue] == currentVendor)) {
-
-            BOOL addProduct = YES;
-
-            if (self.filterCartSwitch.on) {
-                Cart *cart = [self.coreDataOrder findOrCreateCartForId:product.productId context:self.managedObjectContext];
-                addProduct = (cart.totalQuantity > 0);
-            }
-
-            if (addProduct) {
-                NSNumber *productId = product.productId;
-                [self.vendorProductIds addObject:productId];
-                [self.vendorProducts addObject:[[AProduct alloc] initWithCoreDataProduct:product]];
-                NSNumber *bulletinId = product.bulletin_id;
-                if (currentBulletin == 0 || (bulletinId && [bulletinId integerValue] == currentBulletin))
-                    [products addObject:product];
-            }
-        }
-    }];
-    NSArray *sortedProducts = [helper sortProductsBySequenceAndInvtId:products];
-    NSMutableArray *sortedProductIds = [NSMutableArray array];
-    for (Product *product in sortedProducts) {
-        [sortedProductIds addObject:product.productId];
-    }
-    self.resultData = sortedProductIds;
+    [self.productTableViewController filterToVendorId:currentVendor bulletinId:currentBulletin queryTerm:nil];
     [self updateNavigationTitle];
 }
 
@@ -403,23 +320,6 @@
 
 - (void)toggleCartSelection:(Cart *)cart {
     dispatch_async(dispatch_get_main_queue(), ^{
-//        int row = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-//            // obj should be a productId
-//            return [obj isEqual:blockCart.cartId];
-//        }];
-//
-//        if (row != NSNotFound) {
-//            UITableViewCell *productCell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:0]];
-//            if ([self.selectedCarts containsObject:blockCart]) {
-//                productCell.accessoryType = UITableViewCellAccessoryNone;
-//            } else {
-//                if (![blockCart.product.invtid isEqualToString:@"0"]) {
-//                    // todo revert this back to checkmark; right now the checks are showing up in random places when we change bulletins
-//                    productCell.accessoryType = UITableViewCellAccessoryNone;
-//                }
-//            }
-//        }
-
         if ([self.selectedCarts containsObject:cart]) {
             [self.selectedCarts removeObject:cart];
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -514,7 +414,7 @@
                         }
                     }
                 }
-            }   whenSelected:^(NSIndexPath *indexPath) {
+            } whenSelected:^(NSIndexPath *indexPath) {
                 VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
                 vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
                 if (bulletins != nil) vendorViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
@@ -591,61 +491,6 @@
     }
 }
 
-#pragma mark - UITableView Data Source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
-    return [self.resultData count];
-}
-
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-    [helper updateCellBackground:cell order:self.coreDataOrder cart:[self.coreDataOrder findCartForProductId:productId]];
-
-    if(indexPath.row % 2 == 0) {
-        cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
-    } else {
-        cell.backgroundColor = [UIColor colorWithRed:1.000 green:1.000 blue:1.000 alpha:1];
-    }
-}
-
-- (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-    AProduct *product = [[ProductCache sharedCache] getProduct:productId];
-    UITableViewCell *cell = [helper dequeueReusableProductCell:myTableView];
-    [(FarrisProductCell *)cell initializeWithAProduct:product cart:[self.coreDataOrder findOrCreateCartForId:product.productId context:self.managedObjectContext] tag:[indexPath row] ProductCellDelegate:self];
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([[ShowConfigurations instance] isLineItemShipDatesType]) {
-        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-        Cart *cart = [self.coreDataOrder findOrCreateCartForId:productId context:self.managedObjectContext];
-        [self toggleCartSelection:cart];
-    }
-}
-
-- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([[ShowConfigurations instance] isLineItemShipDatesType]) {
-        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) [indexPath row]];
-        Cart *cart = [self.coreDataOrder findOrCreateCartForId:productId context:self.managedObjectContext];
-        [self toggleCartSelection:cart];
-    }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSNumber *productId = self.resultData[(NSUInteger) indexPath.row];
-    Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-
-    if (cart.warnings.count > 0 || cart.errors.count > 0)
-        return 44 + ((cart.warnings.count + cart.errors.count) * 42);
-    else
-        return 44;
-}
-
 #pragma mark - Events
 
 - (IBAction)Cancel:(id)sender {
@@ -661,18 +506,6 @@
         }];
     } else {
         [self Return];
-    }
-}
-
-- (IBAction)vendorTouch:(id)sender {
-    if (!self.vendorView.hidden && !self.dismissVendor.hidden) {
-        self.vendorView.hidden = YES;
-        self.dismissVendor.hidden = YES;
-        return;
-    }
-    [self.selectedCarts removeAllObjects];
-    if (vendorsData && [vendorsData count] > 0) {
-        [self showFilterView];
     }
 }
 
@@ -711,10 +544,7 @@
     }
 }
 
-/**
-* SG: This method is called when user taps the cart button.
-*/
-- (IBAction)reviewCart:(id)sender {
+- (void)reviewCart {
     if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
         CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.coreDataOrder customer:self.customer authToken:self.authToken selectedVendorId:[NSNumber numberWithInt:currentVendor] loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId andManagedObjectContext:self.managedObjectContext];
         cart.delegate = self;
@@ -738,67 +568,10 @@
     return NO;
 }
 
-- (IBAction)dismissVendorTouched:(id)sender {
-    self.vendorView.hidden = YES;
-    self.dismissVendor.hidden = YES;
-}
-
-- (IBAction)shipdatesTouched:(id)sender {
-    [self.view endEditing:YES];
-    [self.slidingProductViewControllerDelegate toggleShipDates:YES];
-}
-
-- (IBAction)searchDidBeginEditing:(UITextField *)sender {
-    sender.text = @"";
-    [self closeCalendar];
-
-    [self searchProducts:sender.text searchIsActive:YES];
-}
-
-- (IBAction)searchDidChangeEditing:(UITextField *)sender {
-    [self searchProducts:sender.text searchIsActive:YES];
-}
-
-- (IBAction)searchDidReturnKey:(id)sender {
-    [self searchProducts:((UITextField *) sender).text searchIsActive:NO];
-}
-
-- (IBAction)searchDidEndEditing:(UITextField *)sender {
-    [self searchProducts:sender.text searchIsActive:NO];
-}
-
-- (IBAction)searchButtonPressed:(UIButton *)sender {
-    [self searchProducts:self.searchText.text searchIsActive:NO];
-}
-
-- (void)searchProducts:(NSString *)queryString searchIsActive:(BOOL)searchIsActive {
-    if (self.vendorProducts == nil|| [self.vendorProducts isKindOfClass:[NSNull class]] || [self.vendorProducts count] == 0) return;
-    queryString = [queryString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    if (queryString.length == 0) {
-        self.resultData = [self.vendorProductIds mutableCopy];
-    } else {
-        NSUInteger limit = searchIsActive ? 50 : 0; //0 indicates no limit
-        //if search is active i.e. we are doing limited search, query all product attributes and add them to the cahce since they will be needed when table is reloaded.
-        //if search is not active, query only product ids since the result might include a large number of products and the table reload will only show 10-20 cells.
-        ProductSearch *productSearch = [ProductSearch searchFor:queryString inBulletin:currentBulletin forVendor:currentVendor limitResultSize:limit usingContext:self.managedObjectContext];
-        [self.productSearchQueue search:productSearch];
-        [self.selectedCarts removeAllObjects];
-        selectedItemRowIndexPath = nil;
-    }
-}
-
-
-
 #pragma mark Keyboard Adjustments
 
 - (void)keyboardWillShow:(NSNotification *)note {
     [CIKeyboardUtil keyboardWillShow:note adjustConstraint:self.keyboardHeightFooter in:self.view];
-}
-
-- (void)addInsetToTable:(float)insetHeight {
-    UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, insetHeight, 0.0); //width because landscape. 69 is height of the view that contains totals at the end of the table.
-    self.productsTableView.contentInset = contentInsets;
-    self.productsTableView.scrollIndicatorInsets = contentInsets;
 }
 
 - (void)keyboardDidHide:(NSNotification *)note {
@@ -838,15 +611,7 @@
 }
 
 - (void)reloadTable {
-    [self.productsTableView reloadData];
-    [self adjustTableInset];
-}
-
-// @todo deprecated
-- (void)adjustTableInset {
-    if (keyboardUp) {
-        //[self addInsetToTable:keyboardHeightFooter - 69];//width because landscape. 69 is height of the view that contains totals at the end of the table.
-    }
+    [self.productTableViewController.tableView reloadData];
 }
 
 - (void)updateTotals {
@@ -921,33 +686,18 @@
             [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
         }
     } else if ([orderShipDatesKeyPath isEqualToString:keyPath]) {
-        [self.productsTableView reloadData];
+        [self.productTableViewController.tableView reloadData];
         [self updateTotals];
-    } else if ([NSStringFromSelector(@selector(resultData)) isEqualToString:keyPath]) {
-        [self reloadTable];
     }
 }
 
 - (void)onCartQuantityChange:(NSNotification *)notification {
-    Cart *cart = (Cart *) notification.object;
-    int idx = [self.resultData indexOfObjectPassingTest:^BOOL(id obj, NSUInteger idx, BOOL *stop) {
-        // obj should be a productId
-        return [obj isEqual:cart.cartId];
-    }];
-    if (idx != NSNotFound) {
-        FarrisProductCell *cell = [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:idx inSection:0]];
-        cell.quantity.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
-        [self updateCellColorForId:(NSUInteger) idx];
-    }
     [self updateTotals];
-
     self.unsavedChangesPresent = YES;
 }
 
-- (void)QtyTouchForIndex:(int)idx {
-
+- (void)QtyTouchForIndex:(NSNumber *)productId {
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
-        NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
         Cart *cart = [self.coreDataOrder findOrCreateCartForId:productId
                                                        context:self.managedObjectContext];
 
@@ -963,38 +713,14 @@
     }
 }
 
-- (void)QtyTableChange:(NSMutableDictionary *)qty forIndex:(int)idx {
-    NSString *JSON = [qty JSONString];
-    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
-    [self.coreDataOrder updateItemQuantity:JSON productId:productId context:self.managedObjectContext];
-    [self updateCellColorForId:(NSUInteger) idx];
-    [self updateTotals];
-    self.unsavedChangesPresent = YES;
+- (Order *)currentOrderForCell {
+    return self.coreDataOrder;
 }
 
-- (void)VoucherChange:(double)price forIndex:(int)idx {
-    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
-    [self.coreDataOrder updateItemVoucher:@(price) productId:productId context:self.managedObjectContext];
-    self.unsavedChangesPresent = YES;
-}
-
-- (void)ShowPriceChange:(double)price forIndex:(int)idx {
-    NSNumber *productId = [self.resultData objectAtIndex:(NSUInteger) idx];
+- (void)ShowPriceChange:(double)price productId:(NSNumber *)productId {
     [self.coreDataOrder updateItemShowPrice:@(price) productId:productId context:self.managedObjectContext];
     self.unsavedChangesPresent = YES;
     [self updateTotals];
-}
-
-- (void)setSelectedRow:(NSIndexPath *)index {
-    selectedItemRowIndexPath = index;
-}
-
-#pragma mark - Core Data routines
-
-- (void)updateCellColorForId:(NSUInteger)index {
-    NSNumber *productId = [self.resultData objectAtIndex:index];
-    ProductCell *cell = (ProductCell *) [self.productsTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
-    [helper updateCellBackground:cell order:self.coreDataOrder cart:[self.coreDataOrder findCartForProductId:productId]];
 }
 
 #pragma mark - UIAlertViewDelegate
@@ -1003,12 +729,6 @@
     if ([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"OK"]) {
         [self Return];
     }
-}
-
-#pragma mark - PullToRefreshViewDeegate
-
-- (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
-    [self reloadProducts];
 }
 
 #pragma CICartViewDelegate
@@ -1072,7 +792,7 @@
     }
 
     UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-cart"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [self reviewCart:nil];
+        [self reviewCart];
     }];
     [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
             NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
@@ -1081,7 +801,7 @@
 }
 
 - (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
-    [self searchProducts:searchTerm searchIsActive:YES];
+    [self.productTableViewController filterToVendorId:currentVendor bulletinId:currentBulletin queryTerm:searchTerm];
 }
 
 @end

@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "CICustomerInfoViewController.h"
-#import "CIStoreQtyTableViewController.h"
 #import "CISignatureViewController.h"
 #import "ProductCellDelegate.h"
 #import "CINavViewManager.h"
@@ -36,7 +35,6 @@
 @property(nonatomic) int tOffset;
 @property(unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 @property(nonatomic, strong) UIPopoverController *popoverController;
-@property(nonatomic, strong) CIStoreQtyTableViewController *storeQtysPO;
 
 @property(unsafe_unretained, nonatomic) IBOutlet UINavigationBar *navBar;
 
@@ -74,9 +72,7 @@
 
 - (void)QtyChange:(int)qty forIndex:(int)idx;
 
-- (void)VoucherChange:(double)voucherPrice forIndex:(int)idx;
-
-- (void)ShowPriceChange:(double)price forIndex:(int)idx;
+- (void)ShowPriceChange:(double)price productId:(NSNumber *)idx;
 
 - (IBAction)Cancel:(id)sender;
 

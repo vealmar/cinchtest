@@ -14,6 +14,7 @@
 + (UIColor *)orangeColor;
 + (UIColor *)blueColor;
 + (UIColor *)greenColor;
++ (UIColor *)tableAltRowColor;
 
 /*
     Generates a title label based on the format parameter.

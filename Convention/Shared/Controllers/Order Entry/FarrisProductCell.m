@@ -22,7 +22,6 @@
 
 @implementation FarrisProductCell
 
-
 - (void)initializeWithAProduct:(AProduct *)product cart:(Cart *)cartInitial tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     cart = cartInitial;
     if (product) {
@@ -83,7 +82,7 @@
 
 - (IBAction)showPriceChanged:(id)sender {
     if (self.delegate) {
-        [self.delegate ShowPriceChange:[self.editableShowPrice.text doubleValue] forIndex:self.tag];
+        //[self.delegate ShowPriceChange:[self.editableShowPrice.text doubleValue] productId:self.tag];
     }
 }
 
@@ -95,8 +94,7 @@
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     UITableView *tableView = (UITableView *) self.superview.superview;
     NSIndexPath *indexPath = [tableView indexPathForCell:self];
-    [self.delegate setSelectedRow:indexPath];
-    [self.delegate QtyTouchForIndex:indexPath.row];
+//    [self.delegate QtyTouchForIndex:indexPath.row];
     return ![ShowConfigurations instance].isLineItemShipDatesType;
 }
 

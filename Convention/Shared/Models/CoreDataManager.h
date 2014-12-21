@@ -27,13 +27,15 @@
 
 + (NSArray *)getBulletins:(NSManagedObjectContext *)managedObjectContext;
 
-+ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSString *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext
++ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSNumber *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext
              onSuccess:(void (^)(id JSON))successBlock
              onFailure:(void (^)())failureBlock;
 
 + (NSUInteger)getProductCount;
 
 + (NSUInteger)getCustomerCount;
+
++ (NSFetchRequest *)buildProductFetch:(ProductSearch *)search;
 
 + (NSArray *)getProductIdsMatching:(ProductSearch *)search;
 

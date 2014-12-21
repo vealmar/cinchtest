@@ -8,8 +8,10 @@
 
 @interface CurrentSession : NSObject
 
+@property NSManagedObjectContext *managedObjectContext;
 @property NSString *authToken;
 @property NSDictionary* vendorInfo;
+@property (readonly) NSString* loggedInVendorGroupId;
 
 +(CurrentSession *)instance;
 - (void)dispatchSessionDidChange;
