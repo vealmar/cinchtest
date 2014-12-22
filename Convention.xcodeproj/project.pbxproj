@@ -165,6 +165,7 @@
 		6DDC9A839430432C0912B8FB /* clear-button-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC931C53BBEB687331F530 /* clear-button-out.png */; };
 		6DDC9A8DD908C9C820A9C02A /* square-paper@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9685C0D2A47D5ADC249C /* square-paper@2x.png */; };
 		6DDC9A9ED104ED467046F189 /* ALineItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9FF55F0DEEF1AB6B5421 /* ALineItem.m */; };
+		6DDC9A9F863CA48D041228AB /* CIBarButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC988216BA44403D072036 /* CIBarButton.m */; };
 		6DDC9AA18DD22292453BF908 /* cart-cancelout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC938DC1B03DAD2A25CE7D /* cart-cancelout.png */; };
 		6DDC9AAFEEE854D2C161B69D /* CIKeyboardUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9FE781BAB3E770AFEBCD /* CIKeyboardUtil.m */; };
 		6DDC9AC1F7F6F371F932F73D /* NotificationConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9F9C0D8D7055357A5516 /* NotificationConstants.m */; };
@@ -538,6 +539,7 @@
 		6DDC98786466A0677EE27BB0 /* CIProductTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductTableViewController.m; sourceTree = "<group>"; };
 		6DDC987867115F86947134F3 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		6DDC9878DFFCD557D6011301 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
+		6DDC988216BA44403D072036 /* CIBarButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIBarButton.m; sourceTree = "<group>"; };
 		6DDC9883F68C92BEA0B7E4AA /* CartViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CartViewCell.h; sourceTree = "<group>"; };
 		6DDC988D6195E5352DA16E6A /* UIColor+Boost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Boost.m"; sourceTree = "<group>"; };
 		6DDC98A2A9CC9E3622261F17 /* MenuViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewCell.h; sourceTree = "<group>"; };
@@ -710,6 +712,7 @@
 		6DDC9FAB13E136E8F7FEB1A3 /* Detail2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Detail2.png; sourceTree = "<group>"; };
 		6DDC9FBE9BFC9E3F0CD961CC /* square-paper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "square-paper.png"; sourceTree = "<group>"; };
 		6DDC9FC241C8BA61916E3E8D /* ThemeUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeUtil.h; sourceTree = "<group>"; };
+		6DDC9FD89EF1740845342A48 /* CIBarButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIBarButton.h; sourceTree = "<group>"; };
 		6DDC9FE4119B8E46DC86C044 /* FarrisCartViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FarrisCartViewCell.xib; sourceTree = "<group>"; };
 		6DDC9FE781BAB3E770AFEBCD /* CIKeyboardUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIKeyboardUtil.m; sourceTree = "<group>"; };
 		6DDC9FEBA535DC13F4905E42 /* username.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = username.png; sourceTree = "<group>"; };
@@ -1279,6 +1282,8 @@
 				6DDC9E0123A7B1D1579F6FE8 /* Custom Fields */,
 				6DDC99B2A95F9584C4BF4A22 /* ThemeUtil.m */,
 				6DDC9FC241C8BA61916E3E8D /* ThemeUtil.h */,
+				6DDC988216BA44403D072036 /* CIBarButton.m */,
+				6DDC9FD89EF1740845342A48 /* CIBarButton.h */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2127,6 +2132,7 @@
 				6DDC9E83B4FA217079A352F2 /* CIQuantityColumnView.m in Sources */,
 				6DDC9F868321076BFEDF856C /* CIShowPriceColumnView.m in Sources */,
 				6DDC9488202D510B4E6A9FBC /* CIProductTableViewCell.m in Sources */,
+				6DDC9A9F863CA48D041228AB /* CIBarButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

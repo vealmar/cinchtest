@@ -15,7 +15,6 @@
 #import "CoreDataUtil.h"
 #import "Order+Extensions.h"
 #import "UIAlertViewDelegateWithBlock.h"
-#import "FarrisProductCell.h"
 #import "ShowConfigurations.h"
 #import "AnOrder.h"
 #import "CoreDataManager.h"
@@ -30,9 +29,6 @@
 #import "MBProgressHUD.h"
 #import "ProductCache.h"
 #import "NotificationConstants.h"
-#import "Cart+Extensions.h"
-#import "ProductSearch.h"
-#import "ProductSearchQueue.h"
 #import "CinchJSONAPIClient.h"
 #import "BulletinViewController.h"
 #import "EditableEntity+Extensions.h"
@@ -42,8 +38,10 @@
 #import "ThemeUtil.h"
 #import "CIKeyboardUtil.h"
 #import "CIProductTableViewController.h"
+#import "CIBarButton.h"
 
 @interface CIProductViewController () {
+    NSInteger initialVendor;
     NSInteger currentVendor; //Logged in vendor's id or the vendor selected in the bulletin drop down
     int currentBulletin; //Bulletin selected in the bulletin drop down
     NSArray *vendorsData; //Vendors belonging to the same vendor group as the logged in vendors. These vendors are displayed in the bulletins drop down.
@@ -92,8 +90,10 @@
     self.coreDataOrder = nil;
     self.savedOrder = nil;
     self.viewInitialized = NO;
-    currentVendor = 0;
+    initialVendor = ![ShowConfigurations instance].vendorMode && self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
+    currentVendor = initialVendor;
     currentBulletin = 0;
+    self.filterCartSwitch = NO;
     self.vendorProductIds = [NSMutableArray array];
     self.vendorProducts = [NSMutableArray array];
     self.orderSubmitted = NO;
@@ -109,8 +109,8 @@
 
     self.useShipDates = [ShowConfigurations instance].shipDates;
     self.allowPrinting = [ShowConfigurations instance].printing;
-
-    currentVendor = ![ShowConfigurations instance].vendorMode && self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
+    initialVendor = ![ShowConfigurations instance].vendorMode && self.loggedInVendorId && ![self.loggedInVendorId isKindOfClass:[NSNull class]] ? [self.loggedInVendorId intValue] : 0;
+    currentVendor = initialVendor;
     self.tableHeader.hidden = NO;
     self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     self.tableHeaderPrice1Label.text = [[ShowConfigurations instance] price1Label];
@@ -350,6 +350,7 @@
     });
 
     [self loadProductsForCurrentVendorAndBulletin];
+    [self updateFilterButtonState];
 }
 
 - (void)setBulletin:(NSInteger)bulletinId {
@@ -361,6 +362,7 @@
     });
 
     [self loadProductsForCurrentVendorAndBulletin];
+    [self updateFilterButtonState];
 }
 
 - (void)dismissVendorPopover {
@@ -373,6 +375,7 @@
 
 - (void)filterCartSwitchChanged {
     [self loadProductsForCurrentVendorAndBulletin];
+    [self updateFilterButtonState];
 }
 
 /**
@@ -784,24 +787,33 @@
 
 - (NSArray *)rightActionItems {
     if (!self.filterBarButtonItem) {
-        self.filterBarButtonItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-filter-selected"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
+        CIBarButton *filterBarButton = [[CIBarButton alloc] initWithText:@"" style:CIBarButtonStyleRoundButton handler:^(id sender) {
             [self showFilterView];
         }];
-        [self.filterBarButtonItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
-            NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+        NSDictionary *labelAttributes = [ThemeUtil navigationRightActionButtonTextAttributes];
+        filterBarButton.label.attributedText = [[NSAttributedString alloc] initWithString:@"\ue140" attributes:Underscore.extend(labelAttributes, @{
+            NSFontAttributeName: [UIFont iconAltFontOfSize:14],
+        })];
+        [filterBarButton setBackgroundColor:[ThemeUtil offWhiteColor] borderColor:[ThemeUtil offWhiteBorderColor] textColor:[ThemeUtil offBlackColor] forControlState:UIControlStateNormal];
+        [filterBarButton setBackgroundColor:[ThemeUtil lightBlueColor] borderColor:[ThemeUtil lightBlueBorderColor] textColor:nil forControlState:UIControlStateHighlighted];
+
+        self.filterBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:filterBarButton];
     }
 
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-cart"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
+    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf07a" style:CIBarButtonStyleRoundButton handler:^(id sender) {
         [self reviewCart];
     }];
-    [addItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont iconFontOfSize:20],
-            NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
-
     return @[addItem, self.filterBarButtonItem];
 }
 
 - (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
     [self.productTableViewController filterToVendorId:currentVendor bulletinId:currentBulletin queryTerm:searchTerm];
+}
+
+- (void)updateFilterButtonState {
+    ((CIBarButton *) self.filterBarButtonItem.customView).active = (0 != currentBulletin ||
+            initialVendor != currentVendor ||
+            self.filterCartSwitch.on);
 }
 
 @end

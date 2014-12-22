@@ -12,6 +12,8 @@
 
 @property UITextField *searchTextField;
 @property BOOL searchable;
+@property UIBarButtonItem *clearSearchItem;
+@property UIButton *dismissButton;
 
 @end
 
@@ -21,8 +23,58 @@
     self = [super init];
     if (self) {
         self.searchable = searchable;
+        [self initClearSearchButton];
+        [self initSearchTextField];
+        [self initDismissButton];
     }
     return self;
+}
+
+- (void)initDismissButton {
+    self.dismissButton = [UIButton buttonWithType: UIButtonTypeCustom];
+    self.dismissButton.backgroundColor = [UIColor clearColor];
+
+    __weak CINavViewManager *weakSelf = self;
+    [self.dismissButton bk_addEventHandler:^(id sender) {
+        [weakSelf exitSearchMode];
+    } forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)initClearSearchButton {
+    __weak CINavViewManager *weakSelf = self;
+
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 22, 44)];
+    label.attributedText = [[NSAttributedString alloc] initWithString:@"\uf057" attributes:[ThemeUtil navigationLeftActionButtonTextAttributes]];
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 22, 44)];
+    [button addSubview:label];
+    [button bk_addEventHandler:^(id sender) {
+        weakSelf.searchTextField.text = @"";
+        [weakSelf searchWithString:weakSelf.searchTextField.text inputCompleted:YES];
+        [weakSelf exitSearchMode];
+    } forControlEvents:UIControlEventTouchUpInside];
+    self.clearSearchItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+
+//    self.clearSearchItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf057" style:UIBarButtonItemStylePlain handler:^(id sender) {
+//        weakSelf.searchTextField.text = @"";
+//        [weakSelf searchWithString:weakSelf.searchTextField.text inputCompleted:YES];
+//        [weakSelf exitSearchMode];
+//    }];
+//    [self.clearSearchItem setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
+}
+
+- (void)initSearchTextField {
+    self.searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 800, 40)];
+    self.searchTextField.defaultTextAttributes = [ThemeUtil navigationTitleTextAttributes:22];
+    self.searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Search..." attributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] }];
+    self.searchTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    self.searchTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+    self.searchTextField.delegate = self;
+    [self.searchTextField bk_addEventHandler:^(id sender) {
+            [self searchWithString:self.searchTextField.text inputCompleted:NO];
+        } forControlEvents:UIControlEventEditingChanged];
+    [self.searchTextField bk_addEventHandler:^(id sender) {
+            [self searchWithString:self.searchTextField.text inputCompleted:YES];
+        } forControlEvents:UIControlEventEditingDidEnd];
 }
 
 - (void)setupNavBar {
@@ -31,7 +83,12 @@
 
 -(void)setTitle:(NSAttributedString *)title {
     CGRect totalHeightRect = [title boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX) options:NSStringDrawingUsesLineFragmentOrigin context:nil];
-    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(512.0f - floor(totalHeightRect.size.width / 2.0f), 5.0f, totalHeightRect.size.width, totalHeightRect.size.height)];
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(
+            512.0f - (int)floor(totalHeightRect.size.width / 2.0f),
+            5.0f,
+            totalHeightRect.size.width,
+            totalHeightRect.size.height
+    )];
     titleLabel.attributedText = title;
     UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
     navItem.titleView = titleLabel;
@@ -49,11 +106,6 @@
     navController.navigationBar.translucent = NO;
     navController.navigationBar.barTintColor = [ThemeUtil offBlackColor];
 
-    NSString *term = @"Search...";
-    if (searchText && searchText.length > 0) {
-        term = searchText;
-    }
-
     NSArray *leftBarButtonItems = self.leftBarButtonItems;
     Underscore.array(leftBarButtonItems).each(^(UIBarButtonItem *item) {
         [item setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
@@ -65,6 +117,12 @@
     });
 
     if (self.searchable) {
+        NSString *term = @"Search...";
+        if (searchText && searchText.length > 0) {
+            rightBarButtonItems = [rightBarButtonItems arrayByAddingObject:self.clearSearchItem];
+            term = searchText;
+        }
+
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:[NSString stringWithFormat:@"   %@", term] style:UIBarButtonItemStylePlain handler:^(id sender) {
             [self setupNavBarSearch:searchText];
         }];
@@ -72,66 +130,43 @@
         leftBarButtonItems = [leftBarButtonItems arrayByAddingObject:searchItem];
     }
 
+    navItem.titleView.hidden = NO;
     navItem.leftBarButtonItems = leftBarButtonItems;
     navItem.rightBarButtonItems = rightBarButtonItems;
 }
+
+//- (void)applyInsets:(NSArray *)barButtonItems {
+//    Underscore.array(barButtonItems).each(^(UIBarButtonItem *item) {
+//        if (item.customView) {
+//            [item.customView setContentEdgeInsets:UIEdgeInsetsMake(0, 4.0, 0, -4.0)];
+//        }
+//        [item setImageInsets:UIEdgeInsetsMake(0, 4.0, 0, -4.0)];
+//    });
+//}
 
 - (void)setupNavBarSearch:(NSString*)searchText {
     UINavigationController *navController = self.delegate.navigationControllerForNavViewManager;
     UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
 
-    navItem.titleView = nil;
+    navItem.titleView.hidden = YES;
     [navController.navigationBar setBackgroundImage:nil forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     navController.navigationBar.barTintColor = [UIColor blackColor];
 
-    UITextField *searchTextField = self.searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 800, 40)];
-    searchTextField.font = [UIFont regularFontOfSize:24];
-    searchTextField.textColor = [UIColor whiteColor];
-    searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Search..." attributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] }];
-    searchTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    searchTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-    searchTextField.delegate = self;
-    [searchTextField bk_addEventHandler:^(id sender) {
-        [self searchWithString:searchTextField.text inputCompleted:NO];
-    } forControlEvents:UIControlEventEditingChanged];
-    [searchTextField bk_addEventHandler:^(id sender) {
-        [self searchWithString:searchTextField.text inputCompleted:YES];
-    } forControlEvents:UIControlEventEditingDidEnd];
     if (searchText && searchText.length) {
-        searchTextField.text = searchText;
+        self.searchTextField.text = searchText;
     }
 
-    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:searchTextField];
+    UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchTextField];
 
-    UIButton *dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    dismissButton.frame = CGRectMake(0.0f, 44.0f, self.delegate.navigationControllerForNavViewManager.view.bounds.size.width, self.delegate.navigationControllerForNavViewManager.view.bounds.size.height - 44.0f);
-    dismissButton.backgroundColor = [UIColor clearColor];
-    [self.delegate.navigationControllerForNavViewManager.view addSubview:dismissButton];
-
-    void (^exitSearchMode)() = ^() {
-        [dismissButton removeFromSuperview];
-        [searchTextField resignFirstResponder];
-        [self setupNavBar:searchTextField.text];
-    };
-
-    [dismissButton bk_addEventHandler:^(id sender) {
-        exitSearchMode();
-    } forControlEvents:UIControlEventTouchUpInside];
-
-    UIBarButtonItem *clearItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"Clear" style:UIBarButtonItemStylePlain handler:^(id sender) {
-        searchTextField.text = @"";
-        [self searchWithString:searchTextField.text inputCompleted:YES];
-        exitSearchMode();
-    }];
-    [clearItem setTitleTextAttributes:@{ NSFontAttributeName: [UIFont regularFontOfSize:18],
-            NSForegroundColorAttributeName: [UIColor whiteColor] } forState:UIControlStateNormal];
+    [self addDismissButtonToViewport];
 
     navItem.leftBarButtonItems = @[searchItem];
-    navItem.rightBarButtonItems = @[clearItem];
+    navItem.rightBarButtonItems = @[self.clearSearchItem];
 
+    __weak CINavViewManager *weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [searchTextField becomeFirstResponder];
-        [self searchWithString:searchTextField.text inputCompleted:NO];
+        [weakSelf.searchTextField becomeFirstResponder];
+        [weakSelf searchWithString:weakSelf.searchTextField.text inputCompleted:NO];
     });
 }
 
@@ -139,6 +174,19 @@
     if ([self.delegate respondsToSelector:@selector(navViewDidSearch:inputCompleted:)]) {
         [self.delegate navViewDidSearch:searchTerm inputCompleted:inputCompleted];
     }
+}
+
+-(void)addDismissButtonToViewport {
+    self.dismissButton.frame = CGRectMake(0.0f, 44.0f, self.delegate.navigationControllerForNavViewManager.view.bounds.size.width, self.delegate.navigationControllerForNavViewManager.view.bounds.size.height - 44.0f);
+    [self.delegate.navigationControllerForNavViewManager.view addSubview:self.dismissButton];
+}
+
+-(void)exitSearchMode {
+    if (self.dismissButton) {
+        [self.dismissButton removeFromSuperview];
+    }
+    [self.searchTextField resignFirstResponder];
+    [self setupNavBar:self.searchTextField.text];
 }
 
 -(NSArray *)leftBarButtonItems {
@@ -166,6 +214,7 @@
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];
+    [self exitSearchMode];
     return NO;
 }
 

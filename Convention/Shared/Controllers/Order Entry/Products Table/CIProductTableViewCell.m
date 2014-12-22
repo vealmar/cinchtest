@@ -99,7 +99,7 @@
         self.backgroundColor = [ThemeUtil greenColor];
         [self highlightColumns];
     } else if (self.selected) {
-        self.backgroundColor = [ThemeUtil blueColor];
+        self.backgroundColor = [ThemeUtil darkBlueColor];
         [self highlightColumns];
     } else {
         self.backgroundColor = self.lastStripeColor;

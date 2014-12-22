@@ -103,8 +103,6 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     return columns;
 }
 
-
-
 - (void)reloadProducts {
     MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     submit.removeFromSuperViewOnHide = YES;

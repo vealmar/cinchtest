@@ -37,6 +37,7 @@
 #import "CIAppDelegate.h"
 #import "VALabel.h"
 #import "ThemeUtil.h"
+#import "CIBarButton.h"
 
 
 @interface CIOrderViewController () {
@@ -878,7 +879,7 @@ SG: The argument 'detail' is the selected order.
             NSString *orderStatus = [cell.orderStatus.text lowercaseString];
 
             if ([orderStatus isEqualToString:@"partial"] || [orderStatus isEqualToString:@"pending"]) {
-                cell.orderStatus.backgroundColor = [ThemeUtil blueColor];
+                cell.orderStatus.backgroundColor = [ThemeUtil darkBlueColor];
             } else if ([orderStatus isEqualToString:@"locked"]) {
                 cell.orderStatus.backgroundColor = [ThemeUtil orangeColor];
             } else if ([orderStatus rangeOfString:@"complete"].length > 0 || [orderStatus rangeOfString:@"submit"].length > 0) {
@@ -1655,7 +1656,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 }
 
 - (NSArray *)rightActionItems {
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-add"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
+    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf067" style:CIBarButtonStyleRoundButton handler:^(id sender) {
         [self AddNewOrder:nil];
     }];
     return @[addItem];

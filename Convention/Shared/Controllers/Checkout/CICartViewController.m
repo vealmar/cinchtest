@@ -22,6 +22,7 @@
 #import "DiscountLineItem.h"
 #import "ALineItem.h"
 #import "ThemeUtil.h"
+#import "CIBarButton.h"
 
 
 @interface CICartViewController ()
@@ -615,7 +616,7 @@
 }
 
 - (NSArray *)rightActionItems {
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] bk_initWithImage:[[UIImage imageNamed:@"ico-bar-done"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] style:UIBarButtonItemStylePlain handler:^(id sender) {
+    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf00c" style:CIBarButtonStyleRoundButton handler:^(id sender) {
         [self finishOrder:nil];
     }];
 

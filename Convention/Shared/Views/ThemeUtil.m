@@ -26,8 +26,32 @@
     return [UIColor colorWithRed:0.992 green:0.545 blue:0.145 alpha:1.000];
 }
 
-+ (UIColor *)blueColor {
++ (UIColor *)darkBlueColor {
     return [UIColor colorWithRed:0.161 green:0.502 blue:0.725 alpha:1.000];
+}
+
++ (UIColor *)lightBlueColor {
+    return [UIColor colorWithRed:0.416 green:0.824 blue:0.922 alpha:1.000];
+}
+
++ (UIColor *)lightBlueBorderColor {
+    return [UIColor colorWithRed:0.122 green:0.725 blue:0.882 alpha:1.000];
+}
+
++ (UIColor *)offWhiteColor {
+    return [UIColor colorWithRed:0.945 green:0.953 blue:0.965 alpha:1.000];
+}
+
++ (UIColor *)offWhiteBorderColor {
+    return [UIColor colorWithRed:0.859 green:0.882 blue:0.910 alpha:1.000];
+}
+
++ (UIColor *)lightGreenColor {
+    return [UIColor colorWithRed:0.667 green:0.820 blue:0.471 alpha:1.000];
+}
+
++ (UIColor *)lightGreenBorderColor {
+    return [UIColor colorWithRed:0.490 green:0.722 blue:0.192 alpha:1.000];
 }
 
 + (UIColor *)greenColor {

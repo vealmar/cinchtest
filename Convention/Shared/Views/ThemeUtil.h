@@ -12,9 +12,17 @@
 + (UIColor *)blackColor;
 + (UIColor *)noteColor;
 + (UIColor *)orangeColor;
-+ (UIColor *)blueColor;
++ (UIColor *)darkBlueColor;
++ (UIColor *)lightBlueColor;
++ (UIColor *)lightBlueBorderColor;
++ (UIColor *)offWhiteColor;
++ (UIColor *)offWhiteBorderColor;
++ (UIColor *)lightGreenColor;
++ (UIColor *)lightGreenBorderColor;
 + (UIColor *)greenColor;
 + (UIColor *)tableAltRowColor;
+
++ (NSDictionary *)navigationTitleTextAttributes:(int)size;
 
 /*
     Generates a title label based on the format parameter.

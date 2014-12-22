@@ -25,7 +25,7 @@
     if (self) {
         self.cellViews = [NSMutableArray array];
         self.selectedBackgroundView = [[UIView alloc] initWithFrame:self.frame];
-        self.selectedBackgroundView.backgroundColor = [ThemeUtil blueColor];
+        self.selectedBackgroundView.backgroundColor = [ThemeUtil darkBlueColor];
     }
 
     return self;
