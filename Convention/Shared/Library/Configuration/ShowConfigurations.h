@@ -12,6 +12,7 @@
 
 @interface ShowConfigurations : NSObject
 
+@property BOOL enableOrderNotes;
 @property BOOL productEnableManufacturerNo;
 @property BOOL atOncePricing;
 @property BOOL discounts;

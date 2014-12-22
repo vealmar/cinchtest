@@ -26,6 +26,7 @@ static ShowConfigurations *showConfigurations = nil;
 + (void)createInstanceFromJson:(NSDictionary *)json {
     showConfigurations = [[[self class] alloc] init];
     if (showConfigurations) {
+        showConfigurations.enableOrderNotes = [[json objectForKey:@"enableOrderNotes"] boolValue];
         showConfigurations.productEnableManufacturerNo = [[json objectForKey:@"productEnableManufacturerNo"] boolValue];
         showConfigurations.atOncePricing = [[json objectForKey:@"atOncePricing"] boolValue];
         showConfigurations.discounts = [[json objectForKey:@"discounts"] boolValue];

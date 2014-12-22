@@ -343,6 +343,8 @@ These partial orders then are put at the beginning of the self.orders array.
 SG: The argument 'detail' is the selected order.
 */
 - (void)displayOrderDetail:(AnOrder *)detail {
+    ShowConfigurations *config = [ShowConfigurations instance];
+    
     self.orderDetailView.hidden = NO;
 
     self.orderDetailOrderNumberLabel.text = [NSString stringWithFormat:@"Order #%@", detail.orderId];
@@ -363,15 +365,20 @@ SG: The argument 'detail' is the selected order.
         self.orderDetailPaymentTermsLabel.text = @"-";
     }
 
-    float orderDetailTableOriginY = 0;
-    if (detail.notes && detail.notes.length) {
+    float orderDetailTableOriginY = self.orderDetailCustomerView.frame.origin.y + self.orderDetailCustomerView.frame.size.height + 8;
+    if (config.enableOrderNotes) {
         self.orderDetailNotesLabel.text = detail.notes;
         self.orderDetailNotesView.hidden = NO;
-
-        orderDetailTableOriginY = self.orderDetailNotesView.frame.origin.y + self.orderDetailNotesView.frame.size.height + 8;
+        orderDetailTableOriginY += self.orderDetailNotesView.frame.size.height + 8;
     } else {
         self.orderDetailNotesView.hidden = YES;
-        orderDetailTableOriginY = self.orderDetailPaymentTermsView.frame.origin.y + self.orderDetailPaymentTermsView.frame.size.height + 8;
+    }
+
+    if (config.paymentTerms) {
+        self.orderDetailPaymentTermsView.hidden = NO;
+        orderDetailTableOriginY += self.orderDetailPaymentTermsView.frame.size.height + 8;
+    } else {
+        self.orderDetailPaymentTermsView.hidden = YES;
     }
 
     self.orderDetailTableParentView.frame = CGRectMake(0, orderDetailTableOriginY, self.orderDetailTableParentView.frame.size.width, 630 - orderDetailTableOriginY);
