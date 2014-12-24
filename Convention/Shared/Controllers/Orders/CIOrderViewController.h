@@ -65,13 +65,7 @@
 
 @property(weak, nonatomic) IBOutlet UILabel *voucherItemTotalLabel;
 
-- (IBAction)AddNewOrder:(id)sender;
-
-- (IBAction)logout:(id)sender;
-
-- (IBAction)Save:(id)sender;
-
-- (IBAction)Refresh:(id)sender;
+- (void)logout;
 
 - (IBAction)Print:(id)sender;
 

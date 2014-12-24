@@ -45,17 +45,18 @@
     BOOL isLoadingOrders;
     UITextField *activeField;
     PullToRefreshView *pull;
+
     NSDictionary *availablePrinters;
     NSString *currentPrinter;
+
     NSIndexPath *selectedItemRowIndexPath;
+
     NSMutableArray *partialOrders;
     NSMutableArray *persistentOrders;
+
     CIProductViewControllerHelper *helper;
     SegmentedControlHelper *cancelDaysHelper;
     ShowConfigurations *showConfig;
-    __weak IBOutlet UILabel *sdLabel;
-    __weak IBOutlet UILabel *sqLabel;
-    __weak IBOutlet UILabel *quantityLabel;
 }
 
 @property BOOL unsavedChangesPresent;
@@ -101,12 +102,6 @@ CIOrderViewController
 
     showConfig = [ShowConfigurations instance];
     self.logoImage.image = [showConfig logo];
-    if (showConfig.isLineItemShipDatesType) {
-        quantityLabel.hidden = YES;
-    } else {
-        sdLabel.hidden = YES;
-        sqLabel.hidden = YES;
-    }
     if (!showConfig.isOrderShipDatesType) self.orderShipDatesView.hidden = YES;
     if (showConfig.vouchers) {
         self.voucherItemTotalLabel.text = @"VOUCHER";
@@ -328,7 +323,7 @@ These partial orders then are put at the beginning of the self.orders array.
 #pragma mark - Order detail display
 
 - (IBAction)orderDetailSaveButtonTapped:(id)sender {
-    [self Save:nil];
+    [self saveOrder];
 }
 
 - (IBAction)orderDetailEditButtonTapped:(id)sender {
@@ -1268,14 +1263,14 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 #pragma mark - Events
 
-- (IBAction)AddNewOrder:(id)sender {
+- (void)addNewOrder {
     CICustomerInfoViewController *ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
     ci.modalPresentationStyle = UIModalPresentationFormSheet;
     ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     ci.delegate = self;
     ci.authToken = self.authToken;
     ci.managedObjectContext = self.managedObjectContext;
-    [self presentViewController:ci animated:NO completion:nil];
+    [self presentViewController:ci animated:YES completion:nil];
 }
 
 - (void)customerSelected:(NSDictionary *)info {
@@ -1305,12 +1300,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
     }];
 }
 
-- (IBAction)logout:(id)sender {
-    [self logout];
-}
-
-- (IBAction)Save:(id)sender {
-    [sender setSelected:YES];
+- (void)saveOrder {
     if (currentOrder == nil) {
         return;
     }
@@ -1377,21 +1367,14 @@ SG: This method gets called when you swipe on an order in the order list and tap
         self.unsavedChangesPresent = NO;
         AnOrder *savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
         [self persistentOrderUpdated:savedOrder];
-        [sender setSelected:NO];
     };
     void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id JSON) {
         if (JSON) {
             AnOrder *savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
             [self persistentOrderUpdated:savedOrder];
-            [sender setSelected:NO];
         }
     };
     [helper sendRequest:@"PUT" url:url parameters:parameters successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Saving order"];
-}
-
-- (IBAction)Refresh:(id)sender {
-    NSNumber *orderId = currentOrder == nil? nil : currentOrder.orderId;
-    [self loadOrders:YES highlightOrder:orderId];
 }
 
 - (void)selectPrintStation {
@@ -1664,7 +1647,7 @@ SG: This method gets called when you swipe on an order in the order list and tap
 
 - (NSArray *)rightActionItems {
     UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf067" style:CIBarButtonStyleRoundButton handler:^(id sender) {
-        [self AddNewOrder:nil];
+        [self addNewOrder];
     }];
     return @[addItem];
 }

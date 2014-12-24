@@ -89,7 +89,7 @@
 
     [self.logoutButton bk_addEventHandler:^(id sender) {
         [self closeMenu];
-        [self.orderViewController logout:nil];
+        [self.orderViewController logout];
     } forControlEvents:UIControlEventTouchUpInside];
 
     self.activeMenuLink = MenuLinkOrderWriter;

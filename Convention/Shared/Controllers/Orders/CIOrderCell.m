@@ -26,21 +26,13 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        // Initialization code
-//        self.Customer.font = [UIFont fontWithName:kFontName size:17.f];
-//        self.auth.font = [UIFont fontWithName:kFontName size:14.f];
-//        self.numItems.font = [UIFont fontWithName:kFontName size:13.f];
-//        self.total.font = [UIFont fontWithName:kFontName size:13.f];
-//        self.vouchers.font = [UIFont fontWithName:kFontName size:13.f];
-//        self.vouchersLabel.font = [UIFont fontWithName:kFontName size:14.f];
-//        self.orderStatus.font = [UIFont fontWithName:kFontName size:13.f];
+
     }
     return self;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
-    UIColor *c = self.orderStatus.backgroundColor;
     BOOL wasSelected = self.selected;
 
     [super setSelected:selected animated:animated];
@@ -79,15 +71,6 @@
     }
 
     self.orderStatus.textColor = [UIColor colorWithWhite:0.95 alpha:1.0];
-
-    // Configure the view for the selected state
-}
-
-- (UIColor*)inverseColor:(UIColor*)color
-{
-    CGFloat r,g,b,a;
-    [color getRed:&r green:&g blue:&b alpha:&a];
-    return [UIColor colorWithRed:1.-r green:1.-g blue:1.-b alpha:a];
 }
 
 @end
