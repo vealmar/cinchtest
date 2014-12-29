@@ -39,7 +39,5 @@
 @dynamic vendor_id;
 @dynamic voucher;
 @dynamic editable;
-@dynamic carts;
-@dynamic discountLineItems;
 
 @end

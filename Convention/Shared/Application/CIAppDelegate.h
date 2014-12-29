@@ -14,7 +14,7 @@
 @class CIViewController;
 
 @interface CIAppDelegate : UIResponder <UIApplicationDelegate, ReachabilityDelegate> {
-	
+
 	ReachabilityDelegation *reachDelegation;
 }
 

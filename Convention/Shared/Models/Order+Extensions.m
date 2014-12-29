@@ -1,158 +1,231 @@
 //
-//  Order+Extensions.m
-//  Convention
-//
-//  Created by Kerry Sanders on 11/13/12.
-//  Copyright (c) 2012 MotionMobs. All rights reserved.
+// Created by David Jafari on 12/24/14.
+// Copyright (c) 2014 Urban Coding. All rights reserved.
 //
 
 #import <Underscore.m/Underscore.h>
+#import <JSONKit/JSONKit.h>
+#import "Order.h"
 #import "Order+Extensions.h"
-#import "config.h"
-#import "NumberUtil.h"
-#import "Cart+Extensions.h"
-#import "AnOrder.h"
-#import "NilUtil.h"
-#import "Error.h"
-#import "Error+Extensions.h"
-#import "ALineItem.h"
+#import "LineItem.h"
+#import "Product.h"
 #import "Product+Extensions.h"
-#import "DiscountLineItem.h"
-#import "DiscountLineItem+Extensions.h"
+#import "LineItem+Extensions.h"
+#import "OrderCoreDataManager.h"
+#import "NilUtil.h"
+#import "config.h"
 #import "DateUtil.h"
-#import "ShipDate.h"
-#import "NotificationConstants.h"
+#import "OrderCoreDataManager.h"
 #import "ShowCustomField.h"
+#import "ShowConfigurations.h"
+#import "CurrentSession.h"
+#import "CoreDataUtil.h"
+#import "OrderTotals.h"
+#import "OrderSubtotalsByDate.h"
+#import "DateRange.h"
+#import "CoreDataBackgroundOperation.h"
 
 @implementation Order (Extensions)
 
-- (id)initWithOrder:(AnOrder *)orderFromServer forCustomer:(NSDictionary *)customer vendorId:(NSNumber *)vendorId vendorGroup:(NSString *)vendorGroup andVendorGroupId:(NSString *)vendorGroupId context:(NSManagedObjectContext *)context {
-    self = [super initWithEntity:[NSEntityDescription entityForName:@"Order" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
-    if (self) {
-        self.billname = [customer objectForKey:kBillName];
-        self.customer_id = [orderFromServer.customerId stringValue];
-        self.custid = [orderFromServer.customer objectForKey:@"custid"];
-        self.status = orderFromServer.status;
-        self.created_at = [NSDate date]; //the time this core data entry was created. It is later used by ciroderviewcontroller to sort the partial orders.
-        self.vendorGroupId = vendorGroupId;
-        self.orderId = orderFromServer.orderId;
-        self.authorized = orderFromServer.authorized;
-        self.notes = orderFromServer.notes;
-        self.ship_notes = orderFromServer.shipNotes;
-        self.ship_flag = [NSNumber numberWithBool:(BOOL) orderFromServer.shipFlag];
-        self.cancelByDays = orderFromServer.cancelByDays;
-        self.po_number = orderFromServer.poNumber;
-        self.payment_terms = orderFromServer.paymentTerms;
-        self.ship_dates = orderFromServer.shipDates;
-        for (NSString *warning in [NilUtil objectOrEmptyArray:orderFromServer.warnings]) {
-            Error *lineItemrError = [[Error alloc] initWithMessage:warning andContext:self.managedObjectContext];
-            [self addWarningsObject:lineItemrError];
-        }
-        for (NSString *error in [NilUtil objectOrEmptyArray:orderFromServer.errors]) {
-            Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
-            [self addErrorsObject:lineItemrError];
-        }
-        NSMutableSet *carts = [NSMutableSet set];
-        NSMutableSet *discountLineItems = [NSMutableSet set];
-        for (ALineItem *lineItem in orderFromServer.lineItems) {
-            if ([lineItem.category isEqualToString:@"standard"]) {//if it is a discount item, core data throws error when saving the cart item becasue of nil value in required fields - company, regprc, showprc, invtid.
-                Cart *cart = [[Cart alloc] initWithLineItem:lineItem context:self.managedObjectContext];
-                [carts addObject:cart];
-            } else if ([lineItem.category isEqualToString:@"discount"]) {
-                DiscountLineItem *discountLineItem = [[DiscountLineItem alloc] initWithLineItem:lineItem context:context];
-                [discountLineItems addObject:discountLineItem];
++ (id)newOrderForCustomer:(NSDictionary *)customer {
+    CurrentSession *session = [CurrentSession instance];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Order" inManagedObjectContext:session.managedObjectContext];
+    Order *newOrder = [[Order alloc] initWithEntity:entity insertIntoManagedObjectContext:session.managedObjectContext];
+    newOrder.inSync = NO;
+    newOrder.status = @"partial";
+    newOrder.customerId = customer[kID];
+    newOrder.custId = customer[kCustID];
+    newOrder.customerName = customer[kBillName];
+    newOrder.vendorId = session.vendorId;
+
+    [[CoreDataUtil sharedManager] saveObjects];
+
+    return newOrder;
+}
+
+- (BOOL)isPartial {
+    return [self.status isEqualToString:@"partial"];
+}
+
+- (BOOL)isPending {
+    return [self.status isEqualToString:@"pending"];
+}
+
+- (BOOL)isComplete{
+    return [self.status isEqualToString:@"complete"];
+}
+
+- (BOOL)isSubmitted{
+    return [self.status isEqualToString:@"submitted"];
+}
+
+- (BOOL)hasNontransientChanges {
+    if (self.hasChanges) {
+        int maxLength = 0;
+        NSArray *changedFields = self.changedValues.allKeys;
+        if ([changedFields containsObject:@"grossTotal"]) maxLength++;
+        if ([changedFields containsObject:@"discountTotal"]) maxLength++;
+        if ([changedFields containsObject:@"voucherTotal"]) maxLength++;
+        return changedFields.count > maxLength;
+    } else {
+        BOOL hasLineChanges = Underscore.array(self.lineItems.allObjects).any(^BOOL(LineItem *lineItem) {
+            return lineItem.hasChanges;
+        });
+        return hasLineChanges;
+    }
+}
+
+- (NSString *)getCustomerDisplayName {
+    return [NSString stringWithFormat:@"%@ - %@", (self.customerName == nil ? @"(Unknown)" : self.customerName), (self.custId == nil? @"(Unknown)" : self.custId)];
+}
+
+- (OrderTotals *)calculateTotals {
+    if (self.grossTotal && !self.hasNontransientChanges) {
+        return [[OrderTotals alloc] initWithOrder:self];
+    } else {
+        __block double grossTotal = 0;
+        __block double discountTotal = 0;
+
+        for (LineItem *lineItem in self.lineItems) {
+            if (lineItem.isDiscount) {
+                discountTotal += [lineItem subtotal];
+            } else {
+                grossTotal += [lineItem subtotal];
             }
+        };
 
-        }
-        self.carts = carts;
-        self.discountLineItems = discountLineItems;
-        self.customFields = [NilUtil objectOrDefault:orderFromServer.customFields defaultObject:[NSArray array]];
-    }
-    return self;
-}
-
-- (DiscountLineItem *)findDiscountForLineItemId:(NSNumber *)lineItemId {
-    for (DiscountLineItem *discountLineItem in self.discountLineItems) {
-        if ([discountLineItem.lineItemId intValue] == [lineItemId intValue])
-            return discountLineItem;
-    }
-    return nil;
-}
-
-
-- (Cart *)findCartForProductId:(NSNumber *)productId {
-    for (Cart *cart in self.carts) {
-        if ([cart.cartId intValue] == [productId intValue])
-            return cart;
-    }
-    return nil;
-}
-
-- (Cart *)findOrCreateCartForId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
-    Cart *cart = [self findCartForProductId:productId];
-    if (!cart)
-        cart = [[Cart alloc] initWithProduct:[Product findProduct:productId] context:context];
-    [self addCartsObject:cart];
-    return cart;
-}
-
-- (void)updateItemQuantity:(NSString *)quantity productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
-    Cart *cart = [self findOrCreateCartForId:productId context:context];
-    cart.editableQty = quantity;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        @autoreleasepool {
-            [[NSNotificationCenter defaultCenter] postNotificationName:CartQuantityChangedNotification object:cart];
-        }
-    });
-    NSError *error = nil;
-    if (![context save:&error]) {
-        NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
-        [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+        OrderTotals *totals = [[OrderTotals alloc] initWithGrossTotal:grossTotal discountTotal:discountTotal];
+        self.grossTotal = totals.grossTotal;
+        self.discountTotal = totals.discountTotal;
+        self.voucherTotal = totals.voucherTotal;
+        return totals;
     }
 }
 
-- (void)updateItemVoucher:(NSNumber *)voucher productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
-    Cart *cart = [self findOrCreateCartForId:productId context:context];
-    cart.editableVoucher = [NumberUtil convertDollarsToCents:voucher];
-    NSError *error = nil;
-    if (![context save:&error]) {
-        NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
-        [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+- (void)calculateTotals:(void(^)(OrderTotals *totals, NSManagedObjectID *totalledOrderId))completion {
+    if (self.grossTotal && !self.hasNontransientChanges) {
+        completion([[OrderTotals alloc] initWithOrder:self], self.objectID);
+    } else {
+        __weak Order *weakSelf = self;
+
+        [OrderCoreDataManager saveOrder:self async:YES beforeSave:^(Order *asyncOrder) {
+            [asyncOrder calculateTotals];
+        } onSuccess:^{
+            if (weakSelf) completion(weakSelf.calculateTotals, weakSelf.objectID);
+        }];
     }
 }
 
-- (void)updateItemShowPrice:(NSNumber *)price productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
-    Cart *cart = [self findOrCreateCartForId:productId context:context];
-    cart.editablePrice = [NumberUtil convertDollarsToCents:price];
-    NSError *error = nil;
-    if (![context save:&error]) {
-        NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
-        [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+- (OrderSubtotalsByDate *)calculateShipDateSubtotals {
+    OrderSubtotalsByDate *subtotals = [[OrderSubtotalsByDate alloc] init];
+    if (![ShowConfigurations instance].shipDates) return subtotals;
+
+    if ([ShowConfigurations instance].isOrderShipDatesType) {
+        Underscore.array(self.shipDates).each(^(NSDate *date) {
+            for (LineItem *lineItem in self.lineItems) {
+                [subtotals addTotal:[lineItem.price doubleValue] * [lineItem.quantity intValue] forDate:date];
+            };
+        });
+    } else if ([ShowConfigurations instance].isLineItemShipDatesType) {
+        NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
+
+        for (LineItem *lineItem in self.lineItems) {
+            NSDictionary *quantities = [lineItem.quantity objectFromJSONString];
+            Underscore.dict(quantities).each(^(NSString *date, NSNumber *quantity) {
+                NSDate *shipDate = [DateUtil convertApiDateTimeToNSDate:date];
+                NSNumber *price = lineItem.price;
+                if ([ShowConfigurations instance].atOncePricing && fixedShipDates.count > 0) {
+                    if ([((NSDate *) fixedShipDates.firstObject) isEqualToDate:shipDate]) {
+                        price = lineItem.product.showprc;
+                    } else {
+                        price = lineItem.product.regprc;
+                    }
+                }
+                
+                [subtotals addTotal:[price doubleValue] * [quantity intValue] forDate:shipDate];
+            });
+        };
     }
+
+    return subtotals;
 }
+
+#pragma mark - LineItems
 
 - (NSArray *)productIds {
-    NSMutableArray *productIds = [[NSMutableArray alloc] initWithCapacity:self.carts.count];
-    for (Cart *cart in self.carts) {
-        [productIds addObject:cart.cartId];
+    NSMutableArray *productIds = [[NSMutableArray alloc] initWithCapacity:self.lineItems.count];
+    for (LineItem *lineItem in self.lineItems) {
+        [productIds addObject:lineItem.productId];
     }
-    return productIds;
+    return [NSArray arrayWithArray:productIds];
 }
 
 - (NSArray *)discountLineItemIds {
-    NSMutableArray *discountLineItemIds = [[NSMutableArray alloc] initWithCapacity:self.discountLineItems.count];
-    for (DiscountLineItem *discountLineItem in self.discountLineItems) {
-        [discountLineItemIds addObject:discountLineItem.lineItemId];
+    NSMutableArray *discountLineItemIds = [[NSMutableArray alloc] initWithCapacity:self.lineItems.count];
+    for (LineItem *lineItem in self.lineItems) {
+        if (lineItem.isDiscount) {
+            [discountLineItemIds addObject:lineItem.lineItemId];
+        }
     }
-    return discountLineItemIds;
+    return [NSArray arrayWithArray:discountLineItemIds];
 }
+
+- (LineItem *)findLineById:(NSNumber *)lineItemId {
+    for (LineItem *lineItem in self.lineItems) {
+        if ([lineItem.lineItemId intValue] == [lineItemId intValue])
+            return lineItem;
+    }
+    return nil;
+}
+
+- (LineItem *)findLineByProductId:(NSNumber *)productId {
+    for (LineItem *lineItem in self.lineItems) {
+        if ([lineItem.productId intValue] == [productId intValue])
+            return lineItem;
+    }
+    return nil;
+}
+
+- (LineItem *)findOrCreateLineForProductId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
+    LineItem *lineItem = [self findLineByProductId:productId];
+    if (!lineItem) {
+        lineItem = [[LineItem alloc] initWithProduct:[Product findProduct:productId] context:context];
+        [self addLineItemsObject:lineItem];
+        //@todo orders we should do this for all order saves
+        [OrderCoreDataManager saveOrder:self inContext:context];
+    }
+    
+    return lineItem;
+}
+
+- (void)updateItemShowPrice:(NSNumber *)price productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
+    LineItem *lineItem = [self findOrCreateLineForProductId:productId context:context];
+    lineItem.price = price;
+    NSError *error = nil;
+    if (![context save:&error]) {
+        NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
+        [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
+    }
+}
+
+- (void)removeZeroQuantityLines {
+    NSMutableSet *lineItemsSet = [NSMutableSet setWithSet:self.lineItems];
+    Underscore.array(self.lineItems.allObjects).filter(^BOOL(LineItem *lineItem) {
+        return lineItem.totalQuantity <= 0;
+    }).each(^(LineItem *lineItem) {
+        [lineItemsSet removeObject:lineItem];
+    });
+    self.lineItems = [NSSet setWithSet:lineItemsSet];
+}
+
+#pragma mark - CustomFields
 
 - (NSString *)customFieldValueFor:(ShowCustomField *)showCustomField {
     NSDictionary *customField = Underscore.array(self.customFields).find(^BOOL(NSDictionary *dict) {
         return [showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:[dict objectForKey:kCustomFieldFieldName]];
     });
     if (customField == nil) {
-        return [NSNull null];
+        return nil;
     } else {
         return [customField objectForKey:kCustomFieldValue];
     }
@@ -178,25 +251,76 @@
     self.customFields = [self.customFields arrayByAddingObject:customField];
 }
 
-- (NSDictionary *)asJSONReqParameter {
-    NSArray *lineItems = Underscore.array(self.carts).map(^id(Cart *cart) {
-        return [cart asJsonReqParameter];
+#pragma mark - Syncing
+
+- (id)initWithJsonFromServer:(NSDictionary *)JSON insertInto:(NSManagedObjectContext *)managedObjectContext {
+    self = [super initWithEntity:[NSEntityDescription entityForName:@"Order" inManagedObjectContext:managedObjectContext] insertIntoManagedObjectContext:managedObjectContext];
+    if (self) {
+        [self updateWithJsonFromServer:JSON];
+    }
+    return self;
+}
+
+- (Order *)updateWithJsonFromServer:(NSDictionary *)JSON {
+    self.inSync = YES;
+    self.grossTotal = nil;
+    self.discountTotal = nil;
+    self.voucherTotal = nil;
+
+    self.customerId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"customer_id"]];
+    self.shippingAddressId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"shipping_address_id"]];
+    self.billingAddressId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"billing_address_id"]];
+    self.showId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"show_id"]];
+    self.vendorId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"vendor_id"]];
+    self.orderId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"id"]];
+    self.notes = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"notes"]];
+    self.status = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"status"]];
+    self.authorizedBy = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"authorized"]];
+    NSNumber *shipFlagInt = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"ship_flag"]];
+    self.shipFlag = shipFlagInt && [shipFlagInt intValue] == 1;//boolean
+    self.purchaseOrderNumber = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"po_number"]];
+    self.shipDates = [DateUtil convertApiDateArrayToNSDateArray:[NilUtil objectOrEmptyArray:[JSON objectForKey:@"ship_dates"]]];
+    self.customFields = [JSON objectForKey:@"custom_fields"];
+    self.updatedAt = [JSON objectForKey:@"updated_at"] ? [DateUtil convertApiDateTimeToNSDate:[JSON objectForKey:@"updated_at"]] : nil;
+
+    NSDictionary *customerDictionary = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
+    self.customerId = ([customerDictionary objectForKey:kCustID] == nil? [NSNumber numberWithInt:0] : [customerDictionary objectForKey:kID]);
+    self.custId = ([customerDictionary objectForKey:kCustID] == nil? @"(Unknown)" : [customerDictionary objectForKey:kCustID]);
+    self.customerName = ([customerDictionary objectForKey:kBillName] == nil? @"(Unknown)" : [customerDictionary objectForKey:kBillName]);
+
+    NSArray *warningsArray = (NSArray *) [NilUtil nilOrObject:JSON[@"warnings"]];
+    self.warnings = [NSSet setWithArray:warningsArray];
+    NSArray *errorsArray = (NSArray *) [NilUtil nilOrObject:JSON[@"errors"]];
+    self.errors = [NSSet setWithArray:errorsArray];
+
+    NSMutableSet *lineItems = [[NSMutableSet alloc] init];
+    NSArray *jsonLineItems = (NSArray *) [NilUtil nilOrObject:JSON[@"line_items"]];
+    if (jsonLineItems != nil) {
+        for (NSDictionary *jsonItem in jsonLineItems) {
+            [lineItems addObject:[[LineItem alloc] initWithJsonFromServer:jsonItem inContext:self.managedObjectContext]];
+        }
+    }
+    self.lineItems = [NSSet setWithSet:lineItems];
+
+    return self;
+}
+
+- (NSDictionary *)asJsonReqParameter {
+    NSArray *lineItems = Underscore.array(self.lineItems.allObjects).filter(^BOOL(LineItem *lineItem) {
+        return lineItem.isStandard;
+    }).map(^id(LineItem *lineItem) {
+        return [lineItem asJsonReqParameter];
     }).unwrap;
 
-    NSDictionary *newOrder = [NSDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNSNull:self.customer_id], kOrderCustomerID,
+    NSDictionary *newOrder = [NSDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNSNull:self.customerId], kOrderCustomerID,
                                                                         [NilUtil objectOrNSNull:self.notes], kNotes,
-                                                                        [NilUtil objectOrNSNull:self.authorized], kAuthorizedBy,
-                                                                        [self.ship_flag boolValue] ? @"TRUE" : @"FALSE", kShipFlag,
-                                                                        [NilUtil objectOrNSNull:self.cancelByDays], kCancelByDays,
+                                                                        [NilUtil objectOrNSNull:self.authorizedBy], kAuthorizedBy,
                                                                         [NilUtil objectOrNSNull:self.status], kOrderStatus,
                                                                         [NSArray arrayWithArray:lineItems], kOrderItems,
-                                                                        [self.print boolValue] ? @"TRUE" : @"FALSE", kOrderPrint,
-                                                                        [NilUtil objectOrNSNull:self.printer], kOrderPrinter,
-                                                                        [NilUtil objectOrNSNull:self.po_number], kOrderPoNumber,
-                                                                        [NilUtil objectOrNSNull:self.payment_terms], kOrderPaymentTerms,
-                                                                        [NilUtil objectOrNSNull:[DateUtil convertNSDateArrayToApiDateArray:self.ship_dates]], kOrderShipDates,
+                                                                        [NilUtil objectOrNSNull:self.purchaseOrderNumber], kOrderPoNumber,
+                                                                        [NilUtil objectOrNSNull:[DateUtil convertNSDateArrayToApiDateArray:self.shipDates]], kOrderShipDates,
                                                                         [NSArray arrayWithArray:self.customFields], kCustomFields,
-                                                                        nil];
+                    nil];
     return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
 }
 

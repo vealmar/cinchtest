@@ -30,7 +30,10 @@
     NSTimeInterval animationDuration = [[info objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     CGRect keyboardFrame = [kbFrame CGRectValue];
 
-    CGFloat height = keyboardFrame.size.height;//we are in landscape
+    // simulator doesn't provide correct height, doesn't account for orientation
+    // regardless, the lesser of these two values is also correct as the alternate dimension will
+    // be either the device's height or width which will be greater than ~350.0f.
+    CGFloat height = MIN(keyboardFrame.size.width, keyboardFrame.size.height);
 
     // Because the "space" is actually the difference between the bottom lines of the 2 views,
     // we need to set a negative constant value here.

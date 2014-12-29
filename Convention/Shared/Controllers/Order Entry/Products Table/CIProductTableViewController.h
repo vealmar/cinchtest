@@ -14,6 +14,6 @@
 
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate;
 
-- (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId queryTerm:(NSString *)query;
+- (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId inCart:(BOOL)inCart queryTerm:(NSString *)query;
 
 @end

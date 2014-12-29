@@ -10,10 +10,8 @@
 #import "CartViewCell.h"
 
 @protocol ProductCellDelegate;
-@class ALineItem;
 @class Product;
-@class DiscountLineItem;
-
+@class LineItem;
 
 @interface FarrisCartViewCell : CartViewCell
 @property(weak, nonatomic) IBOutlet UILabel *descr;
@@ -28,7 +26,7 @@
 
 - (IBAction)quantityChanged:(id)sender;
 
-- (void)initializeWithCart:(Cart *)cart tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeWithCart:(LineItem *)lineItemInitial tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 
-- (void)initializeWithDiscount:(DiscountLineItem *)discount tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
+- (void)initializeWithDiscount:(LineItem *)discount tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate;
 @end

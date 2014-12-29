@@ -9,9 +9,12 @@ extern NSString *const ProductsLoadedNotification;
 extern NSString *const   kCustomerUserInfoKey;
 extern NSString *const PrintersLoadedNotification;
 
-extern NSString *const CartQuantityChangedNotification;
-extern NSString *const CartSelectionNotification;
-extern NSString *const CartDeselectionNotification;
+extern NSString *const OrderSelectionNotification;
+extern NSString *const OrderDeleteRequestedNotification;
+
+extern NSString *const LineQuantityChangedNotification;
+extern NSString *const LineSelectionNotification;
+extern NSString *const LineDeselectionNotification;
 
 extern NSString *const SessionDidChangeNotification;
 

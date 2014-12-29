@@ -8,23 +8,19 @@
 
 
 @class CIProductViewController;
-@protocol CISlidingProductViewControllerDelegate;
-@class Cart;
-
-
-@interface CISlidingProductViewController : ECSlidingViewController <CISlidingProductViewControllerDelegate>
-
-- (id)initWithTopViewController:(CIProductViewController *)productViewController;
-
-@property CIShipDatesViewController *shipDateController;
-
-@end
-
 
 @protocol CISlidingProductViewControllerDelegate <NSObject>
 
 @required
 
 -(void)toggleShipDates:(BOOL)shouldOpen;
+
+@end
+
+@interface CISlidingProductViewController : ECSlidingViewController <CISlidingProductViewControllerDelegate>
+
+- (id)initWithTopViewController:(CIProductViewController *)productViewController;
+
+@property CIShipDatesViewController *shipDateController;
 
 @end

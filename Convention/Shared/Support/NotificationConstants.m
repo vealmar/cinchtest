@@ -7,8 +7,12 @@ NSString *const CustomersLoadedNotification = @"CustomersLoadedNotification";
 NSString *const ProductsLoadedNotification = @"ProductsLoadedNotification";
 NSString *const   kCustomerUserInfoKey = @"kCustomerUserInfoKey";
 NSString *const PrintersLoadedNotification = @"PrintersLoadedNotification";
-NSString *const CartQuantityChangedNotification = @"CartQuantityChangedNotification";
-NSString *const CartSelectionNotification = @"CartSelectionNotification";
-NSString *const CartDeselectionNotification = @"CartDeselectionNotification";
+
+NSString *const OrderSelectionNotification = @"OrderSelectionNotification";
+NSString *const OrderDeleteRequestedNotification = @"OrderDeleteRequestedNotification";
+
+NSString *const LineQuantityChangedNotification = @"LineQuantityChangedNotification";
+NSString *const LineSelectionNotification = @"LineSelectionNotification";
+NSString *const LineDeselectionNotification = @"LineDeselectionNotification";
 
 NSString *const SessionDidChangeNotification = @"SessionDidChangeNotification";

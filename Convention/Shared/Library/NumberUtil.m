@@ -55,6 +55,13 @@ static NSNumberFormatter *currencyFormatter = nil;
         return @"";
 }
 
++ (NSString *)formatDollarAmountWithoutSymbol:(NSNumber *)dollarAmount {
+    if (dollarAmount) {
+        return [[self currencyFormatter] stringFromNumber:dollarAmount];
+    } else
+        return @"";
+}
+
 + (NSString *)formatCentsAsCurrency:(NSNumber *)cents {
     if (cents) {
         return [self formatDollarAmount:[NSNumber numberWithDouble:[cents intValue] / 100.0]];
@@ -86,4 +93,9 @@ static NSNumberFormatter *currencyFormatter = nil;
         return [self zeroIntNSNumber];
 }
 
++ (NSNumber *)convertStringToDollars:(NSString *)string {
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    formatter.numberStyle = NSNumberFormatterDecimalStyle;
+    return [formatter numberFromString:string];
+}
 @end

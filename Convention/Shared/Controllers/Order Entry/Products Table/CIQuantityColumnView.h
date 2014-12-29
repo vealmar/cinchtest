@@ -6,14 +6,14 @@
 #import <Foundation/Foundation.h>
 #import "CITableViewColumnView.h"
 
-@class Cart;
+@class LineItem;
 
 @interface CIQuantityColumnView : CITableViewColumnView <UITextFieldDelegate>
 
 @property UITextField *quantityTextField;
 
-- (void)render:(id)rowData cart:(Cart *)cart;
+- (void)render:(id)rowData lineItem:(LineItem *)lineItem;
 
-- (void)updateQuantity:(Cart *)cart;
+- (void)updateQuantity:(LineItem *)lineItem;
 
 @end

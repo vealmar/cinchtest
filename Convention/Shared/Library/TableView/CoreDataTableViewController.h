@@ -35,4 +35,15 @@
 // Set to YES to get some debugging output in the console.
 @property BOOL debug;
 
+@property NSManagedObjectContext *managedObjectContext;
+@property NSFetchRequest *fetchRequest;
+
+- (void)prepareForDisplay:(NSManagedObjectContext *)managedObjectContext;
+
+@end
+
+@interface CoreDataTableViewController(AbstractMethods)
+
+- (NSFetchRequest *)initialFetchRequest;
+
 @end

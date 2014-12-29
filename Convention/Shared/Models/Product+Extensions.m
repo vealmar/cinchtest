@@ -27,15 +27,15 @@
         self.uom = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductUom]];
         NSString *regPriceStr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductRegPrc]];
         if (regPriceStr) {
-            NSDecimalNumber *decimalRegPrice = [NSDecimalNumber decimalNumberWithString:regPriceStr];
-            self.regprc = [NumberUtil convertDollarsToCents:decimalRegPrice];
+            NSNumber *decimalRegPrice = [NumberUtil convertStringToDollars:regPriceStr];
+            self.regprc = decimalRegPrice;
         } else {
             self.regprc = [NumberUtil zeroIntNSNumber];
         }
         NSString *showPriceStr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShowPrice]];
         if (showPriceStr) {
-            NSDecimalNumber *decimalShowPrice = [NSDecimalNumber decimalNumberWithString:showPriceStr];
-            self.showprc = [NumberUtil convertDollarsToCents:decimalShowPrice];
+            NSNumber *decimalShowPrice = [NumberUtil convertStringToDollars:showPriceStr];
+            self.showprc = decimalShowPrice;
         } else {
             self.showprc = [NumberUtil zeroIntNSNumber];
         }

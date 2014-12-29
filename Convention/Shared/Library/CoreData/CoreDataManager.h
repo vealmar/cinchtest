@@ -8,14 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-@class Order;
 @class Customer;
 @class SetupInfo;
 @class ProductSearch;
 
-
 @interface CoreDataManager : NSObject
-+ (Order *)getOrder:(NSNumber *)orderId managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
 + (Customer *)getCustomer:(NSNumber *)customerId managedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
@@ -40,4 +37,5 @@
 + (NSArray *)getProductIdsMatching:(ProductSearch *)search;
 
 + (SetupInfo *)getSetupInfo:(NSString *)itemName;
+
 @end

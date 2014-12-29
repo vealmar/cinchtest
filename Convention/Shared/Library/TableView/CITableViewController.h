@@ -14,16 +14,11 @@
 @property IBOutlet CITableViewHeader *header;
 
 @property CITableViewColumns *columns;
-@property NSManagedObjectContext *managedObjectContext;
-@property NSFetchRequest *fetchRequest;
-
-- (void)prepareForDisplay:(NSManagedObjectContext *)managedObjectContext;
 
 @end
 
 @interface CITableViewController(AbstractMethods)
 
 - (CITableViewColumns *)createColumns;
-- (NSFetchRequest *)initialFetchRequest;
 
 @end

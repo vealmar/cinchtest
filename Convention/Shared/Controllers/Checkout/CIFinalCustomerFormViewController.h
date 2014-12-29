@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Order.h"
 
+@class Order;
 
 @interface CIFinalCustomerFormViewController : UIViewController
 

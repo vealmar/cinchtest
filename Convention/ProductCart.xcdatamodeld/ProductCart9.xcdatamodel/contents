@@ -12,33 +12,12 @@
         <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendor_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
     </entity>
-    <entity name="Cart" representedClassName="Cart" parentEntity="EditableEntity" syncable="YES">
-        <attribute name="cartId" attributeType="Integer 32" syncable="YES"/>
-        <attribute name="editablePrice" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="editableQty" attributeType="String" defaultValueString="0" syncable="YES"/>
-        <attribute name="editableVoucher" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="orderLineItem_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="order" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Order" inverseName="carts" inverseEntity="Order" syncable="YES"/>
-        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product" inverseName="carts" inverseEntity="Product" syncable="YES"/>
-        <relationship name="shipdates" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ShipDate" inverseName="cart" inverseEntity="ShipDate" syncable="YES"/>
-    </entity>
     <entity name="Customer" representedClassName="Customer" syncable="YES">
         <attribute name="billname" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="custid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="customer_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="stores" optional="YES" attributeType="String" syncable="YES"/>
-    </entity>
-    <entity name="DiscountLineItem" representedClassName="DiscountLineItem" syncable="YES">
-        <attribute name="description1" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="description2" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="lineItemId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="price" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="productId" optional="YES" attributeType="Integer 32" syncable="YES"/>
-        <attribute name="quantity" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="voucherPrice" optional="YES" attributeType="Integer 32" defaultValueString="0.0" syncable="YES"/>
-        <relationship name="order" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Order" inverseName="discountLineItems" inverseEntity="Order" syncable="YES"/>
-        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product" inverseName="discountLineItems" inverseEntity="Product" syncable="YES"/>
     </entity>
     <entity name="EditableEntity" representedClassName="EditableEntity" isAbstract="YES" syncable="YES">
         <relationship name="errors" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Error" syncable="YES"/>
@@ -47,28 +26,56 @@
     <entity name="Error" representedClassName="Error" syncable="YES">
         <attribute name="message" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="LineItem" representedClassName="LineItem" parentEntity="EditableEntity" syncable="YES">
+        <attribute name="category" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="description1" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="description2" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lineItemId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="orderId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="price" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="productId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="quantity" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="shipDates" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <relationship name="order" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Order" inverseName="lineItems" inverseEntity="Order" syncable="YES"/>
+        <relationship name="product" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Product" inverseName="lineItems" inverseEntity="Product" syncable="YES"/>
+        <compoundIndexes>
+            <compoundIndex>
+                <index value="productId"/>
+            </compoundIndex>
+            <compoundIndex>
+                <index value="lineItemId"/>
+            </compoundIndex>
+        </compoundIndexes>
+    </entity>
     <entity name="Order" representedClassName="Order" parentEntity="EditableEntity" syncable="YES">
-        <attribute name="authorized" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="billname" attributeType="String" syncable="YES"/>
-        <attribute name="cancelByDays" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="created_at" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="custid" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="customer_id" attributeType="String" syncable="YES"/>
+        <attribute name="authorizedBy" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="billingAddressId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="custId" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="customerId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="customerName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="customFields" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="discountTotal" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="grossTotal" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="inSync" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="orderId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="payment_terms" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="po_number" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="print" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="printer" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="ship_dates" optional="YES" attributeType="Transformable" syncable="YES"/>
-        <attribute name="ship_flag" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="ship_notes" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="status" attributeType="String" defaultValueString="pending" syncable="YES"/>
-        <attribute name="vendorGroup" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="vendorGroupId" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Cart" inverseName="order" inverseEntity="Cart" syncable="YES"/>
-        <relationship name="discountLineItems" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DiscountLineItem" inverseName="order" inverseEntity="DiscountLineItem" syncable="YES"/>
+        <attribute name="purchaseOrderNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sendEmail" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="shipDates" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="shipFlag" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="shippingAddressId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="showId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="vendorId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="voucherTotal" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="lineItems" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="LineItem" inverseName="order" inverseEntity="LineItem" syncable="YES"/>
+        <compoundIndexes>
+            <compoundIndex>
+                <index value="updatedAt"/>
+            </compoundIndex>
+        </compoundIndexes>
     </entity>
     <entity name="Product" representedClassName="Product" syncable="YES">
         <attribute name="adv" optional="YES" attributeType="Boolean" syncable="YES"/>
@@ -88,25 +95,26 @@
         <attribute name="min" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="partnbr" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="productId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <attribute name="regprc" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="regprc" optional="YES" attributeType="Double" defaultValueString="0" syncable="YES"/>
         <attribute name="sequence" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="shipdate1" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="shipdate2" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="showprc" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="showprc" optional="YES" attributeType="Double" defaultValueString="0" syncable="YES"/>
         <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="unique_product_id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="uom" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendor_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="voucher" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="carts" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Cart" inverseName="product" inverseEntity="Cart" syncable="YES"/>
-        <relationship name="discountLineItems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DiscountLineItem" inverseName="product" inverseEntity="DiscountLineItem" syncable="YES"/>
+        <relationship name="lineItems" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LineItem" inverseName="product" inverseEntity="LineItem" syncable="YES"/>
         <compoundIndexes>
             <compoundIndex>
                 <index value="productId"/>
             </compoundIndex>
             <compoundIndex>
                 <index value="invtid"/>
+                <index value="descr"/>
+                <index value="descr2"/>
             </compoundIndex>
             <compoundIndex>
                 <index value="vendor_id"/>
@@ -119,10 +127,6 @@
     <entity name="SetupInfo" representedClassName="SetupInfo" syncable="YES">
         <attribute name="item" attributeType="String" syncable="YES"/>
         <attribute name="value" attributeType="String" syncable="YES"/>
-    </entity>
-    <entity name="ShipDate" representedClassName="ShipDate" syncable="YES">
-        <attribute name="shipdate" attributeType="Date" syncable="YES"/>
-        <relationship name="cart" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Cart" inverseName="shipdates" inverseEntity="Cart" syncable="YES"/>
     </entity>
     <entity name="Vendor" representedClassName="Vendor" syncable="YES">
         <attribute name="booth" optional="YES" attributeType="String" syncable="YES"/>
@@ -149,16 +153,14 @@
     </entity>
     <fetchRequest name="getSetupItem" entity="SetupInfo" predicateString="item == $ITEMNAME"/>
     <elements>
-        <element name="Bulletin" positionX="0" positionY="0" width="128" height="195"/>
-        <element name="Cart" positionX="0" positionY="0" width="128" height="165"/>
-        <element name="Customer" positionX="0" positionY="0" width="128" height="118"/>
-        <element name="DiscountLineItem" positionX="0" positionY="0" width="128" height="180"/>
-        <element name="EditableEntity" positionX="0" positionY="0" width="128" height="73"/>
-        <element name="Error" positionX="0" positionY="0" width="128" height="58"/>
-        <element name="Order" positionX="0" positionY="0" width="128" height="360"/>
-        <element name="Product" positionX="0" positionY="0" width="128" height="493"/>
-        <element name="SetupInfo" positionX="0" positionY="0" width="128" height="75"/>
-        <element name="ShipDate" positionX="0" positionY="0" width="128" height="75"/>
-        <element name="Vendor" positionX="0" positionY="0" width="128" height="360"/>
+        <element name="Bulletin" positionX="-479" positionY="12" width="128" height="195"/>
+        <element name="Customer" positionX="-614" positionY="-117" width="128" height="118"/>
+        <element name="EditableEntity" positionX="-263" positionY="-198" width="128" height="73"/>
+        <element name="Error" positionX="-146" positionY="-72" width="128" height="58"/>
+        <element name="Product" positionX="-119" positionY="18" width="128" height="478"/>
+        <element name="SetupInfo" positionX="18" positionY="-90" width="128" height="75"/>
+        <element name="Vendor" positionX="196" positionY="-99" width="128" height="360"/>
+        <element name="Order" positionX="-263" positionY="99" width="128" height="388"/>
+        <element name="LineItem" positionX="187" positionY="342" width="128" height="28"/>
     </elements>
 </model>

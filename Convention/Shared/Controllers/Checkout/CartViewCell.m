@@ -7,12 +7,9 @@
 
 
 #import "CartViewCell.h"
-#import "ProductCellDelegate.h"
-#import "Error.h"
 #import "ShowConfigurations.h"
-#import "Cart+Extensions.h"
-#import "UIColor+Boost.h"
 #import "EditableEntity+Extensions.h"
+#import "LineItem.h"
 
 
 @implementation CartViewCell {
@@ -30,9 +27,9 @@
     }
 }
 
-- (void)updateErrorsView:(Cart *)cart {
-    if (cart && [cart hasErrorsOrWarnings]) {
-        self.errorMessageView.attributedText = [cart buildMessageSummary];
+- (void)updateErrorsView:(LineItem *)lineItem {
+    if (lineItem && [lineItem hasErrorsOrWarnings]) {
+        self.errorMessageView.attributedText = [lineItem buildMessageSummary];
         self.errorMessageView.hidden = NO;
         self.errorMessageHeightConstraint.constant = 59.0f;
         CGFloat contentHeight = self.errorMessageView.contentSize.height;

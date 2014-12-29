@@ -12,19 +12,18 @@
 #import "Product.h"
 #import "ProductCellDelegate.h"
 #import "CurrentSession.h"
-#import "Order.h"
-#import "Order+Extensions.h"
-#import "Cart+Extensions.h"
 #import "CIShowPriceColumnView.h"
-#import "UITextField+BlocksKit.h"
 #import "ShowConfigurations.h"
 #import "NotificationConstants.h"
 #import "ThemeUtil.h"
+#import "LineItem.h"
+#import "Order+Extensions.h"
+#import "LineItem+Extensions.h"
 
 @interface CIProductTableViewCell()
 
 @property id<ProductCellDelegate> delegate;
-@property Cart *cart;
+@property LineItem *lineItem;
 @property UIColor *lastStripeColor;
 
 @end
@@ -32,9 +31,9 @@
 @implementation CIProductTableViewCell
 
 -(id)prepareForDisplay:(CITableViewColumns *)columns delegate:(id<ProductCellDelegate>)delegate {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartQuantityChange:) name:CartQuantityChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:CartSelectionNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartDeselection:) name:CartDeselectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartQuantityChange:) name:LineQuantityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:LineSelectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartDeselection:) name:LineDeselectionNotification object:nil];
 
     self.delegate = delegate;
     return [super prepareForDisplay:columns];
@@ -43,12 +42,12 @@
 
 -(void)renderColumn:(CITableViewColumnView *)columnView rowData:(id)rowData{
     Order *order = [self.delegate currentOrderForCell];
-    Cart *cart = self.cart = [order findCartForProductId:((Product *) rowData).productId];
+    LineItem *lineItem = self.lineItem = [order findLineByProductId:((Product *) rowData).productId];
 
     if ([columnView isKindOfClass:[CIQuantityColumnView class]]) {
-        [((CIQuantityColumnView *) columnView) render:rowData cart:cart];
+        [((CIQuantityColumnView *) columnView) render:rowData lineItem:lineItem];
     } else if ([columnView isKindOfClass:[CIShowPriceColumnView class]]) {
-        [((CIShowPriceColumnView *) columnView) render:rowData cart:cart];
+        [((CIShowPriceColumnView *) columnView) render:rowData lineItem:lineItem];
     } else {
         [columnView render:rowData];
     }
@@ -70,8 +69,8 @@
         }];
         [view.quantityTextField setBk_didEndEditingBlock:^(UITextField *field) {
             Order *order = [weakSelf.delegate currentOrderForCell];
-            Cart *cart = [order findOrCreateCartForId:((Product *) weakSelf.rowData).productId context:[CurrentSession instance].managedObjectContext];
-            [cart setQuantity:[field.text intValue]];
+            LineItem *lineItem = [order findOrCreateLineForProductId:((Product *) weakSelf.rowData).productId context:[CurrentSession instance].managedObjectContext];
+            [lineItem setQuantity:field.text];
         }];
 
         return view;
@@ -95,7 +94,7 @@
     }
 
     [self unhighlightColumns];
-    if (self.cart && self.cart.totalQuantity > 0) {
+    if (self.lineItem && self.lineItem.totalQuantity > 0) {
         self.backgroundColor = [ThemeUtil greenColor];
         [self highlightColumns];
     } else if (self.selected) {
@@ -122,34 +121,34 @@
 }
 
 - (void)onCartQuantityChange:(NSNotification *)notification {
-    Cart *cart = (Cart *) notification.object;
+    LineItem *lineItem = (LineItem *) notification.object;
     NSNumber *productId = ((Product *) self.rowData).productId;
-    if (productId && cart.cartId && [cart.cartId isEqualToNumber:productId]) {
-        self.cart = cart;
+    if (productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId]) {
+        self.lineItem = lineItem;
         [self updateRowHighlight:nil];
         Underscore.array(self.cellViews).each(^(CITableViewColumnView *view) {
             if ([view isKindOfClass:[CIQuantityColumnView class]]) {
-                [((CIQuantityColumnView *) view) updateQuantity:cart];
+                [((CIQuantityColumnView *) view) updateQuantity:lineItem];
             }
         });
     }
 }
 
 - (void)onCartSelection:(NSNotification *)notification {
-    Cart *cart = (Cart *) notification.object;
+    LineItem *lineItem = (LineItem *) notification.object;
     NSNumber *productId = ((Product *) self.rowData).productId;
-    if (productId && cart.cartId && [cart.cartId isEqualToNumber:productId]) {
-        self.cart = cart;
+    if (productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId]) {
+        self.lineItem = lineItem;
         self.selected = YES;
         [self updateRowHighlight:nil];
     }
 }
 
 - (void)onCartDeselection:(NSNotification *)notification {
-    Cart *cart = (Cart *) notification.object;
+    LineItem *cart = (LineItem *) notification.object;
     NSNumber *productId = ((Product *) self.rowData).productId;
-    if (productId && cart.cartId && [cart.cartId isEqualToNumber:productId]) {
-        self.cart = cart;
+    if (productId && cart.productId && [cart.productId isEqualToNumber:productId]) {
+        self.lineItem = cart;
         self.selected = NO;
         [self updateRowHighlight:nil];
     }

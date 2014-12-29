@@ -5,13 +5,12 @@
 
 #import <Foundation/Foundation.h>
 
-@class AProduct;
-
+@class Product;
 
 @interface ProductCache : NSObject
 + (id)sharedCache;
 
-- (AProduct *)getProduct:(NSNumber *)productId;
+- (Product *)getProduct:(NSNumber *)productId;
 
 - (void)addRecentlyQueriedProducts:(NSArray *)array;
 @end

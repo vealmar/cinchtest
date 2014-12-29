@@ -21,7 +21,7 @@
 -(id)init:(ShowCustomField *)showCustomField at:(CGPoint)cgPoint withElementWidth:(CGFloat)elementWidth {
     self = [super init];
     if (self) {
-        self.selectedDate = [NSNull null];
+        self.selectedDate = nil;
         self.frame = CGRectMake(cgPoint.x, cgPoint.y, elementWidth, 35.0 + 10.0 + 44.0);
         self.showCustomField = showCustomField;
 

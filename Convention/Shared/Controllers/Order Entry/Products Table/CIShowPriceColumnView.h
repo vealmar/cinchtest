@@ -6,13 +6,13 @@
 #import <Foundation/Foundation.h>
 #import "CITableViewColumnView.h"
 
-@class Cart;
+@class LineItem;
 
 
 @interface CIShowPriceColumnView : CITableViewColumnView <UITextFieldDelegate>
 
 @property UITextField *editablePriceTextField;
 
-- (void)render:(id)rowData cart:(Cart *)cart;
+- (void)render:(id)rowData lineItem:(LineItem *)lineItem;
 
 @end

@@ -5,7 +5,6 @@
 
 #import "EditableEntity+Extensions.h"
 #import "UIColor+Boost.h"
-#import "Error.h"
 #import "NilUtil.h"
 
 

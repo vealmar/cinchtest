@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
-@class Cart;
-
+@class LineItem;
 
 @interface ProductCell : UITableViewCell <UITextFieldDelegate>
 @property(unsafe_unretained, nonatomic) IBOutlet UILabel *InvtID;
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
 @property(weak, nonatomic) IBOutlet UITextView *errorMessageView;
 
-- (void)updateErrorsView:(Cart *)cart;
+- (void)updateErrorsView:(LineItem *)cart;
+
 @end

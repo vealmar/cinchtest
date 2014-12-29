@@ -16,6 +16,8 @@
 
 + (NSString *)formatDollarAmount:(NSNumber *)dollarAmount;
 
++ (NSString *)formatDollarAmountWithoutSymbol:(NSNumber *)dollarAmount;
+
 + (NSNumber *)convertDollarsToCents:(NSNumber *)dollars;
 
 + (NSNumber *)convertCentsToDollars:(NSNumber *)cents;
@@ -23,4 +25,6 @@
 + (NSString *)formatCentsAsCurrency:(NSNumber *)cents;
 
 + (NSString *)formatCentsAsDollarsWithoutSymbol:(NSNumber *)cents;
+
++ (NSNumber *)convertStringToDollars:(NSString *)string;
 @end

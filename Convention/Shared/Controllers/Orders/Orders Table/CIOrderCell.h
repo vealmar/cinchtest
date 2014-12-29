@@ -19,4 +19,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *orderId;
 @property (weak, nonatomic) IBOutlet UILabel *vouchersLabel;
 
+- (void)updateRowHighlight:(NSIndexPath *)indexPath;
+
 @end

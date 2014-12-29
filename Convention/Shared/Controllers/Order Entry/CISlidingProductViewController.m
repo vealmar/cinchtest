@@ -54,7 +54,7 @@
 }
 
 - (UIViewController *)initializeShipDateController:(CIProductViewController *)productViewController {
-    CIShipDatesViewController *shipDateController = [[CIShipDatesViewController alloc] initWithWorkingOrder:productViewController.coreDataOrder];
+    CIShipDatesViewController *shipDateController = [[CIShipDatesViewController alloc] initWithWorkingOrder:productViewController.order];
 
     // configure under right view controller
     shipDateController.edgesForExtendedLayout = UIRectEdgeTop | UIRectEdgeBottom | UIRectEdgeRight; // don't go under the top view
@@ -81,12 +81,12 @@
     [self.underRightViewController.view addGestureRecognizer:self.shipdateViewTapRecognizer];
 
     //listen for changes KVO
-    [productViewController addObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder)) options:NSKeyValueObservingOptionNew context:nil];
+    [productViewController addObserver:self forKeyPath:NSStringFromSelector(@selector(order)) options:NSKeyValueObservingOptionNew context:nil];
 
     // the child view will have viewWillAppear run first, so we want to capture any working order changes
     // since they won't trigger the above KVO handler as the handler is initialized in this parent view controller's
     // viewWillAppear
-    self.shipDateController.workingOrder = productViewController.coreDataOrder;
+    self.shipDateController.workingOrder = productViewController.order;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -96,7 +96,7 @@
     productViewController.slidingProductViewControllerDelegate = nil;
 
     //remove KVO observers
-    [productViewController removeObserver:self forKeyPath:NSStringFromSelector(@selector(coreDataOrder))];
+    [productViewController removeObserver:self forKeyPath:NSStringFromSelector(@selector(order))];
 
     [self.topViewController.view removeGestureRecognizer:self.productViewTapRecognizer];
     [self.underRightViewController.view removeGestureRecognizer:self.shipdateViewTapRecognizer];
@@ -108,8 +108,9 @@
 
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if ([NSStringFromSelector(@selector(coreDataOrder)) isEqualToString:keyPath]) {
-        self.shipDateController.workingOrder = [change objectForKey:@"new"];
+    if ([NSStringFromSelector(@selector(order)) isEqualToString:keyPath]) {
+        id newValue = [change objectForKey:@"new"];
+        self.shipDateController.workingOrder = [[NSNull null] isEqual:newValue] ? nil : (Order *) newValue;
     }
 }
 
@@ -146,8 +147,8 @@
 
 - (void)deselectAllCarts {
     CIProductViewController *productViewController = (CIProductViewController *)self.topViewController;
-    [productViewController.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, BOOL *stop) {
-        [productViewController toggleCartSelection:cart]; //disable selection
+    [productViewController.selectedLineItems enumerateObjectsUsingBlock:^(LineItem *lineItem, BOOL *stop) {
+        [productViewController toggleLineSelection:lineItem]; //disable selection
     }];
 }
 

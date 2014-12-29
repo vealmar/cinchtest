@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class Cart, DiscountLineItem;
-
 @interface Product : NSManagedObject
 
 @property(nonatomic, retain) NSNumber *adv;
@@ -41,26 +39,8 @@
 @property(nonatomic, retain) NSNumber *vendor_id;
 @property(nonatomic, retain) NSNumber *voucher;
 @property(nonatomic, retain) NSNumber *editable;
-@property(nonatomic, retain) NSSet *carts;
-@property(nonatomic, retain) NSSet *discountLineItems;
 @end
 
 @interface Product (CoreDataGeneratedAccessors)
-
-- (void)addCartsObject:(Cart *)value;
-
-- (void)removeCartsObject:(Cart *)value;
-
-- (void)addCarts:(NSSet *)values;
-
-- (void)removeCarts:(NSSet *)values;
-
-- (void)addDiscountLineItemsObject:(DiscountLineItem *)value;
-
-- (void)removeDiscountLineItemsObject:(DiscountLineItem *)value;
-
-- (void)addDiscountLineItems:(NSSet *)values;
-
-- (void)removeDiscountLineItems:(NSSet *)values;
 
 @end

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "DDCalendarView.h"
 
+//@todo orders remove?
 @interface CICalendarViewController : UIViewController <DDCalendarViewDelegate>
 @property (strong, nonatomic) IBOutlet DDCalendarView *calendarView;
 @property (copy,nonatomic) void(^doneTouched)(NSArray*);

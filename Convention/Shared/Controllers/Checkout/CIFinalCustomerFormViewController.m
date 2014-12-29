@@ -11,6 +11,7 @@
 #import "SetupInfo.h"
 #import "CIAppDelegate.h"
 #import "CoreDataManager.h"
+#import "Order.h"
 #import "CoreDataUtil.h"
 
 
@@ -121,7 +122,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-    self.authorizedByRow.value = self.order && self.order.authorized ? self.order.authorized : authorizedBy ? authorizedBy.value : @"";
+    self.authorizedByRow.value = self.order && self.order.authorizedBy ? self.order.authorizedBy : authorizedBy ? authorizedBy.value : @"";
     self.notesRow.value = self.order && self.order.notes ? self.order.notes : @"";
 }
 

@@ -26,6 +26,7 @@ static ShowConfigurations *showConfigurations = nil;
 + (void)createInstanceFromJson:(NSDictionary *)json {
     showConfigurations = [[[self class] alloc] init];
     if (showConfigurations) {
+        showConfigurations.enableOrderAuthorizedBy = [[json objectForKey:@"enableOrderAuthorizedBy"] boolValue];
         showConfigurations.enableOrderNotes = [[json objectForKey:@"enableOrderNotes"] boolValue];
         showConfigurations.productEnableManufacturerNo = [[json objectForKey:@"productEnableManufacturerNo"] boolValue];
         showConfigurations.atOncePricing = [[json objectForKey:@"atOncePricing"] boolValue];
@@ -33,9 +34,7 @@ static ShowConfigurations *showConfigurations = nil;
         NSString *shipDatesValue = [NilUtil objectOrEmptyString:[json objectForKey:@"shipDates"]];
         showConfigurations.shipDates = [shipDatesValue isEqualToString:@"required"] || [shipDatesValue isEqualToString:@"optional"];
         showConfigurations.shipDatesRequired = [shipDatesValue isEqualToString:@"required"];
-        showConfigurations.printing = [[json objectForKey:@"printing"] boolValue];
         showConfigurations.vouchers = [[json objectForKey:@"vouchers"] boolValue];
-        showConfigurations.contracts = [[json objectForKey:@"contracts"] boolValue];
         showConfigurations.contactBeforeShipping = [[json objectForKey:@"contactBeforeShipping"] boolValue];
         showConfigurations.cancelOrder = [[json objectForKey:@"cancelOrder"] boolValue];
         showConfigurations.captureSignature = [[json objectForKey:@"signatureCapture"] boolValue];
@@ -43,19 +42,6 @@ static ShowConfigurations *showConfigurations = nil;
         showConfigurations.loginScreen = [ShowConfigurations imageFromUrl:loginScreenUrl defaultImage:@"loginBG.png"];
         NSString *logoUrl = ((NSString *) [json objectForKey:@"iosLogo"]);
         showConfigurations.logo = [ShowConfigurations imageFromUrl:logoUrl defaultImage:@"background-brand"];
-        NSString *dateString = ((NSString *) [json objectForKey:@"boothPaymentsDate"]);
-        NSDate *date = nil;
-        if (![dateString isKindOfClass:[NSNull class]] && [dateString length] > 0) {
-            NSString *dateFormat = @"yyyy-MM-dd'T'HH:mm:ssZ";
-            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-            [dateFormatter setDateFormat:dateFormat];
-            NSError *error = nil;
-            [dateFormatter getObjectValue:&date forString:dateString range:nil error:&error];
-            if (error != nil) {
-                NSLog(@"Could not parse Booth Payments Date '%@'. Expected Format: '%@'.", dateString, dateFormat);
-            }
-        }
-        showConfigurations.boothPaymentsDate = date;
         showConfigurations.poNumber = [[json objectForKey:@"poNumber"] boolValue];
         showConfigurations.paymentTerms = [[json objectForKey:@"paymentTerms"] boolValue];
         showConfigurations.shipDatesType = [NilUtil objectOrEmptyString:[json objectForKey:@"shipDatesType"]];

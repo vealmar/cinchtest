@@ -15,34 +15,17 @@
 @implementation CITableViewController
 
 - (void)prepareForDisplay:(NSManagedObjectContext *)managedObjectContext {
+    [super prepareForDisplay:managedObjectContext];
     self.columns = [self createColumns];
-    self.managedObjectContext = managedObjectContext;
-    self.fetchRequest = [self initialFetchRequest];
 
     if (self.header) {
         [self.header prepareForDisplay:self.columns];
     }
 }
 
-- (NSFetchRequest *)fetchRequest {
-    return self.fetchedResultsController.fetchRequest;
-}
-
-- (void)setFetchRequest:(NSFetchRequest *)fetchRequest {
-    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                        managedObjectContext:self.managedObjectContext
-                                                                          sectionNameKeyPath:nil
-                                                                                   cacheName:nil];
-}
-
 - (CITableViewColumns *)createColumns {
     CITableViewColumns *columns = [CITableViewColumns new];
     return columns;
-}
-
-- (NSFetchRequest *)initialFetchRequest {
-    assert(false);
-    return nil;
 }
 
 #pragma UITableViewDelegate

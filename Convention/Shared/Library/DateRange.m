@@ -49,23 +49,23 @@
 }
 
 - (bool)covers:(NSDate *)date {
-    __block bool result = false;
+    __block BOOL result = NO;
 
     [self.dates enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         if ([((NSDate *) obj) isEqualToDate:date]) {
-            result = true;
-            stop = true;
+            result = YES;
+            *stop = YES;
         }
     }];
 
     if (result) return result;
 
     [self.ranges enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        NSComparisonResult day1Result = [[((NSArray *) obj) objectAtIndex:0] compare:date];
-        NSComparisonResult day2Result = [[((NSArray *) obj) objectAtIndex:1] compare:date];
+        NSComparisonResult day1Result = [((NSDate *) [((NSArray *) obj) objectAtIndex:0]) compare:date];
+        NSComparisonResult day2Result = [((NSDate *) [((NSArray *) obj) objectAtIndex:1]) compare:date];
         if ((day1Result == NSOrderedSame || day1Result == NSOrderedAscending) && (day2Result == NSOrderedSame || day2Result == NSOrderedDescending)) {
-            result = true;
-            stop = true;
+            result = YES;
+            *stop = YES;
         }
     }];
 

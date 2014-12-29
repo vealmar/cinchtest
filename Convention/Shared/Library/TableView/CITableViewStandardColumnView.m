@@ -105,7 +105,7 @@
         return [NSString stringWithFormat:@"%@", data];
     } else if (ColumnTypeCurrency == self.column.columnType) {
         if ([data isKindOfClass:[NSNumber class]]) {
-            return [NSString stringWithFormat:@"$%@", [NumberUtil formatCentsAsDollarsWithoutSymbol:((NSNumber *)data)]];
+            return [NSString stringWithFormat:@"$%@", [NumberUtil formatDollarAmountWithoutSymbol:((NSNumber *)data)]];
         }
     }
     return @"";

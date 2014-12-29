@@ -7,15 +7,14 @@
 
 
 #import "ProductCell.h"
-#import "Error.h"
-#import "Cart.h"
 #import "EditableEntity+Extensions.h"
+#import "LineItem.h"
 
 
 @implementation ProductCell {
 
 }
-- (void)updateErrorsView:(Cart *)cart {
+- (void)updateErrorsView:(LineItem *)cart {
     if (cart && [cart hasErrorsOrWarnings]) {
         self.errorMessageView.attributedText = [cart buildMessageSummary];
         self.errorMessageView.hidden = NO;

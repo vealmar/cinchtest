@@ -11,13 +11,13 @@
 #import "CIProductTableViewCell.h"
 #import "CIQuantityColumnView.h"
 #import "ProductCellDelegate.h"
-#import "ProductCellDelegate.h"
 #import "CurrentSession.h"
 #import "CIShowPriceColumnView.h"
 #import "CoreDataManager.h"
 #import "ProductSearch.h"
 #import "ProductSearchQueue.h"
 #import "MBProgressHUD.h"
+#import "Order.h"
 
 @interface CIProductTableViewController()
 
@@ -56,11 +56,16 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     [super prepareForDisplay:[CurrentSession instance].managedObjectContext];
 }
 
-- (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId queryTerm:(NSString *)query {
+- (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId inCart:(BOOL)inCart queryTerm:(NSString *)query {
     // todo not sure if we need to use productsearchqueue anymore, it may have solved a performance problem that no longer exists
     //         [self.productSearchQueue search:productSearch];
 
-    self.fetchRequest = [CoreDataManager buildProductFetch:[ProductSearch searchFor:query inBulletin:bulletinId forVendor:vendorId limitResultSize:0 usingContext:self.managedObjectContext]];
+    NSFetchRequest *request = [CoreDataManager buildProductFetch:[ProductSearch searchFor:query inBulletin:bulletinId forVendor:vendorId limitResultSize:0 usingContext:self.managedObjectContext]];
+    if (inCart && self.delegate.currentOrderForCell) {
+        NSPredicate *inCartPredicate = [NSPredicate predicateWithFormat:@"ANY lineItems.order == %@", self.delegate.currentOrderForCell.objectID];
+        request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[request.predicate, inCartPredicate]];
+    }
+    self.fetchRequest = request;
 }
 
 - (NSFetchRequest *)initialFetchRequest {

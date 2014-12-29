@@ -8,9 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@class Cart;
-
 @protocol ProductCellDelegate;
+@class LineItem;
 
 
 @interface CartViewCell : UITableViewCell <UITextFieldDelegate>
@@ -19,5 +18,5 @@
 @property(weak, nonatomic) IBOutlet NSLayoutConstraint *errorMessageHeightConstraint;
 @property(weak, nonatomic) IBOutlet UITextView *errorMessageView;
 
-- (void)updateErrorsView:(Cart *)cart;
+- (void)updateErrorsView:(LineItem *)lineItem;
 @end

@@ -4,16 +4,17 @@
 //
 
 #import "CIShipDateTableViewCell.h"
-#import "Cart+Extensions.h"
 #import "DateUtil.h"
 #import "config.h"
 #import "NotificationConstants.h"
 #import "ShowConfigurations.h"
 #import "ThemeUtil.h"
+#import "LineItem.h"
+#import "LineItem+Extensions.h"
 
 @interface CIShipDateTableViewCell ()
 
-@property NSMutableArray *selectedCarts;
+@property NSMutableArray *selectedLines;
 @property (strong, nonatomic) UILabel *xLabel;
 
 @end
@@ -24,7 +25,7 @@
     self = [super initWithStyle:nil reuseIdentifier:@"CIShipDateTableViewCell"];
     if (self) {
         self.shipDate = shipDate;
-        self.selectedCarts = selectedCartsParam;
+        self.selectedLines = selectedCartsParam;
         if (shipDate != nil) {
             NSString *label = shipDate == nil ? @"No dates selected, ship immediately." : [DateUtil convertNSDateToApiDate:shipDate];
             self.textLabel.text = label;
@@ -56,9 +57,9 @@
             self.quantityField.textColor = self.textLabel.textColor;
             [self addSubview:self.quantityField];
 
-            if (self.selectedCarts.count == 1) {
-                Cart *cart = [self.selectedCarts objectAtIndex:0];
-                self.quantity = [cart getQuantityForShipDate:shipDate];
+            if (self.selectedLines.count == 1) {
+                LineItem *newLineItem = [self.selectedLines objectAtIndex:0];
+                self.quantityField.text = [NSString stringWithFormat:@"%i", [newLineItem getQuantityForShipDate:shipDate]];
             }
 
             self.xLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x - 13, self.quantityField.frame.origin.y, 20, self.quantityField.frame.size.height)];
@@ -96,8 +97,8 @@
 
 - (void)setQuantity:(int)quantity {
     self.quantityField.text = [NSString stringWithFormat:@"%i", quantity];
-    [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, NSUInteger idx, BOOL *stop) {
-        [cart setQuantity:quantity forShipDate:self.shipDate];
+    [self.selectedLines enumerateObjectsUsingBlock:^(LineItem *lineItem, NSUInteger idx, BOOL *stop) {
+        [lineItem setQuantity:quantity forShipDate:self.shipDate];
     }];
 }
 
@@ -117,7 +118,7 @@
         textField.text = @"";
     }
 
-    [[NSNotificationCenter defaultCenter] addObserver:textField selector:@selector(resignFirstResponder) name:CartDeselectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:textField selector:@selector(resignFirstResponder) name:LineDeselectionNotification object:nil];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -135,11 +136,11 @@
     }
 
     int quantity = textField.text.intValue;
-    [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, NSUInteger idx, BOOL *stop) {
-        [cart setQuantity:quantity forShipDate:self.shipDate];
+    [self.selectedLines enumerateObjectsUsingBlock:^(LineItem *lineItem, NSUInteger idx, BOOL *stop) {
+        [lineItem setQuantity:quantity forShipDate:self.shipDate];
     }];
 
-    [[NSNotificationCenter defaultCenter] removeObserver:textField name:CartDeselectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:textField name:LineDeselectionNotification object:nil];
 
     if (self.resignedFirstResponderBlock) {
         self.resignedFirstResponderBlock(self);

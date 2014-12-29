@@ -5,39 +5,33 @@
 //  Copyright (c) 2012 MotionMobs. All rights reserved.
 //
 
-#import <JSONKit/JSONKit.h>
-#import "Order.h"
 #import "CICartViewController.h"
 #import "config.h"
-#import "UIAlertViewDelegateWithBlock.h"
 #import "ShowConfigurations.h"
 #import "CIProductViewControllerHelper.h"
 #import "NumberUtil.h"
 #import "FarrisCartViewCell.h"
 #import "SettingsManager.h"
-#import "Cart.h"
-#import "Order+Extensions.h"
 #import "CoreDataUtil.h"
-#import "Product+Extensions.h"
-#import "DiscountLineItem.h"
-#import "ALineItem.h"
 #import "ThemeUtil.h"
 #import "CIBarButton.h"
+#import "Order+Extensions.h"
+#import "OrderCoreDataManager.h"
+#import "EditableEntity+Extensions.h"
+#import "OrderSubtotalsByDate.h"
+#import "OrderTotals.h"
+#import "LineItem+Extensions.h"
 
 
 @interface CICartViewController ()
-@property(strong, nonatomic) Order *coreDataOrder;
+
+@property(strong, nonatomic) Order *order;
 @property(nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property(nonatomic, strong) NSNumber *selectedVendorId;
-@property(strong, nonatomic) NSString *loggedInVendorId;
-@property(strong, nonatomic) NSString *loggedInVendorGroupId;
-@property(strong, nonatomic) AnOrder *savedOrder;
-@property(nonatomic) BOOL unsavedChangesPresent;
 @property(nonatomic, strong) NSArray *productsInCart;
 @property(nonatomic, strong) NSArray *discountsInCart;
 @property(nonatomic) BOOL initialized;
 
-@property (strong, nonatomic) AnOrder *workingOrder;
 @property (assign) float totalGross;
 @property (assign) float totalDiscounts;
 @property (assign) float totalFinal;
@@ -52,36 +46,19 @@
     BOOL keyboardUp;
     float keyboardHeight;
 }
-@synthesize productsUITableView;
-@synthesize authToken;
-@synthesize navBar;
-@synthesize title;
-@synthesize showPrice;
-@synthesize indicator;
-@synthesize customer;
-@synthesize delegate;
-@synthesize tOffset;
-@synthesize finishTheOrder;
-@synthesize multiStore;
-@synthesize popoverController;
-@synthesize lblShipDate1, lblShipDate2, lblShipDateCount;
-@synthesize tableHeaderPigglyWiggly, tableHeaderFarris;
 
-- (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token selectedVendorId:(NSNumber *)selectedVendorId loggedInVendorId:(NSString *)loggedInVendorId loggedInVendorGroupId:(NSString *)loggedInVendorGroupId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
+- (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token selectedVendorId:(NSNumber *)selectedVendorId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
     self = [super initWithNibName:@"CICartViewController" bundle:nil];
     if (self) {
-        showPrice = YES;
-        tOffset = 0;
         helper = [[CIProductViewControllerHelper alloc] init];
-        self.coreDataOrder = coreDataOrder;
+        self.order = coreDataOrder;
         self.productsInCart = [[NSArray alloc] init];
         self.discountsInCart = [[NSArray alloc] init];
+        self.subtotalLines = [NSMutableArray array];
         self.managedObjectContext = managedObjectContext;
         self.customer = customerDictionary;
         self.authToken = token;
         self.selectedVendorId = selectedVendorId;
-        self.loggedInVendorId = loggedInVendorId;
-        self.loggedInVendorGroupId = loggedInVendorGroupId;
         keyboardUp = NO;
     }
     return self;
@@ -96,33 +73,23 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.indicator startAnimating];
-    navBar.topItem.title = self.title;
-    self.showShipDates = [[ShowConfigurations instance] shipDates];
-    self.allowPrinting = [ShowConfigurations instance].printing;
+    self.navBar.topItem.title = self.title;
     self.allowSignature = [ShowConfigurations instance].captureSignature;
-    self.multiStore = [[self.customer objectForKey:kStores] isKindOfClass:[NSArray class]] && [((NSArray *) [self.customer objectForKey:kStores]) count] > 0;
     logo.image = [ShowConfigurations instance].logo;
     self.discountTotal.hidden = self.discountTotalLabel.hidden = ![ShowConfigurations instance].discounts;
     self.netTotal.hidden = self.netTotalLabel.hidden = ![ShowConfigurations instance].discounts;
     self.voucherTotal.hidden = self.voucherTotalLabel.hidden = ![ShowConfigurations instance].vouchers;
     self.grossTotalLabel.text = [ShowConfigurations instance].discounts ? @"Gross Total" : @"Total";
-    if ([kShowCorp isEqualToString:kPigglyWiggly]) {
-        tableHeaderPigglyWiggly.hidden = NO;
-        tableHeaderFarris.hidden = YES;
-    } else {
-        tableHeaderPigglyWiggly.hidden = YES;
-        tableHeaderFarris.hidden = NO;
-        self.zeroVouchers.hidden = YES;
-        self.tableHeaderMinColumn.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
-    }
-    customerInfoLabel.text = customer != nil &&
-            customer[kBillName] != nil &&
-            ![customer[kBillName] isKindOfClass:[NSNull class]] ? customer[kBillName] : @"";
+    self.tableHeaderPigglyWiggly.hidden = YES;
+    self.tableHeaderFarris.hidden = NO;
+    self.zeroVouchers.hidden = YES;
+    self.tableHeaderMinColumn.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
+    customerInfoLabel.text = self.customer != nil &&
+            self.customer[kBillName] != nil &&
+            ![self.customer[kBillName] isKindOfClass:[NSNull class]] ? self.customer[kBillName] : @"";
     self.vendorLabel.text = [helper displayNameForVendor:self.selectedVendorId];
     self.tableHeaderPrice1Label.text = [[ShowConfigurations instance] price1Label];
     self.tableHeaderPrice2Label.text = [[ShowConfigurations instance] price2Label];
-
-    self.unsavedChangesPresent = NO;
 
     self.productsUITableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
@@ -145,7 +112,7 @@
     CINavViewManager *navViewManager = [[CINavViewManager alloc] init:NO];
     navViewManager.delegate = self;
     [navViewManager setupNavBar];
-    navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s - %b", @"Order Summary", [self.customer objectForKey:kBillName]];
+    navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s - %b", @"Order Summary", [self.customer objectForKey:kBillName], nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -156,42 +123,23 @@
 }
 
 - (void)saveOrderOnFirstLoad {
-    if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
-        self.coreDataOrder.status = @"pending";
+    if ([helper isOrderReadyForSubmission:self.order]) {
+        self.order.status = @"pending";
         [[CoreDataUtil sharedManager] saveObjects];
-        NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[self.coreDataOrder asJSONReqParameter]];
-        parameters[kAuthToken] = self.authToken;
-        NSString *method = [self.coreDataOrder.orderId intValue] > 0 ? @"PUT" : @"POST";
-        NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? kDBORDER : kDBORDEREDITS([self.coreDataOrder.orderId intValue]);
-        void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id json) {
-            self.savedOrder = [self loadJson:json];
-            self.unsavedChangesPresent = NO;
-        };
-        void(^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
-            if (json) {
-                [self loadJson:json];
-            }
-        };
-        [helper sendRequest:method url:url parameters:parameters successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Saving order"];
+        __weak CICartViewController *weakSelf = self;
+        [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
+            weakSelf.order = order;
+            [self refreshView];
+        }                     onFailure:nil];
     }
     self.initialized = YES;
 }
 
-- (AnOrder *)loadJson:(id)json {
-    AnOrder *anOrder = [[AnOrder alloc] initWithJSONFromServer:(NSDictionary *) json];
-    self.workingOrder = anOrder;
-    [self.managedObjectContext deleteObject:self.coreDataOrder];//delete existing core data representation
-    self.coreDataOrder = [helper createCoreDataCopyOfOrder:anOrder customer:self.customer loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];//create fresh new core data representation
-    [[CoreDataUtil sharedManager] saveObjects];
-    [self refreshView];
-    return anOrder;
-}
-
 - (void)refreshView {
-    self.productsInCart = [helper sortProductsBySequenceAndInvtId:[self.coreDataOrder productIds]];
-    self.discountsInCart = [helper sortDiscountsByLineItemId:[self.coreDataOrder discountLineItemIds]];
-    [self reloadTable];
+    self.productsInCart = [helper sortProductsBySequenceAndInvtId:[self.order productIds]];
+    self.discountsInCart = [helper sortDiscountsByLineItemId:[self.order discountLineItemIds]];
     [self updateTotals];
+    [self reloadTable];
 }
 
 - (void)reloadTable {
@@ -202,111 +150,42 @@
 }
 
 - (void)updateTotals {
-    NSArray *totals = [helper getTotals:self.coreDataOrder];
-    self.grossTotal.text = [NumberUtil formatDollarAmount:totals[0]];
-    self.discountTotal.text = [NumberUtil formatDollarAmount:totals[2]];
-    double netTotal = [(NSNumber *) totals[0] doubleValue] + [(NSNumber *) totals[2] doubleValue];
-    self.netTotal.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:netTotal]];
-    self.voucherTotal.text = [NumberUtil formatDollarAmount:totals[1]];
-
-    self.totalGross = [totals[0] floatValue];
-    self.totalDiscounts = fabs([totals[2] floatValue]);
-    self.totalFinal = netTotal;
-
-    CoreDataUtil *coreDataUtil = [CoreDataUtil sharedManager];
-    NSMutableDictionary *dateProducts = [NSMutableDictionary dictionary];
-    NSMutableArray *orderedDates = [NSMutableArray array];
-
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    NSLocale *enUSPOSIXLocale = [[NSLocale alloc] initWithLocaleIdentifier:@"en_US_POSIX"];
-
-    [dateFormatter setLocale:enUSPOSIXLocale];
-    [dateFormatter setDateFormat:@"yyyy'-'MM'-'dd'T'HH':'mm':'ss'.000Z'"];
+    [dateFormatter setDateFormat:@"MM/dd/yyyy"];
     [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+    
+    [self.subtotalLines removeAllObjects];
 
-    NSDate *earliestDate = nil;
+    [self.order.calculateShipDateSubtotals each:^(NSDate *shipDate, NSNumber *totalOnShipDate) {
+        [self.subtotalLines addObject:@[
+                [NSString stringWithFormat:@"Shipping on %@", [dateFormatter stringFromDate:shipDate]],
+                [NumberUtil formatDollarAmount:totalOnShipDate]
+        ]];
+    }];
 
-    self.subtotalLines = [NSMutableArray array];
-
-    for (ALineItem *line in self.workingOrder.lineItems) {
-        Product *product = (Product *) [coreDataUtil fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", line.productId]];
-
-        NSDictionary *quantities = [NSJSONSerialization JSONObjectWithData:[line.quantity dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-        if ([quantities isKindOfClass:[NSDictionary class]]) {
-            for (NSString *d in quantities.allKeys) {
-                NSDate *date = [dateFormatter dateFromString:d];
-                int quantity = [quantities[d] intValue];
-
-                if (earliestDate == nil) {
-                    earliestDate = date;
-                } else {
-                    earliestDate = [earliestDate earlierDate:date];
-                }
-
-                if(quantity) {
-                    NSMutableArray *products = [dateProducts objectForKey:date];
-                    if (!products) {
-                        products = [NSMutableArray array];
-                        dateProducts[date] = products;
-                        [orderedDates addObject:date];
-                    }
-                    [products addObject:@[product, @(quantity)]];
-                }
-            }
-        }
-    }
-
-    dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"dd/MM/yyyy"];
-    [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-
-    [orderedDates sortUsingSelector:@selector(compare:)];
-
-    NSMutableArray *line = nil;
-    for (int i = 0; i < orderedDates.count; i++) {
-        NSDate *date = (NSDate*)[orderedDates objectAtIndex:i];
-
-        line = [NSMutableArray array];
-        [line addObject:[NSString stringWithFormat:@"Shipping on %@", [dateFormatter stringFromDate:date]]];
-
-        float total = 0;
-        for (NSArray *pair in dateProducts[date]) {
-            Product *product = pair[0];
-            int quantity = [pair[1] intValue];
-
-            if (date == earliestDate) {
-                total += quantity * [product.showprc intValue];
-            } else {
-                total += quantity * [product.regprc intValue];
-            }
-        }
-
-        NSString *priceString = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:total / 100.0] numberStyle:NSNumberFormatterCurrencyStyle];
-
-        [line addObject:priceString];
-        [self.subtotalLines addObject:line];
-    }
-
-    NSString *s = nil;
-
+    OrderTotals *totals = self.order.calculateTotals;
     if (self.totalDiscounts > 0) {
-        s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
-        [self.subtotalLines addObject:@[@"SUBTOTAL", s]];
-
-        s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:fabsf(self.totalDiscounts)] numberStyle:NSNumberFormatterCurrencyStyle];
-        [self.subtotalLines addObject:@[@"DISCOUNT", s]];
+        [self.subtotalLines addObject:@[@"SUBTOTAL", [NumberUtil formatDollarAmount:totals.grossTotal]]];
+        [self.subtotalLines addObject:@[@"DISCOUNT", [NumberUtil formatDollarAmount:totals.discountTotal]]];
     }
-
-    s = [NSNumberFormatter localizedStringFromNumber:[NSNumber numberWithDouble:self.totalGross] numberStyle:NSNumberFormatterCurrencyStyle];
-    [self.subtotalLines addObject:@[@"TOTAL", s]];
+    [self.subtotalLines addObject:@[@"TOTAL", [NumberUtil formatDollarAmount:totals.total]]];
 
     [self.productsUITableView reloadData];
+
+    self.grossTotal.text = [NumberUtil formatDollarAmount:totals.grossTotal];
+    self.discountTotal.text = [NumberUtil formatDollarAmount:totals.discountTotal];
+    self.voucherTotal.text = [NumberUtil formatDollarAmount:totals.voucherTotal];
+    self.netTotal.text = [NumberUtil formatDollarAmount:totals.total];
+
+    self.totalGross = [totals.grossTotal floatValue];
+    self.totalDiscounts = [totals.discountTotal floatValue];
+    self.totalFinal = [totals.total floatValue];
 }
 
 - (void)dismissSelf {
     [self.indicator startAnimating];
-    [self.delegate cartViewDismissedWith:self.coreDataOrder savedOrder:self.savedOrder unsavedChangesPresent:self.unsavedChangesPresent orderCompleted:YES];
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.delegate cartViewDismissedWith:self.order orderCompleted:YES];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -341,14 +220,14 @@
     switch (indexPath.section) {
         case 0: {
             NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-            Cart *cart = [self.coreDataOrder findCartForProductId:productId];
+            LineItem *newLineItem = [self.order findLineByProductId:productId];
             FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-            [cell initializeWithCart:cart tag:[indexPath row] ProductCellDelegate:self];
+            [cell initializeWithCart:newLineItem tag:[indexPath row] ProductCellDelegate:self];
             return cell;
         }
         case 1: {
             NSNumber *lineItemId = self.discountsInCart[(NSUInteger) [indexPath row]];
-            DiscountLineItem *discountLineItem = [self.coreDataOrder findDiscountForLineItemId:lineItemId];
+            LineItem *discountLineItem = [self.order findLineById:lineItemId];
             FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
             [cell initializeWithDiscount:discountLineItem tag:[indexPath row] ProductCellDelegate:self];
             return cell;
@@ -366,7 +245,7 @@
                 cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:odcId];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-                cleftLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 850, 44)];
+                cleftLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 880, 44)];
                 cleftLabel.tag = 1001;
                 cleftLabel.backgroundColor = [UIColor clearColor];
                 cleftLabel.font = [UIFont regularFontOfSize:14];
@@ -375,13 +254,13 @@
                 cleftLabel.textAlignment = NSTextAlignmentRight;
                 [cell.contentView addSubview:cleftLabel];
 
-                crightLabel = [[UILabel alloc] initWithFrame:CGRectMake(930, 5, 80, 40)];
+                crightLabel = [[UILabel alloc] initWithFrame:CGRectMake(920, 0, 90, 44)];
                 crightLabel.tag = 1002;
                 crightLabel.backgroundColor = [UIColor clearColor];
                 crightLabel.font = [UIFont semiboldFontOfSize:14];
                 crightLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
                 crightLabel.numberOfLines = 0;
-                crightLabel.textAlignment = NSTextAlignmentLeft;
+                crightLabel.textAlignment = NSTextAlignmentRight;
                 [cell.contentView addSubview:crightLabel];
             } else {
                 cleftLabel = (UILabel*)[cell.contentView viewWithTag:1001];
@@ -407,9 +286,9 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        if (cart.warnings.count > 0 || cart.errors.count > 0)
-            return 44 + ((cart.warnings.count + cart.errors.count) * 42);
+        LineItem *lineItem = [self.order findLineByProductId:productId];
+        if (lineItem.warnings.count > 0 || lineItem.errors.count > 0)
+            return 44 + ((lineItem.warnings.count + lineItem.errors.count) * 42);
     }
     return 44;
 }
@@ -417,8 +296,8 @@
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-        Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-        [helper updateCellBackground:cell order:self.coreDataOrder cart:cart];
+        LineItem *lineItem = [self.order findLineByProductId:productId];
+        [helper updateCellBackground:cell order:self.order lineItem:lineItem];
     }
 
     if(indexPath.row % 2 == 0) {
@@ -441,80 +320,44 @@
 - (IBAction)Cancel:(id)sender {
     self.indicator.hidden = NO;
     [self.indicator startAnimating];
-    [self.delegate cartViewDismissedWith:self.coreDataOrder savedOrder:self.savedOrder unsavedChangesPresent:self.unsavedChangesPresent orderCompleted:NO];
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self.delegate cartViewDismissedWith:self.order orderCompleted:NO];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 
-- (IBAction)finishOrder:(id)sender {
-    if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
-        NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[self.coreDataOrder asJSONReqParameter]];
-        parameters[kAuthToken] = self.authToken;
-        NSString *method = [self.coreDataOrder.orderId intValue] > 0 ? @"PUT" : @"POST";
-        NSString *url = [self.coreDataOrder.orderId intValue] == 0 ? kDBORDER : kDBORDEREDITS([self.coreDataOrder.orderId intValue]);
-        void (^successBlock)(NSURLRequest *, NSHTTPURLResponse *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, id JSON) {
-            [self.managedObjectContext deleteObject:self.coreDataOrder];//delete existing core data representation
-            [[CoreDataUtil sharedManager] saveObjects];
-            self.savedOrder = [[AnOrder alloc] initWithJSONFromServer:JSON];
-            self.coreDataOrder = [helper createCoreDataCopyOfOrder:self.savedOrder customer:self.customer loggedInVendorId:self.loggedInVendorId loggedInVendorGroupId:self.loggedInVendorGroupId managedObjectContext:self.managedObjectContext];
-            self.indicator.hidden = NO;
-            self.unsavedChangesPresent = NO;
-            if (self.allowSignature) {
-                [self displaySignatureScreen];
+- (void)finishOrder {
+    if ([helper isOrderReadyForSubmission:self.order]) {
+        __weak CICartViewController *weakSelf = self;
+        self.order.status = @"complete";
+        [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
+            weakSelf.order = order;
+            weakSelf.indicator.hidden = NO;
+            if (order.hasErrorsOrWarnings) {
+                [self refreshView];
             } else {
-                [self dismissSelf];
-            }
-        };
-        void (^failureBlock)(NSURLRequest *, NSHTTPURLResponse *, NSError *, id) = ^(NSURLRequest *req, NSHTTPURLResponse *response, NSError *error, id json) {
-            if (json) {
-                [self loadJson:json];
-            }
-        };
-        [helper sendRequest:method url:url parameters:parameters successBlock:successBlock failureBlock:failureBlock view:self.view loadingText:@"Submitting order"];
-    }
-}
-
-- (IBAction)clearVouchers:(id)sender {
-    if ([helper isOrderReadyForSubmission:self.coreDataOrder]) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Zero out all vouchers?" delegate:nil cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
-            if (buttonIndex == 1) {
-                for (int i = 0; i <= self.productsInCart.count; i++) {
-                    NSNumber *productId = self.productsInCart[(NSUInteger) i];
-                    [self.coreDataOrder updateItemVoucher:@(0) productId:productId context:self.managedObjectContext];
-                    self.unsavedChangesPresent = YES;
+                if (weakSelf.allowSignature) {
+                    [weakSelf displaySignatureScreen]; //@todo orders handle order signature
+                } else {
+                    [weakSelf dismissSelf];
                 }
-                [self reloadTable];
             }
-        }];
+        }                     onFailure:nil];
     }
 }
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        if (![kShowCorp isEqualToString:kPigglyWiggly]) {
-            for (FarrisCartViewCell *cell in self.productsUITableView.visibleCells) {
-                if ([cell.quantity isFirstResponder]) {
-                    [cell.quantity resignFirstResponder];//so the keyboard will hide
-                    break;
-                }
-            }
-        }
-    }
+//    if (sender.state == UIGestureRecognizerStateEnded) {
+//        for (FarrisCartViewCell *cell in self.productsUITableView.visibleCells) {
+//            if ([cell.quantity isFirstResponder]) {
+//                [cell.quantity resignFirstResponder];//so the keyboard will hide
+//                break;
+//            }
+//        }
+//    }
 }
 
 - (void)ShowPriceChange:(double)price productId:(NSNumber *)productId {
-    [self.coreDataOrder updateItemShowPrice:@(price) productId:productId context:self.managedObjectContext];
-    self.unsavedChangesPresent = YES;
-}
-
-- (void)QtyChange:(int)qty forIndex:(int)idx {
-    NSNumber *productId = self.productsInCart[(NSUInteger) idx];
-    [self.coreDataOrder updateItemQuantity:[NSString stringWithFormat:@"%i", qty] productId:productId context:self.managedObjectContext];
-    self.unsavedChangesPresent = YES;
-    Cart *cart = [self.coreDataOrder findCartForProductId:productId];
-    ProductCell *cell = (ProductCell *) [self.productsUITableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:(NSUInteger) idx inSection:0]];
-    [helper updateCellBackground:cell order:self.coreDataOrder cart:cart];
+    [self.order updateItemShowPrice:@(price) productId:productId context:self.managedObjectContext];
 }
 
 - (void)QtyTouchForIndex:(NSNumber *)productId {
@@ -522,13 +365,14 @@
 }
 
 - (Order *)currentOrderForCell {
-    return self.coreDataOrder;
+    return self.order;
 }
 
 #pragma signature
 
 - (void)displaySignatureScreen {
-    NSArray *totals = [helper getTotals:self.coreDataOrder];
+    OrderTotals *totals1 = [(self.order) calculateTotals];
+    NSArray *totals = @[totals1.grossTotal, totals1.voucherTotal, totals1.discountTotal];
     double netTotal = [(NSNumber *) totals[0] doubleValue] + [(NSNumber *) totals[2] doubleValue];
 
     static CISignatureViewController *signatureViewController;
@@ -538,12 +382,12 @@
         signatureViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     });
 
-    [signatureViewController reinitWithTotal:[NSNumber numberWithDouble:netTotal] authToken:self.authToken orderId:self.coreDataOrder.orderId andDelegate:(id <SignatureDelegate>) self];
+    [signatureViewController reinitWithTotal:[NSNumber numberWithDouble:netTotal] authToken:self.authToken orderId:self.order.orderId andDelegate:(id <SignatureDelegate>) self];
     [self presentViewController:signatureViewController animated:YES completion:nil];
 }
 
 - (void)signatureViewDismissed {
-    [self dismissSelf];
+    [self dismissSelf]; //@todo orders handle order signature
 }
 
 #pragma Keyboard
@@ -578,15 +422,6 @@
 }
 
 - (void)keyboardDidHide {
-//    CGRect frame = self.productsUITableView.frame;
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationBeginsFromCurrentState:YES];
-//    [UIView setAnimationDuration:0.3f];
-//    CGRect tbFrame = [self.productsUITableView frame];
-//    tbFrame.size.height = 459;
-//    [self.productsUITableView setFrame:tbFrame];
-//    [UIView commitAnimations];
-
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [UIView setAnimationDuration:0.3f];
@@ -608,7 +443,7 @@
 }
 
 - (NSArray *)leftActionItems {
-    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf00d" style:UIBarButtonItemStylePlain handler:^(id sender) {
+    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf053" style:UIBarButtonItemStylePlain handler:^(id sender) {
         [self Cancel:nil];
     }];
 
@@ -617,7 +452,7 @@
 
 - (NSArray *)rightActionItems {
     UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf00c" style:CIBarButtonStyleRoundButton handler:^(id sender) {
-        [self finishOrder:nil];
+        [self finishOrder];
     }];
 
     return @[ addItem ];

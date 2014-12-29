@@ -7,10 +7,9 @@
 #import "ShowConfigurations.h"
 #import "ThemeUtil.h"
 #import "StringManipulation.h"
-#import "Order.h"
-#import "Cart+Extensions.h"
-#import "Cart.h"
 #import "CITableViewColumn.h"
+#import "LineItem.h"
+#import "LineItem+Extensions.h"
 
 @interface CIQuantityColumnView ()
 
@@ -42,14 +41,14 @@
     return self;
 }
 
-- (void)render:(id)rowData cart:(Cart *)cart {
+- (void)render:(id)rowData lineItem:(LineItem *)lineItem {
     [super render:rowData];
-    [self updateQuantity:cart];
+    [self updateQuantity:lineItem];
 }
 
-- (void)updateQuantity:(Cart *)cart {
-    if (cart) {
-        self.quantityTextField.text = [NSString stringWithFormat:@"%i", cart.totalQuantity];
+- (void)updateQuantity:(LineItem *)lineItem {
+    if (lineItem) {
+        self.quantityTextField.text = [NSString stringWithFormat:@"%i", lineItem.totalQuantity];
     } else {
         self.quantityTextField.text = @"0";
     }

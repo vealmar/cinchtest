@@ -1,41 +1,71 @@
 //
-//  Order+Extensions.h
-//  Convention
-//
-//  Created by Kerry Sanders on 11/13/12.
-//  Copyright (c) 2012 MotionMobs. All rights reserved.
+// Created by David Jafari on 12/24/14.
+// Copyright (c) 2014 Urban Coding. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 #import "Order.h"
-#import "Cart.h"
 
-@class AnOrder;
+@class LineItem;
+@class OrderTotals;
+@class OrderSubtotalsByDate;
 @class ShowCustomField;
 
 @interface Order (Extensions)
 
-- (id)initWithOrder:(AnOrder *)orderFromServer forCustomer:(NSDictionary *)customer vendorId:(NSNumber *)vendorId vendorGroup:(NSString *)vendorGroup andVendorGroupId:(NSString *)vendorGroupId context:(NSManagedObjectContext *)context;
+@property (readonly) BOOL isPartial;
+@property (readonly) BOOL isPending;
+@property (readonly) BOOL isComplete;
+@property (readonly) BOOL isSubmitted;
+// has this order been changed since the last sync to the server?
+@property (readonly) BOOL hasNontransientChanges;
 
-- (void)updateItemQuantity:(NSString *)quantity productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
++ (id)newOrderForCustomer:(NSDictionary *)customer;
 
-- (void)updateItemVoucher:(NSNumber *)voucher productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+- (NSString *)getCustomerDisplayName;
 
-- (void)updateItemShowPrice:(NSNumber *)price productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+/**
+* Calculate totals immediately. When requesting for multiple orders, consider
+* using the asynchronous version. This version WILL NOT save updated totals.
+*/
+- (OrderTotals *)calculateTotals;
 
-- (Cart *)findCartForProductId:(NSNumber *)productId;
+/**
+* Calculates totals asynchronously unless they are already up to date. The resulting
+* values will be saved to the store.
+*/
+- (void)calculateTotals:(void(^)(OrderTotals *totals, NSManagedObjectID *totalledOrderId))completion;
 
-- (Cart *)findOrCreateCartForId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+- (OrderSubtotalsByDate *)calculateShipDateSubtotals;
 
-- (DiscountLineItem *)findDiscountForLineItemId:(NSNumber *)lineItemId;
+#pragma mark - LineItems
 
 - (NSArray *)productIds;
 
 - (NSArray *)discountLineItemIds;
 
+- (LineItem *)findLineById:(NSNumber *)lineItemId;
+
+- (LineItem *)findLineByProductId:(NSNumber *)productId;
+
+- (LineItem *)findOrCreateLineForProductId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+
+- (void)updateItemShowPrice:(NSNumber *)price productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+
+- (void)removeZeroQuantityLines;
+
+#pragma mark - CustomFields
+
 - (NSString *)customFieldValueFor:(ShowCustomField *)showCustomField;
 
 - (void)setCustomFieldValueFor:(ShowCustomField *)showCustomField value:(NSString *)value;
 
-- (NSDictionary *)asJSONReqParameter;
+#pragma mark - Syncing
+
+- (id)initWithJsonFromServer:(NSDictionary *)JSON insertInto:(NSManagedObjectContext *)managedObjectContext;
+
+- (Order *)updateWithJsonFromServer:(NSDictionary *)JSON;
+
+- (NSDictionary *)asJsonReqParameter;
 
 @end

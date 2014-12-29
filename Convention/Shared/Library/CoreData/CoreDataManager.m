@@ -7,46 +7,23 @@
 
 
 #import "CoreDataManager.h"
-#import "Order.h"
 #import "Customer.h"
 #import "config.h"
 #import "SettingsManager.h"
 #import "Product.h"
 #import "Product+Extensions.h"
 #import "CoreDataUtil.h"
-#import "DiscountLineItem+Extensions.h"
-#import "Cart+Extensions.h"
 #import "SynchronousResponse.h"
 #import "CIAppDelegate.h"
 #import "ProductCache.h"
 #import "SetupInfo.h"
-#import "StringManipulation.h"
 #import "ProductSearch.h"
 #import "JSONResponseSerializerWithErrorData.h"
-#import "AFURLConnectionOperation.h"
 #import "CinchJSONAPIClient.h"
 #import "NotificationConstants.h"
 
 
-@implementation CoreDataManager {
-
-}
-+ (Order *)getOrder:(NSNumber *)orderId managedObjectContext:(NSManagedObjectContext *)managedObjectContext {
-    Order *order;
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:[NSEntityDescription entityForName:@"Order" inManagedObjectContext:managedObjectContext]];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(orderId ==[c] %@)", [orderId stringValue]];
-    [fetchRequest setPredicate:predicate];
-    NSArray *keys = [NSArray arrayWithObjects:@"carts", @"carts.shipdates", nil];
-    [fetchRequest setRelationshipKeyPathsForPrefetching:keys];
-    [fetchRequest setReturnsObjectsAsFaults:NO];
-    NSError *error = nil;
-    NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
-    if (error == nil && fetchedObjects != nil && [fetchedObjects count] > 0) {
-        order = [fetchedObjects objectAtIndex:0];
-    }
-    return order;
-}
+@implementation CoreDataManager
 
 + (Customer *)getCustomer:(NSNumber *)customerId managedObjectContext:(NSManagedObjectContext *)managedObjectContext {
     Customer *customer;
@@ -140,27 +117,6 @@
                 }
                 int newStartLocation = range.location + range.length;
                 range = NSMakeRange(newStartLocation, productsCount - newStartLocation > batchSize ? batchSize : productsCount - newStartLocation);
-            }
-
-            //re-establish connection between carts and products
-            NSArray *carts = [[CoreDataUtil sharedManager] fetchArray:@"Cart" withPredicate:nil];
-            if (carts) {
-                for (Cart *cart in carts) {
-                    Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", cart.cartId]];
-                    if (product) {
-                        cart.product = product;
-                    }
-                }
-            }
-            //re-establish connection between discount line items and products
-            NSArray *discountLineItems = [[CoreDataUtil sharedManager] fetchArray:@"DiscountLineItem" withPredicate:nil];
-            if (discountLineItems) {
-                for (DiscountLineItem *discountLineItem in discountLineItems) {
-                    Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", discountLineItem.productId]];
-                    if (product) {
-                        discountLineItem.product = product;
-                    }
-                }
             }
             [[CoreDataUtil sharedManager] saveObjects];
 

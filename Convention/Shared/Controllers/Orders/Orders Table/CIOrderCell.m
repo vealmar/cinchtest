@@ -2,16 +2,14 @@
 //  CIOrderCell.m
 //  Convention
 //
-//  Created by Matthew Clark on 12/9/11.
-//  Copyright (c) 2011 MotionMobs. All rights reserved.
-//
 
 #import "CIOrderCell.h"
-#import "config.h"
-
+#import "ThemeUtil.h"
 
 @interface CIOrderCell ()
+
 @property (strong, nonatomic) UIColor *savedStatusColor;
+
 @end
 
 @implementation CIOrderCell
@@ -72,5 +70,12 @@
 
     self.orderStatus.textColor = [UIColor colorWithWhite:0.95 alpha:1.0];
 }
+
+
+- (void)updateRowHighlight:(NSIndexPath *)indexPath {
+    self.backgroundColor = indexPath.row % 2 == 1 ? [ThemeUtil tableAltRowColor] : [UIColor whiteColor];
+}
+
+
 
 @end

@@ -4,22 +4,23 @@
 //
 
 #import <Underscore.m/Underscore.h>
+#import <JSONKit/JSONKit.h>
 #import "CKCalendarView.h"
 #import "CIShipDatesViewController.h"
 #import "ECSlidingViewController.h"
-#import "DateUtil.h"
 #import "config.h"
 #import "NilUtil.h"
 #import "DateRange.h"
 #import "ShowConfigurations.h"
 #import "Order.h"
-#import "Cart+Extensions.h"
+#import "LineItem.h"
 #import "NotificationConstants.h"
-#import "UIView+Boost.h"
 #import "CIShipDateTableViewCell.h"
-#import "NSArray+Boost.h"
 #import "ThemeUtil.h"
-#import "CIKeyboardUtil.h"
+#import "LineItem+Extensions.h"
+#import "Product.h"
+#import "NumberUtil.h"
+#import "DateUtil.h"
 
 @interface CIShipDatesViewController()
 
@@ -39,7 +40,7 @@
 @property CGRect originalFrame;
 @property BOOL first;
 
-@property NSMutableArray *selectedCarts;
+@property NSMutableArray *selectedLineItems;
 
 @end
 
@@ -52,7 +53,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     if (self) {
         self.first = NO;
         self.workingOrder = workingOrder;
-        self.selectedCarts = [NSMutableArray array];
+        self.selectedLineItems = [NSMutableArray array];
         self.selectedShipDates = [NSMutableArray array];
         self.orderShipDates = [ShowConfigurations instance].orderShipDates;
 
@@ -68,8 +69,8 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
         self.originalFrame = CGRectZero; //placeholder nil
 
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:CartSelectionNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:CartDeselectionNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:LineSelectionNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:LineDeselectionNotification object:nil];
     }
     return self;
 }
@@ -113,24 +114,24 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 }
 
 - (void)onCartSelection:(NSNotification *)notification {
-    Cart *cart = (Cart *) notification.object;
-    if (notification.name == CartSelectionNotification) {
-        [self.selectedCarts addObject:cart];
-    } else if (notification.name == CartDeselectionNotification) {
-        [self.selectedCarts removeObject:cart];
+    LineItem *lineItem = (LineItem *) notification.object;
+    if (notification.name == LineSelectionNotification) {
+        [self.selectedLineItems addObject:lineItem];
+    } else if (notification.name == LineDeselectionNotification) {
+        [self.selectedLineItems removeObject:lineItem];
     }
 
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
-        if (self.selectedCarts.count == 0) {
+        if (self.selectedLineItems.count == 0) {
             [self.selectedShipDates.copy enumerateObjectsUsingBlock:^(id date, NSUInteger idx, BOOL *stop) {
                 [self toggleDateSelection:date];
             }];
         }
-        if (self.selectedCarts.count == 1) {
+        if (self.selectedLineItems.count == 1) {
             // add in all fixed dates, even if they arent currently assigned quantities
-            NSArray *cartShipDates = ((Cart *) self.selectedCarts.firstObject).shipdates;
+            NSArray *lineShipDates = ((LineItem *) self.selectedLineItems.firstObject).shipDates.array;
             NSMutableSet *shipDates = [NSMutableSet set];
-            if (cartShipDates) [shipDates addObjectsFromArray:[[cartShipDates valueForKey:@"shipdate"] allObjects]];
+            if (lineShipDates) [shipDates addObjectsFromArray:lineShipDates];
             [shipDates addObjectsFromArray:self.orderShipDates.fixedDates];
             [shipDates.allObjects enumerateObjectsUsingBlock:^(id date, NSUInteger idx, BOOL *stop) {
                 [self toggleDateSelection:date];
@@ -180,10 +181,10 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         }
         [self.calendarView reloadDates:@[date]];
         if (nil != self.workingOrder && [ShowConfigurations instance].isOrderShipDatesType) {
-            self.workingOrder.ship_dates = [NSArray arrayWithArray:self.selectedShipDates];
+            self.workingOrder.shipDates = [NSArray arrayWithArray:self.selectedShipDates];
         } else if ([ShowConfigurations instance].isLineItemShipDatesType && ![self.selectedShipDates containsObject:date]) {
-            [self.selectedCarts enumerateObjectsUsingBlock:^(Cart *cart, NSUInteger idx, BOOL *stop) {
-                [cart setQuantity:0 forShipDate:date];
+            [self.selectedLineItems enumerateObjectsUsingBlock:^(LineItem *lineItem, NSUInteger idx, BOOL *stop) {
+                [lineItem setQuantity:0 forShipDate:date];
             }];
         }
     }
@@ -192,11 +193,10 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 - (void)setWorkingOrder:(Order *)newWorkingOrder {
     _workingOrder = newWorkingOrder;
     if (nil != _workingOrder) {
-        self.selectedShipDates = [NSMutableArray arrayWithArray:_workingOrder.ship_dates];
+        self.selectedShipDates = [NSMutableArray arrayWithArray:_workingOrder.shipDates];
         [self.calendarView reloadDates:self.selectedShipDates];
         [self reloadSelectedDatesSection];
     }
-
 }
 
 - (void)reloadSelectedDatesSection {
@@ -332,7 +332,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case 0: {
-            Product *product = self.workingCart.product;
+            Product *product = self.workingLineItem.product;
             return 70.0f + //top
                     (product.descr2 ? 65.0f : 35.0f) + //mid
                     49.0f + //bottom
@@ -358,7 +358,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
     switch (indexPath.section) {
         case 0: {
-            Product *product = self.workingCart.product;
+            Product *product = self.workingLineItem.product;
 
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"headerCell"];
             cell.contentView.backgroundColor = tableView.backgroundColor;
@@ -412,12 +412,14 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             line1.text = product.descr;
             [middleView addSubview:line1];
 
-            if (product.descr2) {
+            if (product.descr2 || product.partnbr) {
                 UILabel *line2 = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, 290, 25)];
                 line2.font = [UIFont regularFontOfSize:12];
                 line2.textAlignment = NSTextAlignmentLeft;
                 line2.textColor = [UIColor blackColor];
-                line2.text = product.descr2;
+                line2.text = [NSString stringWithFormat:@"%@ %@",
+                              (product.descr2 ? product.descr2 : @""),
+                              (product.partnbr ? [NSString stringWithFormat:@"MFG NO: %@", product.partnbr] : @"") ];
                 [middleView addSubview:line2];
             }
 
@@ -426,14 +428,11 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             bottomView.backgroundColor = [UIColor colorWithWhite:0.976 alpha:1.000];
             [backgroundView addSubview:bottomView];
 
-            NSNumberFormatter *formatter = [NSNumberFormatter new];
-            [formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
-
             UILabel *p1line1 = [[UILabel alloc] initWithFrame:CGRectMake(9, -1, 150, 35)];
             p1line1.font = [UIFont boldFontOfSize:18];
             p1line1.textAlignment = NSTextAlignmentLeft;
             p1line1.textColor = [ThemeUtil blackColor];
-            p1line1.text = [formatter stringFromNumber:@([product.showprc intValue] / 100.0)];
+            p1line1.text = [NumberUtil formatDollarAmount:product.showprc];
             [bottomView addSubview:p1line1];
 
             UILabel *p1line2 = [[UILabel alloc] initWithFrame:CGRectMake(10, 16, 150, 35)];
@@ -447,7 +446,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             p2line1.font = [UIFont regularFontOfSize:18];
             p2line1.textAlignment = NSTextAlignmentRight;
             p2line1.textColor = [ThemeUtil blackColor];
-            p2line1.text = [formatter stringFromNumber:@([product.regprc intValue] / 100.0)];
+            p2line1.text = [NumberUtil formatDollarAmount:product.regprc];
             [bottomView addSubview:p2line1];
 
             UILabel *p2line2 = [[UILabel alloc] initWithFrame:CGRectMake(150, 16, 140, 35)];
@@ -504,7 +503,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 - (UITableViewCell *)createShipDateCellOn:(NSDate *)shipDate {
     BOOL useQuantityField = [ShowConfigurations instance].isLineItemShipDatesType && [self.selectedShipDates count] != 0;
-    CIShipDateTableViewCell *cell = [[CIShipDateTableViewCell alloc] initOn:shipDate for:self.selectedCarts usingQuantityField:useQuantityField];
+    CIShipDateTableViewCell *cell = [[CIShipDateTableViewCell alloc] initOn:shipDate for:self.selectedLineItems usingQuantityField:useQuantityField];
 
     if (useQuantityField) {
         UISwipeGestureRecognizer *swipeLeftGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(decrementQuantity:)];
@@ -563,25 +562,19 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 }
 
 - (void)calculateLineTotal:(CIShipDateTableViewCell *)cell on:(NSDate *)shipDate{
-    int quantity = [cell.quantityField.text intValue];
-    float price = 0;
-
-    if ([ShowConfigurations instance].atOncePricing) {
-        if ([[[ShowConfigurations instance] orderShipDates].fixedDates.firstObject isEqual:shipDate]) {
-            price = [self.workingCart.product.showprc intValue] / 100.0;
+    NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
+    NSNumber *price = self.workingLineItem.price;
+    if ([ShowConfigurations instance].atOncePricing && fixedShipDates.count > 0) {
+        if ([((NSDate *) fixedShipDates.firstObject) isEqualToDate:shipDate]) {
+            price = self.workingLineItem.product.showprc;
         } else {
-            price = [self.workingCart.product.regprc intValue] / 100.0;
+            price = self.workingLineItem.product.regprc;
         }
-    } else {
-        price = [self.workingCart.product.showprc intValue] / 100.0;
     }
 
-    float total = quantity * price;
-
-    NSNumberFormatter *formatter = [NSNumberFormatter new];
-    [formatter setNumberStyle:NSNumberFormatterCurrencyStyle];
-
-    cell.lineTotalLabel.text = [formatter stringFromNumber:@(total)];
+    int quantity = [cell.quantityField.text intValue];
+    double total = quantity * [price doubleValue];
+    cell.lineTotalLabel.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:total]];
 
     if (quantity > 0) {
         cell.lineTotalBackgroundView.backgroundColor = [ThemeUtil orangeColor];
@@ -592,14 +585,14 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 - (void)incrementQuantity:(UISwipeGestureRecognizer *)recognizer {
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        CIShipDateTableViewCell *cell = recognizer.view.superview.superview;
+        CIShipDateTableViewCell *cell = (CIShipDateTableViewCell *) recognizer.view.superview.superview;
         cell.quantity += 1;
     }
 }
 
 - (void)decrementQuantity:(UISwipeGestureRecognizer *)recognizer {
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        CIShipDateTableViewCell *cell = recognizer.view.superview.superview;
+        CIShipDateTableViewCell *cell = (CIShipDateTableViewCell *) recognizer.view.superview.superview;
         cell.quantity -= 1;
     }
 }
@@ -625,11 +618,15 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 // The callback for frame-changing of keyboard
 - (void)keyboardWillShow:(NSNotification *)notification {
-    if (self.tableView.frame.size.height != 350.0f) {
+    float keyboardHeight = 352.0f; // keyboard frame
+    float availableHeight = 724.0f; // available height ( - nav bar)
+
+    float resizeHeight = availableHeight - keyboardHeight - 1.0f;
+    if (self.tableView.frame.size.height == 724.0f) {
         self.tableView.frame = CGRectMake(self.originalFrame.origin.x + 10.0f,
             self.originalFrame.origin.y,
             self.originalFrame.size.width - 10.0f,
-            350.0f);
+            resizeHeight);
     }
 }
 

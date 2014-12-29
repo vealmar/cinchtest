@@ -7,79 +7,30 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CIItemEditCell.h"
 #import "CIProductViewController.h"
 #import "PullToRefreshView.h"
-#import "PrinterSelectionViewController.h"
 #import "CINavViewManager.h"
 
-@class AnOrder;
-
-@interface CIOrderViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate,
-        UITextViewDelegate, UIAlertViewDelegate, ItemEditDelegate, CIProductViewDelegate,
-        PullToRefreshViewDelegate, ReachabilityDelegate, UIPrinterSelectedDelegate, CICustomerDelegate,
+@interface CIOrderViewController : UIViewController <
+        UITableViewDataSource,
+        UITableViewDelegate,
+        UITextViewDelegate,
+        UIAlertViewDelegate,
+        CIProductViewDelegate,
+        ReachabilityDelegate,
+        CICustomerDelegate,
         CINavViewManagerDelegate> {
 }
 
 @property(nonatomic, strong) NSString *authToken;
-@property(nonatomic, strong) NSMutableArray *allorders;
-@property(nonatomic, strong) NSMutableArray *filteredOrders;
-@property(nonatomic, strong) NSDictionary *vendorInfo;
-//itemsQty, itemsPrice, itemsVouchers, itemsShipDates and itemsDiscounts are used to track the changes user is making to quantity, price etc of the currently selected order. They are reset when user selects another order.
-@property(nonatomic, strong) NSMutableArray *itemsQty;
-@property(nonatomic, strong) NSMutableArray *itemsPrice;
-@property(nonatomic, strong) NSMutableArray *itemsVouchers;
-@property(nonatomic, strong) NSMutableArray *itemsShipDates;
-@property(nonatomic, strong) NSMutableArray *itemsDiscounts;
-@property(nonatomic, strong) UIPopoverController *poController;
 @property(nonatomic, weak) NSManagedObjectContext *managedObjectContext;
-
-@property(weak, nonatomic) IBOutlet UITableView *sideTable;
-@property(weak, nonatomic) IBOutlet UITableView *itemsTable;
-
 @property(weak, nonatomic) IBOutlet UILabel *NoOrdersLabel;
-@property(strong, nonatomic) IBOutlet UIScrollView *OrderDetailScroll;
-@property(weak, nonatomic) IBOutlet UIButton *printButton;
-//SG:Print button
-@property(weak, nonatomic) IBOutlet UILabel *grossTotal; //SG: label next to Total in the editor view for PW. Displays gross total.
-@property(weak, nonatomic) IBOutlet UILabel *discountTotal;
-//SG:Displays discount total.
-@property(weak, nonatomic) IBOutlet UILabel *total;
-@property(weak, nonatomic) IBOutlet UILabel *grossTotalLabel;
-@property(weak, nonatomic) IBOutlet UILabel *totalLabel;
-@property(weak, nonatomic) IBOutlet UILabel *discountTotalLabel;
-@property(weak, nonatomic) IBOutlet UILabel *voucherTotal;
-@property(weak, nonatomic) IBOutlet UILabel *voucherTotalLabel;
 
 // Order Detail
 @property(weak, nonatomic) IBOutlet UITextView *customer;
 @property(weak, nonatomic) IBOutlet UITextView *authorizer;
-@property(weak, nonatomic) IBOutlet UILabel *notesLabel;
 @property(weak, nonatomic) IBOutlet UITextView *notes;
-@property(weak, nonatomic) IBOutlet UIView *cancelDaysView;
-@property(weak, nonatomic) IBOutlet UISegmentedControl *cancelDaysControl;
-@property(weak, nonatomic) IBOutlet UIView *orderShipDatesView;
-@property(weak, nonatomic) IBOutlet UITextView *orderShipDatesTextView;
-
-@property(weak, nonatomic) IBOutlet UIImageView *logoImage;
-
-@property(weak, nonatomic) IBOutlet UILabel *voucherItemTotalLabel;
 
 - (void)logout;
-
-- (IBAction)Print:(id)sender;
-
-- (IBAction)Delete:(id)sender;
-
-- (IBAction)searchOrders:(id)sender;
-
-- (IBAction)cancelByDaysChanged:(UISegmentedControl *)sender;
-
-
-- (void)setSelectedPrinter:(NSString *)printer;
-
-- (void)UpdateTotal;
-
-- (IBAction)editOrder:(UIButton *)sender;
 
 @end

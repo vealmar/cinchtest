@@ -16,7 +16,6 @@
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
-
 @synthesize window = _window;
 @synthesize networkAvailable;
 
@@ -43,6 +42,9 @@
 
 #pragma mark Reachability
 
+- (BOOL)isNetworkReachable {
+    return networkAvailable;
+}
 
 - (void)networkLost {
 
@@ -128,6 +130,7 @@ static int persistentStoreCoordinatorInvocationAttempts = 0;
             // we can remove and recreate the store, it's only used an a cache of server data
             persistentStoreCoordinatorInvocationAttempts++;
             [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
+            _persistentStoreCoordinator = nil;
             return [self persistentStoreCoordinator];
         } else {
             DLog(@"Unresolved error %@, %@", error, [error userInfo]);

@@ -5,13 +5,12 @@
 
 #import "ProductCache.h"
 #import "Product.h"
-#import "AProduct.h"
 #import "CoreDataUtil.h"
 
+@interface ProductCache ()
 
-@interface ProductCache () {
-}
 @property NSCache *products;
+
 @end
 
 @implementation ProductCache {
@@ -35,13 +34,12 @@
 }
 
 
-- (AProduct *)getProduct:(NSNumber *)productId {
-    AProduct *product = [self.products objectForKey:productId];
+- (Product *)getProduct:(NSNumber *)productId {
+    Product *product = [self.products objectForKey:productId];
     if (!product) {
         CoreDataUtil *coreDataUtil = [CoreDataUtil sharedManager];
-        Product *coreDataProduct = (Product *) [coreDataUtil fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", productId]];
-        if (coreDataProduct) {
-            product = [[AProduct alloc] initWithCoreDataProduct:coreDataProduct];
+        product = (Product *) [coreDataUtil fetchObject:@"Product" withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", productId]];
+        if (product) {
             [self.products setObject:product forKey:productId];
         }
     }
@@ -51,8 +49,7 @@
 - (void)addRecentlyQueriedProducts:(NSArray *)array {
     //todo: only send the predicates or fetch request and let ProductCache query the products and update itself in the background.
     if (array) {
-        [array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-            AProduct *product = [[AProduct alloc] initWithCoreDataProduct:(Product *) obj];
+        [array enumerateObjectsUsingBlock:^(Product *product, NSUInteger idx, BOOL *stop) {
             [self.products setObject:product forKey:product.productId];
         }];
     }

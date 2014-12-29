@@ -13,18 +13,16 @@
 @interface ShowConfigurations : NSObject
 
 @property BOOL enableOrderNotes;
+@property BOOL enableOrderAuthorizedBy;
 @property BOOL productEnableManufacturerNo;
 @property BOOL atOncePricing;
 @property BOOL discounts;
 @property BOOL shipDates; //uses or requires shipdates
 @property BOOL shipDatesRequired;
-@property BOOL printing;
 @property BOOL captureSignature;
 @property BOOL vouchers;
-@property BOOL contracts;
 @property BOOL contactBeforeShipping;
 @property BOOL cancelOrder;
-@property NSDate *boothPaymentsDate;
 @property UIImage *loginScreen;
 @property UIImage *logo;
 @property BOOL poNumber;

@@ -114,6 +114,12 @@ static CoreDataUtil *sharedInstance;
 
     CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
     NSManagedObjectContext *context = delegate.managedObjectContext;
+    return [self fetchObject:entityDescription inContext:context withPredicate:predicate];
+}
+
+- (NSManagedObject *)fetchObject:(NSString *)entityDescription
+                       inContext:(NSManagedObjectContext *)context
+                   withPredicate:(NSPredicate *)predicate {
     NSError *error;
 
     //Fetch the data....
@@ -132,6 +138,17 @@ static CoreDataUtil *sharedInstance;
         return [fetchedObjects objectAtIndex:0];
     else
         return nil;
+}
+
+- (id)fetchObjectFault:(NSString *)entity
+             inContext:(NSManagedObjectContext *)context
+         withPredicate:(NSPredicate *)predicate {
+    NSFetchRequest *request = [[NSFetchRequest alloc] initWithEntityName:entity];
+    request.predicate = predicate;
+    request.resultType = NSManagedObjectIDResultType;
+    request.fetchLimit = 1;
+    NSArray *results = [context executeFetchRequest:request error:nil];
+    return results.count > 0 ? [context objectWithID:((NSManagedObjectID *)results[0])] : nil;
 }
 
 - (NSArray *)fetchArray:(NSString *)entityDescription

@@ -13,20 +13,17 @@
 #import "CoreDataUtil.h"
 #import "CIAppDelegate.h"
 #import "SetupInfo.h"
-#import "Order.h"
 #import "ShowConfigurations.h"
 #import "UIColor+Boost.h"
-#import "SegmentedControlHelper.h"
 #import "NilUtil.h"
 #import "CoreDataManager.h"
-#import "DateUtil.h"
-#import "UIView+Boost.h"
 #import "OrderCustomFieldView.h"
 #import "ShowCustomField.h"
 #import "StringOrderCustomFieldView.h"
 #import "DateOrderCustomFieldView.h"
 #import "EnumOrderCustomFieldView.h"
 #import "BooleanOrderCustomFieldView.h"
+#import "Order.h"
 #import "Order+Extensions.h"
 
 @interface CIFinalCustomerInfoViewController () {
@@ -34,20 +31,14 @@
     SetupInfo *shipFlag;
     NSManagedObjectContext *context;
     CGRect originalBounds;
-    SegmentedControlHelper *cancelDaysHelper;
-    SegmentedControlHelper *paymentTermsHelper;
 }
 
 @property(strong, nonatomic) UITextField *authorizedByTextField;
 @property(strong, nonatomic) UITextField *poNumberTextField;
 @property(strong, nonatomic) UITextView *notesTextView;
 @property(strong, nonatomic) MICheckBox *contactBeforeShippingCB;
-@property(strong, nonatomic) UISegmentedControl *cancelDaysControl;
-@property(strong, nonatomic) UISegmentedControl *paymentTermsControl;
 @property BOOL contactBeforeShippingConfig;
-@property BOOL cancelConfig;
 @property BOOL poNumberConfig;
-@property BOOL paymentTermsConfig;
 @property NSArray *customFieldViews; // id<OrderCustomFieldView>
 
 @end
@@ -58,11 +49,7 @@
     if (self) {
         ShowConfigurations *configurations = [ShowConfigurations instance];
         self.contactBeforeShippingConfig = configurations.contactBeforeShipping;
-        self.cancelConfig = configurations.cancelOrder;
         self.poNumberConfig = configurations.poNumber;
-        self.paymentTermsConfig = configurations.paymentTerms;
-        cancelDaysHelper = [[SegmentedControlHelper alloc] initForCancelByDays];
-        paymentTermsHelper = [[SegmentedControlHelper alloc] initForPaymentTerms];
     }
     return self;
 }
@@ -85,16 +72,8 @@
         [self defaultShippingFields];
     }
 
-    if (self.cancelConfig) {
-        [self.cancelDaysControl setSelectedSegmentIndex:[cancelDaysHelper indexForValue:self.order.cancelByDays]];
-    }
-
     if (self.poNumberConfig) {
-        self.poNumberTextField.text = self.order && self.order.po_number ? self.order.po_number : @"";
-    }
-
-    if (self.paymentTermsConfig) {
-        [self.paymentTermsControl setSelectedSegmentIndex:[paymentTermsHelper indexForValue:self.order.payment_terms]];
+        self.poNumberTextField.text = self.order && self.order.purchaseOrderNumber ? self.order.purchaseOrderNumber : @"";
     }
 
     self.view.superview.bounds = originalBounds;
@@ -102,12 +81,13 @@
 
 - (void)defaultAuthorizedbyText {
     authorizedBy = [CoreDataManager getSetupInfo:@"authorizedBy"];
-    self.authorizedByTextField.text = self.order && self.order.authorized ? self.order.authorized : authorizedBy ? authorizedBy.value : @"";
+    self.authorizedByTextField.text = self.order && self.order.authorizedBy ? self.order.authorizedBy : authorizedBy ? authorizedBy.value : @"";
 }
 
 - (void)defaultShippingFields {
     shipFlag = [CoreDataManager getSetupInfo:@"ship_flag"];
-    [self.contactBeforeShippingCB updateCheckBox:self.order && [self.order.ship_flag boolValue] ? YES : shipFlag ? [shipFlag.value isEqualToString:@"YES"] : NO];
+    BOOL shipFlagEnabled = self.order && self.order.shipFlag ? YES : shipFlag ? [shipFlag.value isEqualToString:@"YES"] : NO;
+    [self.contactBeforeShippingCB updateCheckBox:shipFlagEnabled];
 }
 
 - (void)loadView {
@@ -157,7 +137,7 @@
         currentY = CGRectGetMaxY(fieldView.frame);
         return fieldView;
     }).filter(^BOOL(id obj) {
-        return [[NSNull null] isEqual:obj] ? NO : YES;
+        return ![[NSNull null] isEqual:obj];
     }).unwrap;
 
     if (self.poNumberConfig) {
@@ -185,39 +165,11 @@
         currentY = CGRectGetMaxY(self.contactBeforeShippingCB.frame);
     }
 
-    if (self.cancelConfig) {
-        UILabel *cancelLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
-        cancelLabel.font = labelFont;
-        cancelLabel.textColor = [UIColor whiteColor];
-        cancelLabel.text = @"Cancel If Not Shipped Within";
-        [self.view addSubview:cancelLabel];
-        UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:[cancelDaysHelper displayStrings]];
-        self.cancelDaysControl = segmentedControl;
-        self.cancelDaysControl.frame = CGRectMake(leftX, CGRectGetMaxY(cancelLabel.frame) + 10, elementWidth, 35.0);
-        self.cancelDaysControl.tintColor = [UIColor colorWith256Red:255 green:144 blue:58];
-        [self.view addSubview:self.cancelDaysControl];
-        currentY = CGRectGetMaxY(self.cancelDaysControl.frame);
-    }
-
-    if (self.paymentTermsConfig) {
-        UILabel *paymentTermsLabel = [[UILabel alloc] initWithFrame:CGRectMake(leftX, currentY + verticalMargin, 420.0, 35.0)];
-        paymentTermsLabel.font = labelFont;
-        paymentTermsLabel.textColor = [UIColor whiteColor];
-        paymentTermsLabel.text = @"Payment Terms";
-        [self.view addSubview:paymentTermsLabel];
-        UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:[paymentTermsHelper displayStrings]];
-        self.paymentTermsControl = segmentedControl;
-        self.paymentTermsControl.frame = CGRectMake(leftX, CGRectGetMaxY(paymentTermsLabel.frame) + 10, elementWidth, 35.0);
-        self.paymentTermsControl.tintColor = [UIColor colorWith256Red:255 green:144 blue:58];
-        [self.view addSubview:self.paymentTermsControl];
-        currentY = CGRectGetMaxY(self.paymentTermsControl.frame);
-    }
-
     UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [cancelButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchDown];
     [cancelButton setBackgroundImage:[UIImage imageNamed:@"cart-cancelout.png"] forState:UIControlStateNormal];
     [cancelButton setBackgroundImage:[UIImage imageNamed:@"cart-cancelin.png"] forState:UIControlStateHighlighted];
-    cancelButton.frame = CGRectMake(leftX + 10.0, currentY + verticalMargin, 162.0, 56.0);
+    cancelButton.frame = CGRectMake(leftX + 10.0f, currentY + verticalMargin, 162.0, 56.0);
     UIButton *submitButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [submitButton addTarget:self action:@selector(submit:) forControlEvents:UIControlEventTouchDown];
     [submitButton setBackgroundImage:[UIImage imageNamed:@"submitorderout.png"] forState:UIControlStateNormal];
@@ -269,25 +221,17 @@
         }
 
         self.order.notes = self.notesTextView.text;
-        self.order.authorized = self.authorizedByTextField.text;
+        self.order.authorizedBy = self.authorizedByTextField.text;
 
         Underscore.array(self.customFieldViews).each(^(id<OrderCustomFieldView> orderCustomFieldView) {
             [self.order setCustomFieldValueFor:orderCustomFieldView.showCustomField value:orderCustomFieldView.value];
         });
 
         if (self.poNumberConfig) {
-            self.order.po_number = (NSString *) [NilUtil nilOrObject:self.poNumberTextField.text];
+            self.order.purchaseOrderNumber = (NSString *) [NilUtil nilOrObject:self.poNumberTextField.text];
         }
         if (self.contactBeforeShippingConfig) {
-            self.order.ship_flag = self.contactBeforeShippingCB.isChecked ? @(1) : @(0);
-        }
-        if (self.cancelConfig) {
-            NSNumber *cancelByDays = [cancelDaysHelper valueAtIndex:[self.cancelDaysControl selectedSegmentIndex]];
-            self.order.cancelByDays = (NSNumber *) [NilUtil nilOrObject:cancelByDays];
-        }
-        if (self.paymentTermsConfig) {
-            NSString *paymentTerms = [paymentTermsHelper valueAtIndex:[self.paymentTermsControl selectedSegmentIndex]];
-            self.order.payment_terms = (NSString *) [NilUtil nilOrObject:paymentTerms];
+            self.order.shipFlag = self.contactBeforeShippingCB.isChecked;
         }
         
         [self.delegate submit:nil];

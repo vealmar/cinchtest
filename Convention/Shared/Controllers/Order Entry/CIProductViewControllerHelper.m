@@ -5,45 +5,26 @@
 // To change the template use AppCode | Preferences | File Templates.
 //
 
-
 #import "CIProductViewControllerHelper.h"
 #import "config.h"
 #import "JSONKit.h"
 #import "StringManipulation.h"
 #import "ShowConfigurations.h"
 #import "SettingsManager.h"
-#import "Order.h"
-#import "Cart+Extensions.h"
 #import "MBProgressHUD.h"
 #import "Product.h"
 #import "Product+Extensions.h"
+#import "LineItem.h"
 #import "NilUtil.h"
-#import "Order+Extensions.h"
-#import "DiscountLineItem.h"
 #import "CoreDataUtil.h"
 #import "Vendor.h"
-#import "NumberUtil.h"
 #import "AFURLConnectionOperation.h"
 #import "CinchJSONAPIClient.h"
-#import "JSONResponseSerializerWithErrorData.h"
-
+#import "Order.h"
+#import "LineItem+Extensions.h"
 
 @implementation CIProductViewControllerHelper {
 
-}
-
-+ (int)getQuantity:(NSString *)quantity {
-    if ([[quantity stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] startsWith:@"{"]) {
-        int qty = 0;
-        NSDictionary *quantitiesByStore = [quantity objectFromJSONString];
-        for (NSString *storeId in [quantitiesByStore allKeys]) {
-            qty += [[quantitiesByStore objectForKey:storeId] intValue];
-        }
-        return qty;
-    }
-    else {
-        return [quantity intValue];
-    }
 }
 
 + (BOOL)itemIsVoucher:(Product *)product {
@@ -52,26 +33,21 @@
     return idx == 0 && ([invtId isEmpty] || [invtId isEqualToString:@"0"]);
 }
 
-- (BOOL)isProductAVoucher:(NSNumber *)productId {
-    Product *product = [Product findProduct:productId];
-    return [CIProductViewControllerHelper itemIsVoucher:product];
-}
-
-- (void)updateCellBackground:(UITableViewCell *)cell order:(Order *)order cart:(Cart *)cart {
+- (void)updateCellBackground:(UITableViewCell *)cell order:(Order *)order lineItem:(LineItem *)lineItem {
     UIColor *green = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
     UIColor *red = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
     if ([ShowConfigurations instance].shipDatesRequired) {
         if ([ShowConfigurations instance].isOrderShipDatesType) {
-            if (cart.totalQuantity > 0) {
-                if (order && order.ship_dates.count > 0) cell.backgroundColor = green;
+            if (lineItem.totalQuantity > 0) {
+                if (order && order.shipDates.count > 0) cell.backgroundColor = green;
                 else cell.backgroundColor = red;
             } else {
                 cell.backgroundColor = [UIColor whiteColor];
             }
         } else if ([ShowConfigurations instance].isLineItemShipDatesType) {
-            BOOL hasQty = cart.totalQuantity > 0;
-            BOOL hasShipDates = cart.shipdates && cart.shipdates.count > 0;
-            BOOL isVoucher = [CIProductViewControllerHelper itemIsVoucher:cart.product];
+            BOOL hasQty = lineItem.totalQuantity > 0;
+            BOOL hasShipDates = lineItem.shipDates && lineItem.shipDates.count > 0;
+            BOOL isVoucher = [CIProductViewControllerHelper itemIsVoucher:lineItem.product];
             if (!isVoucher) {
                 if (hasQty) {
                     if (hasShipDates) {
@@ -91,23 +67,13 @@
             }
         }
     } else {
-        BOOL hasQty = cart.totalQuantity > 0;
+        BOOL hasQty = lineItem.totalQuantity > 0;
         if (hasQty) {
             cell.backgroundColor = green;
         } else {
             cell.backgroundColor = [UIColor whiteColor];
         }
     }
-}
-
-- (UITableViewCell *)dequeueReusableProductCell:(UITableView *)table {
-    NSString *CellIdentifier = [kShowCorp isEqualToString:kPigglyWiggly] ? @"PWProductCell" : @"FarrisProductCell";
-    UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:CellIdentifier owner:nil options:nil];
-        cell = [topLevelObjects objectAtIndex:0];
-    }
-    return cell;
 }
 
 - (UITableViewCell *)dequeueReusableCartViewCell:(UITableView *)table {
@@ -120,25 +86,16 @@
     return cell;
 }
 
-- (void)saveManagedContext:(NSManagedObjectContext *)managedObjectContext {
-    NSError *error = nil;
-    if (![managedObjectContext save:&error]) {
-        NSString *msg = [NSString stringWithFormat:@"Error saving changes: %@", [error localizedDescription]];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alert show];
-    }
-}
-
-- (BOOL)isOrderReadyForSubmission:(Order *)coreDataOrder {
+- (BOOL)isOrderReadyForSubmission:(Order *)order {
     //check there are items in cart
-    if (coreDataOrder.carts.count == 0) {
+    if (order.lineItems.count == 0) {
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Please add at least one product to the cart before continuing." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         return NO;
     }
 
     BOOL hasQuantity = NO;
-    for (Cart *cart in coreDataOrder.carts) {
-        if (cart.totalQuantity > 0) {
+    for (LineItem *newLineItem in order.lineItems) {
+        if (newLineItem.totalQuantity > 0) {
             hasQuantity = YES;
             break;
         }
@@ -152,16 +109,16 @@
     //if using ship dates, all items with non-zero quantity (except vouchers) should have ship date(s)
     if ([ShowConfigurations instance].shipDatesRequired) {
         if ([[ShowConfigurations instance] isOrderShipDatesType]) {
-            if (coreDataOrder.ship_dates.count == 0) {
+            if (order.shipDates.count == 0) {
                 [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"You must select at least one ship date for this order before submitting." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
                 return NO;
             }
         } else if ([[ShowConfigurations instance] isLineItemShipDatesType]) {
-            for (Cart *cart in coreDataOrder.carts) {
-                Product *product = [Product findProduct:cart.cartId];
-                BOOL hasQty = cart.totalQuantity > 0;
+            for (LineItem *lineItem in order.lineItems) {
+                Product *product = [Product findProduct:lineItem.productId];
+                BOOL hasQty = lineItem.totalQuantity > 0;
                 if (hasQty && ![CIProductViewControllerHelper itemIsVoucher:product]) {
-                    BOOL hasShipDates = [NilUtil objectOrEmptyArray:cart.shipdates].count > 0; //todo is call to nilutil needed?
+                    BOOL hasShipDates = [NilUtil objectOrEmptyArray:lineItem.shipDates].count > 0;
                     if (!hasShipDates) {
                         [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have ship date(s) before the order can be submitted. Check cart items and try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
                         return NO;
@@ -171,42 +128,6 @@
         }
     }
     return YES;
-}
-
-- (void)sendRequest:(NSString *)httpMethod url:(NSString *)url parameters:(NSDictionary *)parameters
-       successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
-       failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock
-               view:(UIView *)view loadingText:(NSString *)loadingText {
-    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
-    submit.removeFromSuperViewOnHide = YES;
-    submit.labelText = loadingText;
-    [submit show:NO];
-
-    CinchJSONAPIClient *client = [CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization];
-    NSMutableURLRequest *request = [client.requestSerializer requestWithMethod:httpMethod URLString:[NSString stringWithFormat:@"%@%@", kBASEURL, url] parameters:parameters error:nil];
-    __block NSURLSessionDataTask *task = [client dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id json, NSError *error) {
-        if (error) {
-            [submit hide:NO];
-            if (failureBlock) failureBlock(request, response, error, json);
-            NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-            NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
-            if (statusCode == 422) {
-                NSArray *validationErrors = json ? [((NSDictionary *) json) objectForKey:kErrors] : nil;
-                if (validationErrors && validationErrors.count > 0) {
-                    alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
-                }
-            } else if (statusCode == 0) {
-                alertMessage = @"Request timed out.";
-            }
-            [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        } else {
-            [submit hide:NO];
-
-            if (successBlock) successBlock(request, response, json);
-        }
-    }];
-
-    [task resume];
 }
 
 - (void)sendSignature:(UIImage *)signature total:(NSNumber *)total orderId:(NSNumber *)orderId authToken:(NSString *)authToken successBlock:(void (^)())successBlock failureBlock:(void (^)(NSError *error))failureBlock view:(UIView *)view {
@@ -235,21 +156,6 @@
     } else {
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"There was an error in capturing your signature. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
     }
-}
-
-- (void)alert:(NSString *)title message:(NSString *)message {
-    [[[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-}
-
-- (Order *)createCoreDataCopyOfOrder:(AnOrder *)order
-                            customer:(NSDictionary *)customer
-                    loggedInVendorId:(NSString *)loggedInVendorId
-               loggedInVendorGroupId:(NSString *)loggedInVendorGroupId
-                managedObjectContext:(NSManagedObjectContext *)managedObjectContext {
-    Order *coreDataOrder = [[Order alloc] initWithOrder:order forCustomer:customer vendorId:[[NSNumber alloc] initWithInt:[loggedInVendorId intValue]] vendorGroup:loggedInVendorId andVendorGroupId:loggedInVendorGroupId context:managedObjectContext];
-    [managedObjectContext insertObject:coreDataOrder];
-    [self saveManagedContext:managedObjectContext];
-    return coreDataOrder;
 }
 
 - (NSArray *)sortProductsBySequenceAndInvtId:(NSArray *)productIdsOrProducts {
@@ -284,161 +190,6 @@
         return [first compare:second];
     }];
     return sortedArray;
-}
-
-//Returns array with gross total, voucher total and discount total. All items in array are NSNumbers.
-- (NSArray *)getTotals:(Order *)coreDataOrder {
-    NSDecimalNumber *grossTotal = [NumberUtil zeroDecimal];
-    NSDecimalNumber *voucherTotal = [NumberUtil zeroDecimal];
-    NSDecimalNumber *discountTotal = [NumberUtil zeroDecimal];
-    if (coreDataOrder) {
-        for (Cart *cart in coreDataOrder.carts) {
-            NSNumber *qtyNumber = [NSNumber numberWithInt:[CIProductViewControllerHelper getQuantity:cart.editableQty]];//takes care of resolving quantities for multi stores
-            NSDecimalNumber *qty = [NSDecimalNumber decimalNumberWithString:[qtyNumber stringValue]];
-
-            if([qtyNumber intValue] == 1)
-            {
-                int a = 1;
-            }
-            if([qtyNumber intValue] == 3)
-            {
-                int a = 1;
-            }
-
-            int shipDatesCount = cart.order.ship_dates.count;
-
-            NSDecimalNumber *shipDates = shipDatesCount == 0 ? [NSDecimalNumber decimalNumberWithString:@"1"] :
-            [NSDecimalNumber decimalNumberWithString:[[NSNumber numberWithInt:shipDatesCount] stringValue]];
-
-
-            ShowConfigurations *config = [ShowConfigurations instance];
-            if (config.shipDates) {
-                if ([config isLineItemShipDatesType]) {
-                    shipDatesCount = cart.shipdates.count;
-                    if (shipDatesCount) {
-                        for (ShipDate *shipDate in cart.shipdates) {
-                            NSDate *actualShipDate = shipDate.shipdate;
-
-                            NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:actualShipDate];
-                            int aday = [components day];
-                            int amonth = [components month];
-                            int ayear = [components year];
-
-                            NSDictionary *shipdates = [NSJSONSerialization JSONObjectWithData:[cart.editableQty dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
-
-                            int year = 9999;
-                            int month = 9999;
-                            int day = 9999;
-                            int quantity = 0;
-
-                            for (NSString *s in shipdates.allKeys) {
-                                NSArray *c = [s componentsSeparatedByString:@"T"];
-                                c = [c[0] componentsSeparatedByString:@"-"];
-
-                                int ty = [c[0] intValue];
-                                int tm = [c[1] intValue];
-                                int td = [c[2] intValue];
-
-                                if (ty == ayear && tm == amonth && td == aday) {
-                                    quantity = [shipdates[s] intValue];
-                                }
-
-                                if (ty < year) {
-                                    year = ty;
-                                    month = tm;
-                                    day = td;
-                                } else {
-                                    if (tm < month) {
-                                        month = tm;
-                                        day = td;
-                                    } else {
-                                        if (td < day) {
-                                            day = td;
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            BOOL useAtOncePrice = NO;
-                            if (ayear == year && amonth == month && aday == day) {
-                                useAtOncePrice = YES;
-                            }
-
-
-                            if (config.isLineItemShipDatesType) {
-                                NSNumber *qq = [NSNumber numberWithInt:quantity];
-                                NSDecimalNumber *qqty = [NSDecimalNumber decimalNumberWithString:[qq stringValue]];
-                                NSNumber *price = nil;
-
-                                if (useAtOncePrice) {
-                                    price = shipDate.cart.product.showprc;
-                                } else {
-                                    price = shipDate.cart.product.regprc;
-                                }
-
-                                int iprice = [price intValue];
-                                price = [NSNumber numberWithDouble:iprice / 100.0];
-
-                                NSDecimalNumber *decPrice = [NSDecimalNumber decimalNumberWithDecimal:[price decimalValue]];
-                                grossTotal = [grossTotal decimalNumberByAdding:[qqty decimalNumberByMultiplyingBy:decPrice]];
-                                
-//                                if ([qtyNumber intValue] > 0) {
-//                                    NSLog(@"QTY %@ -- DATE %@ == UAP %d", qtyNumber, actualShipDate, useAtOncePrice);
-//                                }
-                            }
-                        }
-                    }
-                } else if ([config isOrderShipDatesType]) {
-
-                    NSNumber *priceNumber = [NSNumber numberWithDouble:[cart.editablePrice intValue] / 100.0];
-                    NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[priceNumber stringValue]];
-                    if (config.isLineItemShipDatesType) {
-                        grossTotal = [grossTotal decimalNumberByAdding:[qty decimalNumberByMultiplyingBy:price]];
-                    } else {
-                        grossTotal = [grossTotal decimalNumberByAdding:[[qty decimalNumberByMultiplyingBy:price] decimalNumberByMultiplyingBy:shipDates]];
-                    }
-                }
-            }
-
-            if ([cart.editableVoucher intValue] != 0) {
-                //cart.editableVoucher will never be null. all number fields have a default value of 0 in core data. you can change the default if you want .
-                NSNumber *voucherNumber = [NSNumber numberWithDouble:[cart.editableVoucher intValue] / 100.0];
-                NSDecimalNumber *voucher = [NSDecimalNumber decimalNumberWithString:[voucherNumber stringValue]];
-                NSDecimalNumber *intermediate = [[qty decimalNumberByMultiplyingBy:voucher] decimalNumberByMultiplyingBy:shipDates];
-                voucherTotal = [voucherTotal decimalNumberByAdding:intermediate];
-            }
-        }
-        for (DiscountLineItem *discountLineItem in coreDataOrder.discountLineItems) {
-            NSNumber *priceNumber = [NSNumber numberWithDouble:[discountLineItem.price intValue] / 100.0];
-            NSDecimalNumber *price = [NSDecimalNumber decimalNumberWithString:[priceNumber stringValue]];
-            NSDecimalNumber *qty = [NSDecimalNumber decimalNumberWithString:[discountLineItem.quantity stringValue]];
-            discountTotal = [discountTotal decimalNumberByAdding:[price decimalNumberByMultiplyingBy:qty]];
-        }
-    }
-    grossTotal = grossTotal == nil? [NumberUtil zeroDecimal] : grossTotal;
-    voucherTotal = voucherTotal == nil? [NumberUtil zeroDecimal] : voucherTotal;
-    discountTotal = discountTotal == nil? [NumberUtil zeroDecimal] : discountTotal;
-    return @[grossTotal, voucherTotal, discountTotal];
-}
-
-- (NSString *)displayNameForVendor:(NSInteger)id vendorDisctionaries:(NSArray *)vendorDictionaries {
-    NSMutableString *displayName = [NSMutableString string];
-    for (NSDictionary *vendor in vendorDictionaries) {
-        NSNumber *vendorId = (NSNumber *) [NilUtil nilOrObject:[vendor objectForKey:kVendorID]];
-        if ([NilUtil nilOrObject:[vendor objectForKey:kVendorID]] && [vendorId integerValue] == id) {
-            NSString *vendId = (NSString *) [NilUtil nilOrObject:[vendor objectForKey:kVendorVendID]];
-            NSString *vendorName = (NSString *) [NilUtil nilOrObject:[vendor objectForKey:kVendorName]];
-            [displayName appendString:vendId ? vendId : @""];
-            if (vendorName) {
-                if (displayName.length > 0) {
-                    [displayName appendString:@" - "];
-                }
-                [displayName appendString:vendorName];
-            }
-            break;
-        }
-    }
-    return displayName;
 }
 
 - (NSString *)displayNameForVendor:(NSNumber *)vendorId {

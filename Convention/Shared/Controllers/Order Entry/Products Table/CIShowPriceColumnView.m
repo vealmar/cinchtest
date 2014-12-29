@@ -6,10 +6,10 @@
 #import "CIShowPriceColumnView.h"
 #import "ThemeUtil.h"
 #import "Product.h"
-#import "Cart.h"
 #import "NumberUtil.h"
 #import "StringManipulation.h"
 #import "CITableViewColumn.h"
+#import "LineItem.h"
 
 @interface CIShowPriceColumnView()
 
@@ -40,7 +40,7 @@
     return self;
 }
 
-- (void)render:(id)rowData cart:(Cart *)cart {
+- (void)render:(id)rowData lineItem:(LineItem *)lineItem {
     [super render:rowData];
 
     Product *product = (Product *) rowData;
@@ -56,15 +56,15 @@
     self.priceLabel.text = @"";
     self.editablePriceTextField.text = @"";
 
-    if (cart != nil) {
-        self.editablePriceTextField.text = [NumberUtil formatCentsAsDollarsWithoutSymbol:cart.editablePrice];
+    if (lineItem != nil) {
+        self.editablePriceTextField.text = [NumberUtil formatDollarAmount:lineItem.price];
     } else {
-        if (product) self.editablePriceTextField.text = [NumberUtil formatCentsAsDollarsWithoutSymbol:product.showprc];
+        if (product) self.editablePriceTextField.text = [NumberUtil formatDollarAmountWithoutSymbol:product.showprc];
         else self.editablePriceTextField.text = @"";
     }
 
     if (product) {
-        self.priceLabel.text = [NumberUtil formatCentsAsCurrency:product.showprc];
+        self.priceLabel.text = [NumberUtil formatDollarAmount:product.showprc];
     }
 }
 

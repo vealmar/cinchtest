@@ -20,10 +20,8 @@
 #import "CoreDataManager.h"
 #import "CinchJSONAPIClient.h"
 #import "JSONResponseSerializerWithErrorData.h"
-#import "CIFinalCustomerFormViewController.h"
 #import "CIAppDelegate.h"
 #import "MenuViewController.h"
-#import "APLSlideMenuViewController.h"
 #import "CurrentSession.h"
 #import "NotificationConstants.h"
 
@@ -123,14 +121,14 @@
             [[CurrentSession instance] dispatchSessionDidChange];
             [self loadCustomers];
         }
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        id JSON = error.userInfo[JSONResponseSerializerWithErrorDataKey];
+    } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
+        id JSON = apiError.userInfo[JSONResponseSerializerWithErrorDataKey];
         if (JSON) {
             self.error.text = [JSON objectForKey:@"error"];
             [loginHud hide:NO];
-        } else if (error) {
+        } else if (apiError) {
             [loginHud hide:NO];
-            [[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription]
+            [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription]
                                        delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         } else {
             [loginHud hide:NO];
@@ -158,10 +156,10 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
         [hud hide:NO];
         [self loadProducts];
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+    } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
         [hud hide:NO];
-        [[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        NSLog(@"%@ Error loading customers: %@", [self class], [error localizedDescription]);
+        [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        NSLog(@"%@ Error loading customers: %@", [self class], [apiError localizedDescription]);
     }];
 }
 
@@ -206,10 +204,10 @@
             }
             [hud hide:NO];
             [self loadBulletins];
-        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
             [hud hide:NO];
-            [[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-            NSLog(@"%@ Error loading vendors: %@", [self class], [error localizedDescription]);
+            [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+            NSLog(@"%@ Error loading vendors: %@", [self class], [apiError localizedDescription]);
         }];
     }
 }
@@ -230,10 +228,10 @@
         }
         [hud hide:NO];
         [self presentOrderViewController];
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+    } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
         [hud hide:NO];
-        [[[UIAlertView alloc] initWithTitle:@"Error" message:[error localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        NSLog(@"%@ Error loading bulletins: %@", [self class], [error localizedDescription]);
+        [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        NSLog(@"%@ Error loading bulletins: %@", [self class], [apiError localizedDescription]);
     }];
 }
 
@@ -252,7 +250,6 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CIOrderViewController" bundle:nil];
     CIOrderViewController *masterViewController = [storyboard instantiateInitialViewController];
     masterViewController.authToken = [CurrentSession instance].authToken;
-    masterViewController.vendorInfo = [[CurrentSession instance].vendorInfo copy];
     masterViewController.managedObjectContext = self.managedObjectContext;
 
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:masterViewController];
