@@ -32,6 +32,7 @@
 #import "CurrentSession.h"
 #import "OrderCoreDataManager.h"
 #import "OrderTotals.h"
+#import "LineItem+Extensions.h"
 
 @interface CIProductViewController () {
     NSInteger initialVendor;
@@ -164,7 +165,7 @@
     }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewDidDisappear {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(order))];
     [self removeObserver:self forKeyPath:[NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(order)), NSStringFromSelector(@selector(shipDates))]];
@@ -496,6 +497,7 @@
 
 - (void)reviewCart {
     if ([helper isOrderReadyForSubmission:self.order]) {
+        if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
         CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.order
                                                                         customer:self.customer
                                                                        authToken:[CurrentSession instance].authToken
@@ -535,9 +537,11 @@
 }
 
 - (void)updateTotals {
-    OrderTotals *totals = [(self.order) calculateTotals];
-    NSArray *totalsArray = @[totals.grossTotal, totals.voucherTotal, totals.discountTotal];
-    self.totalCost.text = [NumberUtil formatDollarAmount:totalsArray[0]];
+    if (self.order) {
+        OrderTotals *totals = [self.order calculateTotals];
+        NSArray *totalsArray = @[totals.grossTotal, totals.voucherTotal, totals.discountTotal];
+        self.totalCost.text = [NumberUtil formatDollarAmount:totalsArray[0]];
+    }
 }
 
 #pragma mark - CIFinalCustomerDelegate
@@ -581,7 +585,10 @@
 }
 
 - (void)onCartQuantityChange:(NSNotification *)notification {
-    [self updateTotals];
+    LineItem *lineItem = notification.object;
+    if (lineItem && lineItem.order && self.order && [self.order.objectID isEqual:lineItem.order.objectID]) {
+        [self updateTotals];
+    }
 }
 
 - (void)QtyTouchForIndex:(NSNumber *)productId {
@@ -627,6 +634,7 @@
 
 #pragma Return
 - (void)Return {
+    if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
     //@todo orders think about what we want to get out of this
     OrderUpdateStatus status = [self orderStatus];
     

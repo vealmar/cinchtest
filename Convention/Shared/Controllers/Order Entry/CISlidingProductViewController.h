@@ -15,6 +15,8 @@
 
 -(void)toggleShipDates:(BOOL)shouldOpen;
 
+-(void)reset;
+
 @end
 
 @interface CISlidingProductViewController : ECSlidingViewController <CISlidingProductViewControllerDelegate>

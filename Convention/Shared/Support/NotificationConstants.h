@@ -15,6 +15,7 @@ extern NSString *const OrderDeleteRequestedNotification;
 extern NSString *const LineQuantityChangedNotification;
 extern NSString *const LineSelectionNotification;
 extern NSString *const LineDeselectionNotification;
+extern NSString *const LineTabbedNotification;
 
 extern NSString *const SessionDidChangeNotification;
 

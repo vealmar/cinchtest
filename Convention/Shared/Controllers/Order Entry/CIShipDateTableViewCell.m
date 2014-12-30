@@ -122,7 +122,8 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    [textField resignFirstResponder];
+//    [textField resignFirstResponder];
+    [[NSNotificationCenter defaultCenter] postNotificationName:LineTabbedNotification object:self];
     return NO;
 }
 

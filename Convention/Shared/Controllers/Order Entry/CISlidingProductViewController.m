@@ -117,22 +117,33 @@
 //User is in middle of editing a quantity (so the keyboard is visible), then taps somewhere else on the screen - the keyboard should disappear.
 - (void)productViewTapped:(UITapGestureRecognizer *)recognizer {
     if (recognizer.state == UIGestureRecognizerStateEnded) {
-        [self.underRightViewController.view endEditing:YES];
-        [self.topViewController.view endEditing:YES];
-        [self resetTopViewAnimated:YES];
-        [self deselectAllCarts];
-        self.panGesture.enabled = NO;
+        [self reset];
     }
+}
+
+- (void)reset {
+    [self deselectAllCarts];
+    [self.underRightViewController.view endEditing:YES];
+    [self.topViewController.view endEditing:YES];
+    [self resetTopViewAnimated:YES];
+    self.panGesture.enabled = NO;
 }
 
 - (void)onPanGesture:(UIPanGestureRecognizer *)recognizer {
     if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionAnchoredLeft) {
         if (recognizer.state == UIGestureRecognizerStateBegan) {
-            [self deselectAllCarts];
             [self.underRightViewController.view endEditing:YES];
             [self.topViewController.view endEditing:YES];
         }
-        if (recognizer.state == UIGestureRecognizerStateEnded) {
+    }
+    
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        CGFloat velocityX = [recognizer velocityInView:self.view].x;
+
+        // the animation will end in the sidepane being closed, we are moving in a positive X direction
+        // towards that side of the screen
+        if (velocityX > 0) {
+            [self deselectAllCarts];
             self.panGesture.enabled = NO;
         }
     }

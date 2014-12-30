@@ -36,6 +36,8 @@
 @property (assign) float totalDiscounts;
 @property (assign) float totalFinal;
 
+@property BOOL savingOrder;
+
 @property (strong, nonatomic) NSMutableArray *subtotalLines;
 @end
 
@@ -59,6 +61,7 @@
         self.customer = customerDictionary;
         self.authToken = token;
         self.selectedVendorId = selectedVendorId;
+        self.savingOrder = NO;
         keyboardUp = NO;
     }
     return self;
@@ -124,18 +127,18 @@
 
 - (void)saveOrderOnFirstLoad {
     if ([helper isOrderReadyForSubmission:self.order]) {
-        self.order.status = @"pending";
-        [[CoreDataUtil sharedManager] saveObjects];
         __weak CICartViewController *weakSelf = self;
+        self.savingOrder = YES;
         [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
             weakSelf.order = order;
             [self refreshView];
-        }                     onFailure:nil];
+        } onFailure:nil];
     }
     self.initialized = YES;
 }
 
 - (void)refreshView {
+    self.savingOrder = NO;
     self.productsInCart = [helper sortProductsBySequenceAndInvtId:[self.order productIds]];
     self.discountsInCart = [helper sortDiscountsByLineItemId:[self.order discountLineItemIds]];
     [self updateTotals];
@@ -329,19 +332,24 @@
     if ([helper isOrderReadyForSubmission:self.order]) {
         __weak CICartViewController *weakSelf = self;
         self.order.status = @"complete";
+        self.savingOrder = YES;
         [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
-            weakSelf.order = order;
-            weakSelf.indicator.hidden = NO;
-            if (order.hasErrorsOrWarnings) {
-                [self refreshView];
-            } else {
-                if (weakSelf.allowSignature) {
-                    [weakSelf displaySignatureScreen]; //@todo orders handle order signature
-                } else {
-                    [weakSelf dismissSelf];
-                }
-            }
-        }                     onFailure:nil];
+            [weakSelf finishOrderSyncComplete:order];
+        } onFailure:nil];
+    }
+}
+
+- (void)finishOrderSyncComplete:(Order *)order {
+    self.order = order;
+    self.indicator.hidden = NO;
+    if (order.hasErrorsOrWarnings) {
+        [self refreshView];
+    } else {
+        if (self.allowSignature) {
+            [self displaySignatureScreen];
+        } else {
+            [self dismissSelf];
+        }
     }
 }
 
@@ -444,7 +452,7 @@
 
 - (NSArray *)leftActionItems {
     UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf053" style:UIBarButtonItemStylePlain handler:^(id sender) {
-        [self Cancel:nil];
+        if (!self.savingOrder) [self Cancel:nil];
     }];
 
     return @[ menuItem ];
@@ -452,7 +460,7 @@
 
 - (NSArray *)rightActionItems {
     UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf00c" style:CIBarButtonStyleRoundButton handler:^(id sender) {
-        [self finishOrder];
+        if (!self.savingOrder) [self finishOrder];
     }];
 
     return @[ addItem ];

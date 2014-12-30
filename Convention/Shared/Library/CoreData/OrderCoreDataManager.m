@@ -110,39 +110,45 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             if (weakOrder) {
                 [weakOrder updateWithJsonFromServer:JSON];
-                [OrderCoreDataManager saveOrder:weakOrder async:NO beforeSave:nil onSuccess:^{
+                [OrderCoreDataManager saveOrder:weakOrder async:NO beforeSave:^(Order *order) {
+                    order.inSync = YES;
+                } onSuccess:^{
                     successBlock(weakOrder);
                 }];
             }
         });
     };
 
-    [self sendRequest:method
-                    url:url
-             parameters:parameters
-           successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-               saveBlock(JSON);
-           }
-           failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-               if (weakOrder) {
-                   if (JSON) {
-                       saveBlock(JSON);
-                   } else {
-                       if (failureBlock) failureBlock();
-                       NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-                       NSString *alertMessage = nil;
-                       if (statusCode == 0) {
-                           alertMessage = @"Request timed out.";
-                       } else {
-                           alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
-                       }
-                       [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                       NSLog(@"%@ Error Loading Orders: %@", [self class], [error localizedDescription]);
-                   }
-               }
-           }
-                   view:view
-            loadingText:@"Saving order"];
+    if (order.hasNontransientChanges || !order.inSync) {
+        [self sendRequest:method
+                      url:url
+               parameters:parameters
+             successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                 saveBlock(JSON);
+             }
+             failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                 if (weakOrder) {
+                     if (JSON) {
+                         saveBlock(JSON);
+                     } else {
+                         if (failureBlock) failureBlock();
+                         NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+                         NSString *alertMessage = nil;
+                         if (statusCode == 0) {
+                             alertMessage = @"Request timed out.";
+                         } else {
+                             alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
+                         }
+                         [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                         NSLog(@"%@ Error Loading Orders: %@", [self class], [error localizedDescription]);
+                     }
+                 }
+             }
+                     view:view
+              loadingText:@"Saving order"];
+    } else {
+        successBlock(order);
+    }
 }
 
 + (void)saveOrder:(Order *)order
@@ -196,7 +202,11 @@
 + (void)saveOrder:(Order *)order inContext:(NSManagedObjectContext *)context {
     // we're about to save, we will consider this order out-of-sync with the server regardless of it's actual state
     // outside of the transient properties
-    if (order.hasNontransientChanges) order.inSync = NO;
+    // we dont want to flip the sync flag if the sync value had just been changed to YES (a sync just occurred)
+    if (order.hasNontransientChanges &&
+        !([order changedValues][@"inSync"] && [[order changedValues][@"inSync"] boolValue])) {
+            order.inSync = NO;
+        }
 
     if (![order.managedObjectContext isEqual:context]) {
         [NSException raise:@"IllegalStateException" format:@"Cannot save order. Saving context is different from the one the order was loaded on."];

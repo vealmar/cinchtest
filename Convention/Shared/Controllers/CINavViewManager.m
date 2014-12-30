@@ -65,6 +65,8 @@
 - (void)initSearchTextField {
     self.searchTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 800, 40)];
     self.searchTextField.defaultTextAttributes = [ThemeUtil navigationTitleTextAttributes:22];
+    self.searchTextField.textColor = [UIColor whiteColor];
+    self.searchTextField.font = [UIFont regularFontOfSize:22];
     self.searchTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Search..." attributes:@{ NSForegroundColorAttributeName: [UIColor colorWithRed:0.600 green:0.600 blue:0.600 alpha:1] }];
     self.searchTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.searchTextField.autocorrectionType = UITextAutocorrectionTypeNo;

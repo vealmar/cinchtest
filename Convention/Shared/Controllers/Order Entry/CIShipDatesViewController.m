@@ -71,6 +71,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:LineSelectionNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:LineDeselectionNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onLineTabbed:) name:LineTabbedNotification object:nil];
     }
     return self;
 }
@@ -522,21 +523,22 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 
         __weak typeof(cell) weakCell = cell;
-        __weak typeof(cell) weakShipDate = shipDate;
+        __weak NSDate *weakShipDate = shipDate;
         [cell.quantityField setBk_didBeginEditingBlock:^(UITextField *field) {
             NSIndexPath *cellIndexPath = [self.tableView indexPathForCell:weakCell];
 
-//            [self.tableView scrollToRowAtIndexPath:cellIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            // we need to scroll up because any cells that are not visible won't be elgible for "next cell" tabbing
+            [self.tableView scrollToRowAtIndexPath:cellIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
 
             UITextRange *textRange = [field textRangeFromPosition:field.beginningOfDocument toPosition:field.endOfDocument];
             [field setSelectedTextRange:textRange];
 
             Underscore.array([self.tableView indexPathsForVisibleRows]).each(^(NSIndexPath *indexPath) {
                 if (indexPath.section == 2 && cellIndexPath.section == indexPath.section && cellIndexPath.row != indexPath.row) {
-                    CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-                    if (nextCell.quantityField.canResignFirstResponder) {
-                        [nextCell.quantityField resignFirstResponder];
-                    }
+//                    CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+//                    if (nextCell.quantityField.canResignFirstResponder) {
+//                        [nextCell.quantityField resignFirstResponder];
+//                    }
                 }
             });
         }];
@@ -548,17 +550,28 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         }];
         [self calculateLineTotal:cell on:shipDate];
 
-        [cell.quantityField setBk_shouldReturnBlock:^BOOL(UITextField *field) {
-            NSIndexPath *indexPath = [self.tableView indexPathForCell:weakCell];
-            CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section]];
-            if (nextCell) {
-                [nextCell.quantityField becomeFirstResponder];
-            }
-            return NO;
-        }];
+//        [cell.quantityField setBk_shouldReturnBlock:^BOOL(UITextField *field) {
+//            NSIndexPath *indexPath = [self.tableView indexPathForCell:weakCell];
+//            CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section]];
+//            if (nextCell) {
+//                [nextCell.quantityField becomeFirstResponder];
+//            }
+//            return NO;
+//        }];
     }
 
     return cell;
+}
+
+- (void)onLineTabbed:(NSNotification *)notification {
+    CIShipDateTableViewCell *currentCell = (CIShipDateTableViewCell *) notification.object;
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:currentCell];
+    CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *) [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section]];
+    if (nextCell) {
+        [nextCell.quantityField becomeFirstResponder];
+    } else {
+        [currentCell.quantityField resignFirstResponder];
+    }
 }
 
 - (void)calculateLineTotal:(CIShipDateTableViewCell *)cell on:(NSDate *)shipDate{

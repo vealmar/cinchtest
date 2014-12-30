@@ -46,8 +46,8 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <containerView opaque="NO" contentMode="scaleToFill" id="Dad-dy-w2p" userLabel="Orders Table Embed">
-                                <rect key="frame" x="0.0" y="0.0" width="327" height="768"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES"/>
+                                <rect key="frame" x="0.0" y="0.0" width="327" height="724"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
                                 <connections>
                                     <segue destination="sjG-Mp-g7o" kind="embed" identifier="orderTableViewControllerEmbed" id="a28-pF-76y"/>
                                 </connections>

@@ -288,7 +288,7 @@
     cell.orderStatus.layer.cornerRadius = 3.0f;
 
     if (order.orderId != nil)
-        cell.orderId.text = [order.orderId stringValue];
+        cell.orderId.text = [NSString stringWithFormat:@"Order #%@", [order.orderId stringValue]];
     else
         cell.orderId.text = @"";
 

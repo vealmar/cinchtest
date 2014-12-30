@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MenuViewController">
@@ -24,48 +24,68 @@
             <rect key="frame" x="0.0" y="0.0" width="280" height="768"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZiY-1R-NCF">
+                <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZiY-1R-NCF" userLabel="Logo Container">
                     <rect key="frame" x="0.0" y="0.0" width="280" height="44"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="sidemenu-cinch-logo" translatesAutoresizingMaskIntoConstraints="NO" id="mXr-NE-dXm">
-                            <rect key="frame" x="109" y="12" width="66" height="22"/>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="sidemenu-cinch-logo" translatesAutoresizingMaskIntoConstraints="NO" id="mXr-NE-dXm">
+                            <rect key="frame" x="106" y="12" width="66" height="22"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="66" id="qAa-Xu-5NU"/>
+                                <constraint firstAttribute="height" constant="22" id="sk6-ug-BhQ"/>
+                            </constraints>
                         </imageView>
                     </subviews>
                     <color key="backgroundColor" red="0.15686274509803921" green="0.17254901960784313" blue="0.17254901960784313" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="Prx-Yo-q6k"/>
+                        <constraint firstAttribute="width" constant="280" id="TIr-Eo-crY"/>
+                        <constraint firstItem="mXr-NE-dXm" firstAttribute="top" secondItem="ZiY-1R-NCF" secondAttribute="top" constant="12" id="mEH-hl-Zf4"/>
+                        <constraint firstItem="mXr-NE-dXm" firstAttribute="leading" secondItem="ZiY-1R-NCF" secondAttribute="leading" constant="106" id="nAQ-G0-bcD"/>
+                    </constraints>
                 </view>
-                <view clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6GG-wm-3Ns">
+                <view clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6GG-wm-3Ns" userLabel="Top Pane Container">
                     <rect key="frame" x="0.0" y="45" width="280" height="260"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q3n-oq-cCf"/>
-                        <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ncX-fV-yms" customClass="UIImageView">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q3n-oq-cCf" userLabel="Background Image"/>
+                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ncX-fV-yms" userLabel="Vendor Info Container" customClass="UIImageView">
                             <rect key="frame" x="0.0" y="140" width="280" height="120"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heD-Dd-ZnE">
-                                    <rect key="frame" x="0.0" y="44" width="280" height="35"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heD-Dd-ZnE" userLabel="Vendor Name Label">
+                                    <rect key="frame" x="0.0" y="44" width="280" height="24"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TlN-Ma-0vu">
-                                    <rect key="frame" x="0.0" y="77" width="280" height="35"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TlN-Ma-0vu" userLabel="Show Name Label">
+                                    <rect key="frame" x="0.0" y="77" width="280" height="24"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="280" id="7UA-Bq-QUK"/>
+                                    </constraints>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstItem="TlN-Ma-0vu" firstAttribute="leading" secondItem="ncX-fV-yms" secondAttribute="leading" id="L2Y-L9-L71"/>
+                                <constraint firstAttribute="trailing" secondItem="heD-Dd-ZnE" secondAttribute="trailing" id="N22-vU-vul"/>
+                                <constraint firstItem="heD-Dd-ZnE" firstAttribute="leading" secondItem="ncX-fV-yms" secondAttribute="leading" id="Na5-W6-QzO"/>
+                                <constraint firstAttribute="trailing" secondItem="TlN-Ma-0vu" secondAttribute="trailing" id="YlN-XZ-LeD"/>
+                                <constraint firstAttribute="width" constant="280" id="hwW-dL-WBS"/>
+                            </constraints>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="background-brand.png" translatesAutoresizingMaskIntoConstraints="NO" id="0od-wM-ASY">
                             <rect key="frame" x="45" y="14" width="190" height="160"/>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         </imageView>
-                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vdR-3I-ibr">
+                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vdR-3I-ibr" userLabel="Help Button">
                             <rect key="frame" x="5" y="106" width="75" height="68"/>
                             <state key="normal" backgroundImage="background-help.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                             </state>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aBZ-oR-WGY">
+                        <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aBZ-oR-WGY" userLabel="Logout Button">
                             <rect key="frame" x="200" y="106" width="75" height="68"/>
                             <state key="normal" backgroundImage="background-logout.png">
                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -74,11 +94,20 @@
                     </subviews>
                     <color key="backgroundColor" red="1" green="0.51210118010000005" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>
+                        <constraint firstAttribute="height" constant="260" id="K6c-dd-tKa"/>
+                        <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="260" id="YIZ-U9-xcB"/>
+                        <constraint firstItem="ncX-fV-yms" firstAttribute="leading" secondItem="6GG-wm-3Ns" secondAttribute="leading" id="fba-91-SpW"/>
                         <constraint firstItem="ncX-fV-yms" firstAttribute="top" secondItem="6GG-wm-3Ns" secondAttribute="top" constant="140" id="gIW-66-iDr"/>
+                        <constraint firstAttribute="width" constant="280" id="shd-Ub-svR"/>
                         <constraint firstAttribute="bottom" secondItem="ncX-fV-yms" secondAttribute="bottom" id="xK4-jd-PKq"/>
                     </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="YIZ-U9-xcB"/>
+                        </mask>
+                    </variation>
                 </view>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="STQ-ls-nsB">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="STQ-ls-nsB" userLabel="Menu Options Table View">
                     <rect key="frame" x="0.0" y="305" width="280" height="200"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
@@ -92,11 +121,25 @@
             </subviews>
             <color key="backgroundColor" red="0.72855548469999998" green="0.242630125" blue="0.3468680744" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
+                <constraint firstItem="6GG-wm-3Ns" firstAttribute="top" secondItem="ZiY-1R-NCF" secondAttribute="bottom" id="69I-9z-C0Y"/>
+                <constraint firstItem="6GG-wm-3Ns" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="8ob-DQ-d0m"/>
                 <constraint firstAttribute="bottom" secondItem="STQ-ls-nsB" secondAttribute="bottom" id="Kef-sA-zFO"/>
+                <constraint firstAttribute="bottom" secondItem="STQ-ls-nsB" secondAttribute="bottom" id="Q7m-Sa-pQf"/>
+                <constraint firstItem="ZiY-1R-NCF" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="TBy-bx-XxS"/>
+                <constraint firstItem="STQ-ls-nsB" firstAttribute="top" secondItem="6GG-wm-3Ns" secondAttribute="bottom" id="Tvg-eT-ixL"/>
+                <constraint firstItem="STQ-ls-nsB" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="YM8-WE-Ta3"/>
                 <constraint firstItem="STQ-ls-nsB" firstAttribute="top" secondItem="6GG-wm-3Ns" secondAttribute="bottom" id="f0v-2q-EeN"/>
+                <constraint firstItem="6GG-wm-3Ns" firstAttribute="top" secondItem="ZiY-1R-NCF" secondAttribute="bottom" constant="1" id="mdw-fC-RES"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="mdw-fC-RES"/>
+                    <exclude reference="Q7m-Sa-pQf"/>
+                    <exclude reference="f0v-2q-EeN"/>
+                </mask>
+            </variation>
         </view>
     </objects>
     <resources>

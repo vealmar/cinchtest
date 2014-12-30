@@ -60,19 +60,19 @@
 }
 
 - (BOOL)hasNontransientChanges {
-    if (self.hasChanges) {
-        int maxLength = 0;
-        NSArray *changedFields = self.changedValues.allKeys;
-        if ([changedFields containsObject:@"grossTotal"]) maxLength++;
-        if ([changedFields containsObject:@"discountTotal"]) maxLength++;
-        if ([changedFields containsObject:@"voucherTotal"]) maxLength++;
-        return changedFields.count > maxLength;
-    } else {
-        BOOL hasLineChanges = Underscore.array(self.lineItems.allObjects).any(^BOOL(LineItem *lineItem) {
-            return lineItem.hasChanges;
-        });
-        return hasLineChanges;
-    }
+    int maxLength = 0;
+    NSArray *changedFields = self.changedValues.allKeys;
+    if ([changedFields containsObject:@"grossTotal"]) maxLength++;
+    if ([changedFields containsObject:@"discountTotal"]) maxLength++;
+    if ([changedFields containsObject:@"voucherTotal"]) maxLength++;
+    
+    BOOL nontransientOrderChanges = changedFields.count > maxLength;
+    
+    BOOL hasLineChanges = Underscore.array(self.lineItems.allObjects).any(^BOOL(LineItem *lineItem) {
+        return lineItem.hasChanges;
+    });
+
+    return (self.hasChanges && nontransientOrderChanges) || hasLineChanges;
 }
 
 - (NSString *)getCustomerDisplayName {
