@@ -37,6 +37,11 @@ static CurrentSession *currentSession = nil;
     }
 }
 
+- (NSNumber *)showId {
+    NSNumber *showId = (NSNumber *) [self.vendorInfo objectForKey:@"current_show"][kID];
+    return showId;
+}
+
 - (NSNumber *)loggedInVendorGroupId {
     NSNumber *vendorgroupId = (NSNumber *) [self.vendorInfo objectForKey:kVendorGroupID];
     return vendorgroupId;

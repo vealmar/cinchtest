@@ -113,7 +113,18 @@
 
 #pragma mark - UIWebViewDelegate
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+-(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
+    NSString *url = request.URL.absoluteString;
+
+    NSRange extraParam = [url rangeOfString:[NSString stringWithFormat:@"%@=", kAuthToken]];
+    if([url containsString:@"http"] && extraParam.location == NSNotFound){
+        BOOL hasQueryString = [url rangeOfString:@"?"].location != NSNotFound;
+        url = [NSString stringWithFormat:@"%@%@%@=%@", url, hasQueryString ? @"&" : @"?", kAuthToken, [CurrentSession instance].authToken];
+
+        NSURLRequest *newRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:url]];
+        [webView loadRequest:newRequest];
+    }
+
     return YES;
 }
 

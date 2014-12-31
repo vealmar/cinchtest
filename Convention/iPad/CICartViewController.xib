@@ -115,7 +115,7 @@
                     </subviews>
                     <color key="backgroundColor" red="0.82352941180000006" green="0.83921568629999999" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
                 </view>
-                <view hidden="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="102" userLabel="Farris Header">
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="102" userLabel="Farris Header">
                     <rect key="frame" x="0.0" y="0.0" width="1024" height="44"/>
                     <subviews>
                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" fixedFrame="YES" text="Item #" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="103">
@@ -161,10 +161,17 @@
                         </label>
                     </subviews>
                     <color key="backgroundColor" red="0.82352941180000006" green="0.83921568629999999" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="1024" id="FUu-MO-9rw"/>
+                        <constraint firstAttribute="height" constant="44" id="kEA-nn-zKK"/>
+                    </constraints>
                 </view>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="27">
-                    <rect key="frame" x="0.0" y="45" width="1024" height="723"/>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="27">
+                    <rect key="frame" x="0.0" y="44" width="1024" height="724"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="1024" id="JmC-nH-aLz"/>
+                    </constraints>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="30"/>
                         <outlet property="delegate" destination="-1" id="31"/>
@@ -177,6 +184,13 @@
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <gestureRecognizers/>
+            <constraints>
+                <constraint firstItem="27" firstAttribute="leading" secondItem="14" secondAttribute="leading" id="LxD-YU-ark"/>
+                <constraint firstItem="102" firstAttribute="top" secondItem="14" secondAttribute="top" id="Sn0-w2-Br1"/>
+                <constraint firstItem="102" firstAttribute="leading" secondItem="14" secondAttribute="leading" id="Wu7-OB-3ep"/>
+                <constraint firstItem="27" firstAttribute="top" secondItem="102" secondAttribute="bottom" id="rc3-J0-ieu"/>
+                <constraint firstAttribute="bottom" secondItem="27" secondAttribute="bottom" id="y8b-ss-OtM"/>
+            </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <nil key="simulatedTopBarMetrics"/>
             <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>

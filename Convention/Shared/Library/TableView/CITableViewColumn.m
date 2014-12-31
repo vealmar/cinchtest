@@ -33,10 +33,10 @@ static int instanceIdCounter = 1;
     NSMutableArray *array = [NSMutableArray array];
 
     id value1 = [self objectForKey:ColumnOptionContentKey in:rowData];
-    if (value1) [array addObject:value1];
+    if ([self valuePresent:value1]) [array addObject:value1];
 
     id value2 = [self objectForKey:ColumnOptionContentKey2 in:rowData];
-    if (value2) [array addObject:value2];
+    if ([self valuePresent:value2]) [array addObject:value2];
 
     return [NSArray arrayWithArray:array];
 }
@@ -51,6 +51,18 @@ static int instanceIdCounter = 1;
         }
     }
     return value1;
+}
+
+- (BOOL)valuePresent:(id)value {
+    if (value) {
+        if ([value isKindOfClass:[NSString class]]) {
+            return [((NSString *)value) length] > 0;
+        } else {
+            return YES;
+        }
+    } else {
+        return NO;
+    }
 }
 
 @end

@@ -196,7 +196,7 @@
         [[CinchJSONAPIClient sharedInstance] GET:kDBGETVENDORSWithVG parameters:@{ kAuthToken: authToken, kVendorGroupID: vendorGroupId } success:^(NSURLSessionDataTask *task, id JSON) {
             if (JSON) {
                 NSArray *results = [NSArray arrayWithArray:JSON];
-                NSArray *vendors = [[results objectAtIndex:0] objectForKey:@"vendors"];
+                NSArray *vendors = results.count > 0 ? [[results objectAtIndex:0] objectForKey:@"vendors"] : [NSArray array];
                 for (NSDictionary *vendor in vendors) {
                     [self.managedObjectContext insertObject:[[Vendor alloc] initWithVendorFromServer:vendor context:self.managedObjectContext]];
                 }

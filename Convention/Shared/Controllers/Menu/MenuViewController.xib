@@ -20,14 +20,14 @@
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT" userLabel="Menu Container">
             <rect key="frame" x="0.0" y="0.0" width="280" height="768"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ZiY-1R-NCF" userLabel="Logo Container">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZiY-1R-NCF" userLabel="Logo Container">
                     <rect key="frame" x="0.0" y="0.0" width="280" height="44"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="sidemenu-cinch-logo" translatesAutoresizingMaskIntoConstraints="NO" id="mXr-NE-dXm">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="sidemenu-cinch-logo" translatesAutoresizingMaskIntoConstraints="NO" id="mXr-NE-dXm">
                             <rect key="frame" x="106" y="12" width="66" height="22"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="66" id="qAa-Xu-5NU"/>
@@ -43,20 +43,20 @@
                         <constraint firstItem="mXr-NE-dXm" firstAttribute="leading" secondItem="ZiY-1R-NCF" secondAttribute="leading" constant="106" id="nAQ-G0-bcD"/>
                     </constraints>
                 </view>
-                <view clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6GG-wm-3Ns" userLabel="Top Pane Container">
+                <view clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6GG-wm-3Ns" userLabel="Top Pane Container">
                     <rect key="frame" x="0.0" y="45" width="280" height="260"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Q3n-oq-cCf" userLabel="Background Image"/>
-                        <view contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ncX-fV-yms" userLabel="Vendor Info Container" customClass="UIImageView">
+                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ncX-fV-yms" userLabel="Vendor Info Container" customClass="UIImageView">
                             <rect key="frame" x="0.0" y="140" width="280" height="120"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heD-Dd-ZnE" userLabel="Vendor Name Label">
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="heD-Dd-ZnE" userLabel="Vendor Name Label">
                                     <rect key="frame" x="0.0" y="44" width="280" height="24"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TlN-Ma-0vu" userLabel="Show Name Label">
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TlN-Ma-0vu" userLabel="Show Name Label">
                                     <rect key="frame" x="0.0" y="77" width="280" height="24"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="280" id="7UA-Bq-QUK"/>
@@ -73,6 +73,8 @@
                                 <constraint firstItem="heD-Dd-ZnE" firstAttribute="leading" secondItem="ncX-fV-yms" secondAttribute="leading" id="Na5-W6-QzO"/>
                                 <constraint firstAttribute="trailing" secondItem="TlN-Ma-0vu" secondAttribute="trailing" id="YlN-XZ-LeD"/>
                                 <constraint firstAttribute="width" constant="280" id="hwW-dL-WBS"/>
+                                <constraint firstItem="TlN-Ma-0vu" firstAttribute="top" secondItem="heD-Dd-ZnE" secondAttribute="bottom" constant="9" id="nMR-QL-oKv"/>
+                                <constraint firstItem="heD-Dd-ZnE" firstAttribute="top" secondItem="ncX-fV-yms" secondAttribute="top" constant="44" id="tEM-qz-SLa"/>
                             </constraints>
                         </view>
                         <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="background-brand.png" translatesAutoresizingMaskIntoConstraints="NO" id="0od-wM-ASY">
@@ -107,7 +109,7 @@
                         </mask>
                     </variation>
                 </view>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="STQ-ls-nsB" userLabel="Menu Options Table View">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="STQ-ls-nsB" userLabel="Menu Options Table View">
                     <rect key="frame" x="0.0" y="305" width="280" height="200"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
@@ -124,22 +126,13 @@
                 <constraint firstItem="6GG-wm-3Ns" firstAttribute="top" secondItem="ZiY-1R-NCF" secondAttribute="bottom" id="69I-9z-C0Y"/>
                 <constraint firstItem="6GG-wm-3Ns" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="8ob-DQ-d0m"/>
                 <constraint firstAttribute="bottom" secondItem="STQ-ls-nsB" secondAttribute="bottom" id="Kef-sA-zFO"/>
-                <constraint firstAttribute="bottom" secondItem="STQ-ls-nsB" secondAttribute="bottom" id="Q7m-Sa-pQf"/>
                 <constraint firstItem="ZiY-1R-NCF" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="TBy-bx-XxS"/>
                 <constraint firstItem="STQ-ls-nsB" firstAttribute="top" secondItem="6GG-wm-3Ns" secondAttribute="bottom" id="Tvg-eT-ixL"/>
                 <constraint firstItem="STQ-ls-nsB" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="YM8-WE-Ta3"/>
-                <constraint firstItem="STQ-ls-nsB" firstAttribute="top" secondItem="6GG-wm-3Ns" secondAttribute="bottom" id="f0v-2q-EeN"/>
-                <constraint firstItem="6GG-wm-3Ns" firstAttribute="top" secondItem="ZiY-1R-NCF" secondAttribute="bottom" constant="1" id="mdw-fC-RES"/>
+                <constraint firstItem="ZiY-1R-NCF" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="wCC-72-fMU"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <variation key="default">
-                <mask key="constraints">
-                    <exclude reference="mdw-fC-RES"/>
-                    <exclude reference="Q7m-Sa-pQf"/>
-                    <exclude reference="f0v-2q-EeN"/>
-                </mask>
-            </variation>
         </view>
     </objects>
     <resources>

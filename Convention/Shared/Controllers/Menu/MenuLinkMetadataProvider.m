@@ -10,6 +10,7 @@
 #import "SettingsManager.h"
 #import "CoreDataManager.h"
 #import "NotificationConstants.h"
+#import "CurrentSession.h"
 
 @implementation MenuLinkMetadata
 
@@ -60,6 +61,14 @@ static MenuLinkMetadataProvider *provider = nil;
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
+        m.menuLink = MenuLinkDiscountGuide;
+        m.iconCharacter = @"\ue459";
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l", @"Discount Guide"];
+        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Discount Guide"];
+        m.relativeUrl = [NSString stringWithFormat:@"/shows/%@/discount_descriptions", [CurrentSession instance].showId];
+        [builder addObject:m];
+
+        m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkReportSalesByBrand;
         m.iconCharacter = @"\ue063";
         m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l %s", @"Sales by", @"Brand"];
@@ -91,6 +100,7 @@ static MenuLinkMetadataProvider *provider = nil;
 
         self.metadatas = [NSArray arrayWithArray:builder];
 
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleSessionDidChange:) name:SessionDidChangeNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateProductMetadata:) name:ProductsLoadedNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCustomerMetadata:) name:CustomersLoadedNotification object:nil];
     }
@@ -138,6 +148,11 @@ static MenuLinkMetadataProvider *provider = nil;
 - (void)updateProductMetadata:(NSNotification *)notification {
     MenuLinkMetadata *m = [self metadataFor:MenuLinkProducts];
     m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.productCount, @"Products"];
+}
+
+- (void)handleSessionDidChange:(NSNotification *)notification {
+    MenuLinkMetadata *m = [self metadataFor:MenuLinkDiscountGuide];
+    m.relativeUrl = [NSString stringWithFormat:@"/shows/%@/discount_descriptions", [CurrentSession instance].showId];
 }
 
 @end

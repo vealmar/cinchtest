@@ -43,8 +43,6 @@
 @property (weak, nonatomic) IBOutlet UILabel *orderDetailCustomerLabel;
 @property (weak, nonatomic) IBOutlet UIView *orderDetailAuthorizedView;
 @property (weak, nonatomic) IBOutlet UILabel *orderDetailAuthorizedLabel;
-@property (weak, nonatomic) IBOutlet UIView *orderDetailPaymentTermsView;
-@property (weak, nonatomic) IBOutlet UILabel *orderDetailPaymentTermsLabel;
 @property (weak, nonatomic) IBOutlet UIView *orderDetailNotesView;
 @property (weak, nonatomic) IBOutlet VALabel *orderDetailNotesLabel;
 
@@ -83,6 +81,7 @@
 
     showConfig = [ShowConfigurations instance];
     self.orderDetailView.hidden = YES;
+    self.orderDetailNotesLabel.verticalAlignment = VerticalAlignmentMiddle;
 
     self.orderDetailTable.separatorColor = [UIColor colorWithRed:0.808 green:0.808 blue:0.827 alpha:1];
     self.orderDetailTable.rowHeight = 40;
@@ -195,7 +194,7 @@
     }
 
     float orderDetailTableOriginY = self.orderDetailCustomerView.frame.origin.y + self.orderDetailCustomerView.frame.size.height + 8;
-    if (config.enableOrderNotes) {
+    if (config.enableOrderNotes && order.notes && order.notes.length > 0) {
         self.orderDetailNotesLabel.text = order.notes;
         self.orderDetailNotesView.hidden = NO;
         orderDetailTableOriginY += self.orderDetailNotesView.frame.size.height + 8;

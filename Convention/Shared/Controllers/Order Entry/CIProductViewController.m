@@ -547,7 +547,7 @@
 #pragma mark - CIFinalCustomerDelegate
 
 - (void)dismissFinalCustomerViewController {
-    [customerInfoViewController dismissViewControllerAnimated:NO completion:nil];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (NSDictionary *)getCustomerInfo {
@@ -647,10 +647,11 @@
         [OrderCoreDataManager saveOrder:self.order inContext:self.order.managedObjectContext];
     }
 
+    __weak CIProductViewController *weakSelf = self;
     [self dismissViewControllerAnimated:YES completion:^{
-        if (self.delegate != nil) {
-            [self.delegate returnOrder:self.order updateStatus:status];
-            [self reinit]; //clear up memory
+        if (weakSelf.delegate) {
+            [weakSelf.delegate returnOrder:weakSelf.order updateStatus:status];
+            [weakSelf reinit]; //clear up memory
         }
     }];
 }

@@ -121,14 +121,6 @@
     }
 }
 
-- (void)reset {
-    [self deselectAllCarts];
-    [self.underRightViewController.view endEditing:YES];
-    [self.topViewController.view endEditing:YES];
-    [self resetTopViewAnimated:YES];
-    self.panGesture.enabled = NO;
-}
-
 - (void)onPanGesture:(UIPanGestureRecognizer *)recognizer {
     if (self.currentTopViewPosition == ECSlidingViewControllerTopViewPositionAnchoredLeft) {
         if (recognizer.state == UIGestureRecognizerStateBegan) {
@@ -173,6 +165,14 @@
         [self.underRightViewController.view endEditing:YES];
         [self resetTopViewAnimated:true];
     }
+}
+
+- (void)reset {
+    [self deselectAllCarts];
+    [self.underRightViewController.view endEditing:YES];
+    [self.topViewController.view endEditing:YES];
+    [self resetTopViewAnimated:YES];
+    self.panGesture.enabled = NO;
 }
 
 @end

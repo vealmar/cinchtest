@@ -138,7 +138,7 @@
         case 0:
             return 1;
         case 1:
-            return 2;
+            return [ShowConfigurations instance].discounts ? 3 : 2;
         case 2:
             return 3;
         default:
@@ -173,6 +173,9 @@
                 }
                 case 1: {
                     return MenuLinkCustomers;
+                }
+                case 2: {
+                    return MenuLinkDiscountGuide;
                 }
             }
             break;

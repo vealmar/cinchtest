@@ -42,7 +42,6 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
         CIFinalCustomerDelegate,
         CICartViewDelegate,
         VendorViewDelegate,
-        CISlidingProductViewControllerDelegate,
         CINavViewManagerDelegate
         >
 

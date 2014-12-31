@@ -21,8 +21,6 @@
             <string>OpenSans</string>
             <string>OpenSans</string>
             <string>OpenSans</string>
-            <string>OpenSans</string>
-            <string>OpenSans</string>
         </mutableArray>
         <mutableArray key="OPENSANS-SEMIBOLD_1.TTF">
             <string>OpenSans-Semibold</string>
@@ -120,44 +118,23 @@
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </view>
-                                    <view contentMode="scaleToFill" id="3YC-yt-zYg">
-                                        <rect key="frame" x="0.0" y="149" width="670" height="36"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Payment Terms" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="TGd-Bf-nMJ">
-                                                <rect key="frame" x="8" y="0.0" width="112" height="36"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="14"/>
-                                                <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Some enumeration value" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="wWN-xg-dsC">
-                                                <rect key="frame" x="138" y="0.0" width="525" height="36"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="14"/>
-                                                <color key="textColor" red="0.26666666666666666" green="0.26666666666666666" blue="0.26666666666666666" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                        </subviews>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    </view>
                                     <view contentMode="scaleToFill" id="zg4-kn-PPz">
-                                        <rect key="frame" x="0.0" y="186" width="670" height="81"/>
+                                        <rect key="frame" x="0.0" y="149" width="670" height="81"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notes" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="YmZ-7o-PKP">
-                                                <rect key="frame" x="8" y="0.0" width="112" height="36"/>
-                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="14"/>
-                                                <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ES7-qA-HWv" customClass="VALabel">
-                                                <rect key="frame" x="138" y="8" width="525" height="67"/>
+                                                <rect key="frame" x="73" y="8" width="590" height="67"/>
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                 <string key="text">Lorem ipsum dollar bills and stuff Lorem ipsum dollar bills and stuff Lorem ipsum dollar bills and stuff Lorem ipsum dollar bills and stuff </string>
                                                 <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="14"/>
                                                 <color key="textColor" red="0.2666666667" green="0.2666666667" blue="0.2666666667" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Notes" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="YmZ-7o-PKP">
+                                                <rect key="frame" x="15" y="23" width="112" height="36"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="14"/>
+                                                <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -286,8 +263,6 @@
                         <outlet property="orderDetailNotesLabel" destination="ES7-qA-HWv" id="ugD-7d-dky"/>
                         <outlet property="orderDetailNotesView" destination="zg4-kn-PPz" id="SxC-sg-KFO"/>
                         <outlet property="orderDetailOrderNumberLabel" destination="I2n-wZ-9VN" id="O0T-Xf-tJO"/>
-                        <outlet property="orderDetailPaymentTermsLabel" destination="wWN-xg-dsC" id="Atz-kG-MaN"/>
-                        <outlet property="orderDetailPaymentTermsView" destination="3YC-yt-zYg" id="SLw-e2-g12"/>
                         <outlet property="orderDetailSaveButton" destination="Cng-qZ-sWf" id="Mow-wJ-efh"/>
                         <outlet property="orderDetailTable" destination="YnO-ye-7jz" id="XYO-ZU-6g6"/>
                         <outlet property="orderDetailTableParentView" destination="edG-jd-O4g" id="fuJ-Ol-dop"/>

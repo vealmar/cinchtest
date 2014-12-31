@@ -10,6 +10,7 @@
 @property NSManagedObjectContext *managedObjectContext;
 @property NSString *authToken;
 @property NSDictionary* vendorInfo;
+@property (readonly) NSNumber* showId;
 @property (readonly) NSString* loggedInVendorGroupId;
 @property (readonly) NSNumber* vendorId;
 

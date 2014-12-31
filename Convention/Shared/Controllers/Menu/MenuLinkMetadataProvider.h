@@ -9,6 +9,7 @@ typedef enum {
     MenuLinkOrderWriter,
     MenuLinkProducts,
     MenuLinkCustomers,
+    MenuLinkDiscountGuide,
     MenuLinkReportSalesByBrand,
     MenuLinkReportSalesByProduct,
     MenuLinkReportSalesByCustomer,

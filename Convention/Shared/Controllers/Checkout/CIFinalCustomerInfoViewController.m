@@ -194,7 +194,6 @@
     [self.delegate dismissFinalCustomerViewController];
 }
 
-
 - (void)updateSetting:(NSString *)itemName newValue:(NSString *)newValue setupInfo:(SetupInfo *)setupInfo {
     if ([newValue length] > 0) {
         if (setupInfo == nil) {
@@ -234,8 +233,8 @@
             self.order.shipFlag = self.contactBeforeShippingCB.isChecked;
         }
         
-        [self.delegate submit:nil];
         [self.delegate dismissFinalCustomerViewController];
+        [self.delegate submit:nil];
     }
 }
 
