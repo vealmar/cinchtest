@@ -17,6 +17,7 @@
 @property BOOL productEnableManufacturerNo;
 @property BOOL atOncePricing;
 @property BOOL discounts;
+@property BOOL discountsGuide;
 @property BOOL shipDates; //uses or requires shipdates
 @property BOOL shipDatesRequired;
 @property BOOL captureSignature;

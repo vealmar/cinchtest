@@ -31,6 +31,7 @@ static ShowConfigurations *showConfigurations = nil;
         showConfigurations.productEnableManufacturerNo = [[json objectForKey:@"productEnableManufacturerNo"] boolValue];
         showConfigurations.atOncePricing = [[json objectForKey:@"atOncePricing"] boolValue];
         showConfigurations.discounts = [[json objectForKey:@"discounts"] boolValue];
+        showConfigurations.discountsGuide = [[json objectForKey:@"discountsGuide"] boolValue];
         NSString *shipDatesValue = [NilUtil objectOrEmptyString:[json objectForKey:@"shipDates"]];
         showConfigurations.shipDates = [shipDatesValue isEqualToString:@"required"] || [shipDatesValue isEqualToString:@"optional"];
         showConfigurations.shipDatesRequired = [shipDatesValue isEqualToString:@"required"];

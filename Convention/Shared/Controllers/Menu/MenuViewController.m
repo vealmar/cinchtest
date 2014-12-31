@@ -138,7 +138,7 @@
         case 0:
             return 1;
         case 1:
-            return [ShowConfigurations instance].discounts ? 3 : 2;
+            return [ShowConfigurations instance].discountsGuide ? 3 : 2;
         case 2:
             return 3;
         default:
