@@ -133,4 +133,29 @@ Generates a title label based on the format parameter.
     };
 }
 
++ (CGRect)fitTextWidthTo:(UILabel *)label {
+    NSRange range;
+    NSDictionary *attributes;
+    if (label.attributedText && label.attributedText.length > 0) {
+        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[label.attributedText attributesAtIndex:0 effectiveRange:&range]];
+        // This seems like an iOS bug, but when you ask for the attributes, it gives you
+        // a literal representation of what was passed in when the attributed text was created.
+        // On labels, the font property still takes effect.
+        [dict setValue:label.font forKey:NSFontAttributeName];
+        attributes = [NSDictionary dictionaryWithDictionary:dict];
+    }
+    if (!attributes || attributes.count == 0) {
+        attributes = @{ NSFontAttributeName: label.font };
+    }
+
+    CGRect totalHeightRect = [label.text boundingRectWithSize:CGSizeMake(label.frame.size.width, CGFLOAT_MAX)
+                                                      options:NSStringDrawingUsesLineFragmentOrigin
+                                                   attributes:attributes
+                                                      context:nil];
+
+    label.frame = CGRectMake(label.frame.origin.x, label.frame.origin.y, totalHeightRect.size.width, label.frame.size.height);
+
+    return label.frame;
+}
+
 @end

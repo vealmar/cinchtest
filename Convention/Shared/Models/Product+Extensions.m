@@ -66,6 +66,8 @@
         if (shipdate2Str)
             self.shipdate2 = [DateUtil convertApiDateTimeToNSDate:shipdate2Str];
         self.editable = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductEditable]];
+        NSArray *tagsArray = [NilUtil objectOrEmptyArray:[productFromServer objectForKey:kProductTags]];
+        self.tags = tagsArray.count > 0 ? [tagsArray componentsJoinedByString:@","] : nil;
     }
     return self;
 }

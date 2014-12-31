@@ -137,6 +137,7 @@
 #define kProductManufacturerNo @"manufacturer_no"
 #define kProductCategory @"category"
 #define kProductEditable @"editable"
+#define kProductTags @"tags"
 
 #define kLineItemPRICE @"price"
 #define kLineItemVoucher @"voucherPrice"

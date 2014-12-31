@@ -93,6 +93,7 @@
 		6DDC9601DA680CE720580CA6 /* bluebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9AC6A5E50AD71238DB62 /* bluebutton.png */; };
 		6DDC960DE5BE21038165921B /* CICustomerInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC990D06D9A0FBEA4E10F1 /* CICustomerInfoViewController.xib */; };
 		6DDC961189B91F5B80ED06CA /* searchbar.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC98D6A08CE29ABE34D4D8 /* searchbar.png */; };
+		6DDC961335B61025C1247CA8 /* CITagColumnView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9BC51C4CAD00C21B2059 /* CITagColumnView.m */; };
 		6DDC9613C6BC9BCEC1E4AC29 /* CIViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9EF6A08E16BDF7AB6F5B /* CIViewController_iPad.xib */; };
 		6DDC96155E37FE90F3DA87A3 /* Order.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9D52FFC13AE2D67AE49C /* Order.m */; };
 		6DDC96192CC418BBF24BD141 /* NISignatureView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9E7001F01194A67EB3BE /* NISignatureView.m */; };
@@ -596,6 +597,7 @@
 		6DDC9BAFAE83B95064F20B27 /* CIProductTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIProductTableViewCell.h; sourceTree = "<group>"; };
 		6DDC9BB780FD2D0D2178AA0B /* OrderShipDateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderShipDateViewController.h; sourceTree = "<group>"; };
 		6DDC9BC453500DB43A36392F /* EditButton-out.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "EditButton-out.png"; sourceTree = "<group>"; };
+		6DDC9BC51C4CAD00C21B2059 /* CITagColumnView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CITagColumnView.m; sourceTree = "<group>"; };
 		6DDC9BCB2E429C258AC4DF29 /* NISignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NISignatureView.h; sourceTree = "<group>"; };
 		6DDC9BD231B00D06CA3C76F9 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6DDC9BDD2CD78920CC5BB96E /* continuein.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = continuein.png; sourceTree = "<group>"; };
@@ -696,6 +698,7 @@
 		6DDC9FEBA535DC13F4905E42 /* username.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = username.png; sourceTree = "<group>"; };
 		6DDC9FEF7E255E8FF864B92F /* CIShowPriceColumnView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIShowPriceColumnView.h; sourceTree = "<group>"; };
 		6DDC9FF3BD81E3B3F848313C /* finalsubmit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = finalsubmit.png; sourceTree = "<group>"; };
+		6DDC9FFBDDE75E6EDF6F29BC /* CITagColumnView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITagColumnView.h; sourceTree = "<group>"; };
 		6E118561145F2F2200568ED1 /* Convention.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Convention.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E118565145F2F2200568ED1 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		6E118567145F2F2200568ED1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1343,6 +1346,8 @@
 				6DDC9FEF7E255E8FF864B92F /* CIShowPriceColumnView.h */,
 				6DDC9688361C00EDD636003A /* CIProductTableViewCell.m */,
 				6DDC9BAFAE83B95064F20B27 /* CIProductTableViewCell.h */,
+				6DDC9BC51C4CAD00C21B2059 /* CITagColumnView.m */,
+				6DDC9FFBDDE75E6EDF6F29BC /* CITagColumnView.h */,
 			);
 			path = "Products Table";
 			sourceTree = "<group>";
@@ -2103,6 +2108,7 @@
 				6DDC9487EAB942C3E4E74089 /* CoreDataBackgroundOperation.m in Sources */,
 				6DDC9FA22336A8C92E1D1EE4 /* OrderTotals.m in Sources */,
 				6DDC920E079171CCEAD4F286 /* OrderSubtotalsByDate.m in Sources */,
+				6DDC961335B61025C1247CA8 /* CITagColumnView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

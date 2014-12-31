@@ -70,9 +70,8 @@
     id clazz = [column.options objectForKey:ColumnOptionCustomTypeClass];
     if (ColumnTypeCurrency == column.columnType || ColumnTypeString == column.columnType || ColumnTypeInt == column.columnType) {
         return [[CITableViewStandardColumnView alloc] initColumn:column frame:frame];
-    } else if (clazz) {
-        //todo create new instance with clazz
-//        [[CIQuantityColumnView alloc] initColumn:column frame:frame]
+    } else if (ColumnTypeCustom == column.columnType && clazz) {
+        return [[clazz alloc] initColumn:column frame:frame];
     } else {
         assert(false);
     }

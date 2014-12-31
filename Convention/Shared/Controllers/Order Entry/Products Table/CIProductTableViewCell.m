@@ -66,9 +66,6 @@
         CIQuantityColumnView *view = [[CIQuantityColumnView alloc] initColumn:column frame:frame];
 
         __weak CIProductTableViewCell *weakSelf = self;
-//        [view bk_whenTapped:^{
-//            [weakSelf.delegate QtyTouchForIndex:((Product *) weakSelf.rowData).productId];
-//        }];
 
         [view.quantityTextField setBk_shouldBeginEditingBlock:^BOOL(UITextField *field) {
             bool liShipDates = [ShowConfigurations instance].isLineItemShipDatesType;

@@ -39,4 +39,6 @@
 
 + (NSDictionary *)navigationRightActionButtonTextAttributes;
 
++ (CGRect)fitTextWidthTo:(UILabel *)label;
+
 @end

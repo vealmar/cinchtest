@@ -101,6 +101,7 @@
         <attribute name="shipdate2" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="showprc" optional="YES" attributeType="Double" defaultValueString="0" syncable="YES"/>
         <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="tags" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="unique_product_id" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="uom" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vendid" optional="YES" attributeType="String" syncable="YES"/>
@@ -157,10 +158,10 @@
         <element name="Customer" positionX="-614" positionY="-117" width="128" height="118"/>
         <element name="EditableEntity" positionX="-263" positionY="-198" width="128" height="73"/>
         <element name="Error" positionX="-146" positionY="-72" width="128" height="58"/>
-        <element name="Product" positionX="-119" positionY="18" width="128" height="478"/>
+        <element name="LineItem" positionX="187" positionY="342" width="128" height="28"/>
+        <element name="Order" positionX="-263" positionY="99" width="128" height="388"/>
+        <element name="Product" positionX="-119" positionY="18" width="128" height="495"/>
         <element name="SetupInfo" positionX="18" positionY="-90" width="128" height="75"/>
         <element name="Vendor" positionX="196" positionY="-99" width="128" height="360"/>
-        <element name="Order" positionX="-263" positionY="99" width="128" height="388"/>
-        <element name="LineItem" positionX="187" positionY="342" width="128" height="28"/>
     </elements>
 </model>

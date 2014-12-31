@@ -18,6 +18,7 @@
 #import "ProductSearchQueue.h"
 #import "MBProgressHUD.h"
 #import "Order.h"
+#import "CITagColumnView.h"
 
 @interface CIProductTableViewController()
 
@@ -91,6 +92,13 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
             ColumnOptionContentKey: @"descr",
             ColumnOptionContentKey2: @"descr2"
     }];
+    if (config.discounts) {
+        [columns add:ColumnTypeCustom titled:@"Tags" using:@{
+                ColumnOptionContentKey: @"tags",
+                ColumnOptionDesiredWidth: [NSNumber numberWithInt:180],
+                ColumnOptionCustomTypeClass: [CITagColumnView class]
+        }];
+    }
     [columns add:ColumnTypeCustom titled:@"Quantity" using:@{
             ColumnOptionDesiredWidth: [NSNumber numberWithInt:75],
             ColumnOptionTextAlignment: [NSNumber numberWithInt:NSTextAlignmentRight],
@@ -145,7 +153,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     return cell;
 }
 
-#pragma mark - PullToRefreshViewDeegate
+#pragma mark - PullToRefreshViewDelegate
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
     [self reloadProducts];
