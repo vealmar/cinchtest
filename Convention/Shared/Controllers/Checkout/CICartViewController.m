@@ -131,8 +131,10 @@
         self.savingOrder = YES;
         [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
             weakSelf.order = order;
-            [self refreshView];
-        } onFailure:nil];
+            [weakSelf refreshView];
+        } onFailure:^{
+            weakSelf.savingOrder = NO;
+        }];
     }
     self.initialized = YES;
 }
@@ -335,7 +337,10 @@
         self.savingOrder = YES;
         [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
             [weakSelf finishOrderSyncComplete:order];
-        } onFailure:nil];
+            weakSelf.savingOrder = NO;
+        } onFailure:^{
+            weakSelf.savingOrder = NO;
+        }];
     }
 }
 

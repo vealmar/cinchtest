@@ -62,9 +62,11 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 
     NSFetchRequest *request = [CoreDataManager buildProductFetch:[ProductSearch searchFor:query inBulletin:bulletinId forVendor:vendorId limitResultSize:0 usingContext:self.managedObjectContext]];
     if (inCart && self.delegate.currentOrderForCell) {
-        NSPredicate *inCartPredicate = [NSPredicate predicateWithFormat:@"ANY lineItems.order == %@", self.delegate.currentOrderForCell.objectID];
+        NSPredicate *inCartPredicate = [NSPredicate predicateWithFormat:@"ANY lineItems.order == %@ AND ANY lineItems.quantity != nil", self.delegate.currentOrderForCell.objectID];
         request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[request.predicate, inCartPredicate]];
     }
+    request.includesPendingChanges = YES;
+    request.includesSubentities = NO;
     self.fetchRequest = request;
 }
 
@@ -125,7 +127,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     };
 
     [CoreDataManager reloadProducts:[CurrentSession instance].authToken
-                      vendorGroupId:[CurrentSession instance].loggedInVendorGroupId
+                      vendorGroupId:[NSNumber numberWithInt:[[CurrentSession instance].loggedInVendorGroupId intValue]]
                managedObjectContext:self.managedObjectContext
                           onSuccess:successBlock
                           onFailure:failureBlock];

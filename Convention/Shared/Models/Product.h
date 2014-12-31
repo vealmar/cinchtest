@@ -39,6 +39,9 @@
 @property(nonatomic, retain) NSNumber *vendor_id;
 @property(nonatomic, retain) NSNumber *voucher;
 @property(nonatomic, retain) NSNumber *editable;
+
+@property(nonatomic, retain) NSSet *lineItems;
+
 @end
 
 @interface Product (CoreDataGeneratedAccessors)

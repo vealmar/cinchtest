@@ -87,7 +87,7 @@
             [[CurrentSession instance].vendorId intValue] : 0;
     currentVendor = initialVendor;
     currentBulletin = 0;
-    self.filterCartSwitch = NO;
+    if (self.filterCartSwitch) self.filterCartSwitch.on = NO;
     self.orderSubmitted = NO;
     self.selectedLineItems = [NSMutableSet set];
 }
@@ -318,6 +318,7 @@
 
     [self loadProductsForCurrentVendorAndBulletin];
     [self updateFilterButtonState];
+    [self toggleFilterView];
 }
 
 - (void)setBulletin:(NSInteger)bulletinId {
@@ -330,25 +331,29 @@
 
     [self loadProductsForCurrentVendorAndBulletin];
     [self updateFilterButtonState];
+    [self toggleFilterView];
 }
 
 - (void)dismissVendorPopover {
-    return;
-    
-    if ([self.poController isPopoverVisible])
-        [self.poController dismissPopoverAnimated:YES];
-    [self loadProductsForCurrentVendorAndBulletin];
 }
 
 - (void)filterCartSwitchChanged {
+    if (self.filterCartSwitch.on) {
+        // Save order to update any changed line items so we can see what's in the cart.
+        // The fetched results controller does watch for changes in the same context which aren't
+        // saved to the store, but this only applies to the primary entity and not the children.
+        // In this case, our fetch is on products, not lineitems.
+        [OrderCoreDataManager saveOrder:self.order inContext:[CurrentSession instance].managedObjectContext];
+    }
     [self loadProductsForCurrentVendorAndBulletin];
     [self updateFilterButtonState];
+    [self toggleFilterView];
 }
 
 /**
 * SG: This is the Bulletins drop down.
 */
-- (void)showFilterView {
+- (void)toggleFilterView {
 
     if (!self.filterCartSwitch) {
         self.filterCartSwitch = [[UISwitch alloc] initWithFrame:CGRectZero];
@@ -442,7 +447,11 @@
         self.poController = [[UIPopoverController alloc] initWithContentViewController:nav];
     }
 
-    [self.poController presentPopoverFromBarButtonItem:self.filterBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    if (self.poController.isPopoverVisible) {
+        [self.poController dismissPopoverAnimated:NO];
+    } else {
+        [self.poController presentPopoverFromBarButtonItem:self.filterBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    }
 }
 
 - (void)closeCalendar {
@@ -692,7 +701,7 @@
 - (NSArray *)rightActionItems {
     if (!self.filterBarButtonItem) {
         CIBarButton *filterBarButton = [[CIBarButton alloc] initWithText:@"" style:CIBarButtonStyleRoundButton handler:^(id sender) {
-            [self showFilterView];
+            [self toggleFilterView];
         }];
         NSDictionary *labelAttributes = [ThemeUtil navigationRightActionButtonTextAttributes];
         filterBarButton.label.attributedText = [[NSAttributedString alloc] initWithString:@"\ue140" attributes:Underscore.extend(labelAttributes, @{

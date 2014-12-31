@@ -32,7 +32,7 @@
     fetchRequest.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO] ];
 
     NSMutableArray *predicates = [NSMutableArray arrayWithCapacity:3];
-    if (queryString) {
+    if (queryString && queryString.length > 0) {
         [predicates addObject:[NSPredicate predicateWithFormat:@"customerName CONTAINS[cd] %@ or custId CONTAINS[cd] %@ or authorizedBy CONTAINS[cd] %@ or orderId CONTAINS[cd] %@", queryString, queryString, queryString, queryString]];
     }
     fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
@@ -132,14 +132,6 @@
                          saveBlock(JSON);
                      } else {
                          if (failureBlock) failureBlock();
-                         NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-                         NSString *alertMessage = nil;
-                         if (statusCode == 0) {
-                             alertMessage = @"Request timed out.";
-                         } else {
-                             alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
-                         }
-                         [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                          NSLog(@"%@ Error Loading Orders: %@", [self class], [error localizedDescription]);
                      }
                  }

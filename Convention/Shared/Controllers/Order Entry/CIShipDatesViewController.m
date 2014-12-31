@@ -334,8 +334,9 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     switch (indexPath.section) {
         case 0: {
             Product *product = self.workingLineItem.product;
+            BOOL descr2Visible = product.descr2 && product.descr2.length > 0;
             return 70.0f + //top
-                    (product.descr2 ? 65.0f : 35.0f) + //mid
+                    (descr2Visible ? 65.0f : 35.0f) + //mid
                     49.0f + //bottom
                     25.0f; //margin
         }
@@ -402,7 +403,9 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             [topView addSubview:subtitleLabel];
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////
-            UIView *middleView = [[UIView alloc] initWithFrame:CGRectMake(0, topView.bounds.size.height, backgroundView.bounds.size.width, (product.descr2 ? 65 : 35))];
+            BOOL descr2Visible = product.descr2 && product.descr2.length > 0;
+            
+            UIView *middleView = [[UIView alloc] initWithFrame:CGRectMake(0, topView.bounds.size.height, backgroundView.bounds.size.width, (descr2Visible ? 65 : 35))];
             middleView.backgroundColor = [UIColor colorWithRed:1.000 green:1.000 blue:1.000 alpha:1];
             [backgroundView addSubview:middleView];
 
@@ -413,13 +416,13 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             line1.text = product.descr;
             [middleView addSubview:line1];
 
-            if (product.descr2 || product.partnbr) {
+            if (descr2Visible || product.partnbr) {
                 UILabel *line2 = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, 290, 25)];
                 line2.font = [UIFont regularFontOfSize:12];
                 line2.textAlignment = NSTextAlignmentLeft;
                 line2.textColor = [UIColor blackColor];
                 line2.text = [NSString stringWithFormat:@"%@ %@",
-                              (product.descr2 ? product.descr2 : @""),
+                              (descr2Visible ? product.descr2 : @""),
                               (product.partnbr ? [NSString stringWithFormat:@"MFG NO: %@", product.partnbr] : @"") ];
                 [middleView addSubview:line2];
             }

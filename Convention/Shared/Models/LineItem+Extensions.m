@@ -101,15 +101,20 @@
 }
 
 - (void)setQuantity:(int)quantity forShipDate:(NSDate *)date {
-    NSMutableDictionary *quantities = [[self.quantity objectFromJSONString] mutableCopy];
-    if (quantities == nil) {
+    id quantityFromJSON = [self.quantity objectFromJSONString];
+    NSMutableDictionary *quantities;
+    if (quantityFromJSON && [quantityFromJSON isKindOfClass:[NSDictionary class]]) {
+        quantities = [quantityFromJSON mutableCopy];
+    } else {
         quantities = [NSMutableDictionary dictionary];
     }
+    
     NSString *key = [date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"];
     [quantities setValue:[NSNumber numberWithInt:quantity] forKey:key];
     if (quantity <= 0) {
         [quantities removeObjectForKey:key];
     }
+    if (quantities.count == 0) quantities = nil;
     self.quantity = [quantities JSONString];
     
     NSMutableOrderedSet *tempShipDates = [NSMutableOrderedSet orderedSetWithOrderedSet:self.shipDates];
@@ -121,12 +126,17 @@
 
 - (void)setQuantity:(NSString *)quantity {
     NSString *originalQuantity = self.quantity;
-    
+
+    NSString *setQuantity = quantity;
+    if (quantity && (quantity.length == 0 || [quantity isEqualToString:@"0"])) {
+        setQuantity = nil;
+    }
+
     [self willChangeValueForKey:@"quantity"];
-    [super setPrimitiveValue:quantity forKey:@"quantity"];
+    [super setPrimitiveValue:setQuantity forKey:@"quantity"];
     [self didChangeValueForKey:@"quantity"];
     
-    if (quantity && originalQuantity && ![quantity isEqualToString:originalQuantity]) {
+    if ((!setQuantity && originalQuantity) || (setQuantity && !originalQuantity) || (setQuantity && originalQuantity && ![setQuantity isEqualToString:originalQuantity])) {
         dispatch_async(dispatch_get_main_queue(), ^{
             @autoreleasepool {
                 [[NSNotificationCenter defaultCenter] postNotificationName:LineQuantityChangedNotification object:self];
