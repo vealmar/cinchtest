@@ -11,6 +11,7 @@
 #import "CoreDataManager.h"
 #import "NotificationConstants.h"
 #import "CurrentSession.h"
+#import "ShowConfigurations.h"
 
 @implementation MenuLinkMetadata
 
@@ -95,7 +96,7 @@ static MenuLinkMetadataProvider *provider = nil;
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkHelp;
         m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b", @"Order Writer", @"Help"];
-        m.relativeUrl = @"/help/ios";
+        m.relativeUrl = [self helpUrl];
         [builder addObject:m];
 
         self.metadatas = [NSArray arrayWithArray:builder];
@@ -151,8 +152,15 @@ static MenuLinkMetadataProvider *provider = nil;
 }
 
 - (void)handleSessionDidChange:(NSNotification *)notification {
-    MenuLinkMetadata *m = [self metadataFor:MenuLinkDiscountGuide];
-    m.relativeUrl = [NSString stringWithFormat:@"/shows/%@/discount_descriptions", [CurrentSession instance].showId];
+    MenuLinkMetadata *m1 = [self metadataFor:MenuLinkDiscountGuide];
+    m1.relativeUrl = [NSString stringWithFormat:@"/shows/%@/discount_descriptions", [CurrentSession instance].showId];
+
+    MenuLinkMetadata *m2 = [self metadataFor:MenuLinkHelp];
+    m2.relativeUrl = [self helpUrl];
+}
+
+- (NSString *)helpUrl {
+    return [ShowConfigurations instance].vendorMode ? @"/pages/help/vendor" : @"/pages/help/host";
 }
 
 @end
