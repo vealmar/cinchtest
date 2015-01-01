@@ -38,7 +38,7 @@
     newOrder.customerName = customer[kBillName];
     newOrder.vendorId = session.vendorId;
 
-    [[CoreDataUtil sharedManager] saveObjects];
+    [OrderCoreDataManager saveOrder:newOrder inContext:session.managedObjectContext];
 
     return newOrder;
 }

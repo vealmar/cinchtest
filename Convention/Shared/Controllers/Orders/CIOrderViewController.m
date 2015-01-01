@@ -36,6 +36,7 @@
 @property Order *currentOrder;
 @property NSArray *currentLineItems; //NSArray[LineItem]
 @property (weak, nonatomic) CIOrdersTableViewController *ordersTableViewController;
+@property CINavViewManager *navViewManager;
 
 @property (weak, nonatomic) IBOutlet UIView *orderDetailView;
 @property (weak, nonatomic) IBOutlet UILabel *orderDetailOrderNumberLabel;
@@ -99,10 +100,10 @@
 
     [self.ordersTableViewController prepareForDisplay];
 
-    CINavViewManager *navViewManager = [[CINavViewManager alloc] init:YES];
-    navViewManager.delegate = self;
-    navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Orders", nil];
-    [navViewManager setupNavBar];
+    self.navViewManager = [[CINavViewManager alloc] init:YES];
+    self.navViewManager.delegate = self;
+    self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Orders", nil];
+    [self.navViewManager setupNavBar];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -131,6 +132,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:OrderSelectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:OrderDeleteRequestedNotification object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -472,6 +474,7 @@
 #pragma mark - Events
 
 - (void)addNewOrder {
+    [self.navViewManager clearSearch]; // our search uses a contains query, this cannot be used in conjunction with NSFetchResultsController when doing inserts/deletes
     CICustomerInfoViewController *ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
     ci.modalPresentationStyle = UIModalPresentationFormSheet;
     ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;

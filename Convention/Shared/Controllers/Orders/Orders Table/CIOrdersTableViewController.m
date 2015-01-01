@@ -86,8 +86,6 @@
         if (order) {
             // if we dont have a path, it's possible that coredata hasn't saved it yet thus it's not in the table
             path = [self.fetchedResultsController indexPathForObject:order];
-        } else if (self.hasOrders) {
-            path = [NSIndexPath indexPathForRow:0 inSection:0];
         }
 
         if (path) {
@@ -184,12 +182,13 @@
         };
 
         [OrderCoreDataManager reloadOrders:NO onSuccess:^{
-            [weakSelf.tableView reloadData];
             cleanup();
-            Order *reloadedOrderWithId = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order"
-                                                                         inContext:[CurrentSession instance].newManagedObjectContext
-                                                                     withPredicate:[NSPredicate predicateWithFormat:@"orderId == %@", selectOrderId]];
-            [weakSelf selectOrder:reloadedOrderWithId];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                Order *reloadedOrderWithId = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order"
+                                                                                       inContext:[CurrentSession instance].managedObjectContext
+                                                                                   withPredicate:[NSPredicate predicateWithFormat:@"orderId == %@", selectOrderId]];
+                [weakSelf selectOrder:reloadedOrderWithId];
+            });
         } onFailure:^{
             cleanup();
         }];

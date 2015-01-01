@@ -43,6 +43,8 @@
 + (void)reloadOrders:(BOOL)partialReturn
            onSuccess:(void (^)())successBlock
            onFailure:(void (^)())failureBlock {
+    NSLog(@"Reloading Orders");
+    
     //@todo orders implement partialReturn
     [[CoreDataUtil sharedManager] deleteAllObjects:@"Order"];
     [[CinchJSONAPIClient sharedInstance] GET:kDBORDER parameters:@{ kAuthToken: [CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
@@ -94,11 +96,51 @@
     }];
 }
 
++ (void)fetchOrder:(NSNumber *)orderId
+       attachHudTo:(UIView *)view
+         onSuccess:(void (^)(Order *order))successBlock
+         onFailure:(void (^)())failureBlock {
+    NSLog(@"Fetching Order");
+    
+    // Get the existing object, if available.
+    Order *existingOrder = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order" withPredicate:[NSPredicate predicateWithFormat:@"orderId = %@", orderId]];
+    
+    NSString *loadingText = existingOrder ? @"Restoring Order" : @"Retrieving Order";
+    NSDictionary *parameters = @{ kAuthToken: [CurrentSession instance].authToken };
+    
+    [OrderCoreDataManager sendRequest:@"GET"
+                                  url:kDBGETORDER(orderId)
+                           parameters:parameters
+                         successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                                 NSManagedObjectContext *managedObjectContext = [CurrentSession instance].managedObjectContext;
+                                 Order *returnOrder;
+                                 if (existingOrder) {
+                                     returnOrder = existingOrder;
+                                     [existingOrder updateWithJsonFromServer:JSON];
+                                 } else {
+                                     returnOrder = [[Order alloc] initWithJsonFromServer:JSON insertInto:managedObjectContext];
+                                 }
+                                 [managedObjectContext save:nil];
+                                 if (successBlock) successBlock(returnOrder);
+                             });
+                         }
+                         failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                             //failure
+                             if (failureBlock) failureBlock();
+                         }
+                                 view:view
+                          loadingText:loadingText];
+    
+}
+
 + (void)syncOrder:(Order *)order
       attachHudTo:(UIView *)view
         onSuccess:(void (^)(Order *order))successBlock
         onFailure:(void (^)())failureBlock {
 
+    NSLog(@"Syncing Order");
+    
     NSString *method = [order.orderId intValue] > 0 ? @"PUT" : @"POST";
     NSString *url = [order.orderId intValue] == 0 ? kDBORDER : kDBORDEREDITS([order.orderId intValue]);
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[order asJsonReqParameter]];
@@ -147,6 +189,7 @@
             async:(BOOL)shouldAsync
        beforeSave:(void (^)(Order *order))threadsafeOrderOperationBlock
         onSuccess:(void (^)())successBlock {
+    
     // we're about to save, we will consider this order out-of-sync with the server regardless of it's actual state
     // outside of the transient properties
     if (order.hasNontransientChanges) order.inSync = NO;
@@ -165,6 +208,7 @@
             ];
         }).unwrap;
 
+        NSLog(@"Saving Order Asynchronously");
         [CoreDataBackgroundOperation performInBackgroundWithContext:^(NSManagedObjectContext *context) {
             Order *asyncOrder = [OrderCoreDataManager load:@"Order" id:order.objectID fromContext:context];
             [asyncOrder setValuesForKeysWithDictionary:orderProperties];
@@ -183,7 +227,10 @@
             }
 
             if (threadsafeOrderOperationBlock) threadsafeOrderOperationBlock(asyncOrder);
-        } completion:successBlock];
+        } completion:^{
+            NSLog(@"Asynchronous Save Complete");
+            if (successBlock) successBlock();
+        }];
     } else {
         if (threadsafeOrderOperationBlock) threadsafeOrderOperationBlock(order);
         [OrderCoreDataManager saveOrder:order inContext:order.managedObjectContext];
@@ -192,6 +239,7 @@
 }
 
 + (void)saveOrder:(Order *)order inContext:(NSManagedObjectContext *)context {
+    NSLog(@"Saving Order");
     // we're about to save, we will consider this order out-of-sync with the server regardless of it's actual state
     // outside of the transient properties
     // we dont want to flip the sync flag if the sync value had just been changed to YES (a sync just occurred)
@@ -257,7 +305,7 @@
     __block NSURLSessionDataTask *task = [client dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id json, NSError *error) {
         if (error) {
             [submit hide:NO];
-            if (failureBlock) failureBlock(request, response, error, json);
+            if (failureBlock) failureBlock(request, (NSHTTPURLResponse *)response, error, json);
             NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
             NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
             if (statusCode == 422) {
@@ -272,7 +320,7 @@
         } else {
             [submit hide:NO];
 
-            if (successBlock) successBlock(request, response, json);
+            if (successBlock) successBlock(request, (NSHTTPURLResponse *)response, json);
         }
     }];
 

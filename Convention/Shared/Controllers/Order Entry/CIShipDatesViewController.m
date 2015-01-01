@@ -67,7 +67,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         self.tableView.backgroundColor = self.tableBackgroundColor;
         self.tableView.allowsSelection = NO;
 
-        self.originalFrame = CGRectZero; //placeholder nil
+//        self.originalFrame = CGRectZero; //placeholder nil
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:LineSelectionNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:LineDeselectionNotification object:nil];
@@ -77,15 +77,13 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 }
 
 - (void)viewDidLayoutSubviews {
-    if (CGRectEqualToRect(self.originalFrame, CGRectZero)) {
-        self.originalFrame = self.tableView.frame;
-        [self.tableView superview].backgroundColor = self.tableBackgroundColor;
+    [super viewDidLayoutSubviews];
 
-        self.tableView.frame = CGRectMake(self.originalFrame.origin.x + 10.0f,
-                self.originalFrame.origin.y,
-                self.originalFrame.size.width - 10.0f,
-                724.0f);
-    }
+    [self.tableView superview].backgroundColor = self.tableBackgroundColor;
+    self.originalFrame = self.tableView.frame = CGRectMake(1024.0f - 320.0f,
+                                     0,
+                                     320.0f,
+                                     724.0f);
 }
 
 - (UIStatusBarStyle) preferredStatusBarStyle {
@@ -102,12 +100,20 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.view.hidden = NO;
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
         if (nextCell) {
             [nextCell.quantityField becomeFirstResponder];
         }
     });
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    self.view.hidden = YES;
 }
 
 - (void)dealloc {
@@ -140,7 +146,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         }
     }
 
-    [self.tableView reloadData];
+//    [self.tableView reloadData];
 }
 
 #pragma mark CKCalendarDelegate
@@ -202,7 +208,6 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 - (void)reloadSelectedDatesSection {
     [self.selectedShipDates sortUsingDescriptors:@[ [[NSSortDescriptor alloc] initWithKey:@"timeIntervalSince1970" ascending:YES] ]];
-
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:self.tableView.numberOfSections - 1] withRowAnimation:UITableViewRowAnimationNone];
 }
 
@@ -510,28 +515,13 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     CIShipDateTableViewCell *cell = [[CIShipDateTableViewCell alloc] initOn:shipDate for:self.selectedLineItems usingQuantityField:useQuantityField];
 
     if (useQuantityField) {
-        UISwipeGestureRecognizer *swipeLeftGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(decrementQuantity:)];
-        swipeLeftGesture.numberOfTouchesRequired = 1;
-        swipeLeftGesture.cancelsTouchesInView = NO;
-        swipeLeftGesture.direction = UISwipeGestureRecognizerDirectionLeft;
-        [cell.contentView addGestureRecognizer:swipeLeftGesture];
-
-        UISwipeGestureRecognizer *swipeRightGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(incrementQuantity:)];
-        swipeRightGesture.numberOfTouchesRequired = 1;
-        swipeRightGesture.cancelsTouchesInView = NO;
-        swipeRightGesture.direction = UISwipeGestureRecognizerDirectionRight;
-        [cell.contentView addGestureRecognizer:swipeRightGesture];
-
-        cell.contentView.userInteractionEnabled = YES;
-
-
         __weak typeof(cell) weakCell = cell;
         __weak NSDate *weakShipDate = shipDate;
         [cell.quantityField setBk_didBeginEditingBlock:^(UITextField *field) {
             NSIndexPath *cellIndexPath = [self.tableView indexPathForCell:weakCell];
 
             // we need to scroll up because any cells that are not visible won't be elgible for "next cell" tabbing
-            [self.tableView scrollToRowAtIndexPath:cellIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            [self.tableView scrollToRowAtIndexPath:cellIndexPath atScrollPosition:UITableViewScrollPositionTop animated:NO];
 
             UITextRange *textRange = [field textRangeFromPosition:field.beginningOfDocument toPosition:field.endOfDocument];
             [field setSelectedTextRange:textRange];
@@ -547,20 +537,10 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
         }];
 
         [cell.quantityField setBk_didEndEditingBlock:^(UITextField *field) {
-            NSIndexPath *indexPath = [self.tableView indexPathForCell:weakCell];
-            NSLog(@"%d %d", indexPath.section, indexPath.row);
             [self calculateLineTotal:weakCell on:weakShipDate];
         }];
         [self calculateLineTotal:cell on:shipDate];
 
-//        [cell.quantityField setBk_shouldReturnBlock:^BOOL(UITextField *field) {
-//            NSIndexPath *indexPath = [self.tableView indexPathForCell:weakCell];
-//            CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row + 1 inSection:indexPath.section]];
-//            if (nextCell) {
-//                [nextCell.quantityField becomeFirstResponder];
-//            }
-//            return NO;
-//        }];
     }
 
     return cell;
@@ -599,20 +579,6 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     }
 }
 
-- (void)incrementQuantity:(UISwipeGestureRecognizer *)recognizer {
-    if (recognizer.state == UIGestureRecognizerStateEnded) {
-        CIShipDateTableViewCell *cell = (CIShipDateTableViewCell *) recognizer.view.superview.superview;
-        cell.quantity += 1;
-    }
-}
-
-- (void)decrementQuantity:(UISwipeGestureRecognizer *)recognizer {
-    if (recognizer.state == UIGestureRecognizerStateEnded) {
-        CIShipDateTableViewCell *cell = (CIShipDateTableViewCell *) recognizer.view.superview.superview;
-        cell.quantity -= 1;
-    }
-}
-
 - (UITableViewCell *)createCalendarCell {
     UITableViewCell *cell = [[UITableViewCell alloc] init];
 
@@ -628,7 +594,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 #pragma mark Keyboard Adjustments
 
 - (void)observeKeyboard {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
@@ -639,19 +605,19 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
     float resizeHeight = availableHeight - keyboardHeight - 1.0f;
     if (self.tableView.frame.size.height == 724.0f) {
-        self.tableView.frame = CGRectMake(self.originalFrame.origin.x + 10.0f,
-            self.originalFrame.origin.y,
-            self.originalFrame.size.width - 10.0f,
-            resizeHeight);
+        self.tableView.frame = self.tableView.frame = CGRectMake(1024.0f - 320.0f,
+                                                                 0,
+                                                                 320.0f,
+                                                                 resizeHeight);
     }
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification {
     if (self.tableView.frame.size.height != 724.0f) {
-        self.tableView.frame = CGRectMake(self.originalFrame.origin.x + 10.0f,
-                                          self.originalFrame.origin.y,
-                                          self.originalFrame.size.width - 10.0f,
-                                          724.0f);
+        self.tableView.frame = self.tableView.frame = CGRectMake(1024.0f - 320.0f,
+                                                                 0,
+                                                                 320.0f,
+                                                                 724.0f);
     }
 }
 

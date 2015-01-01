@@ -22,7 +22,7 @@
 
     if (self) {
         if ([ShowConfigurations instance].shipDates) {
-            self.shipDateController = [self initializeShipDateController:productViewController];
+            self.shipDateController =  (CIShipDatesViewController *) [self initializeShipDateController:productViewController];
             self.underRightViewController = self.shipDateController;
         }
 
@@ -57,7 +57,7 @@
     CIShipDatesViewController *shipDateController = [[CIShipDatesViewController alloc] initWithWorkingOrder:productViewController.order];
 
     // configure under right view controller
-    shipDateController.edgesForExtendedLayout = UIRectEdgeTop | UIRectEdgeBottom | UIRectEdgeRight; // don't go under the top view
+//    shipDateController.edgesForExtendedLayout = UIRectEdgeTop | UIRectEdgeBottom | UIRectEdgeRight; // don't go under the top view
 
     return shipDateController;
 }

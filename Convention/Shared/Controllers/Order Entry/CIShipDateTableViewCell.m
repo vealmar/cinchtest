@@ -22,7 +22,7 @@
 @implementation CIShipDateTableViewCell
 
 - (id)initOn:(NSDate *)shipDate for:(NSMutableArray *)selectedCartsParam usingQuantityField:(BOOL)useQuantity {
-    self = [super initWithStyle:nil reuseIdentifier:@"CIShipDateTableViewCell"];
+    self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CIShipDateTableViewCell"];
     if (self) {
         self.shipDate = shipDate;
         self.selectedLines = selectedCartsParam;

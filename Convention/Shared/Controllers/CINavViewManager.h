@@ -32,4 +32,6 @@
 
 - (void)setupNavBar;
 
+-(void)clearSearch;
+
 @end

@@ -33,6 +33,7 @@ static CurrentSession *currentSession = nil;
 
 - (void)handleContextSave:(NSNotification *)notification {
     if (![notification.object isEqual:self.managedObjectContext]) {
+        NSLog(@"Merging Contexts, main context has %i changes, %i inserts, %i deletes", self.managedObjectContext.updatedObjects.count, self.managedObjectContext.insertedObjects.count, self.managedObjectContext.deletedObjects.count);
         [self.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
     }
 }

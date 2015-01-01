@@ -21,6 +21,7 @@
 #define kDBGETVENDORSWithVG [NSString stringWithFormat:@"/vendor/shows/%@/vendorgroups.json",ShowID]
 #define kDBGETCUSTOMERS [NSString stringWithFormat:@"/vendor/shows/%@/customers.json",ShowID]
 #define kDBGETCUSTOMER(customerId) [NSString stringWithFormat:@"/vendor/shows/%@/customers/%@.json?",ShowID, customerId]
+#define kDBGETORDER(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%@.json",ShowID,ID]
 #define kDBORDER [NSString stringWithFormat:@"/vendor/shows/%@/orders.json",ShowID]
 #define kDBORDEREDITS(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%d.json",ShowID,ID]
 #define kDBCAPTURESIG(ID)[NSString stringWithFormat:@"/vendor/orders/%d/signature.json",ID]

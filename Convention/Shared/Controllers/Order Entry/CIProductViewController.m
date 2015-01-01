@@ -85,11 +85,13 @@
             [CurrentSession instance].vendorId &&
             ![[CurrentSession instance].vendorId isKindOfClass:[NSNull class]] ?
             [[CurrentSession instance].vendorId intValue] : 0;
+    self.orderSubmitted = NO;
+    self.selectedLineItems = [NSMutableSet set];
+    
     currentVendor = initialVendor;
     currentBulletin = 0;
     if (self.filterCartSwitch) self.filterCartSwitch.on = NO;
-    self.orderSubmitted = NO;
-    self.selectedLineItems = [NSMutableSet set];
+    [self updateFilterButtonState];
 }
 
 - (void)viewDidLoad {
@@ -137,17 +139,11 @@
     if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
 
     // notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardDidShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartQuantityChange:) name:LineQuantityChangedNotification object:nil];
-
-    // listen for changes KVO
-    [self addObserver:self forKeyPath:NSStringFromSelector(@selector(order)) options:0 context:nil];
-    [self addObserver:self
-           forKeyPath:[NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(order)), NSStringFromSelector(@selector(shipDates))]
-              options:0
-              context:nil];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onLineDeselection:) name:LineDeselectionNotification object:nil];
+    
     CINavViewManager *navViewManager = self.navViewManager = [[CINavViewManager alloc] init:YES];
     navViewManager.delegate = self;
     [navViewManager setupNavBar];
@@ -165,10 +161,8 @@
     }
 }
 
-- (void)viewDidDisappear {
+- (void)viewDidDisappear:(BOOL)animated {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(order))];
-    [self removeObserver:self forKeyPath:[NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(order)), NSStringFromSelector(@selector(shipDates))]];
 }
 
 # pragma mark - Initialization
@@ -430,12 +424,10 @@
             self.filterStaticController.tableView.separatorColor = [UIColor colorWithRed:0.839 green:0.839 blue:0.851 alpha:1];
             self.filterStaticController.navigationController.navigationBarHidden = YES;
             self.poController.popoverContentSize = CGSizeMake(320, 133);
-            NSLog(@"appears");
         }                                          error:nil];
 
         [self.filterStaticController aspect_hookSelector:@selector(viewWillDisappear:) withOptions:AspectPositionAfter usingBlock:^(id instance, NSArray *args) {
             [self.poController setPopoverContentSize:CGSizeMake(320, 480) animated:YES];
-            NSLog(@"disapp");
         }                                          error:nil];
 
 
@@ -469,14 +461,62 @@
 #pragma mark - Events
 
 - (void)cancel {
-    if ([self.order.orderId intValue] == 0) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Cancel Order?" message:@"This will cancel the current order." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
-        [alertView show];
-    } else if (self.order.hasNontransientChanges) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Exit Without Saving?" message:@"There are some unsaved changes. Are you sure you want to exit without saving?" delegate:self cancelButtonTitle:@"No" otherButtonTitles:@"Yes", nil];
-        [UIAlertViewDelegateWithBlock showAlertView:alertView withCallBack:^(NSInteger buttonIndex) {
-            if ([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"Yes"]) {
-                [self Return];
+    if (self.order.hasNontransientChanges || !self.order.inSync) {
+        NSMutableArray *options = [NSMutableArray array];
+        NSString *title = @"";
+        
+        if (self.order.hasNontransientChanges) {
+            title = @"Unsaved Changes";
+        } else {
+            title = @"Unsynced Changes";
+        }
+        
+        [options addObject:@"Cancel & Continue with Order"];
+        
+        if (!self.order.updatedAt) {
+            // if this is blank, the order has never been saved
+            [options addObject:@"Cancel and Delete this Order"];
+        } else {
+            [options addObject:@"Undo Changes Since Last Sync"];
+        }
+        
+        [options addObject:@"Save Locally & Resume Later"];
+        [options addObject:@"Submit This Order Now"];
+        
+        __weak CIProductViewController *weakSelf = self;
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
+                                                        message:@"You have unsaved or unsynced changes to this order. How would you like to proceed?"
+                                                       delegate:self
+                                              cancelButtonTitle:options.firstObject
+                                              otherButtonTitles:nil];
+        for (NSString *option in [options subarrayWithRange:NSMakeRange(1, options.count - 1)]) {
+            [alert addButtonWithTitle:option];
+        }
+        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+            NSString *action = [alert buttonTitleAtIndex:buttonIndex];
+            if ([action isEqualToString:@"Cancel and Delete this Order"]) {
+                [OrderCoreDataManager deleteOrder:weakSelf.order onSuccess:^{
+                    [self Return];
+                } onFailure:^{
+                    // do nothing
+                }];
+            } else if ([action isEqualToString:@"Undo Changes Since Last Sync"]) {
+                [OrderCoreDataManager fetchOrder:weakSelf.order.orderId attachHudTo:weakSelf.view onSuccess:^(Order *order) {
+                    weakSelf.order = order;
+                    [weakSelf Return];
+                } onFailure:^{
+                    // do nothing
+                }];
+            } else if ([action isEqualToString:@"Save Locally & Resume Later"]) {
+                if (weakSelf.order.isComplete) weakSelf.order.status = @"pending";
+                [OrderCoreDataManager saveOrder:weakSelf.order inContext:weakSelf.order.managedObjectContext];
+                [weakSelf Return];
+            } else if ([action isEqualToString:@"Submit This Order Now"]) {
+                [weakSelf reviewCart];
+            } else if ([action isEqualToString:@"Cancel & Continue with Order"]) {
+                // do nothing
+            } else {
+                [weakSelf Return];
             }
         }];
     } else {
@@ -579,24 +619,18 @@
 
 #pragma mark - ProductCellDelegate
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    NSString *orderShipDatesKeyPath = [NSString stringWithFormat:@"%@.%@", NSStringFromSelector(@selector(order)), NSStringFromSelector(@selector(shipDates))];
-    if ([NSStringFromSelector(@selector(order)) isEqualToString:keyPath]) {
-        NSError *error = nil;
-        if (![[CurrentSession instance].managedObjectContext save:&error]) {
-            NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
-            [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-        }
-    } else if (self.order && [orderShipDatesKeyPath isEqualToString:keyPath]) {
-        [self.productTableViewController.tableView reloadData];
-        [self updateTotals];
-    }
-}
-
 - (void)onCartQuantityChange:(NSNotification *)notification {
     LineItem *lineItem = notification.object;
     if (lineItem && lineItem.order && self.order && [self.order.objectID isEqual:lineItem.order.objectID]) {
         [self updateTotals];
+    }
+}
+
+- (void)onLineDeselection:(NSNotification *)notification {
+    if (self.order) {
+        NSLog(@"Triggering Autosave...");
+        BOOL hasInserts = self.order.managedObjectContext.insertedObjects.count > 0;
+        [OrderCoreDataManager saveOrder:self.order async:!hasInserts beforeSave:nil onSuccess:nil];
     }
 }
 

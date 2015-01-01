@@ -129,6 +129,7 @@
     if ([helper isOrderReadyForSubmission:self.order]) {
         __weak CICartViewController *weakSelf = self;
         self.savingOrder = YES;
+        self.order.status = @"pending";
         [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
             weakSelf.order = order;
             [weakSelf refreshView];

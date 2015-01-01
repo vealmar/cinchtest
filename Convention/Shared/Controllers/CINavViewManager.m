@@ -102,6 +102,7 @@
 }
 
 - (void)setupNavBar:(NSString*)searchText {
+    
     UINavigationController *navController = self.delegate.navigationControllerForNavViewManager;
     UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
 
@@ -137,16 +138,8 @@
     navItem.rightBarButtonItems = rightBarButtonItems;
 }
 
-//- (void)applyInsets:(NSArray *)barButtonItems {
-//    Underscore.array(barButtonItems).each(^(UIBarButtonItem *item) {
-//        if (item.customView) {
-//            [item.customView setContentEdgeInsets:UIEdgeInsetsMake(0, 4.0, 0, -4.0)];
-//        }
-//        [item setImageInsets:UIEdgeInsetsMake(0, 4.0, 0, -4.0)];
-//    });
-//}
-
 - (void)setupNavBarSearch:(NSString*)searchText {
+    
     UINavigationController *navController = self.delegate.navigationControllerForNavViewManager;
     UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
 
@@ -181,6 +174,13 @@
 -(void)addDismissButtonToViewport {
     self.dismissButton.frame = CGRectMake(0.0f, 44.0f, self.delegate.navigationControllerForNavViewManager.view.bounds.size.width, self.delegate.navigationControllerForNavViewManager.view.bounds.size.height - 44.0f);
     [self.delegate.navigationControllerForNavViewManager.view addSubview:self.dismissButton];
+}
+
+-(void)clearSearch {
+    NSString *originalSearchQuery = self.searchTextField.text;
+    self.searchTextField.text = nil;
+    [self exitSearchMode];
+    if (originalSearchQuery) [self searchWithString:self.searchTextField.text inputCompleted:YES];
 }
 
 -(void)exitSearchMode {
