@@ -21,6 +21,7 @@
 #import "JSONResponseSerializerWithErrorData.h"
 #import "CinchJSONAPIClient.h"
 #import "NotificationConstants.h"
+#import "ShowConfigurations.h"
 
 
 @implementation CoreDataManager
@@ -191,6 +192,8 @@
 }
 
 + (NSFetchRequest *)buildProductFetch:(ProductSearch *)search {
+    ShowConfigurations *configurations = [ShowConfigurations instance];
+    
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:search.context]];
     [fetchRequest setIncludesSubentities:NO];
@@ -209,7 +212,15 @@
         [predicates addObject:[NSPredicate predicateWithFormat:@"bulletin_id = %d", search.currentBulletin]];
     }
     if (search.queryString.length > 0) {
-        [predicates addObject:[NSPredicate predicateWithFormat:@"invtid CONTAINS[cd] %@ or partnbr CONTAINS[cd] %@ or descr CONTAINS[cd] %@ or descr2 CONTAINS[cd] %@", search.queryString, search.queryString, search.queryString, search.queryString]];
+        NSMutableArray *queryMatches = [NSMutableArray array];
+        [queryMatches addObject:[NSPredicate predicateWithFormat:@"invtid CONTAINS[cd] %@ or descr CONTAINS[cd] %@ or descr2 CONTAINS[cd] %@", search.queryString, search.queryString, search.queryString]];
+        if (configurations.productEnableManufacturerNo) {
+            [queryMatches addObject:[NSPredicate predicateWithFormat:@"partnbr CONTAINS[cd] %@", search.queryString]];
+        }
+        if (configurations.discounts) {
+            [queryMatches addObject:[NSPredicate predicateWithFormat:@"tags CONTAINS[cd] %@", search.queryString]];
+        }
+        [predicates addObject:[NSCompoundPredicate orPredicateWithSubpredicates:queryMatches]];
     }
     fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
     return fetchRequest;
