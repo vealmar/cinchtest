@@ -67,6 +67,8 @@
 
 - (void)persistentOrderUpdated:(Order *)updatedOrder {
     self.NoOrdersLabel.hidden = self.ordersTableViewController.hasOrders;
+    
+    self.currentOrder = updatedOrder;
     [self.ordersTableViewController selectOrder:updatedOrder];
 }
 
@@ -513,7 +515,6 @@
     __weak CIOrderViewController *weakSelf = self;
     [OrderCoreDataManager syncOrder:self.currentOrder attachHudTo:self.view onSuccess:^(Order *order) {
         [self persistentOrderUpdated:order];
-        weakSelf.currentOrder = order;
     } onFailure:nil];
 }
 

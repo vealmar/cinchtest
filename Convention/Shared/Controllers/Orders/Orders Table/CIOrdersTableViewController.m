@@ -67,20 +67,42 @@
 }
 
 - (void)selectOrder:(Order *)order {
-    NSIndexPath *path = nil;
-    if (order) {
-        // if we dont have a path, it's possible that coredata hasn't saved it yet thus it's not in the table
-        path = [self.fetchedResultsController indexPathForObject:order];
-    } else if (self.hasOrders) {
-        path = [NSIndexPath indexPathForRow:0 inSection:0];
-    }
-    
-    if (path) {
-        [self tableView:self.tableView willSelectRowAtIndexPath:path];
-        [self.tableView selectRowAtIndexPath:path
-                                    animated:NO
-                              scrollPosition:UITableViewScrollPositionTop];
-        [self tableView:self.tableView didSelectRowAtIndexPath:path];
+    if (order != self.currentOrder || (order && self.currentOrder && ![order.objectID isEqual:self.currentOrder.objectID])) {
+
+        //deselect current order
+        if (self.currentOrder) {
+            NSIndexPath *path = [self.fetchedResultsController indexPathForObject:self.currentOrder];
+            if (path) {
+                CIOrderCell *cell = (CIOrderCell *) [self.tableView cellForRowAtIndexPath:path];
+                if (cell) {
+                    [cell setActive:NO];
+                }
+            }
+        }
+
+        self.currentOrder = order;
+
+        NSIndexPath *path = nil;
+        if (order) {
+            // if we dont have a path, it's possible that coredata hasn't saved it yet thus it's not in the table
+            path = [self.fetchedResultsController indexPathForObject:order];
+        } else if (self.hasOrders) {
+            path = [NSIndexPath indexPathForRow:0 inSection:0];
+        }
+
+        if (path) {
+            CIOrderCell *cell = (CIOrderCell *) [self.tableView cellForRowAtIndexPath:path];
+            // select new order
+            if (cell) {
+                [cell setActive:YES];
+            }
+            // scroll to new order
+            if (!(cell && cell.visible)) {
+                [self.tableView scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            }
+        }
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:OrderSelectionNotification object:order];
     }
 }
 
@@ -129,11 +151,10 @@
             NSIndexPath *selectedPath = [self.tableView indexPathForSelectedRow];
             Order *selectedOrder = (Order *) [self.fetchedResultsController objectAtIndexPath:selectedPath];
             if (!selectedPath || ![self.currentOrder.objectID isEqual:selectedOrder.objectID]) {
-                NSIndexPath *shouldSelectIndexPath = [self.fetchedResultsController indexPathForObject:self.currentOrder];
-                [self.tableView selectRowAtIndexPath:shouldSelectIndexPath animated:YES scrollPosition:UITableViewScrollPositionTop];
+                [self selectOrder:selectedOrder];
             }
         } else if (NSFetchedResultsChangeDelete == type) {
-            self.currentOrder = nil;
+            [self selectOrder:nil];
         }
     }
 }
@@ -143,7 +164,7 @@
 - (void)loadOrders:(BOOL)showLoadingIndicator selectOrder:(Order *)order {
     if (!self.isLoadingOrders) {
         NSNumber *selectOrderId = order.orderId;
-        self.currentOrder = nil;
+        [self selectOrder:nil];
         self.isLoadingOrders = YES;
 
         //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
@@ -218,8 +239,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     Order *order = (Order *) [self.fetchedResultsController objectAtIndexPath:indexPath];
-    self.currentOrder = order;
-    [[NSNotificationCenter defaultCenter] postNotificationName:OrderSelectionNotification object:order];
+    [self selectOrder:order];
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -242,71 +262,8 @@
 
     Order *order = [self.fetchedResultsController objectAtIndexPath:indexPath];
     
-    if (self.currentOrder && [order.orderId isEqual:self.currentOrder.orderId]) {
-        cell.selected = YES;
-    }
-
-    cell.Customer.text = order.customerName;
-
-    if (order.authorizedBy != nil) {
-        cell.auth.text = order.authorizedBy;
-        cell.Customer.center = CGPointMake(cell.Customer.center.x, cell.contentView.center.y - 8);
-        cell.auth.center = CGPointMake(cell.auth.center.x, cell.contentView.center.y + 14);
-    } else {
-        cell.Customer.center = CGPointMake(cell.Customer.center.x, cell.contentView.center.y);
-        cell.auth.text = @"";
-    }
-
-    cell.numItems.text = [NSString stringWithFormat:@"%d Items", order.lineItems.count];
-
-    cell.total.text = @"Calculating...";
-    __weak CIOrdersTableViewController *weakSelf = self;
-    [order calculateTotals:^(OrderTotals *totals, NSManagedObjectID *totalledOrderId) {
-        if (weakSelf && [order.objectID isEqual:totalledOrderId])
-        cell.total.text = [NumberUtil formatDollarAmount:totals.total];
-    }];
-
-    cell.tag = [order.orderId intValue];
-
-    cell.orderStatus.textColor = [UIColor whiteColor];
-    cell.orderStatus.font = [UIFont semiboldFontOfSize:12.0];
-    if (order.status != nil) {
-        cell.orderStatus.text = [order.status capitalizedString];
-        if (order.isPartial || order.isPending) {
-            cell.orderStatus.backgroundColor = [ThemeUtil darkBlueColor];
-        } else if (order.isSubmitted) {
-            cell.orderStatus.backgroundColor = [ThemeUtil orangeColor];
-        } else if (order.isComplete) {
-            cell.orderStatus.backgroundColor = [ThemeUtil greenColor];
-        }
-    } else {
-        cell.orderStatus.text = @"Unknown";
-        cell.orderStatus.backgroundColor = [UIColor blackColor];
-    }
-
-    cell.orderStatus.attributedText = [[NSAttributedString alloc] initWithString:cell.orderStatus.text attributes: @{ NSKernAttributeName : @(-0.5f) }];
-    cell.orderStatus.layer.cornerRadius = 3.0f;
-
-    if (order.orderId != nil)
-        cell.orderId.text = [NSString stringWithFormat:@"Order #%@", [order.orderId stringValue]];
-    else
-        cell.orderId.text = @"";
-
-    if (![ShowConfigurations instance].vouchers) {
-        cell.vouchersLabel.hidden = YES;
-        cell.vouchers.hidden = YES;
-    }
-
-    UIView *bgColorView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
-    bgColorView.backgroundColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
-
-    UIView *bar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 10, 50)];
-    bar.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    bar.backgroundColor = [ThemeUtil orangeColor];
-    [bgColorView addSubview:bar];
-
-    [cell setSelectedBackgroundView:bgColorView];
-
+    [cell prepareForDisplay:order setActive:self.currentOrder && [order.orderId isEqual:self.currentOrder.orderId]];
+    
     return cell;
 }
 

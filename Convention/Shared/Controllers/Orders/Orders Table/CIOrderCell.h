@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class Order;
+
 @interface CIOrderCell : UITableViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *orderId;
@@ -19,6 +21,12 @@
 @property (weak, nonatomic) IBOutlet UILabel *orderStatus;
 @property (weak, nonatomic) IBOutlet UILabel *vouchersLabel;
 
+@property NSManagedObjectID *orderObjectId;
+
+- (void)prepareForDisplay:(Order *)order setActive:(BOOL)activeOrder;
+
 - (void)updateRowHighlight:(NSIndexPath *)indexPath;
+
+- (void)setActive:(BOOL)activeOrder;
 
 @end

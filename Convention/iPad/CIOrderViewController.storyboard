@@ -296,6 +296,9 @@
                     </tableView>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
                     <size key="freeformSize" width="200" height="200"/>
+                    <connections>
+                        <outlet property="view" destination="Pdi-b1-vJm" id="mOt-6t-DM9"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mpZ-nG-8Bx" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
