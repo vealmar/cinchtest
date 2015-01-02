@@ -24,6 +24,7 @@
 #import "OrderSubtotalsByDate.h"
 #import "DateRange.h"
 #import "CoreDataBackgroundOperation.h"
+#import "Error+Extensions.h"
 
 @implementation Order (Extensions)
 
@@ -192,7 +193,8 @@
 - (LineItem *)findOrCreateLineForProductId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
     LineItem *lineItem = [self findLineByProductId:productId];
     if (!lineItem) {
-        lineItem = [[LineItem alloc] initWithProduct:[Product findProduct:productId] context:context];
+        Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" inContext:context withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", productId]];
+        lineItem = [[LineItem alloc] initWithProduct:product context:context];
         [self addLineItemsObject:lineItem];
         //@todo orders we should do this for all order saves
         [OrderCoreDataManager saveOrder:self inContext:context];
@@ -302,9 +304,19 @@
 
     BOOL includingErrorsAndWarnings = (BOOL) JSON[@"including_errors_and_warnings"];
     if (includingErrorsAndWarnings) {
-        NSArray *warningsArray = (NSArray *) [NilUtil nilOrObject:JSON[@"warnings"]];
+        NSMutableArray *warningsArray = [NSMutableArray array];
+        NSMutableArray *errorsArray = [NSMutableArray array];
+
+        for (NSString *warning in [NilUtil objectOrEmptyArray:JSON[@"warnings"]]) {
+            Error *lineItemrError = [[Error alloc] initWithMessage:warning andContext:self.managedObjectContext];
+            [warningsArray addObject:lineItemrError];
+        }
+        for (NSString *error in [NilUtil objectOrEmptyArray:JSON[@"errors"]]) {
+            Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
+            [errorsArray addObject:lineItemrError];
+        }
+
         self.warnings = [NSSet setWithArray:warningsArray];
-        NSArray *errorsArray = (NSArray *) [NilUtil nilOrObject:JSON[@"errors"]];
         self.errors = [NSSet setWithArray:errorsArray];
     }
 

@@ -16,6 +16,8 @@
 #import "NumberUtil.h"
 #import "DateRange.h"
 #import "CoreDataUtil.h"
+#import "Error+Extensions.h"
+#import "Error.h"
 
 @implementation LineItem (Extensions)
 
@@ -176,9 +178,19 @@
 
     BOOL includingErrorsAndWarnings = (BOOL) json[@"including_errors_and_warnings"];
     if (includingErrorsAndWarnings) {
-        NSArray *warningsArray = (NSArray *) [NilUtil nilOrObject:json[@"warnings"]];
+        NSMutableArray *warningsArray = [NSMutableArray array];
+        NSMutableArray *errorsArray = [NSMutableArray array];
+        
+        for (NSString *warning in [NilUtil objectOrEmptyArray:json[@"warnings"]]) {
+            Error *lineItemrError = [[Error alloc] initWithMessage:warning andContext:self.managedObjectContext];
+            [warningsArray addObject:lineItemrError];
+        }
+        for (NSString *error in [NilUtil objectOrEmptyArray:json[@"errors"]]) {
+            Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
+            [errorsArray addObject:lineItemrError];
+        }
+        
         self.warnings = [NSSet setWithArray:warningsArray];
-        NSArray *errorsArray = (NSArray *) [NilUtil nilOrObject:json[@"errors"]];
         self.errors = [NSSet setWithArray:errorsArray];
     }
 

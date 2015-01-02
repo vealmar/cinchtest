@@ -256,7 +256,7 @@
                 cleftLabel.backgroundColor = [UIColor clearColor];
                 cleftLabel.font = [UIFont regularFontOfSize:14];
                 cleftLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-                cleftLabel.numberOfLines = 0;
+                cleftLabel.numberOfLines = 1;
                 cleftLabel.textAlignment = NSTextAlignmentRight;
                 [cell.contentView addSubview:cleftLabel];
 
@@ -265,8 +265,9 @@
                 crightLabel.backgroundColor = [UIColor clearColor];
                 crightLabel.font = [UIFont semiboldFontOfSize:14];
                 crightLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-                crightLabel.numberOfLines = 0;
+                crightLabel.numberOfLines = 1;
                 crightLabel.textAlignment = NSTextAlignmentRight;
+                crightLabel.adjustsFontSizeToFitWidth = YES;
                 [cell.contentView addSubview:crightLabel];
             } else {
                 cleftLabel = (UILabel*)[cell.contentView viewWithTag:1001];

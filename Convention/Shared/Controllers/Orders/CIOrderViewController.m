@@ -534,7 +534,8 @@
 - (void)returnOrder:(Order *)savedOrder updateStatus:(OrderUpdateStatus)updateStatus {
     [self.ordersTableViewController.tableView reloadData];
     if (updateStatus != NewOrderCancelled && savedOrder) { //new order created
-        [self persistentOrderUpdated:savedOrder];
+        Order *contextReadyOrder = [OrderCoreDataManager load:@"Order" id:savedOrder.objectID fromContext:self.ordersTableViewController.managedObjectContext];
+        [self persistentOrderUpdated:contextReadyOrder];
     }
 }
 

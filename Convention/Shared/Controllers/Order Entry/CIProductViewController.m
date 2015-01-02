@@ -119,18 +119,27 @@
             if (self.newOrder) {
                 self.order = [Order newOrderForCustomer:self.customer];
             }
-            else
+            else {
+                if (self.order) {
+                    self.order = [OrderCoreDataManager load:@"Order" id:self.order.objectID fromContext:[CurrentSession instance].managedObjectContext];
+                }
+
                 [self loadOrder:OrderRecoverySelectionNone];
+            }
         }
         [self loadVendors];
         [self loadBulletins];
-        [self loadProductsForCurrentVendorAndBulletin];
-        [self deserializeOrder];
         self.viewInitialized = YES;
-    } else {
-        [self deserializeOrder];
     }
 
+    // if we're looking at a different vendor's order, show all products by default
+    if (self.order && self.order.vendorId.intValue != currentVendor) {
+        currentVendor = 0;
+    }
+    
+    [self loadProductsForCurrentVendorAndBulletin];
+    [self deserializeOrder];
+    
     self.vendorLabel.text = [[NSUserDefaults standardUserDefaults] objectForKey:kSettingsUsernameKey];
 
     [self.vendorTable reloadData];
@@ -643,7 +652,7 @@
 - (void)QtyTouchForIndex:(NSNumber *)productId {
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
         LineItem *lineItem = [self.order findOrCreateLineForProductId:productId
-                                                        context:[CurrentSession instance].managedObjectContext];
+                                                        context:self.order.managedObjectContext];
 
         if (self.selectedLineItems.count == 1) {
             [self closeCalendar];

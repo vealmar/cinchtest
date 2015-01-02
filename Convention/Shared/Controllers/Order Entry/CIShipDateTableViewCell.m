@@ -46,7 +46,7 @@
         self.textLabel.textColor = [UIColor whiteColor];
         self.textLabel.font = [UIFont fontWithName:kFontName size:14.0f];
         if (useQuantity) {
-            self.quantityField = [[UITextField alloc] initWithFrame:CGRectMake(180, 10, 50, 20)];
+            self.quantityField = [[UITextField alloc] initWithFrame:CGRectMake(160, 10, 55, 20)];
             self.quantityField.textAlignment = NSTextAlignmentCenter;
             self.quantityField.font = [UIFont systemFontOfSize:14.0f];
             self.quantityField.borderStyle = UITextBorderStyleRoundedRect;
@@ -68,12 +68,12 @@
             self.xLabel.text = @"x";
             [self addSubview:self.xLabel];
 
-            self.lineTotalBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x + 45, self.quantityField.frame.origin.y, 75, self.quantityField.frame.size.height)];
+            self.lineTotalBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x + 60, self.quantityField.frame.origin.y, 90, self.quantityField.frame.size.height)];
             self.lineTotalBackgroundView.backgroundColor = [ThemeUtil blackColor];
             self.lineTotalBackgroundView.layer.cornerRadius = 3;
             [self addSubview:self.lineTotalBackgroundView];
 
-            self.lineTotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x+ 45, self.quantityField.frame.origin.y, 70, self.quantityField.frame.size.height)];
+            self.lineTotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.quantityField.frame.origin.x + 60, self.quantityField.frame.origin.y, 85, self.quantityField.frame.size.height)];
             self.lineTotalLabel.font = [UIFont systemFontOfSize:13.0f];
             self.lineTotalLabel.textColor = [UIColor whiteColor];
             self.lineTotalLabel.text = @"$0.00";
