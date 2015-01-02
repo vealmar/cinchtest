@@ -7,6 +7,9 @@
 
 @interface CoreDataBackgroundOperation : NSObject
 
++ (void)performBatchInBackgroundWithContext:(void(^)(NSManagedObjectContext *context))asyncBlock
+                                 completion:(void(^)(void))completion;
+
 + (void)performInBackgroundWithContext:(void(^)(NSManagedObjectContext *context))asyncBlock
                             completion:(void(^)(void))completion;
 

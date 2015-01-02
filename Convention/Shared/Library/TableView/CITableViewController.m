@@ -14,8 +14,8 @@
 
 @implementation CITableViewController
 
-- (void)prepareForDisplay:(NSManagedObjectContext *)managedObjectContext {
-    [super prepareForDisplay:managedObjectContext];
+- (void)prepareForDisplay {
+    [super prepareForDisplay];
     self.columns = [self createColumns];
 
     if (self.header) {

@@ -38,7 +38,11 @@
 @property NSManagedObjectContext *managedObjectContext;
 @property NSFetchRequest *fetchRequest;
 
-- (void)prepareForDisplay:(NSManagedObjectContext *)managedObjectContext;
+- (void)prepareForDisplay;
+
+- (void)pauseContextUpdates;
+
+- (void)resumeContextUpdates;
 
 @end
 

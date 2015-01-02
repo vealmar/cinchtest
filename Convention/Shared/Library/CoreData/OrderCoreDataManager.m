@@ -33,7 +33,7 @@
 
     NSMutableArray *predicates = [NSMutableArray arrayWithCapacity:3];
     if (queryString && queryString.length > 0) {
-        [predicates addObject:[NSPredicate predicateWithFormat:@"customerName CONTAINS[cd] %@ or custId CONTAINS[cd] %@ or authorizedBy CONTAINS[cd] %@ or orderId CONTAINS[cd] %@", queryString, queryString, queryString, queryString]];
+        [predicates addObject:[NSPredicate predicateWithFormat:@"customerName CONTAINS[cd] %@ or custId CONTAINS[cd] %@ or authorizedBy CONTAINS[cd] %@ or orderId == %@", queryString, queryString, queryString, queryString]];
     }
     fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
 
@@ -44,12 +44,9 @@
            onSuccess:(void (^)())successBlock
            onFailure:(void (^)())failureBlock {
     NSLog(@"Reloading Orders");
-    
-    //@todo orders implement partialReturn
     [[CoreDataUtil sharedManager] deleteAllObjects:@"Order"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:OrderReloadStartedNotification object:nil];
     [[CinchJSONAPIClient sharedInstance] GET:kDBORDER parameters:@{ kAuthToken: [CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-        NSManagedObjectContext *managedObjectContext = [CurrentSession instance].newManagedObjectContext;
-
         if (JSON && ([(NSArray *) JSON count] > 0)) {
             NSArray *orders = (NSArray *) JSON;
 
@@ -58,19 +55,38 @@
             NSRange range = NSMakeRange(0, orderCount > batchSize ? batchSize : orderCount);
 
             NSDate *start = [NSDate date];
+            NSMutableArray *remainingBatches = [NSMutableArray array];
             while (range.length > 0) {
                 NSArray *orderBatch = [orders subarrayWithRange:range];
-                @autoreleasepool {
-                    for (NSDictionary *orderJson in orderBatch) {
-//                        NSEntityDescription *entityDescription = [NSEntityDescription entityForName:@"Order" inManagedObjectContext:managedObjectContext];
-//                        Order *order = [[Order alloc] initWithEntity:entityDescription insertIntoManagedObjectContext:managedObjectContext];
-//                        [order updateWithJsonFromServer:orderJson];
-                        Order *order = [[Order alloc] initWithJsonFromServer:orderJson insertInto:managedObjectContext];
-                    }
+                if (range.location > 0) {
+                    [remainingBatches addObject:orderBatch];
+                } else {
+                    NSManagedObjectContext *managedObjectContext = [CurrentSession instance].newManagedObjectContext;
+                    [OrderCoreDataManager createBatch:orderBatch inContext:managedObjectContext];
                     [managedObjectContext save:nil];
+                    managedObjectContext = nil;
                 }
                 int newStartLocation = range.location + range.length;
                 range = NSMakeRange(newStartLocation, orderCount - newStartLocation > batchSize ? batchSize : orderCount - newStartLocation);
+            }
+
+            //release unneeded data for memory
+            JSON = nil;
+            orders = nil;
+
+            __block int remainingBatchCount = 0;
+            int totalRemainingBatchCount = remainingBatches.count;
+            for (NSArray *orderBatch in remainingBatches) {
+                @synchronized(@(range.location)){
+                    [CoreDataBackgroundOperation performBatchInBackgroundWithContext:^(NSManagedObjectContext *context) {
+                        [OrderCoreDataManager createBatch:orderBatch inContext:context];
+                    } completion:^{
+                        remainingBatchCount += 1;
+                        if (remainingBatchCount >= totalRemainingBatchCount) {
+                            [[NSNotificationCenter defaultCenter] postNotificationName:OrderReloadCompleteNotification object:nil];
+                        }
+                    }];
+                }
             }
 
             NSDate *methodFinish = [NSDate date];
@@ -78,9 +94,7 @@
 
             NSLog(@"Execution Time: %f", executionTime);
         }
-        //@todo orders change to orderloaded notification
-        [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
-        if (successBlock) successBlock(JSON);
+        if (successBlock) successBlock();
 
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         if (failureBlock) failureBlock();
@@ -325,6 +339,14 @@
     }];
 
     [task resume];
+}
+
++ (void)createBatch:(NSArray *)orderBatch inContext:(NSManagedObjectContext *)managedObjectContext {
+    @autoreleasepool {
+        for (NSDictionary *orderJson in orderBatch) {
+            Order *order = [[Order alloc] initWithJsonFromServer:orderJson insertInto:managedObjectContext];
+        }
+    }
 }
 
 @end

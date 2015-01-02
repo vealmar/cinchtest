@@ -72,10 +72,10 @@
     self.searchTextField.autocorrectionType = UITextAutocorrectionTypeNo;
     self.searchTextField.delegate = self;
     [self.searchTextField bk_addEventHandler:^(id sender) {
-            [self searchWithString:self.searchTextField.text inputCompleted:NO];
+        [self searchWithString:self.searchTextField.text inputCompleted:NO];
         } forControlEvents:UIControlEventEditingChanged];
     [self.searchTextField bk_addEventHandler:^(id sender) {
-            [self searchWithString:self.searchTextField.text inputCompleted:YES];
+        [self searchWithString:self.searchTextField.text inputCompleted:YES];
         } forControlEvents:UIControlEventEditingDidEnd];
 }
 
@@ -101,7 +101,7 @@
     return ((UILabel *) navItem.titleView).attributedText;
 }
 
-- (void)setupNavBar:(NSString*)searchText {
+- (void)setupNavBar:(NSString *)searchText {
     
     UINavigationController *navController = self.delegate.navigationControllerForNavViewManager;
     UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
@@ -127,7 +127,9 @@
         }
 
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:[NSString stringWithFormat:@"   %@", term] style:UIBarButtonItemStylePlain handler:^(id sender) {
-            [self setupNavBarSearch:searchText];
+            if ([self allowSearch]) {
+                [self setupNavBarSearch:searchText];
+            }
         }];
         [searchItem setTitleTextAttributes:[ThemeUtil navigationSearchLabelTextAttributes] forState:UIControlStateNormal];
         leftBarButtonItems = [leftBarButtonItems arrayByAddingObject:searchItem];
@@ -139,25 +141,24 @@
 }
 
 - (void)setupNavBarSearch:(NSString*)searchText {
-    
     UINavigationController *navController = self.delegate.navigationControllerForNavViewManager;
     UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
-
+    
     navItem.titleView.hidden = YES;
     [navController.navigationBar setBackgroundImage:nil forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
     navController.navigationBar.barTintColor = [UIColor blackColor];
-
+    
     if (searchText && searchText.length) {
         self.searchTextField.text = searchText;
     }
-
+    
     UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchTextField];
-
+    
     [self addDismissButtonToViewport];
-
+    
     navItem.leftBarButtonItems = @[searchItem];
     navItem.rightBarButtonItems = @[self.clearSearchItem];
-
+    
     __weak CINavViewManager *weakSelf = self;
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [weakSelf.searchTextField becomeFirstResponder];
@@ -165,10 +166,22 @@
     });
 }
 
--(void)searchWithString:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
-    if ([self.delegate respondsToSelector:@selector(navViewDidSearch:inputCompleted:)]) {
-        [self.delegate navViewDidSearch:searchTerm inputCompleted:inputCompleted];
+- (void)searchWithString:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
+    BOOL allowSearch = [self allowSearch];
+
+    if (allowSearch) {
+        if ([self.delegate respondsToSelector:@selector(navViewDidSearch:inputCompleted:)]) {
+            [self.delegate navViewDidSearch:searchTerm inputCompleted:inputCompleted];
+        }
     }
+}
+
+- (BOOL)allowSearch {
+    BOOL allowSearch = YES;
+    if ([self.delegate respondsToSelector:@selector(navViewWillSearch)]) {
+        allowSearch = [self.delegate navViewWillSearch];
+    }
+    return allowSearch;
 }
 
 -(void)addDismissButtonToViewport {
@@ -176,11 +189,19 @@
     [self.delegate.navigationControllerForNavViewManager.view addSubview:self.dismissButton];
 }
 
--(void)clearSearch {
+- (void)clearSearch {
     NSString *originalSearchQuery = self.searchTextField.text;
     self.searchTextField.text = nil;
-    [self exitSearchMode];
+
+    if (self.dismissButton) {
+        [self.dismissButton removeFromSuperview];
+    }
+    [self.searchTextField resignFirstResponder];
+    [self setupNavBar:self.searchTextField.text];
+
     if (originalSearchQuery) [self searchWithString:self.searchTextField.text inputCompleted:YES];
+
+    [self didEndSearch];
 }
 
 -(void)exitSearchMode {
@@ -189,6 +210,13 @@
     }
     [self.searchTextField resignFirstResponder];
     [self setupNavBar:self.searchTextField.text];
+    [self didEndSearch];
+}
+
+-(void)didEndSearch {
+    if ([self.delegate respondsToSelector:@selector(navViewDidEndSearch)]) {
+        return [self.delegate navViewDidEndSearch];
+    }
 }
 
 -(NSArray *)leftBarButtonItems {

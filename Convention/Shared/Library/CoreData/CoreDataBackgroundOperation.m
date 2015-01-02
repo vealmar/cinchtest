@@ -8,19 +8,29 @@
 
 @implementation CoreDataBackgroundOperation
 
-static dispatch_queue_t _coredata_background_save_queue;
-
 dispatch_queue_t coredata_background_save_queue() {
-    if (NULL == _coredata_background_save_queue) {
-        _coredata_background_save_queue = dispatch_queue_create("com.urbancoding.cinch.coredata.backgroundsaves", 0);
-    }
-    return _coredata_background_save_queue;
+    static dispatch_once_t queueCreationGuard;
+    static dispatch_queue_t queue;
+    dispatch_once(&queueCreationGuard, ^{
+        queue = dispatch_queue_create("com.urbancoding.cinch.coredata.backgroundsaves", nil);
+    });
+    return queue;
+}
+
+dispatch_queue_t coredata_batch_save_queue() {
+    static dispatch_once_t queueCreationGuard;
+    static dispatch_queue_t queue;
+    dispatch_once(&queueCreationGuard, ^{
+        queue = dispatch_queue_create("com.urbancoding.cinch.coredata.batchsaves", nil);
+    });
+    return queue;
 }
 
 + (void)performInBackgroundWithContext:(void(^)(NSManagedObjectContext *context))asyncBlock
-                            completion:(void(^)(void))completion {
+                            completion:(void(^)(void))completion
+                               onQueue:(dispatch_queue_t)queue {
 
-    dispatch_async(coredata_background_save_queue(), ^{
+    dispatch_async(queue, ^{
         [self saveDataInContext:asyncBlock];
 
         if (completion) {
@@ -29,6 +39,20 @@ dispatch_queue_t coredata_background_save_queue() {
             });
         }
     });
+}
+
++ (void)performBatchInBackgroundWithContext:(void(^)(NSManagedObjectContext *context))asyncBlock
+                            completion:(void(^)(void))completion {
+    
+    dispatch_queue_t queue = coredata_batch_save_queue();
+    [CoreDataBackgroundOperation performInBackgroundWithContext:asyncBlock completion:completion onQueue:queue];
+}
+
++ (void)performInBackgroundWithContext:(void(^)(NSManagedObjectContext *context))asyncBlock
+                            completion:(void(^)(void))completion {
+
+    dispatch_queue_t queue = coredata_background_save_queue();
+    [CoreDataBackgroundOperation performInBackgroundWithContext:asyncBlock completion:completion onQueue:queue];
 }
 
 + (void)saveDataInContext:(void(^)(NSManagedObjectContext *context))saveBlock {

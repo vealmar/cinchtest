@@ -6,23 +6,78 @@
 //
 
 #import "CoreDataTableViewController.h"
+#import "CurrentSession.h"
+
+@interface CoreDataTableViewController ()
+
+@property BOOL pauseUpdates;
+@property NSMutableArray *pendingContextMerges;
+
+@end
 
 @implementation CoreDataTableViewController
 
-- (void)prepareForDisplay:(NSManagedObjectContext *)managedObjectContext {
-    self.managedObjectContext = managedObjectContext;
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.pendingContextMerges = [NSMutableArray array];
+    self.pauseUpdates = NO;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleContextSave:) name:NSManagedObjectContextDidSaveNotification object:nil];
+}
+
+- (void)prepareForDisplay {
+    // use our own separate context so we can control merges from other context
+    self.managedObjectContext = [CurrentSession instance].newManagedObjectContext;
     self.fetchRequest = [self initialFetchRequest];
 }
 
+- (void)pauseContextUpdates {
+    self.pauseUpdates = YES;
+}
+
+- (void)resumeContextUpdates {
+    self.pauseUpdates = NO;
+    [self processMerges];
+}
+
+- (void)handleContextSave:(NSNotification *)notification {
+    if (self.managedObjectContext) {
+        if (notification.object && ![notification.object isEqual:self.managedObjectContext]) {
+            NSLog(@"Merging context into CoreDataTableViewController");
+            [self.pendingContextMerges addObject:notification];
+            [self processMerges];
+        } else if (notification.object) {
+            [NSException raise:NSObjectNotAvailableException format:@"The NSManagedObjectContext used for CoreDataTableViewController is read-only and may not be used for saving changes."];
+        }
+    }
+
+}
+
+- (void)processMerges {
+    if (self.managedObjectContext) {
+        while (!self.pauseUpdates && self.pendingContextMerges.count > 0) {
+            NSNotification *notification = (NSNotification *) self.pendingContextMerges.firstObject;
+            [self.pendingContextMerges removeObjectAtIndex:0];
+            [self.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+        }
+    }
+}
+
 - (NSFetchRequest *)fetchRequest {
-    return self.fetchedResultsController.fetchRequest;
+    return self.fetchedResultsController ? self.fetchedResultsController.fetchRequest : nil;
 }
 
 - (void)setFetchRequest:(NSFetchRequest *)fetchRequest {
-    self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                        managedObjectContext:self.managedObjectContext
-                                                                          sectionNameKeyPath:nil
-                                                                                   cacheName:nil];
+    if (!self.managedObjectContext) {
+        [NSException raise:NSObjectNotAvailableException format:@"Cannot set a NSFetchRequest until context has been created."];
+    }
+    if (fetchRequest) {
+        self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                            managedObjectContext:self.managedObjectContext
+                                                                              sectionNameKeyPath:nil
+                                                                                       cacheName:nil];
+    } else {
+        self.fetchedResultsController = nil;
+    }
 }
 
 
@@ -75,14 +130,17 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    NSInteger sections = [[self.fetchedResultsController sections] count];
-    return sections;
+    if (self.fetchedResultsController) {
+        return [[self.fetchedResultsController sections] count];
+    } else {
+        return 0;
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSInteger rows = 0;
-    if ([[self.fetchedResultsController sections] count] > 0) {
+    if (self.fetchedResultsController && [[self.fetchedResultsController sections] count] > 0) {
         id <NSFetchedResultsSectionInfo> sectionInfo = [[self.fetchedResultsController sections] objectAtIndex:section];
         rows = [sectionInfo numberOfObjects];
     }
@@ -91,23 +149,24 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    return [[[self.fetchedResultsController sections] objectAtIndex:section] name];
+    return self.fetchedResultsController ? [[[self.fetchedResultsController sections] objectAtIndex:section] name] : nil;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
 {
-    return [self.fetchedResultsController sectionForSectionIndexTitle:title atIndex:index];
+    return self.fetchedResultsController ? [self.fetchedResultsController sectionForSectionIndexTitle:title atIndex:index] : 0;
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
-    return [self.fetchedResultsController sectionIndexTitles];
+    return self.fetchedResultsController ? [self.fetchedResultsController sectionIndexTitles] : nil;
 }
 
 #pragma mark - NSFetchedResultsControllerDelegate
 
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller
 {
+    [self pauseContextUpdates];
     [self.tableView beginUpdates];
 }
 
@@ -158,7 +217,18 @@
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
-    [self.tableView endUpdates];
+    @try {
+        [self.tableView endUpdates];
+        [self resumeContextUpdates];
+    }
+    @catch (NSException *exception) {
+//        if (exception.name == NSInternalInconsistencyException) {
+//            // there was an update in a background thread with changes that were just merged in
+//        } else {
+            @throw exception;
+//        }
+    }
+    
 }
 
 @end

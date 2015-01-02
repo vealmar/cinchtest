@@ -54,7 +54,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate {
     self.delegate = delegate;
-    [super prepareForDisplay:[CurrentSession instance].managedObjectContext];
+    [super prepareForDisplay];
 }
 
 - (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId inCart:(BOOL)inCart queryTerm:(NSString *)query {
@@ -136,7 +136,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 
     [CoreDataManager reloadProducts:[CurrentSession instance].authToken
                       vendorGroupId:[NSNumber numberWithInt:[[CurrentSession instance].loggedInVendorGroupId intValue]]
-               managedObjectContext:self.managedObjectContext
+               managedObjectContext:[CurrentSession instance].managedObjectContext
                           onSuccess:successBlock
                           onFailure:failureBlock];
 

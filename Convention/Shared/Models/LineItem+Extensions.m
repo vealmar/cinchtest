@@ -159,7 +159,13 @@
     self.lineItemId = (NSNumber *) [NilUtil nilOrObject:json[kID]];
     self.orderId = (NSNumber *) [NilUtil nilOrObject:json[@"order_id"]];
     self.productId = (NSNumber *) [NilUtil nilOrObject:json[@"product_id"]];
-    self.price = [NumberUtil convertStringToDollars:json[@"price"]];
+    id price = json[@"price"];
+    if ([price isKindOfClass:[NSNumber class]]) {
+        self.price = price;
+    } else {
+        self.price = [NumberUtil convertStringToDollars:price];
+    }
+    
     self.category = (NSString *) [NilUtil nilOrObject:json[@"category"]];
     self.description1 = (NSString *) [NilUtil nilOrObject:json[@"desc"]];
     self.description2 = (NSString *) [NilUtil nilOrObject:json[@"desc2"]];
@@ -168,11 +174,13 @@
     NSArray *shipDatesArray = (NSArray *) [NilUtil nilOrObject:json[@"shipdates"]];
     if (shipDatesArray) self.shipDates = [NSOrderedSet orderedSetWithArray:[DateUtil convertApiDateArrayToNSDateArray:shipDatesArray]];
 
-    NSArray *errorsArray = (NSArray *) [NilUtil nilOrObject:json[@"errors"]];
-    if (errorsArray) self.errors = [NSSet setWithArray:errorsArray];
-
-    NSArray *warningsArray = (NSArray *) [NilUtil nilOrObject:json[@"warnings"]];
-    if (warningsArray) self.warnings = [NSSet setWithArray:warningsArray];
+    BOOL includingErrorsAndWarnings = (BOOL) json[@"including_errors_and_warnings"];
+    if (includingErrorsAndWarnings) {
+        NSArray *warningsArray = (NSArray *) [NilUtil nilOrObject:json[@"warnings"]];
+        self.warnings = [NSSet setWithArray:warningsArray];
+        NSArray *errorsArray = (NSArray *) [NilUtil nilOrObject:json[@"errors"]];
+        self.errors = [NSSet setWithArray:errorsArray];
+    }
 
     if (self.productId) {
         self.product = [[CoreDataUtil sharedManager] fetchObjectFault:@"Product"

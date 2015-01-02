@@ -28,6 +28,7 @@
 #import "MBProgressHUD.h"
 #import "CoreDataUtil.h"
 #import "CurrentSession.h"
+#import "KeyCommander.h"
 
 @interface CIOrderViewController () {
     ShowConfigurations *showConfig;
@@ -37,6 +38,7 @@
 @property NSArray *currentLineItems; //NSArray[LineItem]
 @property (weak, nonatomic) CIOrdersTableViewController *ordersTableViewController;
 @property CINavViewManager *navViewManager;
+@property BOOL isLoadingOrders;
 
 @property (weak, nonatomic) IBOutlet UIView *orderDetailView;
 @property (weak, nonatomic) IBOutlet UILabel *orderDetailOrderNumberLabel;
@@ -53,6 +55,13 @@
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailSaveButton;
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailEditButton;
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailDeleteButton;
+
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailTableItemIdLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailTableDescriptionLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailTableShipdatesLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailTableQuantityLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailTablePriceLabel;
+@property (weak, nonatomic) IBOutlet UILabel *orderDetailTableTotalLabel;
 
 @property (assign) float totalGross;
 @property (assign) float totalDiscounts;
@@ -104,6 +113,14 @@
     self.navViewManager.delegate = self;
     self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Orders", nil];
     [self.navViewManager setupNavBar];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ordersReloading:) name:OrderReloadStartedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ordersReloadComplete:) name:OrderReloadCompleteNotification object:nil];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:OrderReloadStartedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:OrderReloadCompleteNotification object:nil];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -124,10 +141,8 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderSelected:)
-                                                 name:OrderSelectionNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderDeleted:)
-                                                 name:OrderDeleteRequestedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderSelected:) name:OrderSelectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderDeleted:) name:OrderDeleteRequestedNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -151,6 +166,15 @@
 
 - (IBAction)orderDetailDeleteButtonTapped:(id)sender {
     [self requestDelete:self.currentOrder];
+}
+
+- (void)ordersReloading:(NSNotification *)notification {
+    [self.navViewManager clearSearch];
+    self.isLoadingOrders = YES;
+}
+
+- (void)ordersReloadComplete:(NSNotification *)notification {
+    self.isLoadingOrders = NO;
 }
 
 - (void)orderSelected:(NSNotification *)notification {
@@ -343,6 +367,8 @@
             crightLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
             crightLabel.numberOfLines = 0;
             crightLabel.textAlignment = NSTextAlignmentRight;
+            crightLabel.numberOfLines = 1;
+            crightLabel.adjustsFontSizeToFitWidth = YES;
             [cell.contentView addSubview:crightLabel];
         } else {
             cleftLabel = (UILabel*)[cell.contentView viewWithTag:1001];
@@ -373,8 +399,27 @@
         if (cell == nil) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:odcId];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            
+            float currentX = 15.0;
+            float margin = 7.0;
+            float maxWidth = 667.0;
+            
+            float itemLabelWidth = 90.0;
+            float shipDateLabelWidth = 60.0;
+            float shipQuantityLabelWidth = 60.0;
+            float priceLabelWidth = 90.0;
+            float totalLabelWidth = 90.0;
+            float descriptionLabelWidth = maxWidth - currentX - margin -
+                    itemLabelWidth - margin -
+                    shipQuantityLabelWidth - margin -
+                    priceLabelWidth - margin -
+                    totalLabelWidth - margin;
 
-            citemLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 5, 112, 40)];
+            if ([ShowConfigurations instance].isOrderShipDatesType) {
+                descriptionLabelWidth = descriptionLabelWidth - shipDateLabelWidth - margin;
+            }
+
+            citemLabel = [[UILabel alloc] initWithFrame:CGRectMake(currentX, 5, itemLabelWidth, 40)];
             citemLabel.tag = 1001;
             citemLabel.backgroundColor = [UIColor clearColor];
             citemLabel.font = [UIFont regularFontOfSize:14];
@@ -382,51 +427,72 @@
             citemLabel.numberOfLines = 0;
             citemLabel.textAlignment = NSTextAlignmentLeft;
             [cell.contentView addSubview:citemLabel];
+            self.orderDetailTableItemIdLabel.frame = CGRectMake(currentX, self.orderDetailTableItemIdLabel.frame.origin.y, itemLabelWidth, self.orderDetailTableItemIdLabel.frame.size.height);
+            currentX = citemLabel.frame.origin.x + citemLabel.frame.size.width + margin;
 
-            cdescriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(135, 5, 197, 40)];
+            cdescriptionLabel = [[UILabel alloc] initWithFrame:CGRectMake(currentX, 5, descriptionLabelWidth, 40)];
             cdescriptionLabel.tag = 1002;
             cdescriptionLabel.backgroundColor = [UIColor clearColor];
             cdescriptionLabel.font = [UIFont regularFontOfSize:14];
             cdescriptionLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
             cdescriptionLabel.numberOfLines = 0;
             cdescriptionLabel.textAlignment = NSTextAlignmentLeft;
+            cdescriptionLabel.numberOfLines = 1;
+            cdescriptionLabel.adjustsFontSizeToFitWidth = YES;
             [cell.contentView addSubview:cdescriptionLabel];
+            self.orderDetailTableDescriptionLabel.frame = CGRectMake(currentX, self.orderDetailTableDescriptionLabel.frame.origin.y, descriptionLabelWidth, self.orderDetailTableDescriptionLabel.frame.size.height);
+            currentX = cdescriptionLabel.frame.origin.x + cdescriptionLabel.frame.size.width + margin;
 
-            csdLabel = [[UILabel alloc] initWithFrame:CGRectMake(340, 5, 64, 40)];
-            csdLabel.tag = 1003;
-            csdLabel.backgroundColor = [UIColor clearColor];
-            csdLabel.font = [UIFont regularFontOfSize:14];
-            csdLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-            csdLabel.numberOfLines = 0;
-            csdLabel.textAlignment = NSTextAlignmentLeft;
-            [cell.contentView addSubview:csdLabel];
-
-            csqLabel = [[UILabel alloc] initWithFrame:CGRectMake(412, 5, 67, 40)];
+            if ([ShowConfigurations instance].isOrderShipDatesType) {
+                csdLabel = [[UILabel alloc] initWithFrame:CGRectMake(currentX, 5, shipDateLabelWidth, 40)];
+                csdLabel.tag = 1003;
+                csdLabel.backgroundColor = [UIColor clearColor];
+                csdLabel.font = [UIFont regularFontOfSize:14];
+                csdLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
+                csdLabel.numberOfLines = 0;
+                csdLabel.textAlignment = NSTextAlignmentLeft;
+                [cell.contentView addSubview:csdLabel];
+                self.orderDetailTableShipdatesLabel.frame = CGRectMake(currentX, self.orderDetailTableShipdatesLabel.frame.origin.y, shipDateLabelWidth, self.orderDetailTableShipdatesLabel.frame.size.height);
+                currentX = csdLabel.frame.origin.x + csdLabel.frame.size.width + margin;
+            }
+            
+            csqLabel = [[UILabel alloc] initWithFrame:CGRectMake(currentX, 5, shipQuantityLabelWidth, 40)];
             csqLabel.tag = 1004;
             csqLabel.backgroundColor = [UIColor clearColor];
             csqLabel.font = [UIFont regularFontOfSize:14];
             csqLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
             csqLabel.numberOfLines = 0;
             csqLabel.textAlignment = NSTextAlignmentRight;
+            csqLabel.numberOfLines = 1;
+            csqLabel.adjustsFontSizeToFitWidth = YES;
             [cell.contentView addSubview:csqLabel];
+            self.orderDetailTableQuantityLabel.frame = CGRectMake(currentX, self.orderDetailTableQuantityLabel.frame.origin.y, shipQuantityLabelWidth, self.orderDetailTableQuantityLabel.frame.size.height);
+            currentX = csqLabel.frame.origin.x + csqLabel.frame.size.width + margin;
 
-            cpriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(482, 5, 89, 40)];
+            cpriceLabel = [[UILabel alloc] initWithFrame:CGRectMake(currentX, 5, priceLabelWidth, 40)];
             cpriceLabel.tag = 1005;
             cpriceLabel.backgroundColor = [UIColor clearColor];
             cpriceLabel.font = [UIFont regularFontOfSize:14];
             cpriceLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
             cpriceLabel.numberOfLines = 0;
             cpriceLabel.textAlignment = NSTextAlignmentRight;
+            cpriceLabel.numberOfLines = 1;
+            cpriceLabel.adjustsFontSizeToFitWidth = YES;
             [cell.contentView addSubview:cpriceLabel];
+            self.orderDetailTablePriceLabel.frame = CGRectMake(currentX, self.orderDetailTablePriceLabel.frame.origin.y, priceLabelWidth, self.orderDetailTablePriceLabel.frame.size.height);
+            currentX = cpriceLabel.frame.origin.x + cpriceLabel.frame.size.width + margin;
 
-            ctotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(577, 5, 80, 40)];
+            ctotalLabel = [[UILabel alloc] initWithFrame:CGRectMake(currentX, 5, totalLabelWidth, 40)];
             ctotalLabel.tag = 1006;
             ctotalLabel.backgroundColor = [UIColor clearColor];
             ctotalLabel.font = [UIFont semiboldFontOfSize:14];
             ctotalLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
             ctotalLabel.numberOfLines = 0;
             ctotalLabel.textAlignment = NSTextAlignmentRight;
+            ctotalLabel.numberOfLines = 1;
+            ctotalLabel.adjustsFontSizeToFitWidth = YES;
             [cell.contentView addSubview:ctotalLabel];
+            self.orderDetailTableTotalLabel.frame = CGRectMake(currentX, self.orderDetailTableTotalLabel.frame.origin.y, totalLabelWidth, self.orderDetailTableTotalLabel.frame.size.height);
         } else {
             citemLabel = (UILabel*)[cell.contentView viewWithTag:1001];
             cdescriptionLabel = (UILabel*)[cell.contentView viewWithTag:1002];
@@ -438,9 +504,10 @@
 
         LineItem *lineItem = self.currentLineItems[indexPath.row];
         citemLabel.text = [NSString stringWithFormat:@"#%@", lineItem.productId];
-        cdescriptionLabel.text = [NSString stringWithFormat:@"%@", lineItem.description1];
-        csdLabel.text = [ShowConfigurations instance].isOrderShipDatesType ?
-                [NSString stringWithFormat:@"%d", lineItem.shipDates.count] : @"";
+        cdescriptionLabel.text = [lineItem.description1 stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if ([ShowConfigurations instance].isOrderShipDatesType) {
+            csdLabel.text = [NSString stringWithFormat:@"%d", lineItem.shipDates.count];
+        }
         csqLabel.text = [NSString stringWithFormat:@"%d", [lineItem totalQuantity]];
 
         cpriceLabel.text = [NumberUtil formatDollarAmount:lineItem.price];
@@ -565,27 +632,6 @@
     }];
 }
 
-#pragma mark - CINavViewManagerDelegate
-
-- (UINavigationController *)navigationControllerForNavViewManager {
-    return self.navigationController;
-}
-
-- (UINavigationItem *)navigationItemForNavViewManager {
-    return self.navigationItem;
-}
-
-- (NSArray *)rightActionItems {
-    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf067" style:CIBarButtonStyleRoundButton handler:^(id sender) {
-        [self addNewOrder];
-    }];
-    return @[addItem];
-}
-
-- (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
-    [self.ordersTableViewController filterToQueryTerm:searchTerm];
-}
-
 # pragma mark - Storyboard
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
@@ -669,5 +715,70 @@
     [self presentViewController:navController animated:YES completion:nil];
 }
 
+#pragma mark - CINavViewManagerDelegate
+
+- (UINavigationController *)navigationControllerForNavViewManager {
+    return self.navigationController;
+}
+
+- (UINavigationItem *)navigationItemForNavViewManager {
+    return self.navigationItem;
+}
+
+- (NSArray *)rightActionItems {
+    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf067" style:CIBarButtonStyleRoundButton handler:^(id sender) {
+        [self addNewOrder];
+    }];
+    return @[addItem];
+}
+
+- (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
+    if (!self.isLoadingOrders) {
+        [self.ordersTableViewController filterToQueryTerm:searchTerm];
+    }
+}
+
+- (BOOL)navViewWillSearch {
+    if (self.isLoadingOrders) {
+        [[[UIAlertView alloc] initWithTitle:@"Orders Reloading" message:@"Orders are currently being reloaded from the server in the background. Order searches cannot be conducted until complete." delegate:nil
+                          cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }
+    return !self.isLoadingOrders;
+}
+
+- (void)navViewDidEndSearch {
+    //[self.keyCommander mayBecomeFirstResponder];
+}
+
+#pragma mark - Keyboard
+
+//- (BOOL)canBecomeFirstResponder {
+//    return YES;
+//}
+//
+//- (NSArray *)keyCommands {
+//    return @[];
+////    return [self.keyCommander allKeys];
+//}
+//
+//- (void)alphaNumericKeyPressed {
+//    [self.navViewManager ]
+//}
+//
+//- (void)upKeyPressed {
+//    [self.ordersTableViewController selectSibling:YES];
+//}
+//
+//- (void)downKeyPressed {
+//    [self.ordersTableViewController selectSibling:NO];
+//}
+//
+//- (void)enterKeyPressed {
+//    [self addNewOrder];
+//}
+//
+//- (void)escapeKeyPressed {
+//    NSLog(@"key pressed");
+//}
 
 @end

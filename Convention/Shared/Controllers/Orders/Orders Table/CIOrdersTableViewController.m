@@ -33,11 +33,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.isLoadingOrders = NO;
-    [self loadOrders:YES selectOrder:nil];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     self.pull = [[PullToRefreshView alloc] initWithScrollView:self.tableView];
     [self.pull setDelegate:self];
     [self.tableView addSubview:self.pull];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ordersReloading:) name:OrderReloadStartedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ordersReloadComplete:) name:OrderReloadCompleteNotification object:nil];
+
+    // wait until the controller loads have completed for notification observation
+    __weak CIOrdersTableViewController *weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [weakSelf loadOrders:YES selectOrder:nil];
+    });
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -50,16 +61,24 @@
     self.view.hidden = YES;
 }
 
-- (void)prepareForDisplay {
-    [super prepareForDisplay:[CurrentSession instance].managedObjectContext];
+- (void)ordersReloading:(NSNotification *)notification {
+    [self selectOrder:nil];
+    self.isLoadingOrders = YES;
+}
+
+- (void)ordersReloadComplete:(NSNotification *)notification {
+    self.isLoadingOrders = NO;
+    [self.tableView reloadData];
 }
 
 - (NSFetchRequest *)initialFetchRequest {
-    return [OrderCoreDataManager buildOrderFetch:nil inManagedObjectContext:self.managedObjectContext];
+    return nil; // we will wait until the partial load is complete from loadOrders
 }
 
 - (void)filterToQueryTerm:(NSString *)query {
-    self.fetchRequest = [OrderCoreDataManager buildOrderFetch:query inManagedObjectContext:self.managedObjectContext];
+    if (!self.isLoadingOrders) {
+        self.fetchRequest = [OrderCoreDataManager buildOrderFetch:query inManagedObjectContext:self.managedObjectContext];
+    }
 }
 
 - (BOOL)hasOrders {
@@ -99,29 +118,36 @@
                 [self.tableView scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:YES];
             }
         }
-        
+
         [[NSNotificationCenter defaultCenter] postNotificationName:OrderSelectionNotification object:order];
     }
 }
 
+- (void)selectSibling:(BOOL)up {
+    NSIndexPath *path = [self.fetchedResultsController indexPathForObject:self.currentOrder];
+    if (!path) {
+        path = [NSIndexPath indexPathForRow:0 inSection:0];
+    } else {
+        if (up && path.row > 0) {
+            path = [NSIndexPath indexPathForRow:path.row - 1 inSection:path.section];
+        } else if (!up && path.row > [self.tableView numberOfRowsInSection:path.section] - 1) {
+            path = [NSIndexPath indexPathForRow:path.row + 1 inSection:path.section];
+        }
+
+    }
+    id orderAtPath = (Order *) [self.fetchedResultsController objectAtIndexPath:path];
+    if (orderAtPath) {
+        [self selectOrder:orderAtPath];
+    }
+}
+
 - (void)controller:(NSFetchedResultsController *)controller
-   didChangeObject:(id)anObject 
-       atIndexPath:(NSIndexPath *)indexPath 
-     forChangeType:(NSFetchedResultsChangeType)type 
+   didChangeObject:(id)anObject
+       atIndexPath:(NSIndexPath *)indexPath
+     forChangeType:(NSFetchedResultsChangeType)type
       newIndexPath:(NSIndexPath *)newIndexPath {
 
     Order *order = (Order *) anObject;
-
-//    if (NSFetchedResultsChangeUpdate == type) {
-//        __weak CIOrdersTableViewController *weakSelf = self;
-//
-//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//            if (order.hasChanges) {
-//                [order.managedObjectContext refreshObject:order mergeChanges:YES];
-//            }
-//            [weakSelf.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-//        });
-//    }
 
     switch(type)
     {
@@ -142,7 +168,7 @@
             [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
             break;
     }
-        
+
     if (0 == indexPath.section && self.currentOrder && [self.currentOrder.objectID isEqual:order.objectID]) {
         if (NSFetchedResultsChangeInsert == type) {
             // it's possible the order became the currentOrder before coredata was updated
@@ -163,7 +189,6 @@
     if (!self.isLoadingOrders) {
         NSNumber *selectOrderId = order.orderId;
         [self selectOrder:nil];
-        self.isLoadingOrders = YES;
 
         //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
         MBProgressHUD *hud;
@@ -178,20 +203,22 @@
         void (^cleanup)(void) = ^{
             if (![hud isHidden]) [hud hide:NO];
             [weakSelf.pull finishedLoading];
-            weakSelf.isLoadingOrders = NO;
         };
 
         [OrderCoreDataManager reloadOrders:NO onSuccess:^{
             cleanup();
             dispatch_async(dispatch_get_main_queue(), ^{
+                if (!self.fetchRequest) self.fetchRequest = [OrderCoreDataManager buildOrderFetch:nil inManagedObjectContext:[CurrentSession instance].managedObjectContext];
                 Order *reloadedOrderWithId = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order"
                                                                                        inContext:[CurrentSession instance].managedObjectContext
                                                                                    withPredicate:[NSPredicate predicateWithFormat:@"orderId == %@", selectOrderId]];
-                [weakSelf selectOrder:reloadedOrderWithId];
+                if (reloadedOrderWithId) [weakSelf selectOrder:reloadedOrderWithId];
             });
         } onFailure:^{
             cleanup();
         }];
+    } else {
+        [self.pull finishedLoading];
     }
 }
 
@@ -215,9 +242,9 @@
             ![self.currentOrder.objectID isEqual:((Order *)[self.fetchedResultsController objectAtIndexPath:indexPath]).objectID] &&
             !self.currentOrder.inSync &&
             self.currentOrder.hasNontransientChanges) {
-        
+
         indexPathToReturn = nil;
-        
+
         __weak CIOrdersTableViewController *weakSelf = self;
         Order *currentOrder = self.currentOrder;
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Exit Without Saving?"
@@ -260,9 +287,9 @@
     }
 
     Order *order = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
+
     [cell prepareForDisplay:order setActive:self.currentOrder && [order.orderId isEqual:self.currentOrder.orderId]];
-    
+
     return cell;
 }
 

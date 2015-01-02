@@ -70,23 +70,29 @@
     
     self.Customer.text = order.customerName;
     
-    if (order.authorizedBy != nil) {
+    if (order.authorizedBy != nil && ![order.authorizedBy isEqualToString:@""]) {
+        self.auth.hidden = NO;
         self.auth.text = order.authorizedBy;
-        self.Customer.center = CGPointMake(self.Customer.center.x, self.contentView.center.y - 8);
-        self.auth.center = CGPointMake(self.auth.center.x, self.contentView.center.y + 14);
     } else {
-        self.Customer.center = CGPointMake(self.Customer.center.x, self.contentView.center.y);
+        self.auth.hidden = YES;
         self.auth.text = @"";
     }
     
     self.numItems.text = [NSString stringWithFormat:@"%d Items", order.lineItems.count];
     
-    self.total.text = @"Calculating...";
-    __weak CIOrderCell *weakSelf = self;
-    [order calculateTotals:^(OrderTotals *totals, NSManagedObjectID *totalledOrderId) {
-        if (weakSelf && [order.objectID isEqual:totalledOrderId])
-            self.total.text = [NumberUtil formatDollarAmount:totals.total];
-    }];
+    if (order.grossTotal) {
+        self.total.text = [NumberUtil formatDollarAmount:order.grossTotal];
+    } else {
+        self.total.text = @"Calculating...";
+        
+        __weak CIOrderCell *weakSelf = self;
+        [order calculateTotals:^(OrderTotals *totals, NSManagedObjectID *totalledOrderId) {
+            if (weakSelf && [order.objectID isEqual:totalledOrderId]) {
+                weakSelf.total.text = [NumberUtil formatDollarAmount:totals.total];
+            }
+        }];
+        
+    }
     
     self.tag = [order.orderId intValue];
     
@@ -130,8 +136,8 @@
     }
     
     CGRect orderIdFrame = CGRectMake(12.0f, 9.0f, 106.0f, 20.0f);
-    CGRect customerFrame = CGRectMake(12.0f, 27.0f, 297.0f, 34.0f);
-    CGRect authFrame = CGRectMake(12.0f, 56.0f, 308.0f, 21.0f);
+    CGRect customerFrame = CGRectMake(12.0f, self.auth.hidden ? 40.0f : 27.0f, 297.0f, 34.0f);
+    CGRect authFrame = CGRectMake(12.0f, self.auth.hidden ? 0 : 56.0f, 308.0f, 21.0f);
     CGRect totalFrame = CGRectMake(12.0f, 84.0f, 141.0f, 21.0f);
 
     self.orderId.frame = CGRectMake(orderIdFrame.origin.x + 10.0f, orderIdFrame.origin.y, orderIdFrame.size.width, orderIdFrame.size.height);
@@ -153,8 +159,8 @@
     }
     
     CGRect orderIdFrame = CGRectMake(12.0f, 9.0f, 106.0f, 20.0f);
-    CGRect customerFrame = CGRectMake(12.0f, 27.0f, 297.0f, 34.0f);
-    CGRect authFrame = CGRectMake(12.0f, 56.0f, 308.0f, 21.0f);
+    CGRect customerFrame = CGRectMake(12.0f, self.auth.hidden ? 40.0f : 27.0f, 297.0f, 34.0f);
+    CGRect authFrame = CGRectMake(12.0f, self.auth.hidden ? 0 : 56.0f, 308.0f, 21.0f);
     CGRect totalFrame = CGRectMake(12.0f, 84.0f, 141.0f, 21.0f);
     
     self.orderId.frame = orderIdFrame;

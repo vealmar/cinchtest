@@ -337,7 +337,7 @@
         // The fetched results controller does watch for changes in the same context which aren't
         // saved to the store, but this only applies to the primary entity and not the children.
         // In this case, our fetch is on products, not lineitems.
-        [OrderCoreDataManager saveOrder:self.order inContext:[CurrentSession instance].managedObjectContext];
+        [OrderCoreDataManager saveOrder:self.order inContext:self.order.managedObjectContext];
     }
     [self loadProductsForCurrentVendorAndBulletin];
     [self updateFilterButtonState];
@@ -373,16 +373,7 @@
 
                 cell.textLabel.text = @"Vendor";
 
-                if (currentVendor == 0) {
-                    cell.detailTextLabel.text = @"All";
-                } else {
-                    for (NSDictionary *vendor in vendorsData) {
-                        if ([vendor[@"id"] intValue] == currentVendor) {
-                            cell.detailTextLabel.text = vendor[@"name"];
-                            break;
-                        }
-                    }
-                }
+                
             } whenSelected:^(NSIndexPath *indexPath) {
                 VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
                 vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
@@ -398,18 +389,6 @@
 
                 cell.textLabel.text = @"Brand";
 
-                if (currentBulletin == 0) {
-                    cell.detailTextLabel.text = @"All";
-                } else {
-                    NSArray *items = Underscore.array([bulletins allValues]).flatten.unwrap;
-                    for (NSDictionary *item in items) {
-                        if ([item[@"id"] intValue] == currentBulletin) {
-                            cell.detailTextLabel.text = item[@"name"];
-                            break;
-                        }
-                    }
-                }
-
             }   whenSelected:^(NSIndexPath *indexPath) {
                 BulletinViewController *bulletinViewController = [[BulletinViewController alloc] initWithNibName:@"BulletinViewController" bundle:nil];
                 bulletinViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
@@ -424,6 +403,34 @@
             self.filterStaticController.tableView.separatorColor = [UIColor colorWithRed:0.839 green:0.839 blue:0.851 alpha:1];
             self.filterStaticController.navigationController.navigationBarHidden = YES;
             self.poController.popoverContentSize = CGSizeMake(320, 133);
+
+            UITableViewCell *cell = [self.filterStaticController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+
+            if (currentVendor == 0) {
+                cell.detailTextLabel.text = @"All";
+            } else {
+                for (NSDictionary *vendor in vendorsData) {
+                    if ([vendor[@"id"] intValue] == currentVendor) {
+                        cell.detailTextLabel.text = vendor[@"name"];
+                        break;
+                    }
+                }
+            }
+
+            cell = [self.filterStaticController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+            
+            if (currentBulletin == 0) {
+                cell.detailTextLabel.text = @"All";
+            } else {
+                NSArray *items = Underscore.array([bulletins allValues]).flatten.unwrap;
+                for (NSDictionary *item in items) {
+                    if ([item[@"id"] intValue] == currentBulletin) {
+                        cell.detailTextLabel.text = item[@"name"];
+                        break;
+                    }
+                }
+            }
+            
         }                                          error:nil];
 
         [self.filterStaticController aspect_hookSelector:@selector(viewWillDisappear:) withOptions:AspectPositionAfter usingBlock:^(id instance, NSArray *args) {
@@ -472,6 +479,8 @@
         }
         
         [options addObject:@"Cancel & Continue with Order"];
+        [options addObject:@"Save Locally & Resume Later"];
+        [options addObject:@"Submit This Order Now"];
         
         if (!self.order.updatedAt) {
             // if this is blank, the order has never been saved
@@ -479,9 +488,6 @@
         } else {
             [options addObject:@"Undo Changes Since Last Sync"];
         }
-        
-        [options addObject:@"Save Locally & Resume Later"];
-        [options addObject:@"Submit This Order Now"];
         
         __weak CIProductViewController *weakSelf = self;
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title

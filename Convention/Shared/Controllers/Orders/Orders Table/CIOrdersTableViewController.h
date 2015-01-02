@@ -13,13 +13,13 @@
 
 @property (readonly) BOOL hasOrders;
 
-- (void)prepareForDisplay;
-
 - (void)filterToQueryTerm:(NSString *)query;
 
 /**
 * Selects the given order. If nil, selects the first one.
 */
 - (void)selectOrder:(Order *)order;
+
+- (void)selectSibling:(BOOL)up;
 
 @end

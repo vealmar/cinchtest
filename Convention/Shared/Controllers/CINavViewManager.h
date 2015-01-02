@@ -20,6 +20,10 @@
 
 - (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted;
 
+- (BOOL)navViewWillSearch;
+
+- (void)navViewDidEndSearch;
+
 @end
 
 
@@ -32,6 +36,6 @@
 
 - (void)setupNavBar;
 
--(void)clearSearch;
+- (void)clearSearch;
 
 @end

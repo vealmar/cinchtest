@@ -139,6 +139,7 @@
 		6DDC9965CC129DFCFDBB4618 /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9C912FF77B429E59828A /* refresh.png */; };
 		6DDC996FAAF23CD30546FEB0 /* OrderCoreDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9B8A9CC21F6E3654396D /* OrderCoreDataManager.m */; };
 		6DDC997B92CEB765800F2BF9 /* submit-button-out-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9E08FC804A26FAED96D6 /* submit-button-out-green.png */; };
+		6DDC997F161D0D87586BF2E6 /* KeyCommander.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9C095322C31DCC47C7DA /* KeyCommander.m */; };
 		6DDC9989D5C7619C1F43AED8 /* logoutout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC939B69B4F4331148BDF5 /* logoutout.png */; };
 		6DDC999204AECDD7139DFBC6 /* ProductCart.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9C257E1F421C5B8AB6BB /* ProductCart.xcdatamodeld */; };
 		6DDC9993AE2BC70AAF64535D /* Bulletin.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC92940191A2A27FFA423E /* Bulletin.m */; };
@@ -497,6 +498,7 @@
 		6DDC974E367C51D9DC90BED6 /* DDCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDCalendarView.m; sourceTree = "<group>"; };
 		6DDC97503FF234FC78B42689 /* right_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = right_arrow.png; sourceTree = "<group>"; };
 		6DDC9751BEC28683AD7ECEEE /* CIOrderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIOrderViewController.m; sourceTree = "<group>"; };
+		6DDC975426D33F352EB3CDEF /* KeyCommander.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCommander.h; sourceTree = "<group>"; };
 		6DDC975CD42FF20487C7728A /* BulletinViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BulletinViewController.m; sourceTree = "<group>"; };
 		6DDC97771967AD43C297C5FD /* PWHome.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PWHome.png; sourceTree = "<group>"; };
 		6DDC977F53E12C1D88907422 /* CITableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableViewCell.h; sourceTree = "<group>"; };
@@ -602,6 +604,7 @@
 		6DDC9BD231B00D06CA3C76F9 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6DDC9BDD2CD78920CC5BB96E /* continuein.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = continuein.png; sourceTree = "<group>"; };
 		6DDC9BE91F7CB769D13ABDC7 /* CICartViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = CICartViewController.xib; path = ../../../iPad/CICartViewController.xib; sourceTree = "<group>"; };
+		6DDC9C095322C31DCC47C7DA /* KeyCommander.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyCommander.m; sourceTree = "<group>"; };
 		6DDC9C262778347168CA4141 /* CIProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductViewController.m; sourceTree = "<group>"; };
 		6DDC9C3AD129D324297DE989 /* ProductCart8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart8.xcdatamodel; sourceTree = "<group>"; };
 		6DDC9C4180DC3354D1879B13 /* ProductCart2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart2.xcdatamodel; sourceTree = "<group>"; };
@@ -985,6 +988,8 @@
 				6DDC9F248996720F17152BC9 /* TableView */,
 				6DDC9CFB6DFD5A22991A5B04 /* CoreData */,
 				6DDC9D3916AD3327F575BB4A /* Orders */,
+				6DDC9C095322C31DCC47C7DA /* KeyCommander.m */,
+				6DDC975426D33F352EB3CDEF /* KeyCommander.h */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -2109,6 +2114,7 @@
 				6DDC9FA22336A8C92E1D1EE4 /* OrderTotals.m in Sources */,
 				6DDC920E079171CCEAD4F286 /* OrderSubtotalsByDate.m in Sources */,
 				6DDC961335B61025C1247CA8 /* CITagColumnView.m in Sources */,
+				6DDC997F161D0D87586BF2E6 /* KeyCommander.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

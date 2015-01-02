@@ -103,16 +103,19 @@
 }
 
 - (void)calculateTotals:(void(^)(OrderTotals *totals, NSManagedObjectID *totalledOrderId))completion {
+    static int i = 0;
+    NSLog(@"Calculating Totals: %i", i++);
     if (self.grossTotal && !self.hasNontransientChanges) {
         completion([[OrderTotals alloc] initWithOrder:self], self.objectID);
     } else {
-        __weak Order *weakSelf = self;
-
-        [OrderCoreDataManager saveOrder:self async:YES beforeSave:^(Order *asyncOrder) {
-            [asyncOrder calculateTotals];
-        } onSuccess:^{
-            if (weakSelf) completion(weakSelf.calculateTotals, weakSelf.objectID);
-        }];
+        NSManagedObjectID *orderObjectID = self.objectID;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            NSManagedObjectContext *asyncContext = [CurrentSession instance].newManagedObjectContext;
+            Order *asyncOrder = (Order *) [OrderCoreDataManager load:@"Order" id:orderObjectID fromContext:asyncContext];
+            OrderTotals *totals = [asyncOrder calculateTotals];
+            completion(totals, orderObjectID);
+            [OrderCoreDataManager saveOrder:asyncOrder inContext:asyncContext];
+        });
     }
 }
 
@@ -284,14 +287,26 @@
     self.updatedAt = [JSON objectForKey:@"updated_at"] ? [DateUtil convertApiDateTimeToNSDate:[JSON objectForKey:@"updated_at"]] : nil;
 
     NSDictionary *customerDictionary = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
-    self.customerId = ([customerDictionary objectForKey:kCustID] == nil? [NSNumber numberWithInt:0] : [customerDictionary objectForKey:kID]);
-    self.custId = ([customerDictionary objectForKey:kCustID] == nil? @"(Unknown)" : [customerDictionary objectForKey:kCustID]);
-    self.customerName = ([customerDictionary objectForKey:kBillName] == nil? @"(Unknown)" : [customerDictionary objectForKey:kBillName]);
+    if (customerDictionary) {
+        self.customerId = ([customerDictionary objectForKey:kCustID] == nil? [NSNumber numberWithInt:0] : [customerDictionary objectForKey:kID]);
+        self.custId = ([customerDictionary objectForKey:kCustID] == nil? @"(Unknown)" : [customerDictionary objectForKey:kCustID]);
+        self.customerName = ([customerDictionary objectForKey:kBillName] == nil? @"(Unknown)" : [customerDictionary objectForKey:kBillName]);
+    } else {
+        self.customerId = (NSNumber *) [NilUtil nilOrObject:JSON[@"customer_id"]];
+        self.custId = (NSString *) [NilUtil nilOrObject:JSON[kCustID]];
+        if (!self.custId) self.custId = @"(Unknown)";
+        self.customerName = (NSString *) [NilUtil nilOrObject:JSON[kBillName]];
+        if (!self.customerName) self.customerName = @"(Unknown)";
+    }
+    
 
-    NSArray *warningsArray = (NSArray *) [NilUtil nilOrObject:JSON[@"warnings"]];
-    self.warnings = [NSSet setWithArray:warningsArray];
-    NSArray *errorsArray = (NSArray *) [NilUtil nilOrObject:JSON[@"errors"]];
-    self.errors = [NSSet setWithArray:errorsArray];
+    BOOL includingErrorsAndWarnings = (BOOL) JSON[@"including_errors_and_warnings"];
+    if (includingErrorsAndWarnings) {
+        NSArray *warningsArray = (NSArray *) [NilUtil nilOrObject:JSON[@"warnings"]];
+        self.warnings = [NSSet setWithArray:warningsArray];
+        NSArray *errorsArray = (NSArray *) [NilUtil nilOrObject:JSON[@"errors"]];
+        self.errors = [NSSet setWithArray:errorsArray];
+    }
 
     NSMutableSet *lineItems = [[NSMutableSet alloc] init];
     NSArray *jsonLineItems = (NSArray *) [NilUtil nilOrObject:JSON[@"line_items"]];

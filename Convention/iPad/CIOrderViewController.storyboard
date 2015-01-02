@@ -265,7 +265,13 @@
                         <outlet property="orderDetailOrderNumberLabel" destination="I2n-wZ-9VN" id="O0T-Xf-tJO"/>
                         <outlet property="orderDetailSaveButton" destination="Cng-qZ-sWf" id="Mow-wJ-efh"/>
                         <outlet property="orderDetailTable" destination="YnO-ye-7jz" id="XYO-ZU-6g6"/>
+                        <outlet property="orderDetailTableDescriptionLabel" destination="Ph9-4Y-tzO" id="C3i-dG-sUm"/>
+                        <outlet property="orderDetailTableItemIdLabel" destination="J4v-Xs-aRw" id="jZr-JJ-Soc"/>
                         <outlet property="orderDetailTableParentView" destination="edG-jd-O4g" id="fuJ-Ol-dop"/>
+                        <outlet property="orderDetailTablePriceLabel" destination="JMJ-Wu-p04" id="Zqf-HL-GY7"/>
+                        <outlet property="orderDetailTableQuantityLabel" destination="oeS-tY-jzU" id="wtt-d7-aHY"/>
+                        <outlet property="orderDetailTableShipdatesLabel" destination="coZ-Vg-hZV" id="wyD-gB-TYF"/>
+                        <outlet property="orderDetailTableTotalLabel" destination="ezr-No-tEj" id="Wu1-Sd-nck"/>
                         <outlet property="orderDetailView" destination="89b-In-fVe" id="isr-9S-Bv9"/>
                     </connections>
                 </viewController>

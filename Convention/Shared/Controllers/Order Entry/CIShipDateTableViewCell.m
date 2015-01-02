@@ -46,7 +46,7 @@
         self.textLabel.textColor = [UIColor whiteColor];
         self.textLabel.font = [UIFont fontWithName:kFontName size:14.0f];
         if (useQuantity) {
-            self.quantityField = [[UITextField alloc] initWithFrame:CGRectMake(190, 10, 40, 20)];
+            self.quantityField = [[UITextField alloc] initWithFrame:CGRectMake(180, 10, 50, 20)];
             self.quantityField.textAlignment = NSTextAlignmentCenter;
             self.quantityField.font = [UIFont systemFontOfSize:14.0f];
             self.quantityField.borderStyle = UITextBorderStyleRoundedRect;

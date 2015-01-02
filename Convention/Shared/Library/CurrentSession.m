@@ -32,8 +32,14 @@ static CurrentSession *currentSession = nil;
 }
 
 - (void)handleContextSave:(NSNotification *)notification {
-    if (![notification.object isEqual:self.managedObjectContext]) {
-        NSLog(@"Merging Contexts, main context has %i changes, %i inserts, %i deletes", self.managedObjectContext.updatedObjects.count, self.managedObjectContext.insertedObjects.count, self.managedObjectContext.deletedObjects.count);
+    if (notification.object && ![notification.object isEqual:self.managedObjectContext]) {
+        NSLog(@"Merging Contexts\n    Main context has: %i changes, %i inserts, %i deletes\nIncoming context has: %i changes, %i inserts, %i deletes",
+              self.managedObjectContext.updatedObjects.count,
+              self.managedObjectContext.insertedObjects.count,
+              self.managedObjectContext.deletedObjects.count,
+              ((NSSet *)notification.userInfo[NSUpdatedObjectsKey]).count,
+              ((NSSet *)notification.userInfo[NSInsertedObjectsKey]).count,
+              ((NSSet *)notification.userInfo[NSDeletedObjectsKey]).count);
         [self.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
     }
 }

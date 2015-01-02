@@ -8,8 +8,10 @@ NSString *const ProductsLoadedNotification = @"ProductsLoadedNotification";
 NSString *const   kCustomerUserInfoKey = @"kCustomerUserInfoKey";
 NSString *const PrintersLoadedNotification = @"PrintersLoadedNotification";
 
+NSString *const OrderReloadStartedNotification = @"OrderReloadStartedNotification";
 NSString *const OrderSelectionNotification = @"OrderSelectionNotification";
 NSString *const OrderDeleteRequestedNotification = @"OrderDeleteRequestedNotification";
+NSString *const OrderReloadCompleteNotification = @"OrderReloadCompleteNotification";
 
 NSString *const LineQuantityChangedNotification = @"LineQuantityChangedNotification";
 NSString *const LineSelectionNotification = @"LineSelectionNotification";
