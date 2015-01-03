@@ -205,65 +205,69 @@
 }
 
 - (void)displayOrderDetail:(Order *)order {
-    ShowConfigurations *config = [ShowConfigurations instance];
-    
-    self.orderDetailView.hidden = NO;
-
-    self.orderDetailOrderNumberLabel.text = [NSString stringWithFormat:@"Order #%@", order.orderId];
-    self.orderDetailCustomerLabel.text = order.customerName;
-
-    if (order.authorizedBy && order.authorizedBy.length) {
-        self.orderDetailAuthorizedView.hidden = NO;
-        self.orderDetailAuthorizedLabel.text = order.authorizedBy;
-        self.orderDetailCustomerView.frame = CGRectMake(0, 44, 331, 96);
+    if (order) {
+        self.orderDetailView.hidden = NO;
+        
+        ShowConfigurations *config = [ShowConfigurations instance];
+        
+        self.orderDetailOrderNumberLabel.text = [NSString stringWithFormat:@"Order #%@", order.orderId];
+        self.orderDetailCustomerLabel.text = order.customerName;
+        
+        if (order.authorizedBy && order.authorizedBy.length) {
+            self.orderDetailAuthorizedView.hidden = NO;
+            self.orderDetailAuthorizedLabel.text = order.authorizedBy;
+            self.orderDetailCustomerView.frame = CGRectMake(0, 44, 331, 96);
+        } else {
+            self.orderDetailAuthorizedView.hidden = YES;
+            self.orderDetailCustomerView.frame = CGRectMake(0, 44, 670, 96);
+        }
+        
+        float orderDetailTableOriginY = self.orderDetailCustomerView.frame.origin.y + self.orderDetailCustomerView.frame.size.height + 8;
+        if (config.enableOrderNotes && order.notes && order.notes.length > 0) {
+            self.orderDetailNotesLabel.text = order.notes;
+            self.orderDetailNotesView.hidden = NO;
+            orderDetailTableOriginY += self.orderDetailNotesView.frame.size.height + 8;
+        } else {
+            self.orderDetailNotesView.hidden = YES;
+        }
+        self.orderDetailTableParentView.frame = CGRectMake(0, orderDetailTableOriginY, self.orderDetailTableParentView.frame.size.width, 630 - orderDetailTableOriginY);
+        
+        self.subtotalLines = [NSMutableArray array];
+        
+        self.customer.text = @"";
+        self.authorizer.text = @"";
+        self.customer.text = [self.currentOrder getCustomerDisplayName];
+        self.authorizer.text = order.authorizedBy != nil? order.authorizedBy : @"";
+        
+        if (order && ![order.notes isKindOfClass:[NSNull class]]) {
+            self.notes.text = order.notes;
+        } else {
+            self.notes.text = @"";
+        }
+        
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"MM/dd/yyyy"];
+        [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
+        
+        [order.calculateShipDateSubtotals each:^(NSDate *shipDate, NSNumber *totalOnShipDate) {
+            [self.subtotalLines addObject:@[
+                                            [NSString stringWithFormat:@"Shipping on %@", [dateFormatter stringFromDate:shipDate]],
+                                            [NumberUtil formatDollarAmount:totalOnShipDate]
+                                            ]];
+        }];
+        
+        OrderTotals *totals = order.calculateTotals;
+        if (self.totalDiscounts > 0) {
+            [self.subtotalLines addObject:@[@"SUBTOTAL", [NumberUtil formatDollarAmount:totals.grossTotal]]];
+            [self.subtotalLines addObject:@[@"DISCOUNT", [NumberUtil formatDollarAmount:totals.discountTotal]]];
+        }
+        [self.subtotalLines addObject:@[@"TOTAL", [NumberUtil formatDollarAmount:totals.total]]];
+        
+        [self.orderDetailTable reloadData];
+        [self updateOrderActions];
     } else {
-        self.orderDetailAuthorizedView.hidden = YES;
-        self.orderDetailCustomerView.frame = CGRectMake(0, 44, 670, 96);
+        self.orderDetailView.hidden = YES;
     }
-
-    float orderDetailTableOriginY = self.orderDetailCustomerView.frame.origin.y + self.orderDetailCustomerView.frame.size.height + 8;
-    if (config.enableOrderNotes && order.notes && order.notes.length > 0) {
-        self.orderDetailNotesLabel.text = order.notes;
-        self.orderDetailNotesView.hidden = NO;
-        orderDetailTableOriginY += self.orderDetailNotesView.frame.size.height + 8;
-    } else {
-        self.orderDetailNotesView.hidden = YES;
-    }
-    self.orderDetailTableParentView.frame = CGRectMake(0, orderDetailTableOriginY, self.orderDetailTableParentView.frame.size.width, 630 - orderDetailTableOriginY);
-
-    self.subtotalLines = [NSMutableArray array];
-
-    self.customer.text = @"";
-    self.authorizer.text = @"";
-    self.customer.text = [self.currentOrder getCustomerDisplayName];
-    self.authorizer.text = order.authorizedBy != nil? order.authorizedBy : @"";
-
-    if (order && ![order.notes isKindOfClass:[NSNull class]]) {
-        self.notes.text = order.notes;
-    } else {
-        self.notes.text = @"";
-    }
-
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"MM/dd/yyyy"];
-    [dateFormatter setTimeZone:[NSTimeZone timeZoneForSecondsFromGMT:0]];
-
-    [order.calculateShipDateSubtotals each:^(NSDate *shipDate, NSNumber *totalOnShipDate) {
-        [self.subtotalLines addObject:@[
-                [NSString stringWithFormat:@"Shipping on %@", [dateFormatter stringFromDate:shipDate]],
-                [NumberUtil formatDollarAmount:totalOnShipDate]
-        ]];
-    }];
-
-    OrderTotals *totals = order.calculateTotals;
-    if (self.totalDiscounts > 0) {
-        [self.subtotalLines addObject:@[@"SUBTOTAL", [NumberUtil formatDollarAmount:totals.grossTotal]]];
-        [self.subtotalLines addObject:@[@"DISCOUNT", [NumberUtil formatDollarAmount:totals.discountTotal]]];
-    }
-    [self.subtotalLines addObject:@[@"TOTAL", [NumberUtil formatDollarAmount:totals.total]]];
-
-    [self.orderDetailTable reloadData];
-    [self updateOrderActions];
 }
 
 - (void)updateOrderActions {
