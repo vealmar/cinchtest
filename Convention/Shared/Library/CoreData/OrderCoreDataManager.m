@@ -214,7 +214,7 @@
                  saveBlock(JSON);
              }
              failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                 if (JSON) {
+                 if (response.statusCode == 422 && JSON) {
                      saveBlock(JSON);
                  } else {
                      [submit hide:NO];
