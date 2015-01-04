@@ -8,6 +8,7 @@
 
 #import "CoreDataUtil.h"
 #import "CIAppDelegate.h"
+#import "CurrentSession.h"
 
 static CoreDataUtil *sharedInstance;
 
@@ -26,16 +27,13 @@ static CoreDataUtil *sharedInstance;
 
 - (NSManagedObject *)createNewEntity:(NSString *)entityDescription {
 
-    CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
-
     return [NSEntityDescription insertNewObjectForEntityForName:entityDescription
-                                         inManagedObjectContext:delegate.managedObjectContext];
+                                         inManagedObjectContext:[CurrentSession mainQueueContext]];
 }
 
 - (NSArray *)fetchObjects:(NSString *)entityDescription sortField:(NSString *)sortField {
 
-    CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
-    NSManagedObjectContext *context = delegate.managedObjectContext;
+    NSManagedObjectContext *context = [CurrentSession mainQueueContext];
     NSError *error;
 
     //Fetch the data....
@@ -61,9 +59,7 @@ static CoreDataUtil *sharedInstance;
                                           sortField:(NSString *)sortField
                                       withPredicate:(NSPredicate *)predicate {
 
-    CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
-
-    NSManagedObjectContext *context = delegate.managedObjectContext;
+    NSManagedObjectContext *context = [CurrentSession mainQueueContext];
     //NSError *error;
 
     //Fetch the data....
@@ -112,8 +108,7 @@ static CoreDataUtil *sharedInstance;
 - (NSManagedObject *)fetchObject:(NSString *)entityDescription
                    withPredicate:(NSPredicate *)predicate {
 
-    CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
-    NSManagedObjectContext *context = delegate.managedObjectContext;
+    NSManagedObjectContext *context = [CurrentSession mainQueueContext];
     return [self fetchObject:entityDescription inContext:context withPredicate:predicate];
 }
 
@@ -152,23 +147,21 @@ static CoreDataUtil *sharedInstance;
 }
 
 - (NSArray *)fetchArray:(NSString *)entityDescription
-          withPredicate:(NSPredicate *)predicate {
+          withPredicate:(NSPredicate *)predicate
+            withContext:(NSManagedObjectContext *)managedObjectContext{
 
-    CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
-
-    NSManagedObjectContext *context = delegate.managedObjectContext;
     NSError *error;
 
     //Fetch the data....
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     NSEntityDescription *entity = [NSEntityDescription
-            entityForName:entityDescription inManagedObjectContext:context];
+            entityForName:entityDescription inManagedObjectContext:managedObjectContext];
     [fetchRequest setEntity:entity];
 
     if (predicate != nil)
         [fetchRequest setPredicate:predicate];
 
-    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
 
 
     return fetchedObjects;
@@ -233,20 +226,18 @@ static CoreDataUtil *sharedInstance;
 }
 
 
-- (void)deleteAllObjects:(NSString *)entityDescription {
-
-
+- (void)deleteAllObjectsAndSave:(NSString *)entityDescription withContext:(NSManagedObjectContext *)managedObjectContext {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:entityDescription inManagedObjectContext:[DELEGATE managedObjectContext]];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:entityDescription inManagedObjectContext:managedObjectContext];
     [fetchRequest setEntity:entity];
 
     NSError *error;
-    NSArray *items = [[DELEGATE managedObjectContext] executeFetchRequest:fetchRequest error:&error];
+    NSArray *items = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
 
     for (NSManagedObject *managedObject in items) {
-        [[DELEGATE managedObjectContext] deleteObject:managedObject];
+        [managedObjectContext deleteObject:managedObject];
     }
-    if (![[DELEGATE managedObjectContext] save:&error]) {
+    if (![managedObjectContext save:&error]) {
         DLog(@"Error deleting %@ - error:%@", entityDescription, error);
     }
 }
@@ -275,8 +266,9 @@ static CoreDataUtil *sharedInstance;
 - (BOOL)deleteObject:(NSManagedObject *)managedObject {
 
     NSError *error;
-    [[DELEGATE managedObjectContext] deleteObject:managedObject];
-    if (![[DELEGATE managedObjectContext] save:&error]) {
+    NSManagedObjectContext *context = managedObject.managedObjectContext;
+    [context deleteObject:managedObject];
+    if (![context save:&error]) {
         DLog(@"Error deleting - error:%@", error);
         return NO;
     }

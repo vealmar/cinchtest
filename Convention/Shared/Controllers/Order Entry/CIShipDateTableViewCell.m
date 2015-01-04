@@ -119,6 +119,7 @@
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:textField selector:@selector(resignFirstResponder) name:LineDeselectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:textField selector:@selector(resignFirstResponder) name:ProductsLoadRequestedNotification object:nil];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -142,6 +143,7 @@
     }];
 
     [[NSNotificationCenter defaultCenter] removeObserver:textField name:LineDeselectionNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:textField name:ProductsLoadRequestedNotification object:nil];
 
     if (self.resignedFirstResponderBlock) {
         self.resignedFirstResponderBlock(self);

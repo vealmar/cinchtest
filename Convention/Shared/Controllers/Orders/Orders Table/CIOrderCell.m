@@ -10,6 +10,10 @@
 #import "NumberUtil.h"
 #import "ShowConfigurations.h"
 #import "OrderTotals.h"
+#import "CurrentSession.h"
+#import "OrderCoreDataManager.h"
+#import "CoreDataUtil.h"
+#import "Vendor.h"
 
 @interface CIOrderCell ()
 
@@ -45,16 +49,16 @@
 }
 
 - (void)setActive:(BOOL)activeOrder {
-    if (activeOrder) {
+    if (activeOrder && !self.activeOrder) {
         [self styleAsActive];
-    } else {
+    } else if (!activeOrder && self.activeOrder) {
         [self styleAsInactive];
     }
 
     self.activeOrder = activeOrder;
 }
 
-- (void)prepareForDisplay:(Order *)order setActive:(BOOL)activeOrder {
+- (void)prepareForDisplay:(Order *)order isLoading:(BOOL)isLoading setActive:(BOOL)activeOrder {
     
     if (!self.initialized) {
         self.initialized = YES;
@@ -74,28 +78,57 @@
         self.auth.hidden = NO;
         self.auth.text = order.authorizedBy;
     } else {
-        self.auth.hidden = YES;
+        self.auth.hidden = NO;
         self.auth.text = @"";
+        
+        NSNumber *vendorId = [order.vendorId copy];
+        self.auth.tag = [vendorId intValue];
+        __weak CIOrderCell *weakSelf = self;
+        [[CurrentSession privateQueueContext] performBlock:^{
+            if (vendorId) {
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"vendorId == %@", vendorId];
+                Vendor *asyncVendor = (Vendor *) [[CoreDataUtil sharedManager] fetchObject:@"Vendor" inContext:[CurrentSession privateQueueContext] withPredicate:predicate];
+                if (asyncVendor && weakSelf && weakSelf.auth.tag == [asyncVendor.vendorId intValue]) {
+                    if (asyncVendor.name) {
+                        weakSelf.auth.text = asyncVendor.name;
+                        weakSelf.auth.hidden = NO;
+                        [weakSelf.backgroundView setNeedsDisplay];
+                    } else if (asyncVendor.vendid) {
+                        weakSelf.auth.text = asyncVendor.vendid;
+                        weakSelf.auth.hidden = NO;
+                        [weakSelf.backgroundView setNeedsDisplay];
+                    }
+                }
+            }
+        }];
     }
     
     self.numItems.text = [NSString stringWithFormat:@"%d Items", order.lineItems.count];
-    
+
+    self.tag = [order.orderId intValue];
+
     if (order.grossTotal) {
         self.total.text = [NumberUtil formatDollarAmount:order.grossTotal];
     } else {
         self.total.text = @"Calculating...";
         
         __weak CIOrderCell *weakSelf = self;
-        [order calculateTotals:^(OrderTotals *totals, NSManagedObjectID *totalledOrderId) {
-            if (weakSelf && [order.objectID isEqual:totalledOrderId]) {
-                weakSelf.total.text = [NumberUtil formatDollarAmount:totals.total];
-            }
-        }];
-        
+        if (order.grossTotal && !order.hasNontransientChanges) {
+            OrderTotals *totals = [[OrderTotals alloc] initWithOrder:order];
+            self.total.text = [NumberUtil formatDollarAmount:totals.total];
+        } else {
+            NSManagedObjectID *orderObjectID = order.objectID;
+            [[CurrentSession privateQueueContext] performBlock:^{
+                Order *asyncOrder = (Order *) [[CurrentSession privateQueueContext] existingObjectWithID:orderObjectID error:nil];
+                if (asyncOrder && weakSelf && weakSelf.tag == [asyncOrder.orderId intValue]) {
+                    OrderTotals *totals = [asyncOrder calculateTotals];
+                    weakSelf.total.text = [NumberUtil formatDollarAmount:totals.total];
+                    [OrderCoreDataManager saveOrder:asyncOrder inContext:[CurrentSession privateQueueContext]];
+                }
+            }];
+        }
     }
-    
-    self.tag = [order.orderId intValue];
-    
+
     self.orderStatus.font = [UIFont semiboldFontOfSize:12.0];
     if (order.status != nil) {
         self.orderStatus.text = [order.status capitalizedString];
@@ -125,7 +158,12 @@
         self.vouchers.hidden = YES;
     }
     
-    [self setActive:activeOrder];
+    if (activeOrder) {
+        [self styleAsActive];
+    } else {
+        [self styleAsInactive];
+    }
+    self.activeOrder = activeOrder;
 }
 
 - (void)styleAsActive {

@@ -26,6 +26,8 @@
 
 + (NSArray *)convertApiDateArrayToNSDateArray:(NSArray *)jsonDateArray;
 
++ (NSDate *)convertPsqlDateTimeToNSDate:(NSString *)jsonDate;
+
 + (NSDate *)convertApiDateTimeToNSDate:(NSString *)jsonDate;
 
 + (NSString *)convertNSDateToApiDate:(NSDate *)nsDate;

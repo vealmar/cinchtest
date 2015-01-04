@@ -19,12 +19,14 @@
 #import "MBProgressHUD.h"
 #import "Order.h"
 #import "CITagColumnView.h"
+#import "NotificationConstants.h"
 
 @interface CIProductTableViewController()
 
 @property id<ProductCellDelegate> delegate;
 @property ProductSearchQueue *productSearchQueue;
 @property PullToRefreshView *pull;
+@property BOOL isLoadingProducts;
 
 @end
 
@@ -34,6 +36,11 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    self.isLoadingProducts = NO;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloading:) name:ProductsLoadRequestedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloadComplete:) name:ProductsLoadedNotification object:nil];
 
     self.pull = [[PullToRefreshView alloc] initWithScrollView:self.tableView];
     [self.pull setDelegate:self];
@@ -50,6 +57,20 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 //    self.productSearchQueue = nil;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadRequestedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
+}
+
+- (void)productsReloading:(NSNotification *)notification {
+    self.isLoadingProducts = YES;
+    self.fetchRequest = nil;
+}
+
+- (void)productsReloadComplete:(NSNotification *)notification {
+    self.isLoadingProducts = NO;
 }
 
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate {
@@ -125,7 +146,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     [submit show:YES];
 
     __weak CIProductTableViewController *weakSelf = self;
-    void (^successBlock)(id) = ^(id json) {
+    void (^successBlock)() = ^() {
         [weakSelf.pull finishedLoading];
         [submit hide:NO];
     };
@@ -136,10 +157,10 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 
     [CoreDataManager reloadProducts:[CurrentSession instance].authToken
                       vendorGroupId:[NSNumber numberWithInt:[[CurrentSession instance].loggedInVendorGroupId intValue]]
-               managedObjectContext:[CurrentSession instance].managedObjectContext
+                              async:YES
+                  usingQueueContext:[CurrentSession privateQueueContext]
                           onSuccess:successBlock
                           onFailure:failureBlock];
-
 }
 
 #pragma UITableViewDelegate

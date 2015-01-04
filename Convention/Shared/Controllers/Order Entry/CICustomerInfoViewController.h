@@ -23,7 +23,6 @@
 @property(nonatomic, strong) NSArray *tableData;
 @property(nonatomic, strong) NSMutableArray *filteredtableData;
 @property(weak, nonatomic) IBOutlet UITextField *searchText;
-@property(strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
 @property(nonatomic, strong) NSString *authToken;
 

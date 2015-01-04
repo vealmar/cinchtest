@@ -16,6 +16,7 @@
 #import "CoreDataUtil.h"
 #import "NotificationConstants.h"
 #import "CinchJSONAPIClient.h"
+#import "CurrentSession.h"
 
 
 @interface CICustomerInfoViewController ()
@@ -230,16 +231,23 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    NSArray *customers = [CoreDataManager getCustomers:self.managedObjectContext];
-    if (customers && customers.count > 0) {//todo use ACustomer objects
-        NSMutableArray *customerData = [[NSMutableArray alloc] init];
-        for (Customer *customer in customers) {
-            [customerData addObject:[customer asDictionary]];
+    __weak CICustomerInfoViewController *weakSelf = self;
+    [[CurrentSession mainQueueContext] performBlockAndWait:^{
+        NSArray *customers = [CoreDataManager getCustomers:[CurrentSession mainQueueContext]];
+        if (customers && customers.count > 0) {//todo use ACustomer objects
+            NSMutableArray *customerData = [[NSMutableArray alloc] init];
+            for (Customer *customer in customers) {
+                [customerData addObject:[customer asDictionary]];
+            }
+            if (weakSelf) {
+                weakSelf.customerData = customerData;
+            }
+        } else {
+            if (weakSelf) {
+                [weakSelf reLoadCustomers:NO];
+            }
         }
-        self.customerData = customerData;
-    } else {
-        [self reLoadCustomers:NO];
-    }
+    }];
 }
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
@@ -247,7 +255,11 @@
 }
 
 - (void)reLoadCustomers:(BOOL)triggeredByPullToRefresh {
-    [[CoreDataUtil sharedManager] deleteAllObjects:@"Customer"];
+
+    [[CurrentSession privateQueueContext] performBlockAndWait:^{
+        [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Customer" withContext:[CurrentSession privateQueueContext]];
+    }];
+
     MBProgressHUD *hud;
     if (!triggeredByPullToRefresh) {
         hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -256,22 +268,25 @@
         [hud show:NO];
     }
 
+    __weak CICustomerInfoViewController *weakSelf = self;
     [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMERS parameters:@{ kAuthToken: authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-        if (JSON && ([(NSArray *) JSON count] > 0)) {
-            NSArray *customers = (NSArray *) JSON;
-            for (NSDictionary *customer in customers) {
-                [self.managedObjectContext insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:self.managedObjectContext]];
+        [[CurrentSession privateQueueContext] performBlock:^{
+            if (JSON && ([(NSArray *) JSON count] > 0)) {
+                NSArray *customers = (NSArray *) JSON;
+                for (NSDictionary *customer in customers) {
+                    [[CurrentSession privateQueueContext] insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:[CurrentSession privateQueueContext]]];
+                }
+                [[CoreDataUtil sharedManager] saveObjects];
             }
-            [[CoreDataUtil sharedManager] saveObjects];
-        }
-        [self setCustomerData:(NSArray *) JSON];
-        if (triggeredByPullToRefresh)
-            [pull finishedLoading];
-        else
-            [hud hide:NO];
-        [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
+            [weakSelf setCustomerData:(NSArray *) JSON];
+            if (triggeredByPullToRefresh)
+                [pull finishedLoading];
+            else
+                [hud hide:NO];
+            [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
+        }];
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        [self setCustomerData:nil];
+        [weakSelf setCustomerData:nil];
         if (triggeredByPullToRefresh)
             [pull finishedLoading];
         else

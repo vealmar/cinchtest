@@ -23,23 +23,23 @@
 #import "OrderTotals.h"
 #import "OrderSubtotalsByDate.h"
 #import "DateRange.h"
-#import "CoreDataBackgroundOperation.h"
 #import "Error+Extensions.h"
 
 @implementation Order (Extensions)
 
 + (id)newOrderForCustomer:(NSDictionary *)customer {
-    CurrentSession *session = [CurrentSession instance];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Order" inManagedObjectContext:session.managedObjectContext];
-    Order *newOrder = [[Order alloc] initWithEntity:entity insertIntoManagedObjectContext:session.managedObjectContext];
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Order" inManagedObjectContext:[CurrentSession mainQueueContext]];
+    Order *newOrder = [[Order alloc] initWithEntity:entity insertIntoManagedObjectContext:[CurrentSession mainQueueContext]];
     newOrder.inSync = NO;
     newOrder.status = @"partial";
     newOrder.customerId = customer[kID];
     newOrder.custId = customer[kCustID];
     newOrder.customerName = customer[kBillName];
-    newOrder.vendorId = session.vendorId;
+    newOrder.vendorId = [CurrentSession instance].vendorId;
 
-    [OrderCoreDataManager saveOrder:newOrder inContext:session.managedObjectContext];
+    [[CurrentSession mainQueueContext] performBlockAndWait:^{
+        [OrderCoreDataManager saveOrder:newOrder inContext:[CurrentSession mainQueueContext]];
+    }];
 
     return newOrder;
 }
@@ -61,19 +61,25 @@
 }
 
 - (BOOL)hasNontransientChanges {
-    int maxLength = 0;
-    NSArray *changedFields = self.changedValues.allKeys;
-    if ([changedFields containsObject:@"grossTotal"]) maxLength++;
-    if ([changedFields containsObject:@"discountTotal"]) maxLength++;
-    if ([changedFields containsObject:@"voucherTotal"]) maxLength++;
-    
-    BOOL nontransientOrderChanges = changedFields.count > maxLength;
-    
-    BOOL hasLineChanges = Underscore.array(self.lineItems.allObjects).any(^BOOL(LineItem *lineItem) {
-        return lineItem.hasChanges;
-    });
-
-    return (self.hasChanges && nontransientOrderChanges) || hasLineChanges;
+    @try {
+        int maxLength = 0;
+        NSArray *changedFields = self.changedValues.allKeys;
+        if ([changedFields containsObject:@"grossTotal"]) maxLength++;
+        if ([changedFields containsObject:@"discountTotal"]) maxLength++;
+        if ([changedFields containsObject:@"voucherTotal"]) maxLength++;
+        
+        BOOL nontransientOrderChanges = changedFields.count > maxLength;
+        
+        BOOL hasLineChanges = Underscore.array(self.lineItems.allObjects).any(^BOOL(LineItem *lineItem) {
+            return lineItem.hasChanges;
+        });
+        
+        return (self.hasChanges && nontransientOrderChanges) || hasLineChanges;
+    }
+    @catch (NSException *exception) {
+        if ([exception description]) NSLog(@"%@", [exception description]);
+        return false;
+    }
 }
 
 - (NSString *)getCustomerDisplayName {
@@ -100,23 +106,6 @@
         self.discountTotal = totals.discountTotal;
         self.voucherTotal = totals.voucherTotal;
         return totals;
-    }
-}
-
-- (void)calculateTotals:(void(^)(OrderTotals *totals, NSManagedObjectID *totalledOrderId))completion {
-    static int i = 0;
-    NSLog(@"Calculating Totals: %i", i++);
-    if (self.grossTotal && !self.hasNontransientChanges) {
-        completion([[OrderTotals alloc] initWithOrder:self], self.objectID);
-    } else {
-        NSManagedObjectID *orderObjectID = self.objectID;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            NSManagedObjectContext *asyncContext = [CurrentSession instance].newManagedObjectContext;
-            Order *asyncOrder = (Order *) [OrderCoreDataManager load:@"Order" id:orderObjectID fromContext:asyncContext];
-            OrderTotals *totals = [asyncOrder calculateTotals];
-            completion(totals, orderObjectID);
-            [OrderCoreDataManager saveOrder:asyncOrder inContext:asyncContext];
-        });
     }
 }
 
@@ -261,12 +250,12 @@
 - (id)initWithJsonFromServer:(NSDictionary *)JSON insertInto:(NSManagedObjectContext *)managedObjectContext {
     self = [super initWithEntity:[NSEntityDescription entityForName:@"Order" inManagedObjectContext:managedObjectContext] insertIntoManagedObjectContext:managedObjectContext];
     if (self) {
-        [self updateWithJsonFromServer:JSON];
+        [self updateWithJsonFromServer:JSON withContext:managedObjectContext];
     }
     return self;
 }
 
-- (Order *)updateWithJsonFromServer:(NSDictionary *)JSON {
+- (Order *)updateWithJsonFromServer:(NSDictionary *)JSON withContext:(NSManagedObjectContext *)managedObjectContext {
     self.inSync = YES;
     self.grossTotal = nil;
     self.discountTotal = nil;
@@ -286,7 +275,14 @@
     self.purchaseOrderNumber = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"po_number"]];
     self.shipDates = [DateUtil convertApiDateArrayToNSDateArray:[NilUtil objectOrEmptyArray:[JSON objectForKey:@"ship_dates"]]];
     self.customFields = [JSON objectForKey:@"custom_fields"];
-    self.updatedAt = [JSON objectForKey:@"updated_at"] ? [DateUtil convertApiDateTimeToNSDate:[JSON objectForKey:@"updated_at"]] : nil;
+    
+    if (JSON[@"updated_at"]) {
+        NSString *updatedAtStringCopy = [JSON[@"updated_at"] copy];
+        self.updatedAt = [DateUtil convertApiDateTimeToNSDate:updatedAtStringCopy];
+        if (!self.updatedAt) self.updatedAt = [DateUtil convertPsqlDateTimeToNSDate:updatedAtStringCopy];
+    } else {
+        self.updatedAt = nil;
+    }
 
     NSDictionary *customerDictionary = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
     if (customerDictionary) {
@@ -308,11 +304,11 @@
         NSMutableArray *errorsArray = [NSMutableArray array];
 
         for (NSString *warning in [NilUtil objectOrEmptyArray:JSON[@"warnings"]]) {
-            Error *lineItemrError = [[Error alloc] initWithMessage:warning andContext:self.managedObjectContext];
+            Error *lineItemrError = [[Error alloc] initWithMessage:warning andContext:managedObjectContext];
             [warningsArray addObject:lineItemrError];
         }
         for (NSString *error in [NilUtil objectOrEmptyArray:JSON[@"errors"]]) {
-            Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
+            Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:managedObjectContext];
             [errorsArray addObject:lineItemrError];
         }
 
@@ -324,7 +320,7 @@
     NSArray *jsonLineItems = (NSArray *) [NilUtil nilOrObject:JSON[@"line_items"]];
     if (jsonLineItems != nil) {
         for (NSDictionary *jsonItem in jsonLineItems) {
-            [lineItems addObject:[[LineItem alloc] initWithJsonFromServer:jsonItem inContext:self.managedObjectContext]];
+            [lineItems addObject:[[LineItem alloc] initWithJsonFromServer:jsonItem inContext:managedObjectContext]];
         }
     }
     self.lineItems = [NSSet setWithSet:lineItems];

@@ -8,6 +8,13 @@
 #import "config.h"
 #import "CIAppDelegate.h"
 
+@interface CurrentSession ()
+
+@property (strong, nonatomic) NSManagedObjectContext *privateQueueContext;
+@property (strong, nonatomic) NSManagedObjectContext *mainQueueContext;
+
+@end;
+
 @implementation CurrentSession
 
 static CurrentSession *currentSession = nil;
@@ -19,29 +26,8 @@ static CurrentSession *currentSession = nil;
     return currentSession;
 }
 
-- (id)init {
-    self = [super init];
-    if (self) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleContextSave:) name:NSManagedObjectContextDidSaveNotification object:nil];
-    }
-    return self;
-}
-
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)handleContextSave:(NSNotification *)notification {
-    if (notification.object && ![notification.object isEqual:self.managedObjectContext]) {
-        NSLog(@"Merging Contexts\n    Main context has: %i changes, %i inserts, %i deletes\nIncoming context has: %i changes, %i inserts, %i deletes",
-              self.managedObjectContext.updatedObjects.count,
-              self.managedObjectContext.insertedObjects.count,
-              self.managedObjectContext.deletedObjects.count,
-              ((NSSet *)notification.userInfo[NSUpdatedObjectsKey]).count,
-              ((NSSet *)notification.userInfo[NSInsertedObjectsKey]).count,
-              ((NSSet *)notification.userInfo[NSDeletedObjectsKey]).count);
-        [self.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-    }
 }
 
 - (NSNumber *)showId {
@@ -61,6 +47,18 @@ static CurrentSession *currentSession = nil;
 
 - (void)dispatchSessionDidChange {
     [[NSNotificationCenter defaultCenter] postNotificationName:SessionDidChangeNotification object:self];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(contextDidSavePrivateQueueContext:)
+                                                 name:NSManagedObjectContextDidSaveNotification
+                                               object:[self privateQueueContext]];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(contextDidSaveMainQueueContext:)
+                                                 name:NSManagedObjectContextDidSaveNotification
+                                               object:[self mainQueueContext]];
+
 }
 
 - (NSManagedObjectContext *)newManagedObjectContext {
@@ -69,7 +67,7 @@ static CurrentSession *currentSession = nil;
     if (coordinator != nil) {
         NSManagedObjectContext *newContext = [[NSManagedObjectContext alloc] init];
         [newContext setPersistentStoreCoordinator:coordinator];
-        [newContext setMergePolicy:[[NSMergePolicy alloc] initWithMergeType:NSMergeByPropertyObjectTrumpMergePolicyType]];
+        [newContext setMergePolicy:NSMergeByPropertyObjectTrumpMergePolicy];
         [newContext setUndoManager:nil];
         return newContext;
     } else {
@@ -77,5 +75,71 @@ static CurrentSession *currentSession = nil;
         return nil;
     }
 }
+
+#pragma New Context Setup
+
+#pragma mark - Singleton Access
+
++ (NSManagedObjectContext *)mainQueueContext
+{
+    return [[self instance] mainQueueContext];
+}
+
++ (NSManagedObjectContext *)privateQueueContext
+{
+    return [[self instance] privateQueueContext];
+}
+
+#pragma mark - Getters
+
+- (NSManagedObjectContext *)mainQueueContext
+{
+    if (!_mainQueueContext) {
+        CIAppDelegate *appDelegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
+        NSPersistentStoreCoordinator *coordinator = [appDelegate persistentStoreCoordinator];
+        _mainQueueContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        _mainQueueContext.persistentStoreCoordinator = coordinator;
+        _mainQueueContext.mergePolicy = NSOverwriteMergePolicy;
+//        _mainQueueContext.mergePolicy = NSErrorMergePolicyType;
+    }
+
+    return _mainQueueContext;
+}
+
+- (NSManagedObjectContext *)privateQueueContext
+{
+    if (!_privateQueueContext) {
+        CIAppDelegate *appDelegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
+        NSPersistentStoreCoordinator *coordinator = [appDelegate persistentStoreCoordinator];
+        _privateQueueContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+        _privateQueueContext.persistentStoreCoordinator = coordinator;
+        _privateQueueContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy;
+    }
+
+    return _privateQueueContext;
+}
+
+- (void)contextDidSavePrivateQueueContext:(NSNotification *)notification
+{
+    @synchronized(self) {
+        [self.mainQueueContext performBlock:^{
+            NSLog(@"Merging Private Queue into Main Queue");
+            [self.mainQueueContext mergeChangesFromContextDidSaveNotification:notification];
+        }];
+    }
+}
+
+- (void)contextDidSaveMainQueueContext:(NSNotification *)notification
+{
+    @synchronized(self) {
+        [self.privateQueueContext performBlock:^{
+            NSLog(@"Merging Main Queue into Private Queue");
+            [self.privateQueueContext mergeChangesFromContextDidSaveNotification:notification];
+        }];
+    }
+}
+
+
+
 
 @end

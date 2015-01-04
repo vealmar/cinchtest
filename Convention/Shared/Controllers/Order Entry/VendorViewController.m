@@ -58,6 +58,8 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
 
+    cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    
     NSDictionary *details = [vendors objectAtIndex:indexPath.row];
     if ([details objectForKey:kVendorVendID] != nil)
         cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", [details objectForKey:kVendorVendID] != nil ? [details objectForKey:kVendorVendID] : @"", [details objectForKey:@"name"]];

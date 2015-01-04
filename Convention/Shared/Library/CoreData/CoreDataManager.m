@@ -22,6 +22,7 @@
 #import "CinchJSONAPIClient.h"
 #import "NotificationConstants.h"
 #import "ShowConfigurations.h"
+#import "CurrentSession.h"
 
 
 @implementation CoreDataManager
@@ -94,40 +95,82 @@
         return fetchedObjects;
 }
 
-+ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSNumber *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext
-             onSuccess:(void (^)(id JSON))successBlock
-             onFailure:(void (^)())failureBlock {
-
++ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSNumber *)vendorGroupId async:(BOOL)async usingQueueContext:(NSManagedObjectContext *)queueContext onSuccess:(void (^)())successBlock onFailure:(void (^)())failureBlock {
+    [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadRequestedNotification object:nil];
     [[CinchJSONAPIClient sharedInstance] GET:kDBGETPRODUCTS parameters:@{ kAuthToken: authToken, kVendorGroupID: [NSString stringWithFormat:@"%@", vendorGroupId] } success:^(NSURLSessionDataTask *task, id JSON) {
         if (JSON && ([(NSArray *) JSON count] > 0)) {
-            [[CoreDataUtil sharedManager] deleteAllObjects:@"Product"];
-            NSArray *products = (NSArray *) JSON;
 
+            //always perform the delete synchronously so we dont delete stuff we pull from the server later
+            [queueContext performBlockAndWait:^{
+                [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Product" withContext:queueContext];
+            }];
+
+            NSArray *products = (NSArray *) JSON;
             int batchSize = 500;
             int productsCount = [products count];
             NSRange range = NSMakeRange(0, productsCount > batchSize ? batchSize : productsCount);
 
             NSDate *start = [NSDate date];
+            NSMutableArray *remainingBatches = [NSMutableArray array];
             while (range.length > 0) {
                 NSArray *productsBatch = [products subarrayWithRange:range];
-                @autoreleasepool {
+                // always wait for the first iteration, we can return from this method with data to display immediately
+                [queueContext performBlockAndWait:^{
                     for (NSDictionary *productJson in productsBatch) {
-                        [[Product alloc] initWithProductFromServer:productJson context:managedObjectContext];
+                        [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
                     }
-                    [managedObjectContext save:nil];
-                }
+                    [queueContext save:nil];
+                }];
                 int newStartLocation = range.location + range.length;
                 range = NSMakeRange(newStartLocation, productsCount - newStartLocation > batchSize ? batchSize : productsCount - newStartLocation);
             }
-            [[CoreDataUtil sharedManager] saveObjects];
+
+            //release unneeded data for memory
+            JSON = nil;
+            products = nil;
+
+            __block int remainingBatchCount = 0;
+            int totalRemainingBatchCount = remainingBatches.count;
+
+            if (totalRemainingBatchCount == 0) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
+            }
+
+            for (NSArray *productsBatch in remainingBatches) {
+                if (async) {
+                    [queueContext performBlock:^{
+                        for (NSDictionary *productJson in productsBatch) {
+                            [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
+                        }
+                        [queueContext save:nil];
+
+                        remainingBatchCount += 1;
+                        if (remainingBatchCount >= totalRemainingBatchCount) {
+                            [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
+                        }
+                    }];
+                } else {
+                    [queueContext performBlockAndWait:^{
+                        for (NSDictionary *productJson in productsBatch) {
+                            [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
+                        }
+                        [queueContext save:nil];
+
+                        remainingBatchCount += 1;
+                        if (remainingBatchCount >= totalRemainingBatchCount) {
+                            [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
+                        }
+                    }];
+                }
+            }
 
             NSDate *methodFinish = [NSDate date];
             NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:start];
 
             NSLog(@"Execution Time: %f", executionTime);
         }
-        [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
-        if (successBlock) successBlock(JSON);
+
+        if (successBlock) successBlock();
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         id JSON = error.userInfo[JSONResponseSerializerWithErrorDataKey];
         if (failureBlock) failureBlock();
@@ -149,8 +192,7 @@
 }
 
 + (NSUInteger)getProductCount {
-    CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
-    NSManagedObjectContext *context = delegate.managedObjectContext;
+    NSManagedObjectContext *context = [CurrentSession mainQueueContext];
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:context]];
     [request setIncludesSubentities:NO];
@@ -164,8 +206,7 @@
 }
 
 + (NSUInteger)getCustomerCount {
-    CIAppDelegate *delegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
-    NSManagedObjectContext *context = delegate.managedObjectContext;
+    NSManagedObjectContext *context = [CurrentSession mainQueueContext];
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:[NSEntityDescription entityForName:@"Customer" inManagedObjectContext:context]];
     [request setIncludesSubentities:NO];
@@ -280,7 +321,7 @@
     NSManagedObjectModel *model = appDelegate.managedObjectModel;
     NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs]; //todo: this code looks nasty
     NSError *error = nil;
-    NSArray *results = [appDelegate.managedObjectContext executeFetchRequest:req error:&error];
+    NSArray *results = [[CurrentSession mainQueueContext] executeFetchRequest:req error:&error];
     return (!error && results != nil && [results count] > 0) ? [results objectAtIndex:0] : nil;
 }
 

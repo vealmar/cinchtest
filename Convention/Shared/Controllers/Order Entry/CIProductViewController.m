@@ -44,6 +44,7 @@
     CIFinalCustomerInfoViewController *customerInfoViewController;
 }
 @property CINavViewManager *navViewManager;
+@property BOOL isLoadingProducts;
 
 @property (strong, nonatomic) UIBarButtonItem *filterBarButtonItem;
 @property (strong, nonatomic) JMStaticContentTableViewController *filterStaticController;
@@ -97,6 +98,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    self.isLoadingProducts = NO;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloading:) name:ProductsLoadRequestedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloadComplete:) name:ProductsLoadedNotification object:nil];
+
     self.view.backgroundColor = [UIColor colorWithRed:0.133 green:0.129 blue:0.137 alpha:1];
 
     initialVendor = ![ShowConfigurations instance].vendorMode &&
@@ -111,6 +117,22 @@
     if (![ShowConfigurations instance].isOrderShipDatesType) self.btnSelectShipDates.hidden = YES;
 }
 
+- (void)productsReloading:(NSNotification *)notification {
+    [self.navViewManager clearSearch];
+    if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
+    self.isLoadingProducts = YES;
+}
+
+- (void)productsReloadComplete:(NSNotification *)notification {
+    self.isLoadingProducts = NO;
+    [self loadProductsForCurrentVendorAndBulletin];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadRequestedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     if (!self.viewInitialized) {
         [self.productTableViewController prepareForDisplay:self];
@@ -120,10 +142,6 @@
                 self.order = [Order newOrderForCustomer:self.customer];
             }
             else {
-                if (self.order) {
-                    self.order = [OrderCoreDataManager load:@"Order" id:self.order.objectID fromContext:[CurrentSession instance].managedObjectContext];
-                }
-
                 [self loadOrder:OrderRecoverySelectionNone];
             }
         }
@@ -132,9 +150,9 @@
         self.viewInitialized = YES;
     }
 
-    // if we're looking at a different vendor's order, show all products by default
+    // if we're looking at a different vendor's order, show those products by default
     if (self.order && self.order.vendorId.intValue != currentVendor) {
-        currentVendor = 0;
+        currentVendor = self.order.vendorId.intValue;
     }
     
     [self loadProductsForCurrentVendorAndBulletin];
@@ -177,7 +195,7 @@
 # pragma mark - Initialization
 
 - (void)loadVendors {
-    NSArray *vendors = [CoreDataManager getVendors:[CurrentSession instance].managedObjectContext];
+    NSArray *vendors = [CoreDataManager getVendors:[CurrentSession mainQueueContext]];
     if (vendors && vendors.count > 0) {//todo use AVendor objects
         NSMutableArray *vendorDataMutable = [[NSMutableArray alloc] init];
         for (Vendor *vendor in vendors) {
@@ -258,7 +276,7 @@
 }
 
 - (void)loadBulletins {
-    NSArray *coreDataBulletins = [CoreDataManager getBulletins:[CurrentSession instance].managedObjectContext];
+    NSArray *coreDataBulletins = [CoreDataManager getBulletins:[CurrentSession mainQueueContext]];
     if (coreDataBulletins && coreDataBulletins.count > 0) {//todo use ABulletin objects
         NSMutableDictionary *bulls = [[NSMutableDictionary alloc] init];
         for (Bulletin *bulletin in coreDataBulletins) {
@@ -477,10 +495,15 @@
 #pragma mark - Events
 
 - (void)cancel {
+    if (self.isLoadingProducts) {
+        [[[UIAlertView alloc] initWithTitle:@"Products Reloading" message:@"Products are currently being reloaded from the server in the background. Product searches cannot be conducted until complete." delegate:nil
+                          cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        return;
+    }
+
     if (self.order.hasNontransientChanges || !self.order.inSync) {
         NSMutableArray *options = [NSMutableArray array];
-        NSString *title = @"";
-        
+        NSString *title;
         if (self.order.hasNontransientChanges) {
             title = @"Unsaved Changes";
         } else {
@@ -560,13 +583,19 @@
 }
 
 - (void)reviewCart {
+    if (self.isLoadingProducts) {
+        [[[UIAlertView alloc] initWithTitle:@"Products Reloading" message:@"Products are currently being reloaded from the server in the background. Product searches cannot be conducted until complete." delegate:nil
+                          cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        return;
+    }
+
     if ([helper isOrderReadyForSubmission:self.order]) {
         if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
         CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.order
                                                                         customer:self.customer
                                                                        authToken:[CurrentSession instance].authToken
                                                                 selectedVendorId:[NSNumber numberWithInt:currentVendor]
-                                                         andManagedObjectContext:[CurrentSession instance].managedObjectContext];
+                                                         andManagedObjectContext:[CurrentSession mainQueueContext]];
         cart.delegate = self;
         [self.navigationController pushViewController:cart animated:YES];
     }
@@ -650,6 +679,12 @@
 }
 
 - (void)QtyTouchForIndex:(NSNumber *)productId {
+    if (self.isLoadingProducts) {
+        [[[UIAlertView alloc] initWithTitle:@"Products Reloading" message:@"Products are currently being reloaded from the server in the background. Product searches cannot be conducted until complete." delegate:nil
+                          cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        return;
+    }
+
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
         LineItem *lineItem = [self.order findOrCreateLineForProductId:productId
                                                         context:self.order.managedObjectContext];
@@ -671,7 +706,7 @@
 }
 
 - (void)ShowPriceChange:(double)price productId:(NSNumber *)productId {
-    [self.order updateItemShowPrice:@(price) productId:productId context:[CurrentSession instance].managedObjectContext];
+    [self.order updateItemShowPrice:@(price) productId:productId context:[CurrentSession mainQueueContext]];
     [self updateTotals];
 }
 
@@ -692,6 +727,7 @@
 
 #pragma Return
 - (void)Return {
+
     if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
     //@todo orders think about what we want to get out of this
     OrderUpdateStatus status = [self orderStatus];
@@ -705,10 +741,11 @@
         [OrderCoreDataManager saveOrder:self.order inContext:self.order.managedObjectContext];
     }
 
+    NSManagedObjectID *orderObjectID = self.order ? self.order.objectID : nil;
     __weak CIProductViewController *weakSelf = self;
     [self dismissViewControllerAnimated:YES completion:^{
         if (weakSelf.delegate) {
-            [weakSelf.delegate returnOrder:weakSelf.order updateStatus:status];
+            [weakSelf.delegate returnOrder:orderObjectID updateStatus:status];
             [weakSelf reinit]; //clear up memory
         }
     }];
@@ -769,7 +806,17 @@
 }
 
 - (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
-    [self.productTableViewController filterToVendorId:currentVendor bulletinId:currentBulletin inCart:self.filterCartSwitch.on queryTerm:searchTerm];
+    if (!self.isLoadingProducts) {
+        [self.productTableViewController filterToVendorId:currentVendor bulletinId:currentBulletin inCart:self.filterCartSwitch.on queryTerm:searchTerm];
+    }
+}
+
+- (BOOL)navViewWillSearch {
+    if (self.isLoadingProducts) {
+        [[[UIAlertView alloc] initWithTitle:@"Products Reloading" message:@"Products are currently being reloaded from the server in the background. Product searches cannot be conducted until complete." delegate:nil
+                          cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }
+    return !self.isLoadingProducts;
 }
 
 - (void)updateFilterButtonState {

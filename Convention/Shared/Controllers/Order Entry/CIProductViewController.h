@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 @protocol CIProductViewDelegate <NSObject>
 
-- (void)returnOrder:(Order *)savedOrder updateStatus:(OrderUpdateStatus)updateStatus;
+- (void)returnOrder:(NSManagedObjectID *)savedOrder updateStatus:(OrderUpdateStatus)updateStatus;
 
 @end
 

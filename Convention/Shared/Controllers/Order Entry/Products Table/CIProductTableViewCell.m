@@ -74,7 +74,7 @@
         }];
         [view.quantityTextField setBk_didEndEditingBlock:^(UITextField *field) {
             Order *order = [weakSelf.delegate currentOrderForCell];
-            LineItem *lineItem = [order findOrCreateLineForProductId:((Product *) weakSelf.rowData).productId context:[CurrentSession instance].managedObjectContext];
+            LineItem *lineItem = [order findOrCreateLineForProductId:((Product *) weakSelf.rowData).productId context:[CurrentSession mainQueueContext]];
             [lineItem setQuantity:field.text];
         }];
 

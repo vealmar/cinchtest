@@ -117,7 +117,6 @@
             vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
             [CurrentSession instance].authToken = authToken;
             [CurrentSession instance].vendorInfo = vendorInfo;
-            [CurrentSession instance].managedObjectContext = managedObjectContext;
             [[CurrentSession instance] dispatchSessionDidChange];
             [self loadCustomers];
         }
@@ -144,19 +143,26 @@
     hud.labelText = @"Loading customers";
     [hud show:NO];
 
+    __weak CIViewController *weakSelf = self;
     [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMERS parameters:@{ kAuthToken: authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-        [[CoreDataUtil sharedManager] deleteAllObjects:@"Customer"];
-        if (JSON && ([(NSArray *) JSON count] > 0)) {
-            NSArray *customers = (NSArray *) JSON;
-            for (NSDictionary *customer in customers) {
-                [self.managedObjectContext insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:self.managedObjectContext]];
+        [[CurrentSession mainQueueContext] performBlockAndWait:^{
+            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Customer" withContext:[CurrentSession mainQueueContext]];
+
+            if (JSON && ([(NSArray *) JSON count] > 0)) {
+                NSArray *customers = (NSArray *) JSON;
+                for (NSDictionary *customer in customers) {
+                    [[CurrentSession mainQueueContext] insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:[CurrentSession mainQueueContext]]];
+                }
+                [[CurrentSession mainQueueContext] save:nil];
             }
-            [[CoreDataUtil sharedManager] saveObjects];
-        }
-        [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
-        [hud hide:NO];
-        [self loadProducts];
+            [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
+            [hud hide:NO];
+            [weakSelf loadProducts];
+        }];
     } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
+        [[CurrentSession mainQueueContext] performBlockAndWait:^{
+            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Customer" withContext:[CurrentSession mainQueueContext]];
+        }];
         [hud hide:NO];
         [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         NSLog(@"%@ Error loading customers: %@", [self class], [apiError localizedDescription]);
@@ -169,7 +175,7 @@
     hud.labelText = @"Loading products";
     [hud show:NO];
 
-    void (^successBlock)(id) = ^(id json) {
+    void (^successBlock)() = ^() {
         [hud hide:NO];
         [self loadVendors];
     };
@@ -180,7 +186,8 @@
 
     [CoreDataManager reloadProducts:self.authToken
                       vendorGroupId:[self.vendorInfo objectForKey:kVendorGroupID]
-               managedObjectContext:self.managedObjectContext
+                              async:NO
+                  usingQueueContext:[CurrentSession mainQueueContext]
                           onSuccess:successBlock
                           onFailure:failureBlock];
 }
@@ -190,21 +197,28 @@
     hud.removeFromSuperViewOnHide = YES;
     hud.labelText = @"Loading vendors";
     [hud show:NO];
-    [[CoreDataUtil sharedManager] deleteAllObjects:@"Vendor"];
+
     NSNumber *vendorGroupId = (NSNumber *) [NilUtil nilOrObject:[vendorInfo objectForKey:kVendorGroupID]];
     if (vendorGroupId) {
         [[CinchJSONAPIClient sharedInstance] GET:kDBGETVENDORSWithVG parameters:@{ kAuthToken: authToken, kVendorGroupID: vendorGroupId } success:^(NSURLSessionDataTask *task, id JSON) {
-            if (JSON) {
-                NSArray *results = [NSArray arrayWithArray:JSON];
-                NSArray *vendors = results.count > 0 ? [[results objectAtIndex:0] objectForKey:@"vendors"] : [NSArray array];
-                for (NSDictionary *vendor in vendors) {
-                    [self.managedObjectContext insertObject:[[Vendor alloc] initWithVendorFromServer:vendor context:self.managedObjectContext]];
+            [[CurrentSession mainQueueContext] performBlockAndWait:^{
+                [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Vendor" withContext:[CurrentSession mainQueueContext]];
+
+                if (JSON) {
+                    NSArray *results = [NSArray arrayWithArray:JSON];
+                    NSArray *vendors = results.count > 0 ? [[results objectAtIndex:0] objectForKey:@"vendors"] : [NSArray array];
+                    for (NSDictionary *vendor in vendors) {
+                        [[CurrentSession mainQueueContext] insertObject:[[Vendor alloc] initWithVendorFromServer:vendor context:[CurrentSession mainQueueContext]]];
+                    }
+                    [[CurrentSession mainQueueContext] save:nil];
+                    [hud hide:NO];
+                    [self loadBulletins];
                 }
-                [[CoreDataUtil sharedManager] saveObjects];
-            }
-            [hud hide:NO];
-            [self loadBulletins];
+            }];
         } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
+            [[CurrentSession mainQueueContext] performBlockAndWait:^{
+                [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Vendor" withContext:[CurrentSession mainQueueContext]];
+            }];
             [hud hide:NO];
             [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
             NSLog(@"%@ Error loading vendors: %@", [self class], [apiError localizedDescription]);
@@ -217,18 +231,24 @@
     hud.removeFromSuperViewOnHide = YES;
     hud.labelText = @"Loading bulletins";
     [hud show:NO];
-    [[CoreDataUtil sharedManager] deleteAllObjects:@"Bulletin"];
 
     [[CinchJSONAPIClient sharedInstance] GET:kDBGETBULLETINS parameters:@{ kAuthToken: authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-        if (JSON) {
-            for (NSDictionary *bulletin in JSON) {
-                [self.managedObjectContext insertObject:[[Bulletin alloc] initWithBulletinFromServer:bulletin context:self.managedObjectContext]];
+        [[CurrentSession mainQueueContext] performBlockAndWait:^{
+            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Bulletin" withContext:[CurrentSession mainQueueContext]];
+
+            if (JSON) {
+                for (NSDictionary *bulletin in JSON) {
+                    [[CurrentSession mainQueueContext] insertObject:[[Bulletin alloc] initWithBulletinFromServer:bulletin context:[CurrentSession mainQueueContext]]];
+                }
+                [[CurrentSession mainQueueContext] save:nil];
             }
-            [[CoreDataUtil sharedManager] saveObjects];
-        }
-        [hud hide:NO];
-        [self presentOrderViewController];
+            [hud hide:NO];
+            [self presentOrderViewController];
+        }];
     } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
+        [[CurrentSession mainQueueContext] performBlockAndWait:^{
+            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Bulletin" withContext:[CurrentSession mainQueueContext]];
+        }];
         [hud hide:NO];
         [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         NSLog(@"%@ Error loading bulletins: %@", [self class], [apiError localizedDescription]);
@@ -250,7 +270,6 @@
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CIOrderViewController" bundle:nil];
     CIOrderViewController *masterViewController = [storyboard instantiateInitialViewController];
     masterViewController.authToken = [CurrentSession instance].authToken;
-    masterViewController.managedObjectContext = self.managedObjectContext;
 
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:masterViewController];
 

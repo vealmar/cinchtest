@@ -18,7 +18,7 @@
 /**
 * Selects the given order. If nil, selects the first one.
 */
-- (void)selectOrder:(Order *)order;
+- (void)selectOrder:(NSManagedObjectID *)order;
 
 - (void)selectSibling:(BOOL)up;
 

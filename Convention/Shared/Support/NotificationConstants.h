@@ -5,6 +5,7 @@
 
 //notifications
 extern NSString *const CustomersLoadedNotification;
+extern NSString *const ProductsLoadRequestedNotification;
 extern NSString *const ProductsLoadedNotification;
 extern NSString *const   kCustomerUserInfoKey;
 extern NSString *const PrintersLoadedNotification;

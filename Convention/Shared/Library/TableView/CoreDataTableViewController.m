@@ -21,46 +21,32 @@
     [super viewDidLoad];
     self.pendingContextMerges = [NSMutableArray array];
     self.pauseUpdates = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleContextSave:) name:NSManagedObjectContextDidSaveNotification object:nil];
 }
 
 - (void)prepareForDisplay {
     // use our own separate context so we can control merges from other context
-    self.managedObjectContext = [CurrentSession instance].newManagedObjectContext;
+    self.managedObjectContext = [CurrentSession mainQueueContext];
     self.fetchRequest = [self initialFetchRequest];
 }
 
 - (void)pauseContextUpdates {
-    self.pauseUpdates = YES;
+//    self.pauseUpdates = YES;
 }
 
 - (void)resumeContextUpdates {
     self.pauseUpdates = NO;
-    [self processMerges];
+//    [self processMerges];
 }
 
-- (void)handleContextSave:(NSNotification *)notification {
-    if (self.managedObjectContext) {
-        if (notification.object && ![notification.object isEqual:self.managedObjectContext]) {
-            NSLog(@"Merging context into CoreDataTableViewController");
-            [self.pendingContextMerges addObject:notification];
-            [self processMerges];
-        } else if (notification.object) {
-            [NSException raise:NSObjectNotAvailableException format:@"The NSManagedObjectContext used for CoreDataTableViewController is read-only and may not be used for saving changes."];
-        }
-    }
-
-}
-
-- (void)processMerges {
-    if (self.managedObjectContext) {
-        while (!self.pauseUpdates && self.pendingContextMerges.count > 0) {
-            NSNotification *notification = (NSNotification *) self.pendingContextMerges.firstObject;
-            [self.pendingContextMerges removeObjectAtIndex:0];
-            [self.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-        }
-    }
-}
+//- (void)processMerges {
+//    if (self.managedObjectContext) {
+//        while (!self.pauseUpdates && self.pendingContextMerges.count > 0) {
+//            NSNotification *notification = (NSNotification *) self.pendingContextMerges.firstObject;
+//            [self.pendingContextMerges removeObjectAtIndex:0];
+//            [self.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
+//        }
+//    }
+//}
 
 - (NSFetchRequest *)fetchRequest {
     return self.fetchedResultsController ? self.fetchedResultsController.fetchRequest : nil;

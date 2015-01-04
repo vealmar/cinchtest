@@ -7,7 +7,6 @@
 
 @interface CurrentSession : NSObject
 
-@property NSManagedObjectContext *managedObjectContext;
 @property NSString *authToken;
 @property NSDictionary* vendorInfo;
 @property (readonly) NSNumber* showId;
@@ -27,5 +26,9 @@
 * @return a new context
 */
 - (NSManagedObjectContext *)newManagedObjectContext;
+
+
++ (NSManagedObjectContext *)mainQueueContext;
++ (NSManagedObjectContext *)privateQueueContext;
 
 @end

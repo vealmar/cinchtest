@@ -70,7 +70,6 @@
 		6DDC946FD8D073C7E143A63A /* CISlidingProductViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9499EB2C65D9E71F560D /* CISlidingProductViewController.m */; };
 		6DDC947B21FE051C6660C51A /* Order+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC95A375932789B93362D8 /* Order+Extensions.m */; };
 		6DDC947DC2348219943A019A /* CI_144logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9D14CADC47A0BC6B4590 /* CI_144logo.png */; };
-		6DDC9487EAB942C3E4E74089 /* CoreDataBackgroundOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9461AD065B8724BA4FF7 /* CoreDataBackgroundOperation.m */; };
 		6DDC9488202D510B4E6A9FBC /* CIProductTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9688361C00EDD636003A /* CIProductTableViewCell.m */; };
 		6DDC94946A0892B0683A76B9 /* CITableViewColumnView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC97B1EEF9E6C0885A6412 /* CITableViewColumnView.m */; };
 		6DDC94969448350F637FD21F /* CITableViewColumn.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC97E1993C4458BB729EAA /* CITableViewColumn.m */; };
@@ -414,7 +413,6 @@
 		6DDC944E0A5A6547E426FCA3 /* CIShowPriceColumnView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIShowPriceColumnView.m; sourceTree = "<group>"; };
 		6DDC9457B9F6FCC5D5AC0A3C /* FarrisBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBG.png; sourceTree = "<group>"; };
 		6DDC945FDA920CAA48BA33B6 /* LaunchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchViewController.h; sourceTree = "<group>"; };
-		6DDC9461AD065B8724BA4FF7 /* CoreDataBackgroundOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataBackgroundOperation.m; sourceTree = "<group>"; };
 		6DDC94638F7534B203743D9F /* NumberUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberUtil.h; sourceTree = "<group>"; };
 		6DDC94761C17CF4BAFE7995B /* printin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = printin.png; sourceTree = "<group>"; };
 		6DDC947AD72E135341901F63 /* CITableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableViewController.h; sourceTree = "<group>"; };
@@ -642,7 +640,6 @@
 		6DDC9D9773FFB7F121A71B40 /* ProductCart5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart5.xcdatamodel; sourceTree = "<group>"; };
 		6DDC9D9CC967EF69216245B9 /* savein.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = savein.png; sourceTree = "<group>"; };
 		6DDC9DA7E0B2C05922668179 /* ProductCart3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart3.xcdatamodel; sourceTree = "<group>"; };
-		6DDC9DAE001B342CA72C2EA2 /* CoreDataBackgroundOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataBackgroundOperation.h; sourceTree = "<group>"; };
 		6DDC9DAEB128D6BBE895AEBC /* clear-button-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "clear-button-in.png"; sourceTree = "<group>"; };
 		6DDC9DB4D7724E65EA208A06 /* ShowConfigurations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowConfigurations.h; sourceTree = "<group>"; };
 		6DDC9DBB5AE43AD4AFA20CFD /* mainpage_back.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = mainpage_back.jpg; sourceTree = "<group>"; };
@@ -1446,8 +1443,6 @@
 				6DDC99CB78E2602CB2050028 /* CoreDataUtil.m */,
 				6DDC9B8A9CC21F6E3654396D /* OrderCoreDataManager.m */,
 				6DDC939591E268A6984A4162 /* OrderCoreDataManager.h */,
-				6DDC9461AD065B8724BA4FF7 /* CoreDataBackgroundOperation.m */,
-				6DDC9DAE001B342CA72C2EA2 /* CoreDataBackgroundOperation.h */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -2110,7 +2105,6 @@
 				6DDC94CEE65C1994679066FD /* CoreDataManager.m in Sources */,
 				6DDC9CD68EF532609FF2BB37 /* CoreDataUtil.m in Sources */,
 				6DDC996FAAF23CD30546FEB0 /* OrderCoreDataManager.m in Sources */,
-				6DDC9487EAB942C3E4E74089 /* CoreDataBackgroundOperation.m in Sources */,
 				6DDC9FA22336A8C92E1D1EE4 /* OrderTotals.m in Sources */,
 				6DDC920E079171CCEAD4F286 /* OrderSubtotalsByDate.m in Sources */,
 				6DDC961335B61025C1247CA8 /* CITagColumnView.m in Sources */,

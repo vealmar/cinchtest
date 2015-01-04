@@ -14,7 +14,6 @@
 #import "config.h"
 #import "CurrentSession.h"
 #import "SettingsManager.h"
-#import "CoreDataBackgroundOperation.h"
 #import "CIProductViewControllerHelper.h"
 #import "LineItem+Extensions.h"
 #import "Product.h"
@@ -27,15 +26,24 @@
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Order" inManagedObjectContext:managedObjectContext]];
     [fetchRequest setIncludesSubentities:NO];
-    [fetchRequest setFetchBatchSize:100];
+    [fetchRequest setFetchBatchSize:50];
 
-    fetchRequest.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO] ];
+    fetchRequest.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO],
+                                      [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO]
+                                    ];
 
-    NSMutableArray *predicates = [NSMutableArray arrayWithCapacity:3];
+    NSMutableArray *predicates = [NSMutableArray arrayWithCapacity:4];
     if (queryString && queryString.length > 0) {
-        [predicates addObject:[NSPredicate predicateWithFormat:@"customerName CONTAINS[cd] %@ or custId CONTAINS[cd] %@ or authorizedBy CONTAINS[cd] %@ or orderId == %@", queryString, queryString, queryString, queryString]];
+        [predicates addObject:[NSPredicate predicateWithFormat:@"customerName CONTAINS[cd] %@", queryString]];
+        [predicates addObject:[NSPredicate predicateWithFormat:@"custId CONTAINS[cd] %@", queryString]];
+        [predicates addObject:[NSPredicate predicateWithFormat:@"authorizedBy CONTAINS[cd] %@", queryString]];
+        if ([queryString intValue] > 0) {
+            [predicates addObject:[NSPredicate predicateWithFormat:@"orderId == %@", @([queryString integerValue])]];
+        }
     }
-    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
+    if (predicates.count > 0) {
+        fetchRequest.predicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicates];
+    }
 
     return fetchRequest;
 }
@@ -44,13 +52,17 @@
            onSuccess:(void (^)())successBlock
            onFailure:(void (^)())failureBlock {
     NSLog(@"Reloading Orders");
-    [[CoreDataUtil sharedManager] deleteAllObjects:@"Order"];
+
+    [[CurrentSession privateQueueContext] performBlockAndWait:^{
+        [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Order" withContext:[CurrentSession privateQueueContext]];
+    }];
+
     [[NSNotificationCenter defaultCenter] postNotificationName:OrderReloadStartedNotification object:nil];
     [[CinchJSONAPIClient sharedInstance] GET:kDBORDER parameters:@{ kAuthToken: [CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
         if (JSON && ([(NSArray *) JSON count] > 0)) {
             NSArray *orders = (NSArray *) JSON;
 
-            int batchSize = 50;
+            int batchSize = 75;
             int orderCount = [orders count];
             NSRange range = NSMakeRange(0, orderCount > batchSize ? batchSize : orderCount);
 
@@ -61,10 +73,13 @@
                 if (range.location > 0) {
                     [remainingBatches addObject:orderBatch];
                 } else {
-                    NSManagedObjectContext *managedObjectContext = [CurrentSession instance].newManagedObjectContext;
-                    [OrderCoreDataManager createBatch:orderBatch inContext:managedObjectContext];
-                    [managedObjectContext save:nil];
-                    managedObjectContext = nil;
+                    [[CurrentSession privateQueueContext] performBlockAndWait:^{
+                        for (NSDictionary *orderJson in orderBatch) {
+                            Order *order = [[Order alloc] initWithJsonFromServer:orderJson insertInto:[CurrentSession privateQueueContext]];
+                            [[CurrentSession privateQueueContext] insertObject:order];
+                        }
+                        [[CurrentSession privateQueueContext] save:nil];
+                    }];
                 }
                 int newStartLocation = range.location + range.length;
                 range = NSMakeRange(newStartLocation, orderCount - newStartLocation > batchSize ? batchSize : orderCount - newStartLocation);
@@ -76,17 +91,24 @@
 
             __block int remainingBatchCount = 0;
             int totalRemainingBatchCount = remainingBatches.count;
+
+            if (totalRemainingBatchCount == 0) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:OrderReloadCompleteNotification object:nil];
+            }
+
             for (NSArray *orderBatch in remainingBatches) {
-                @synchronized(@(range.location)){
-                    [CoreDataBackgroundOperation performBatchInBackgroundWithContext:^(NSManagedObjectContext *context) {
-                        [OrderCoreDataManager createBatch:orderBatch inContext:context];
-                    } completion:^{
-                        remainingBatchCount += 1;
-                        if (remainingBatchCount >= totalRemainingBatchCount) {
-                            [[NSNotificationCenter defaultCenter] postNotificationName:OrderReloadCompleteNotification object:nil];
-                        }
-                    }];
-                }
+                [[CurrentSession privateQueueContext] performBlock:^{
+                    for (NSDictionary *orderJson in orderBatch) {
+                        Order *order = [[Order alloc] initWithJsonFromServer:orderJson insertInto:[CurrentSession privateQueueContext]];
+                        [[CurrentSession privateQueueContext] insertObject:order];
+                    }
+                    [[CurrentSession privateQueueContext] save:nil];
+
+                    remainingBatchCount += 1;
+                    if (remainingBatchCount >= totalRemainingBatchCount) {
+                        [[NSNotificationCenter defaultCenter] postNotificationName:OrderReloadCompleteNotification object:nil];
+                    }
+                }];
             }
 
             NSDate *methodFinish = [NSDate date];
@@ -127,16 +149,17 @@
                            parameters:parameters
                          successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
                              dispatch_async(dispatch_get_main_queue(), ^{
-                                 NSManagedObjectContext *managedObjectContext = [CurrentSession instance].managedObjectContext;
-                                 Order *returnOrder;
-                                 if (existingOrder) {
-                                     returnOrder = existingOrder;
-                                     [existingOrder updateWithJsonFromServer:JSON];
-                                 } else {
-                                     returnOrder = [[Order alloc] initWithJsonFromServer:JSON insertInto:managedObjectContext];
-                                 }
-                                 [managedObjectContext save:nil];
-                                 if (successBlock) successBlock(returnOrder);
+                                 [[CurrentSession mainQueueContext] performBlock:^{
+                                     Order *returnOrder;
+                                     if (existingOrder) {
+                                         returnOrder = existingOrder;
+                                         [existingOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
+                                     } else {
+                                         returnOrder = [[Order alloc] initWithJsonFromServer:JSON insertInto:[CurrentSession mainQueueContext]];
+                                     }
+                                     [[CurrentSession mainQueueContext] save:nil];
+                                     if (successBlock) successBlock(returnOrder);
+                                 }];
                              });
                          }
                          failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
@@ -160,18 +183,19 @@
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[order asJsonReqParameter]];
     parameters[kAuthToken] = [CurrentSession instance].authToken;
 
-    __weak Order *weakOrder = order;
+    NSManagedObjectID *orderObjectID = order.objectID;
 
     void(^saveBlock)(id) = ^(id JSON) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (weakOrder) {
-                [weakOrder updateWithJsonFromServer:JSON];
-                [OrderCoreDataManager saveOrder:weakOrder async:NO beforeSave:^(Order *order) {
-                    order.inSync = YES;
-                } onSuccess:^{
-                    successBlock(weakOrder);
-                }];
-            }
+            [[CurrentSession mainQueueContext] performBlock:^{
+                Order *contextOrder = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderObjectID error:nil];
+                if (contextOrder) {
+                    [contextOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
+                    contextOrder.inSync = YES;
+                    [[CurrentSession mainQueueContext] save:nil];
+                }
+                successBlock(contextOrder);
+            }];
         });
     };
 
@@ -183,13 +207,11 @@
                  saveBlock(JSON);
              }
              failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                 if (weakOrder) {
-                     if (JSON) {
-                         saveBlock(JSON);
-                     } else {
-                         if (failureBlock) failureBlock();
-                         NSLog(@"%@ Error Loading Orders: %@", [self class], [error localizedDescription]);
-                     }
+                 if (JSON) {
+                     saveBlock(JSON);
+                 } else {
+                     if (failureBlock) failureBlock();
+                     NSLog(@"%@ Error Loading Orders: %@", [self class], [error localizedDescription]);
                  }
              }
                      view:view
@@ -223,25 +245,25 @@
         }).unwrap;
 
         NSLog(@"Saving Order Asynchronously");
-        [CoreDataBackgroundOperation performInBackgroundWithContext:^(NSManagedObjectContext *context) {
-            Order *asyncOrder = [OrderCoreDataManager load:@"Order" id:order.objectID fromContext:context];
+        [[CurrentSession privateQueueContext] performBlock:^{
+            Order *asyncOrder = [OrderCoreDataManager load:@"Order" withId:order.objectID fromContext:[CurrentSession privateQueueContext]];
             [asyncOrder setValuesForKeysWithDictionary:orderProperties];
 
             for (NSArray *lineItemIdAndProps in insertedLineProperties) {
                 NSManagedObjectID *objectID = [[NSNull null] isEqual:lineItemIdAndProps[0]] ? nil : lineItemIdAndProps[0];
                 NSDictionary *lineItemProperties = lineItemIdAndProps[1];
-                LineItem *asyncLineItem = [OrderCoreDataManager load:@"LineItem" id:objectID fromContext:context];
+                LineItem *asyncLineItem = [OrderCoreDataManager load:@"LineItem" withId:objectID fromContext:[CurrentSession privateQueueContext]];
                 [asyncLineItem setValuesForKeysWithDictionary:lineItemProperties];
                 if (!objectID && asyncLineItem.productId && (!asyncLineItem.product || ![asyncLineItem.productId isEqualToNumber:asyncLineItem.product.productId])) {
                     //in an insert, make sure we have the right product
                     asyncLineItem.product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product"
-                                                                                        inContext:context
+                                                                                        inContext:[CurrentSession privateQueueContext]
                                                                                     withPredicate:[NSPredicate predicateWithFormat:@"productId == %@", asyncLineItem.productId]];
                 }
             }
 
             if (threadsafeOrderOperationBlock) threadsafeOrderOperationBlock(asyncOrder);
-        } completion:^{
+            [[CurrentSession privateQueueContext] save:nil];
             NSLog(@"Asynchronous Save Complete");
             if (successBlock) successBlock();
         }];
@@ -257,10 +279,21 @@
     // we're about to save, we will consider this order out-of-sync with the server regardless of it's actual state
     // outside of the transient properties
     // we dont want to flip the sync flag if the sync value had just been changed to YES (a sync just occurred)
-    if (order.hasNontransientChanges &&
-        !([order changedValues][@"inSync"] && [[order changedValues][@"inSync"] boolValue])) {
-            order.inSync = NO;
+    
+    @try {
+        if (order.changedValues) {
+            BOOL wasInSync = [order changedValues][@"inSync"] && [[order changedValues][@"inSync"] boolValue];
+            if (order.hasNontransientChanges && !(wasInSync)) {
+                order.inSync = NO;
+            }
+        } else {
+            NSLog(@"ok");
         }
+    }
+    @catch (id exception) {
+        NSLog(@"Exception occured checking order state before save.");
+        order.inSync = NO;
+    }
 
     if (![order.managedObjectContext isEqual:context]) {
         [NSException raise:@"IllegalStateException" format:@"Cannot save order. Saving context is different from the one the order was loaded on."];
@@ -273,7 +306,7 @@
     }
 }
 
-+ (id)load:(NSString*)name id:(NSManagedObjectID *)objectID fromContext:(NSManagedObjectContext *)context {
++ (id)load:(NSString *)name withId:(NSManagedObjectID *)objectID fromContext:(NSManagedObjectContext *)context {
     if (objectID) {
         return [context existingObjectWithID:objectID error:nil];
     } else {
@@ -339,14 +372,6 @@
     }];
 
     [task resume];
-}
-
-+ (void)createBatch:(NSArray *)orderBatch inContext:(NSManagedObjectContext *)managedObjectContext {
-    @autoreleasepool {
-        for (NSDictionary *orderJson in orderBatch) {
-            Order *order = [[Order alloc] initWithJsonFromServer:orderJson insertInto:managedObjectContext];
-        }
-    }
 }
 
 @end

@@ -172,7 +172,6 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     return NO;
 }
 
-
 - (void)calendar:(CKCalendarView *)calendar didDeselectDate:(NSDate *)date {
     [self toggleDateSelection:date];
 }

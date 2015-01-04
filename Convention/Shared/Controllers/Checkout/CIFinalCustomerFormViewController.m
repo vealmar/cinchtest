@@ -13,6 +13,7 @@
 #import "CoreDataManager.h"
 #import "Order.h"
 #import "CoreDataUtil.h"
+#import "CurrentSession.h"
 
 
 @interface CIFinalCustomerFormViewController () {
@@ -109,7 +110,7 @@
     buttonsView.frame = CGRectMake(0, 0, submitButton.frame.origin.x + submitButton.frame.size.width, submitButton.frame.size.height);
     buttonsView.center = CGPointMake(w / 2, h - buttonsView.frame.size.height / 2 - 10);
 
-    context = ((CIAppDelegate *) [[UIApplication sharedApplication] delegate]).managedObjectContext;
+    context = [CurrentSession mainQueueContext];
     authorizedBy = [CoreDataManager getSetupInfo:@"authorizedBy"];
 }
 

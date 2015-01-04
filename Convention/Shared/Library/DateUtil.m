@@ -52,10 +52,21 @@ static DateUtil *sharedInstance;
     return df;
 }
 
++ (NSDateFormatter *)newPsqlDateTimeFormatter {
+    NSDateFormatter *df = [[NSDateFormatter alloc] init];
+    [df setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSSSSS"];
+    return df;
+}
+
 + (NSDateFormatter *)newApiDateFormatter {
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"yyyy-MM-dd"];
     return df;
+}
+
++ (NSDate *)convertPsqlDateTimeToNSDate:(NSString *)jsonDate {
+    NSDateFormatter *df = [DateUtil newPsqlDateTimeFormatter];
+    return [df dateFromString:jsonDate];
 }
 
 + (NSDate *)convertApiDateTimeToNSDate:(NSString *)jsonDate {

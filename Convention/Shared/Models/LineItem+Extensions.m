@@ -152,12 +152,12 @@
 - (id)initWithJsonFromServer:(NSDictionary *)json inContext:(NSManagedObjectContext *)managedObjectContext {
     self = [super initWithEntity:[NSEntityDescription entityForName:@"LineItem" inManagedObjectContext:managedObjectContext] insertIntoManagedObjectContext:managedObjectContext];
     if (self) {
-        [self updateWithJsonFromServer:json];
+        [self updateWithJsonFromServer:json withContext:managedObjectContext];
     }
     return self;
 }
 
-- (void)updateWithJsonFromServer:(NSDictionary *)json {
+- (void)updateWithJsonFromServer:(NSDictionary *)json withContext:(NSManagedObjectContext *)managedObjectContext {
     self.lineItemId = (NSNumber *) [NilUtil nilOrObject:json[kID]];
     self.orderId = (NSNumber *) [NilUtil nilOrObject:json[@"order_id"]];
     self.productId = (NSNumber *) [NilUtil nilOrObject:json[@"product_id"]];
@@ -182,11 +182,11 @@
         NSMutableArray *errorsArray = [NSMutableArray array];
         
         for (NSString *warning in [NilUtil objectOrEmptyArray:json[@"warnings"]]) {
-            Error *lineItemrError = [[Error alloc] initWithMessage:warning andContext:self.managedObjectContext];
+            Error *lineItemrError = [[Error alloc] initWithMessage:warning andContext:managedObjectContext];
             [warningsArray addObject:lineItemrError];
         }
         for (NSString *error in [NilUtil objectOrEmptyArray:json[@"errors"]]) {
-            Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:self.managedObjectContext];
+            Error *lineItemrError = [[Error alloc] initWithMessage:error andContext:managedObjectContext];
             [errorsArray addObject:lineItemrError];
         }
         
@@ -196,8 +196,8 @@
 
     if (self.productId) {
         self.product = [[CoreDataUtil sharedManager] fetchObjectFault:@"Product"
-                                                            inContext:self.managedObjectContext
-                                                        withPredicate:[NSPredicate predicateWithFormat:@"productId == %@", self.productId]];
+                                                            inContext:managedObjectContext
+                                                        withPredicate:[NSPredicate predicateWithFormat:@"productId == %@", [self.productId copy]]];
     }
 }
 

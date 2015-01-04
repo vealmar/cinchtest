@@ -57,9 +57,10 @@
 
 
 -(NSArray *) fetchArray:(NSString *)entityDescription 
-			withPredicate:(NSPredicate *)predicate;
+			withPredicate:(NSPredicate *)predicate
+            withContext:(NSManagedObjectContext *)managedObjectContext;
 
-- (void) deleteAllObjects: (NSString *) entityDescription;
+- (void)deleteAllObjectsAndSave:(NSString *)entityDescription withContext:(NSManagedObjectContext *)managedObjectContext;
 
 - (BOOL) deleteObject: (NSManagedObject *) managedObject;
 

@@ -23,7 +23,6 @@
 }
 
 @property(nonatomic, strong) NSString *authToken;
-@property(nonatomic, weak) NSManagedObjectContext *managedObjectContext;
 @property(weak, nonatomic) IBOutlet UILabel *NoOrdersLabel;
 
 // Order Detail

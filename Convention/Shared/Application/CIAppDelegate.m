@@ -9,6 +9,7 @@
 #import "CIAppDelegate.h"
 #import "SettingsManager.h"
 #import "LaunchViewController.h"
+#import "CurrentSession.h"
 
 
 @implementation CIAppDelegate
@@ -24,7 +25,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"LaunchViewController" bundle:nil];
     LaunchViewController *launchViewController = [storyboard instantiateInitialViewController];
-    launchViewController.managedObjectContext = self.managedObjectContext;
+    launchViewController.managedObjectContext = [CurrentSession mainQueueContext];
     self.window.rootViewController = launchViewController;
     [self.window makeKeyAndVisible];
     [[SettingsManager sharedManager] initialize];

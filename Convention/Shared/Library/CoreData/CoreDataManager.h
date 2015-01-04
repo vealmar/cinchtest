@@ -24,9 +24,7 @@
 
 + (NSArray *)getBulletins:(NSManagedObjectContext *)managedObjectContext;
 
-+ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSNumber *)vendorGroupId managedObjectContext:(NSManagedObjectContext *)managedObjectContext
-             onSuccess:(void (^)(id JSON))successBlock
-             onFailure:(void (^)())failureBlock;
++ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSNumber *)vendorGroupId async:(BOOL)async usingQueueContext:(NSManagedObjectContext *)queueContext onSuccess:(void (^)())successBlock onFailure:(void (^)())failureBlock;
 
 + (NSUInteger)getProductCount;
 

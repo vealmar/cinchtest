@@ -25,6 +25,7 @@
 #import "BooleanOrderCustomFieldView.h"
 #import "Order.h"
 #import "Order+Extensions.h"
+#import "CurrentSession.h"
 
 @interface CIFinalCustomerInfoViewController () {
     SetupInfo *authorizedBy;
@@ -58,7 +59,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    context = ((CIAppDelegate *) [[UIApplication sharedApplication] delegate]).managedObjectContext;
+    context = [CurrentSession mainQueueContext];
     [self defaultAuthorizedbyText];
 
     self.notesTextView.text = self.order && self.order.notes ? self.order.notes : @"";

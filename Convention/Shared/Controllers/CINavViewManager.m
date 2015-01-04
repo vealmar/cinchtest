@@ -14,6 +14,7 @@
 @property BOOL searchable;
 @property UIBarButtonItem *clearSearchItem;
 @property UIButton *dismissButton;
+@property BOOL inSearchMode;
 
 @end
 
@@ -26,6 +27,7 @@
         [self initClearSearchButton];
         [self initSearchTextField];
         [self initDismissButton];
+        self.inSearchMode = NO;
     }
     return self;
 }
@@ -102,7 +104,6 @@
 }
 
 - (void)setupNavBar:(NSString *)searchText {
-    
     UINavigationController *navController = self.delegate.navigationControllerForNavViewManager;
     UINavigationItem *navItem = self.delegate.navigationItemForNavViewManager;
 
@@ -138,6 +139,8 @@
     navItem.titleView.hidden = NO;
     navItem.leftBarButtonItems = leftBarButtonItems;
     navItem.rightBarButtonItems = rightBarButtonItems;
+    
+    self.inSearchMode = NO;
 }
 
 - (void)setupNavBarSearch:(NSString*)searchText {
@@ -164,6 +167,8 @@
         [weakSelf.searchTextField becomeFirstResponder];
         [weakSelf searchWithString:weakSelf.searchTextField.text inputCompleted:NO];
     });
+    
+    self.inSearchMode = YES;
 }
 
 - (void)searchWithString:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
@@ -190,18 +195,21 @@
 }
 
 - (void)clearSearch {
-    NSString *originalSearchQuery = self.searchTextField.text;
-    self.searchTextField.text = nil;
+//    if (self.inSearchMode) {
+        NSString *originalSearchQuery = self.searchTextField.text;
+        self.searchTextField.text = nil;
+        
+        if (self.dismissButton) {
+            [self.dismissButton removeFromSuperview];
+        }
+        [self.searchTextField resignFirstResponder];
+        [self setupNavBar:self.searchTextField.text];
+        
+        if (originalSearchQuery) [self searchWithString:self.searchTextField.text inputCompleted:YES];
+        
+        [self didEndSearch];
 
-    if (self.dismissButton) {
-        [self.dismissButton removeFromSuperview];
-    }
-    [self.searchTextField resignFirstResponder];
-    [self setupNavBar:self.searchTextField.text];
-
-    if (originalSearchQuery) [self searchWithString:self.searchTextField.text inputCompleted:YES];
-
-    [self didEndSearch];
+//    }
 }
 
 -(void)exitSearchMode {

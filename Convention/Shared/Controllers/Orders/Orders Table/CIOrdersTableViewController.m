@@ -64,11 +64,17 @@
 - (void)ordersReloading:(NSNotification *)notification {
     [self selectOrder:nil];
     self.isLoadingOrders = YES;
+    self.fetchRequest = nil;
 }
 
 - (void)ordersReloadComplete:(NSNotification *)notification {
     self.isLoadingOrders = NO;
-    [self.tableView reloadData];
+
+    if (!self.fetchRequest) {
+        self.fetchRequest = [OrderCoreDataManager buildOrderFetch:nil inManagedObjectContext:self.managedObjectContext];
+    } else {
+        [self.tableView reloadData];
+    }
 }
 
 - (NSFetchRequest *)initialFetchRequest {
@@ -85,8 +91,13 @@
     return [self tableView:self.tableView numberOfRowsInSection:0] > 0;
 }
 
-- (void)selectOrder:(Order *)order {
-    if (order != self.currentOrder || (order && self.currentOrder && ![order.objectID isEqual:self.currentOrder.objectID])) {
+- (void)selectOrder:(NSManagedObjectID *)orderObjectID {
+    if ((orderObjectID && !self.currentOrder) || (!orderObjectID && self.currentOrder) || (orderObjectID && self.currentOrder && ![orderObjectID isEqual:self.currentOrder.objectID])) {
+
+        Order *order = nil;
+        if (orderObjectID) {
+            order = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderObjectID error:nil];
+        }
 
         //deselect current order
         if (self.currentOrder) {
@@ -101,24 +112,26 @@
 
         self.currentOrder = order;
 
-        NSIndexPath *path = nil;
-        if (order) {
-            // if we dont have a path, it's possible that coredata hasn't saved it yet thus it's not in the table
-            path = [self.fetchedResultsController indexPathForObject:order];
-        }
-
-        if (path) {
-            CIOrderCell *cell = (CIOrderCell *) [self.tableView cellForRowAtIndexPath:path];
-            // select new order
-            if (cell) {
-                [cell setActive:YES];
+        if (order && !self.isLoadingOrders) {
+            NSIndexPath *path = nil;
+            if (order) {
+                // if we dont have a path, it's possible that coredata hasn't saved it yet thus it's not in the table
+                path = [self.fetchedResultsController indexPathForObject:order];
             }
-            // scroll to new order
-            if (!(cell && cell.visible)) {
-                [self.tableView scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:YES];
+            
+            if (path) {
+                CIOrderCell *cell = (CIOrderCell *) [self.tableView cellForRowAtIndexPath:path];
+                // select new order
+                if (cell) {
+                    [cell setActive:YES];
+                }
+                // scroll to new order
+                if (!(cell && cell.visible)) {
+                    [self.tableView scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:YES];
+                }
             }
         }
-
+        
         [[NSNotificationCenter defaultCenter] postNotificationName:OrderSelectionNotification object:order];
     }
 }
@@ -135,9 +148,9 @@
         }
 
     }
-    id orderAtPath = (Order *) [self.fetchedResultsController objectAtIndexPath:path];
+    Order *orderAtPath = (Order *) [self.fetchedResultsController objectAtIndexPath:path];
     if (orderAtPath) {
-        [self selectOrder:orderAtPath];
+        [self selectOrder:orderAtPath.objectID];
     }
 }
 
@@ -160,7 +173,7 @@
             break;
 
         case NSFetchedResultsChangeUpdate:
-            // we will manually handle this case because of the way we do asynchronous saves during calculateTotals
+            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
             break;
 
         case NSFetchedResultsChangeMove:
@@ -175,7 +188,7 @@
             NSIndexPath *selectedPath = [self.tableView indexPathForSelectedRow];
             Order *selectedOrder = (Order *) [self.fetchedResultsController objectAtIndexPath:selectedPath];
             if (!selectedPath || ![self.currentOrder.objectID isEqual:selectedOrder.objectID]) {
-                [self selectOrder:selectedOrder];
+                [self selectOrder:selectedOrder.objectID];
             }
         } else if (NSFetchedResultsChangeDelete == type) {
             [self selectOrder:nil];
@@ -185,9 +198,12 @@
 
 #pragma mark - Private
 
-- (void)loadOrders:(BOOL)showLoadingIndicator selectOrder:(Order *)order {
+- (void)loadOrders:(BOOL)showLoadingIndicator selectOrder:(NSManagedObjectID *)orderObjectID {
     if (!self.isLoadingOrders) {
-        NSNumber *selectOrderId = order.orderId;
+        Order *order = nil;
+        if (orderObjectID) order = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderObjectID error:nil];
+
+        NSNumber *selectOrderId = order ? order.orderId : nil;
         [self selectOrder:nil];
 
         //if load orders is triggered because view is appearing, then the loading hud is shown. if it is triggered because of the pull action in orders list, there already will be a loading indicator so don't show the hud.
@@ -208,12 +224,16 @@
         [OrderCoreDataManager reloadOrders:NO onSuccess:^{
             cleanup();
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (!self.fetchRequest) self.fetchRequest = [OrderCoreDataManager buildOrderFetch:nil inManagedObjectContext:[CurrentSession instance].managedObjectContext];
-                Order *reloadedOrderWithId = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order"
-                                                                                       inContext:[CurrentSession instance].managedObjectContext
-                                                                                   withPredicate:[NSPredicate predicateWithFormat:@"orderId == %@", selectOrderId]];
-                if (reloadedOrderWithId) [weakSelf selectOrder:reloadedOrderWithId];
+                if (weakSelf && !weakSelf.fetchRequest) weakSelf.fetchRequest = [OrderCoreDataManager buildOrderFetch:nil inManagedObjectContext:weakSelf.managedObjectContext];
             });
+            [[CurrentSession privateQueueContext] performBlock:^{
+                if (selectOrderId) {
+                    Order *reloadedOrderWithId = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order"
+                                                                                       inContext:[CurrentSession privateQueueContext]
+                                                                                   withPredicate:[NSPredicate predicateWithFormat:@"orderId == %@", selectOrderId]];
+                    if (reloadedOrderWithId) [weakSelf selectOrder:reloadedOrderWithId.objectID];
+                }
+            }];
         } onFailure:^{
             cleanup();
         }];
@@ -225,7 +245,7 @@
 #pragma mark - PullToRefreshViewDelegate
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
-    [self loadOrders:NO selectOrder:self.currentOrder];
+    [self loadOrders:NO selectOrder:self.currentOrder.objectID];
 }
 
 #pragma mark - UITableViewDelegate
@@ -265,7 +285,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     Order *order = (Order *) [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [self selectOrder:order];
+    [self selectOrder:order.objectID];
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -288,7 +308,7 @@
 
     Order *order = [self.fetchedResultsController objectAtIndexPath:indexPath];
 
-    [cell prepareForDisplay:order setActive:self.currentOrder && [order.orderId isEqual:self.currentOrder.orderId]];
+    [cell prepareForDisplay:order isLoading:self.isLoadingOrders setActive:self.currentOrder && [order.orderId isEqual:self.currentOrder.orderId]];
 
     return cell;
 }

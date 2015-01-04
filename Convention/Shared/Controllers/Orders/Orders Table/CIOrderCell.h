@@ -23,7 +23,7 @@
 
 @property NSManagedObjectID *orderObjectId;
 
-- (void)prepareForDisplay:(Order *)order setActive:(BOOL)activeOrder;
+- (void)prepareForDisplay:(Order *)order isLoading:(BOOL)isLoading setActive:(BOOL)activeOrder;
 
 - (void)updateRowHighlight:(NSIndexPath *)indexPath;
 

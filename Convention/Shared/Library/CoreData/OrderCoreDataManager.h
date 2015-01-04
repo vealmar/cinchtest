@@ -42,7 +42,7 @@
 + (void)saveOrder:(Order *)order
         inContext:(NSManagedObjectContext *)context;
 
-+ (id)load:(NSString*)name id:(NSManagedObjectID *)objectID fromContext:(NSManagedObjectContext *)context;
++ (id)load:(NSString *)name withId:(NSManagedObjectID *)objectID fromContext:(NSManagedObjectContext *)context;
 
 // Deletes order locally and on the server if it's ever been synced.
 + (void)deleteOrder:(Order *)order

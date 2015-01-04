@@ -79,7 +79,7 @@
     self.NoOrdersLabel.hidden = self.ordersTableViewController.hasOrders;
     
     self.currentOrder = updatedOrder;
-    [self.ordersTableViewController selectOrder:updatedOrder];
+    [self.ordersTableViewController selectOrder:updatedOrder.objectID];
 }
 
 #pragma mark - View lifecycle
@@ -178,7 +178,7 @@
 }
 
 - (void)orderSelected:(NSNotification *)notification {
-    self.currentOrder = notification.object;
+    self.currentOrder = (Order *) [[CurrentSession mainQueueContext] objectRegisteredForID:((Order *) notification.object).objectID];
     [self displayOrderDetail:self.currentOrder];
 }
 
@@ -535,11 +535,15 @@
 
 #pragma mark - CIProductViewDelegate
 
-- (void)returnOrder:(Order *)savedOrder updateStatus:(OrderUpdateStatus)updateStatus {
+- (void)returnOrder:(NSManagedObjectID *)orderObjectID updateStatus:(OrderUpdateStatus)updateStatus {
     [self.ordersTableViewController.tableView reloadData];
-    if (updateStatus != NewOrderCancelled && savedOrder) { //new order created
-        Order *contextReadyOrder = [OrderCoreDataManager load:@"Order" id:savedOrder.objectID fromContext:self.ordersTableViewController.managedObjectContext];
-        [self persistentOrderUpdated:contextReadyOrder];
+    if (updateStatus != NewOrderCancelled && orderObjectID) { //new order created
+        NSManagedObjectContext *context = self.ordersTableViewController.managedObjectContext;
+        __weak CIOrderViewController *weakSelf = self;
+        [context performBlockAndWait:^{
+            Order *contextReadyOrder = (Order *) [context existingObjectWithID:orderObjectID error:nil];
+            [weakSelf persistentOrderUpdated:contextReadyOrder];
+        }];
     }
 }
 
@@ -552,7 +556,6 @@
     ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     ci.delegate = self;
     ci.authToken = self.authToken;
-    ci.managedObjectContext = self.managedObjectContext;
     [self presentViewController:ci animated:YES completion:nil];
 }
 
@@ -589,7 +592,7 @@
     }
     __weak CIOrderViewController *weakSelf = self;
     [OrderCoreDataManager syncOrder:self.currentOrder attachHudTo:self.view onSuccess:^(Order *order) {
-        [self persistentOrderUpdated:order];
+        [weakSelf persistentOrderUpdated:order];
     } onFailure:nil];
 }
 
@@ -648,52 +651,66 @@
 #pragma mark - Load Product View Controller
 
 - (void)startNewOrderForCustomer:(NSDictionary *)customer {
-    NSArray *existingOrders = [[CoreDataUtil sharedManager] fetchArray:@"Order" withPredicate:[NSPredicate predicateWithFormat:@"customerId == %@ and vendorId == %@", customer[kID], [CurrentSession instance].vendorId]];
-    if (existingOrders && existingOrders.count == 1) {
-        Order *existingOrder = (Order *) existingOrders[0];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Order Exists"
-                                                        message:@"You already have an active order for this customer, would you like to open it instead?"
-                                                       delegate:self
-                                              cancelButtonTitle:@"No, Create New Order"
-                                              otherButtonTitles:@"Yes, Use Existing Order", nil];
-        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
-            if (buttonIndex == 1) {
-                [self launchCIProductViewController:NO order:existingOrder customer:customer];
-            } else {
-                [self launchCIProductViewController:YES order:nil customer:customer];
+    __weak CIOrderViewController *weakSelf = self;
+    [[CurrentSession mainQueueContext] performBlock:^{
+        NSArray *existingOrders = [[CoreDataUtil sharedManager] fetchArray:@"Order" 
+                                                             withPredicate:[NSPredicate predicateWithFormat:@"customerId == %@ and vendorId == %@", customer[kID], [CurrentSession instance].vendorId] 
+                                                               withContext:[CurrentSession mainQueueContext]];
+        if (existingOrders && existingOrders.count > 0 && weakSelf) {
+            Order *existingOrder = (Order *) existingOrders[0];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Order Exists"
+                                                            message:@"You already have an active order for this customer, would you like to open it instead?"
+                                                           delegate:weakSelf
+                                                  cancelButtonTitle:@"No, Create New Order"
+                                                  otherButtonTitles:@"Yes, Use Existing Order", nil];
+            [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+                if (weakSelf) {
+                    if (buttonIndex == 1) {
+                        [weakSelf launchCIProductViewController:NO order:existingOrder.objectID customer:customer];
+                    } else {
+                        [weakSelf launchCIProductViewController:YES order:nil customer:customer];
+                    }
+                }
+            }];
+        } else {
+            if (weakSelf) {
+                [weakSelf launchCIProductViewController:YES order:nil customer:customer];
             }
-        }];
-    } else {
-        [self launchCIProductViewController:YES order:nil customer:customer];
-    }
+        }
+    }];
 }
 
 - (void)openOrder:(Order *)order {
     if (self.currentOrder) {
         NSNumber *customerId = self.currentOrder.customerId;
-        Customer *customer = [CoreDataManager getCustomer:customerId managedObjectContext:self.managedObjectContext];
-        if (customer) {
-            [self launchCIProductViewController:NO order:order customer:[customer asDictionary]];
-        } else {
-            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
-            hud.removeFromSuperViewOnHide = YES;
-            hud.labelText = @"Loading customer";
-            [hud show:NO];
+        NSManagedObjectID *orderObjectID = order.objectID;
 
-            [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMER([customerId stringValue]) parameters:@{ kAuthToken: self.authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-                [self launchCIProductViewController:NO order:order customer:(NSDictionary *) JSON];
-                [hud hide:NO];
-            } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                [hud hide:NO];
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
-                                  cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                NSLog(@"%@", [error localizedDescription]);
-            }];
-        }
+        __weak CIOrderViewController *weakSelf = self;
+        [[CurrentSession mainQueueContext] performBlock:^{
+            Customer *customer = [CoreDataManager getCustomer:customerId managedObjectContext:[CurrentSession mainQueueContext]];
+            if (customer) {
+                [weakSelf launchCIProductViewController:NO order:orderObjectID customer:[customer asDictionary]];
+            } else {
+                MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+                hud.removeFromSuperViewOnHide = YES;
+                hud.labelText = @"Loading customer";
+                [hud show:NO];
+
+                [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMER([customerId stringValue]) parameters:@{ kAuthToken: self.authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+                    [weakSelf launchCIProductViewController:NO order:orderObjectID customer:(NSDictionary *) JSON];
+                    [hud hide:NO];
+                } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                    [hud hide:NO];
+                    [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
+                                      cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                    NSLog(@"%@", [error localizedDescription]);
+                }];
+            }
+        }];
     }
 }
 
-- (void)launchCIProductViewController:(bool)newOrder order:(Order *)order customer:(NSDictionary *)customer {
+- (void)launchCIProductViewController:(bool)newOrder order:(NSManagedObjectID *)orderID customer:(NSDictionary *)customer {
     static CIProductViewController *productViewController;
     static dispatch_once_t loadProductViewControllerOnce;
     dispatch_once(&loadProductViewControllerOnce, ^{
@@ -705,8 +722,14 @@
     productViewController.newOrder = newOrder;
     productViewController.customer = customer;
 
-    if (!newOrder) {
-        productViewController.order = order;
+    if (!newOrder && orderID) {
+        [[CurrentSession mainQueueContext] performBlockAndWait:^{
+            // let it use a separate instance for safety
+            Order *order = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderID error:nil];
+            productViewController.order = order;
+        }];
+    } else {
+        productViewController.order = nil;
     }
 
     static CISlidingProductViewController *slidingProductViewController;

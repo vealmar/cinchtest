@@ -30,12 +30,6 @@
 */
 - (OrderTotals *)calculateTotals;
 
-/**
-* Calculates totals asynchronously unless they are already up to date. The resulting
-* values will be saved to the store.
-*/
-- (void)calculateTotals:(void(^)(OrderTotals *totals, NSManagedObjectID *totalledOrderId))completion;
-
 - (OrderSubtotalsByDate *)calculateShipDateSubtotals;
 
 #pragma mark - LineItems
@@ -64,7 +58,7 @@
 
 - (id)initWithJsonFromServer:(NSDictionary *)JSON insertInto:(NSManagedObjectContext *)managedObjectContext;
 
-- (Order *)updateWithJsonFromServer:(NSDictionary *)JSON;
+- (Order *)updateWithJsonFromServer:(NSDictionary *)JSON withContext:(NSManagedObjectContext *)managedObjectContext;
 
 - (NSDictionary *)asJsonReqParameter;
 

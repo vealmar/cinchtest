@@ -75,6 +75,8 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
 
+    cell.textLabel.adjustsFontSizeToFitWidth = YES;
+    
     NSDictionary *details = [[self currentBulletins] objectAtIndex:[indexPath row]];
     if ([details objectForKey:@"name"] != nil)
         cell.textLabel.text = [details objectForKey:@"name"];

@@ -4,6 +4,7 @@
 //
 
 NSString *const CustomersLoadedNotification = @"CustomersLoadedNotification";
+NSString *const ProductsLoadRequestedNotification = @"ProductsLoadRequestedNotification";
 NSString *const ProductsLoadedNotification = @"ProductsLoadedNotification";
 NSString *const   kCustomerUserInfoKey = @"kCustomerUserInfoKey";
 NSString *const PrintersLoadedNotification = @"PrintersLoadedNotification";
