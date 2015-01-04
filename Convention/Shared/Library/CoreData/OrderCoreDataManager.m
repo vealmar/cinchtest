@@ -26,7 +26,7 @@
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Order" inManagedObjectContext:managedObjectContext]];
     [fetchRequest setIncludesSubentities:NO];
-    [fetchRequest setFetchBatchSize:50];
+    [fetchRequest setFetchBatchSize:40];
 
     fetchRequest.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO],
                                       [NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO]
@@ -53,11 +53,13 @@
            onFailure:(void (^)())failureBlock {
     NSLog(@"Reloading Orders");
 
+    [[NSNotificationCenter defaultCenter] postNotificationName:OrderReloadStartedNotification object:nil];
+
+
     [[CurrentSession privateQueueContext] performBlockAndWait:^{
         [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Order" withContext:[CurrentSession privateQueueContext]];
     }];
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:OrderReloadStartedNotification object:nil];
     [[CinchJSONAPIClient sharedInstance] GET:kDBORDER parameters:@{ kAuthToken: [CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
         if (JSON && ([(NSArray *) JSON count] > 0)) {
             NSArray *orders = (NSArray *) JSON;
@@ -178,6 +180,11 @@
 
     NSLog(@"Syncing Order");
     
+    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:NO];
+    
+    submit.removeFromSuperViewOnHide = YES;
+    submit.labelText = @"Saving Order";
+    
     NSString *method = [order.orderId intValue] > 0 ? @"PUT" : @"POST";
     NSString *url = [order.orderId intValue] == 0 ? kDBORDER : kDBORDEREDITS([order.orderId intValue]);
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[order asJsonReqParameter]];
@@ -186,20 +193,20 @@
     NSManagedObjectID *orderObjectID = order.objectID;
 
     void(^saveBlock)(id) = ^(id JSON) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[CurrentSession mainQueueContext] performBlock:^{
-                Order *contextOrder = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderObjectID error:nil];
-                if (contextOrder) {
-                    [contextOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
-                    contextOrder.inSync = YES;
-                    [[CurrentSession mainQueueContext] save:nil];
-                }
-                successBlock(contextOrder);
-            }];
-        });
+        [[CurrentSession mainQueueContext] performBlock:^{
+            Order *contextOrder = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderObjectID error:nil];
+            if (contextOrder) {
+                [contextOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
+                contextOrder.inSync = YES;
+                [[CurrentSession mainQueueContext] save:nil];
+            }
+            [submit hide:NO];
+            successBlock(contextOrder);
+        }];
     };
 
     if (order.hasNontransientChanges || !order.inSync) {
+        
         [self sendRequest:method
                       url:url
                parameters:parameters
@@ -210,13 +217,15 @@
                  if (JSON) {
                      saveBlock(JSON);
                  } else {
+                     [submit hide:NO];
                      if (failureBlock) failureBlock();
                      NSLog(@"%@ Error Loading Orders: %@", [self class], [error localizedDescription]);
                  }
              }
-                     view:view
+                     view:nil
               loadingText:@"Saving order"];
     } else {
+        [submit hide:NO];
         successBlock(order);
     }
 }
@@ -328,6 +337,7 @@
                 NSString *errorMsg = [NSString stringWithFormat:@"Error deleting order. %@", error.localizedDescription];
                 [[[UIAlertView alloc] initWithTitle:@"Error" message:errorMsg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
             }];
+            
         } else {
             [[CoreDataUtil sharedManager] deleteObject:order];
             if (successBlock) successBlock();
@@ -342,16 +352,19 @@
        failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock
                view:(UIView *)hudView loadingText:(NSString *)loadingText {
 
-    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:hudView animated:YES];
-    submit.removeFromSuperViewOnHide = YES;
-    submit.labelText = loadingText;
-    [submit show:NO];
+    MBProgressHUD *submit = nil;
+    if (hudView) {
+        submit = [MBProgressHUD showHUDAddedTo:hudView animated:YES];
+        submit.removeFromSuperViewOnHide = YES;
+        submit.labelText = loadingText;
+        [submit show:NO];
+    }
 
     CinchJSONAPIClient *client = [CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization];
     NSMutableURLRequest *request = [client.requestSerializer requestWithMethod:httpMethod URLString:[NSString stringWithFormat:@"%@%@", kBASEURL, url] parameters:parameters error:nil];
     __block NSURLSessionDataTask *task = [client dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id json, NSError *error) {
         if (error) {
-            [submit hide:NO];
+            if (submit) [submit hide:NO];
             if (failureBlock) failureBlock(request, (NSHTTPURLResponse *)response, error, json);
             NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
             NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
@@ -365,7 +378,7 @@
             }
             [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         } else {
-            [submit hide:NO];
+            if (submit) [submit hide:NO];
 
             if (successBlock) successBlock(request, (NSHTTPURLResponse *)response, json);
         }

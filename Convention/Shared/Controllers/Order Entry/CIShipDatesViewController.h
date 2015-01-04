@@ -13,7 +13,7 @@
 
 //Working copy of selected or new order
 @property Order *workingOrder;
-@property LineItem *workingLineItem;
+@property (assign) LineItem *workingLineItem;
 
 - (id)initWithWorkingOrder:(Order *)order;
 

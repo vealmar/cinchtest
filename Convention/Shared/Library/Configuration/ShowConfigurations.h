@@ -30,7 +30,7 @@
 @property BOOL paymentTerms;
 @property NSString *shipDatesType;
 @property DateRange *orderShipDates;
-@property BOOL *vendorMode;
+@property BOOL vendorMode;
 @property NSArray *customFields; //Array<ShowCustomField>
 
 + (ShowConfigurations *)instance;

@@ -592,7 +592,7 @@
     }
     __weak CIOrderViewController *weakSelf = self;
     [OrderCoreDataManager syncOrder:self.currentOrder attachHudTo:self.view onSuccess:^(Order *order) {
-        [weakSelf persistentOrderUpdated:order];
+        [weakSelf persistentOrderUpdated:weakSelf.currentOrder];
     } onFailure:nil];
 }
 

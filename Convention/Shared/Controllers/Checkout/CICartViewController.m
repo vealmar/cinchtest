@@ -131,7 +131,7 @@
         self.savingOrder = YES;
         self.order.status = @"pending";
         [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
-            weakSelf.order = order;
+//            weakSelf.order = order;
             [weakSelf refreshView];
         } onFailure:^{
             weakSelf.savingOrder = NO;
@@ -338,7 +338,7 @@
         self.order.status = @"complete";
         self.savingOrder = YES;
         [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
-            [weakSelf finishOrderSyncComplete:order];
+            [weakSelf finishOrderSyncComplete:weakSelf.order];
             weakSelf.savingOrder = NO;
         } onFailure:^{
             weakSelf.savingOrder = NO;

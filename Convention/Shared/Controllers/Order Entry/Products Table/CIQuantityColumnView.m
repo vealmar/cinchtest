@@ -10,6 +10,7 @@
 #import "CITableViewColumn.h"
 #import "LineItem.h"
 #import "LineItem+Extensions.h"
+#import "CurrentSession.h"
 
 @interface CIQuantityColumnView ()
 

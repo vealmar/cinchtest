@@ -12,6 +12,7 @@
 @property (readonly) NSNumber* showId;
 @property (readonly) NSString* loggedInVendorGroupId;
 @property (readonly) NSNumber* vendorId;
+@property (strong, nonatomic) NSMutableDictionary *vendorNameCache;
 
 +(CurrentSession *)instance;
 

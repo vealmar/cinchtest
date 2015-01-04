@@ -20,6 +20,7 @@
 #import "Order.h"
 #import "CITagColumnView.h"
 #import "NotificationConstants.h"
+#import "UIAlertViewDelegateWithBlock.h"
 
 @interface CIProductTableViewController()
 
@@ -177,7 +178,20 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 #pragma mark - PullToRefreshViewDelegate
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
-    [self reloadProducts];
+    __weak CIProductTableViewController *weakSelf = self;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Reload Data"
+                                                    message:@"Would you like to update your product catalog from the server?"
+                                                   delegate:self
+                                          cancelButtonTitle:@"No"
+                                          otherButtonTitles:@"Yes", nil];
+    [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+        NSString *action = [alert buttonTitleAtIndex:buttonIndex];
+        if (weakSelf && [action isEqualToString:@"Yes"]) {
+            [weakSelf reloadProducts];
+        } else {
+            [weakSelf.pull finishedLoading];
+        }
+    }];
 }
 
 

@@ -47,6 +47,14 @@ static NSNumberFormatter *currencyFormatter = nil;
     return currencyFormatter;
 }
 
++ (NSNumber *)convertDollarStringToDollars:(NSString *)dollarAmount {
+    if (dollarAmount) {
+        NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+        formatter.numberStyle = NSNumberFormatterCurrencyStyle;
+        return [formatter numberFromString:dollarAmount];
+    } else
+        return @(0);
+}
 
 + (NSString *)formatDollarAmount:(NSNumber *)dollarAmount {
     if (dollarAmount) {

@@ -49,9 +49,13 @@
 }
 
 - (int)totalQuantity {
-    id quantities = [self.quantity objectFromJSONString];
+    return [LineItem totalQuantity:self.quantity];
+}
+
++ (int)totalQuantity:(NSString *)quantityValue {
+    id quantities = [quantityValue objectFromJSONString];
     if (quantities == nil) {
-        return self.quantity == nil ? 0 : [self.quantity intValue];
+        return quantityValue == nil ? 0 : [quantityValue intValue];
     } else if ([quantities isKindOfClass:[NSString class]]) {
         return [quantities intValue];
     } else if ([quantities isKindOfClass:[NSDictionary class]]) {
@@ -72,21 +76,25 @@
 }
 
 - (double)subtotal {
+    return [self subtotalUsing:self.quantity shipDatesCount:self.shipDates.count];
+}
+
+- (double)subtotalUsing:(NSString *)quantityValue shipDatesCount:(int)shipDatesCount {
     ShowConfigurations *configurations = [ShowConfigurations instance];
 
     if (self.isDiscount) {
-        return [self.price doubleValue] * self.totalQuantity;
+        return [self.price doubleValue] * [LineItem totalQuantity:quantityValue];
     } else if (configurations.isOrderShipDatesType) {
-        return self.shipDates.count * [self.price doubleValue] * self.totalQuantity;
+        return shipDatesCount * [self.price doubleValue] * [LineItem totalQuantity:quantityValue];
     } else if (configurations.isLineItemShipDatesType && configurations.atOncePricing) {
-        if (self.shipDates.count > 0) {
+        if (shipDatesCount > 0) {
             NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
             NSDate *atOnceDate = fixedShipDates ? fixedShipDates.firstObject : nil;
-            
-            NSMutableDictionary *quantities = [self.quantity objectFromJSONString];
-            
+
+            NSMutableDictionary *quantities = [quantityValue objectFromJSONString];
+
             double runningTotal = 0.0;
-            
+
             for (NSDate *shipDate in fixedShipDates) {
                 NSString *key = [shipDate formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"];
                 int quantityOnDate = [[quantities allKeys] containsObject:key] ? [[quantities valueForKey:key] intValue] : 0;
@@ -98,15 +106,15 @@
                     }
                 }
             }
-            
+
             return runningTotal;
         } else {
             return 0;
         }
     } else if (configurations.isLineItemShipDatesType) {
-        return [self.price doubleValue] * self.totalQuantity;
+        return [self.price doubleValue] * [LineItem totalQuantity:quantityValue];
     } else {
-        return [self.price doubleValue] * self.totalQuantity;
+        return [self.price doubleValue] * [LineItem totalQuantity:quantityValue];
     }
 }
 
@@ -144,6 +152,7 @@
 
 - (void)setQuantity:(NSString *)quantity {
     NSString *originalQuantity = self.quantity;
+    int originalShipDateCount = self.shipDates.count; // this hasnt been updated yet
 
     NSString *setQuantity = quantity;
     if (quantity && (quantity.length == 0 || [quantity isEqualToString:@"0"])) {
@@ -157,7 +166,7 @@
     if ((!setQuantity && originalQuantity) || (setQuantity && !originalQuantity) || (setQuantity && originalQuantity && ![setQuantity isEqualToString:originalQuantity])) {
         dispatch_async(dispatch_get_main_queue(), ^{
             @autoreleasepool {
-                [[NSNotificationCenter defaultCenter] postNotificationName:LineQuantityChangedNotification object:self];
+                [[NSNotificationCenter defaultCenter] postNotificationName:LineQuantityChangedNotification object:self userInfo:@{ @"originalQuantity" : (originalQuantity ? originalQuantity : [NSNull null]), @"originalShipDatesCount" : @(originalShipDateCount) }];
             }
         });
     }

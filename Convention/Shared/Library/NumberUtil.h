@@ -14,6 +14,8 @@
 
 + (NSNumber *)zeroIntNSNumber;
 
++ (NSNumber *)convertDollarStringToDollars:(NSString *)dollarAmount;
+
 + (NSString *)formatDollarAmount:(NSNumber *)dollarAmount;
 
 + (NSString *)formatDollarAmountWithoutSymbol:(NSNumber *)dollarAmount;

@@ -245,7 +245,20 @@
 #pragma mark - PullToRefreshViewDelegate
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
-    [self loadOrders:NO selectOrder:self.currentOrder.objectID];
+    __weak CIOrdersTableViewController *weakSelf = self;
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Reload Data"
+                                                    message:@"Would you like to update your orders from the server?"
+                                                   delegate:self
+                                          cancelButtonTitle:@"No"
+                                          otherButtonTitles:@"Yes", nil];
+    [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+        NSString *action = [alert buttonTitleAtIndex:buttonIndex];
+        if (weakSelf && [action isEqualToString:@"Yes"]) {
+            [weakSelf loadOrders:NO selectOrder:nil];
+        } else {
+            [weakSelf.pull finishedLoading];
+        }
+    }];
 }
 
 #pragma mark - UITableViewDelegate
@@ -285,11 +298,11 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     Order *order = (Order *) [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [self selectOrder:order.objectID];
+    if (order) [self selectOrder:order.objectID];
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return UITableViewCellEditingStyleDelete;
+    return UITableViewCellEditingStyleNone;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -314,10 +327,10 @@
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        Order *order = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        [[NSNotificationCenter defaultCenter] postNotificationName:OrderDeleteRequestedNotification object:order];
-    }
+//    if (editingStyle == UITableViewCellEditingStyleDelete) {
+//        Order *order = [self.fetchedResultsController objectAtIndexPath:indexPath];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:OrderDeleteRequestedNotification object:order];
+//    }
 }
 
 

@@ -73,6 +73,8 @@
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productLoadComplete) name:ProductsLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(customerLoadComplete) name:CustomersLoadedNotification object:nil];
 
     [super viewWillAppear:animated];
 
@@ -82,6 +84,8 @@
     // unregister for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:CustomersLoadedNotification object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -138,35 +142,41 @@
 }
 
 - (void)loadCustomers {
-    MBProgressHUD *__weak hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    __weak MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.removeFromSuperViewOnHide = YES;
     hud.labelText = @"Loading customers";
     [hud show:NO];
 
     __weak CIViewController *weakSelf = self;
     [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMERS parameters:@{ kAuthToken: authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-        [[CurrentSession mainQueueContext] performBlockAndWait:^{
-            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Customer" withContext:[CurrentSession mainQueueContext]];
+        [[CurrentSession privateQueueContext] performBlock:^{
+            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Customer" withContext:[CurrentSession privateQueueContext]];
 
             if (JSON && ([(NSArray *) JSON count] > 0)) {
                 NSArray *customers = (NSArray *) JSON;
                 for (NSDictionary *customer in customers) {
-                    [[CurrentSession mainQueueContext] insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:[CurrentSession mainQueueContext]]];
+                    [[CurrentSession privateQueueContext] insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:[CurrentSession privateQueueContext]]];
                 }
-                [[CurrentSession mainQueueContext] save:nil];
+                [[CurrentSession privateQueueContext] save:nil];
             }
             [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
-            [hud hide:NO];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (hud) [hud hide:NO];
+            });
             [weakSelf loadProducts];
         }];
     } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
-        [[CurrentSession mainQueueContext] performBlockAndWait:^{
-            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Customer" withContext:[CurrentSession mainQueueContext]];
+        [[CurrentSession privateQueueContext] performBlock:^{
+            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Customer" withContext:[CurrentSession privateQueueContext]];
         }];
         [hud hide:NO];
         [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         NSLog(@"%@ Error loading customers: %@", [self class], [apiError localizedDescription]);
     }];
+}
+
+- (void)customerLoadComplete {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:CustomersLoadedNotification object:nil];
 }
 
 - (void)loadProducts {
@@ -175,10 +185,7 @@
     hud.labelText = @"Loading products";
     [hud show:NO];
 
-    void (^successBlock)() = ^() {
-        [hud hide:NO];
-        [self loadVendors];
-    };
+    void (^successBlock)() = ^() { };
 
     void (^failureBlock)() = ^() {
         [hud hide:NO];
@@ -186,10 +193,19 @@
 
     [CoreDataManager reloadProducts:self.authToken
                       vendorGroupId:[self.vendorInfo objectForKey:kVendorGroupID]
-                              async:NO
-                  usingQueueContext:[CurrentSession mainQueueContext]
+                              async:YES
+                  usingQueueContext:[CurrentSession privateQueueContext]
                           onSuccess:successBlock
                           onFailure:failureBlock];
+}
+
+- (void)productLoadComplete {
+    __weak CIViewController *weakSelf = self;
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[MBProgressHUD HUDForView:weakSelf.view] hide:NO];
+        [weakSelf loadVendors];
+    });
 }
 
 - (void)loadVendors {

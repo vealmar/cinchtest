@@ -21,6 +21,7 @@
 #import "Product.h"
 #import "NumberUtil.h"
 #import "DateUtil.h"
+#import "CurrentSession.h"
 
 @interface CIShipDatesViewController()
 
@@ -41,6 +42,7 @@
 @property BOOL first;
 
 @property NSMutableArray *selectedLineItems;
+@property LineItem *currentLineItem;
 
 @end
 
@@ -196,6 +198,11 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     }
 }
 
+- (void)setWorkingLineItem:(LineItem *)lineItem {
+    self.currentLineItem = lineItem;
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationNone];
+}
+
 - (void)setWorkingOrder:(Order *)newWorkingOrder {
     _workingOrder = newWorkingOrder;
     if (nil != _workingOrder) {
@@ -337,7 +344,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case 0: {
-            Product *product = self.workingLineItem.product;
+            Product *product = self.currentLineItem.product;
             BOOL descr2Visible = (product.descr2 && product.descr2.length > 0) || product.partnbr;
             return 70.0f + //top
                     (descr2Visible ? 65.0f : 35.0f) + //mid
@@ -364,7 +371,12 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
     switch (indexPath.section) {
         case 0: {
-            Product *product = self.workingLineItem.product;
+            Product *product = self.currentLineItem.product;
+            
+            if (!product) {
+                [[CurrentSession mainQueueContext] refreshObject:self.currentLineItem mergeChanges:YES];
+                product = self.currentLineItem.product;
+            }
 
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"headerCell"];
             cell.contentView.backgroundColor = tableView.backgroundColor;
@@ -558,12 +570,12 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
 
 - (void)calculateLineTotal:(CIShipDateTableViewCell *)cell on:(NSDate *)shipDate{
     NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
-    NSNumber *price = self.workingLineItem.price;
+    NSNumber *price = self.currentLineItem.price;
     if ([ShowConfigurations instance].atOncePricing && fixedShipDates.count > 0) {
         if ([((NSDate *) fixedShipDates.firstObject) isEqualToDate:shipDate]) {
-            price = self.workingLineItem.product.showprc;
+            price = self.currentLineItem.product.showprc;
         } else {
-            price = self.workingLineItem.product.regprc;
+            price = self.currentLineItem.product.regprc;
         }
     }
 

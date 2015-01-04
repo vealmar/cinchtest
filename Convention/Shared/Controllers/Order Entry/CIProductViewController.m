@@ -429,7 +429,6 @@
         [self.filterStaticController aspect_hookSelector:@selector(viewWillAppear:) withOptions:AspectPositionAfter usingBlock:^(id instance, NSArray *args) {
             self.filterStaticController.tableView.separatorColor = [UIColor colorWithRed:0.839 green:0.839 blue:0.851 alpha:1];
             self.filterStaticController.navigationController.navigationBarHidden = YES;
-            self.poController.popoverContentSize = CGSizeMake(320, 133);
 
             UITableViewCell *cell = [self.filterStaticController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
 
@@ -461,7 +460,7 @@
         }                                          error:nil];
 
         [self.filterStaticController aspect_hookSelector:@selector(viewWillDisappear:) withOptions:AspectPositionAfter usingBlock:^(id instance, NSArray *args) {
-            [self.poController setPopoverContentSize:CGSizeMake(320, 480) animated:YES];
+
         }                                          error:nil];
 
 
@@ -471,12 +470,13 @@
         nav.navigationItem.backBarButtonItem = backButton;
 
         self.poController = [[UIPopoverController alloc] initWithContentViewController:nav];
+        [self.poController setPopoverContentSize:CGSizeMake(320, 480) animated:YES];
     }
 
     if (self.poController.isPopoverVisible) {
         [self.poController dismissPopoverAnimated:NO];
     } else {
-        [self.poController presentPopoverFromBarButtonItem:self.filterBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        [self.poController presentPopoverFromBarButtonItem:self.filterBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
     }
 }
 
@@ -512,7 +512,6 @@
         
         [options addObject:@"Cancel & Continue with Order"];
         [options addObject:@"Save Locally & Resume Later"];
-        [options addObject:@"Submit This Order Now"];
         
         if (!self.order.updatedAt) {
             // if this is blank, the order has never been saved
@@ -590,7 +589,13 @@
     }
 
     if ([helper isOrderReadyForSubmission:self.order]) {
+        
         if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
+        
+        if (self.poController && self.poController.isPopoverVisible) {
+            [self.poController dismissPopoverAnimated:NO];
+        }
+        
         CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.order
                                                                         customer:self.customer
                                                                        authToken:[CurrentSession instance].authToken
@@ -632,8 +637,7 @@
 - (void)updateTotals {
     if (self.order) {
         OrderTotals *totals = [self.order calculateTotals];
-        NSArray *totalsArray = @[totals.grossTotal, totals.voucherTotal, totals.discountTotal];
-        self.totalCost.text = [NumberUtil formatDollarAmount:totalsArray[0]];
+        self.totalCost.text = [NumberUtil formatDollarAmount:totals.grossTotal];
     }
 }
 
@@ -652,9 +656,9 @@
     if ([helper isOrderReadyForSubmission:self.order]) {
         __weak CIProductViewController *weakSelf = self;
         [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
-            weakSelf.order = order;
+//            weakSelf.order = order;
             [weakSelf reloadTable];
-            [weakSelf updateTotals];
+//            [weakSelf updateTotals];
             [weakSelf updateErrorsView];
             [weakSelf Return];
         } onFailure:nil];
@@ -666,7 +670,54 @@
 - (void)onCartQuantityChange:(NSNotification *)notification {
     LineItem *lineItem = notification.object;
     if (lineItem && lineItem.order && self.order && [self.order.objectID isEqual:lineItem.order.objectID]) {
-        [self updateTotals];
+
+        __weak CIProductViewController *weakSelf = self;
+
+        NSString *previousTotalCostValue = self.totalCost.text; // in case error
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (weakSelf) {
+                if (weakSelf) weakSelf.totalCost.text = @"Recalculating...";
+            }
+        });
+
+        void (^error)() = ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (weakSelf) {
+                    weakSelf.totalCost.text = previousTotalCostValue;
+                }
+            });
+        };
+
+        double newLineSubtotal = lineItem.subtotal;
+
+        [[CurrentSession privateQueueContext] performBlock:^{
+            if (weakSelf && weakSelf.order) {
+                Order *asyncOrder = (Order *) [[CurrentSession privateQueueContext] existingObjectWithID:weakSelf.order.objectID error:nil];
+                LineItem *asyncLine = (LineItem *) [[CurrentSession privateQueueContext] existingObjectWithID:lineItem.objectID error:nil];
+                
+                if (asyncOrder && asyncLine) {
+                    asyncOrder.grossTotal = nil;
+                    OrderTotals *totals = [asyncOrder calculateTotals];
+                    double oldLineSubtotal = asyncLine.subtotal;
+                    double newTotal = totals.grossTotal.doubleValue + newLineSubtotal - oldLineSubtotal;
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (weakSelf) {
+                            weakSelf.totalCost.text = [NumberUtil formatDollarAmount:@(newTotal)];
+                        } else {
+                            error();
+                        }
+                    });
+                } else {
+                    error();
+                    
+                }
+            } else {
+                error();
+            }
+            
+        }];
     }
 }
 
@@ -729,6 +780,11 @@
 - (void)Return {
 
     if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
+    
+    if (self.poController && self.poController.isPopoverVisible) {
+        [self.poController dismissPopoverAnimated:NO];
+    }
+    
     //@todo orders think about what we want to get out of this
     OrderUpdateStatus status = [self orderStatus];
     
@@ -815,6 +871,10 @@
     if (self.isLoadingProducts) {
         [[[UIAlertView alloc] initWithTitle:@"Products Reloading" message:@"Products are currently being reloaded from the server in the background. Product searches cannot be conducted until complete." delegate:nil
                           cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    } else {
+        if (self.poController && self.poController.isPopoverVisible) {
+            [self.poController dismissPopoverAnimated:NO];
+        }
     }
     return !self.isLoadingProducts;
 }

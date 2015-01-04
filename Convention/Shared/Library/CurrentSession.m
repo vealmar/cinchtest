@@ -22,6 +22,7 @@ static CurrentSession *currentSession = nil;
 + (CurrentSession *)instance {
     if (nil == currentSession) {
         currentSession = [CurrentSession new];
+        currentSession.vendorNameCache = [NSMutableDictionary dictionary];
     }
     return currentSession;
 }
@@ -46,9 +47,16 @@ static CurrentSession *currentSession = nil;
 }
 
 - (void)dispatchSessionDidChange {
+    [self.vendorNameCache removeAllObjects];
+
     [[NSNotificationCenter defaultCenter] postNotificationName:SessionDidChangeNotification object:self];
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleContextDidSave:)
+                                                 name:NSManagedObjectContextDidSaveNotification
+                                               object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contextDidSavePrivateQueueContext:)
@@ -71,7 +79,7 @@ static CurrentSession *currentSession = nil;
         [newContext setUndoManager:nil];
         return newContext;
     } else {
-        NSLog(@"A thread-safe NSManagedObjectContext was requested, but the NSPersistentStoreCoordinator was not available. Prepare for death by NIL");
+        DLog(@"A thread-safe NSManagedObjectContext was requested, but the NSPersistentStoreCoordinator was not available. Prepare for death by NIL");
         return nil;
     }
 }
@@ -119,11 +127,19 @@ static CurrentSession *currentSession = nil;
     return _privateQueueContext;
 }
 
+- (void)handleContextDidSave:(NSNotification *)notification
+{
+    if (![notification.object isEqual:self.mainQueueContext] && ![notification.object isEqual:self.privateQueueContext]) {
+        [self contextDidSavePrivateQueueContext:notification];
+        [self contextDidSaveMainQueueContext:notification];
+    }
+}
+
 - (void)contextDidSavePrivateQueueContext:(NSNotification *)notification
 {
     @synchronized(self) {
         [self.mainQueueContext performBlock:^{
-            NSLog(@"Merging Private Queue into Main Queue");
+            DLog(@"Context Merge |-> Main Queue");
             [self.mainQueueContext mergeChangesFromContextDidSaveNotification:notification];
         }];
     }
@@ -133,7 +149,7 @@ static CurrentSession *currentSession = nil;
 {
     @synchronized(self) {
         [self.privateQueueContext performBlock:^{
-            NSLog(@"Merging Main Queue into Private Queue");
+            DLog(@"Context Merge: |-> Private Queue");
             [self.privateQueueContext mergeChangesFromContextDidSaveNotification:notification];
         }];
     }

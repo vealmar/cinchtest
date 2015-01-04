@@ -117,7 +117,8 @@
     NSString *url = request.URL.absoluteString;
 
     NSRange extraParam = [url rangeOfString:[NSString stringWithFormat:@"%@=", kAuthToken]];
-    if([url containsString:@"http"] && extraParam.location == NSNotFound){
+    NSRange rangeOfHttp = [url rangeOfString:@"http"];
+    if(rangeOfHttp.length > 0 && extraParam.location == NSNotFound){
         BOOL hasQueryString = [url rangeOfString:@"?"].location != NSNotFound;
         url = [NSString stringWithFormat:@"%@%@%@=%@", url, hasQueryString ? @"&" : @"?", kAuthToken, [CurrentSession instance].authToken];
 
@@ -131,6 +132,9 @@
 - (void)webViewDidStartLoad:(UIWebView *)webView {
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
     hud.labelText = @"Loading Page...";
+    [self.view bk_performBlock:^(id obj) {
+        [MBProgressHUD hideHUDForView:self.view animated:NO];
+    } afterDelay:3.0];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {

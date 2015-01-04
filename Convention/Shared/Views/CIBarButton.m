@@ -19,7 +19,7 @@
 - (id)initWithText:(NSString *)string
               style:(CIBarButtonStyle)style
             handler:(void (^)(id sender))handler {
-    return [self initWithFrame:CGRectMake(0, 0, 34.0, 44.0) text:string style:style handler:handler];
+    return [self initWithFrame:CGRectMake(5.0, 0, 34.0, 44.0) text:string style:style handler:handler];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -53,7 +53,7 @@
     return self;
 }
 
-+ (CIBarButton *)buttonItemWithText:(NSString *)string
++ (UIBarButtonItem *)buttonItemWithText:(NSString *)string
                               style:(CIBarButtonStyle)style
                             handler:(void (^)(id sender))handler {
     CIBarButton *button = [[CIBarButton alloc] initWithText:string
@@ -61,10 +61,10 @@
                                                      handler:handler];
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:button];
     return item;
-}
+}   
 
 - (void)initCircleView {
-    UIView *circleView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 5.0, 34.0, 34.0)];
+    UIView *circleView = [[UIView alloc] initWithFrame:CGRectMake(5.0, 5.0, 34.0, 34.0)];
     circleView.userInteractionEnabled = NO;
     circleView.layer.cornerRadius = 17.0;
     circleView.layer.borderWidth = 2.0;
@@ -72,7 +72,7 @@
 }
 
 - (void)initLabel:(NSString *)string attributes:(NSDictionary *)attributes {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 34.0, 44.0)];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(5.0, 0, 34.0, 44.0)];
     label.userInteractionEnabled = NO;
     label.textAlignment = NSTextAlignmentCenter;
     label.attributedText = [[NSAttributedString alloc] initWithString:string attributes:attributes];

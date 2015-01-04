@@ -49,15 +49,23 @@
 }
 
 -(void)renderColumn:(CITableViewColumnView *)columnView rowData:(id)rowData{
-    Order *order = [self.delegate currentOrderForCell];
-    LineItem *lineItem = self.lineItem = [order findLineByProductId:((Product *) rowData).productId];
-
-    if ([columnView isKindOfClass:[CIQuantityColumnView class]]) {
-        [((CIQuantityColumnView *) columnView) render:rowData lineItem:lineItem];
-    } else if ([columnView isKindOfClass:[CIShowPriceColumnView class]]) {
-        [((CIShowPriceColumnView *) columnView) render:rowData lineItem:lineItem];
-    } else {
-        [columnView render:rowData];
+    @try {
+        Order *order = [self.delegate currentOrderForCell];
+        LineItem *lineItem = self.lineItem = [order findLineByProductId:((Product *) rowData).productId];
+        
+        if ([columnView isKindOfClass:[CIQuantityColumnView class]]) {
+            [((CIQuantityColumnView *) columnView) render:rowData lineItem:lineItem];
+        } else if ([columnView isKindOfClass:[CIShowPriceColumnView class]]) {
+            [((CIShowPriceColumnView *) columnView) render:rowData lineItem:lineItem];
+        } else {
+            [columnView render:rowData];
+        }
+    }
+    @catch (NSException *e) {
+        if ([NSObjectInaccessibleException isEqualToString:e.name]) {
+            // product may be deleted during a refresh and be inaccessible until updated
+            NSLog(@"Object could not be returned from fault. Products are likely being reloaded.");
+        }
     }
 }
 

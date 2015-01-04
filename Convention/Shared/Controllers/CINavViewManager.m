@@ -69,7 +69,9 @@
     [button bk_addEventHandler:^(id sender) {
         weakSelf.searchTextField.text = @"";
         [weakSelf searchWithString:weakSelf.searchTextField.text inputCompleted:YES];
-        [weakSelf exitSearchMode];
+        if (weakSelf.inSearchMode || [weakSelf hasSearchText]) {
+            [weakSelf exitSearchMode];
+        }
     } forControlEvents:UIControlEventTouchUpInside];
     self.clearSearchItem = [[UIBarButtonItem alloc] initWithCustomView:button];
 }
@@ -216,12 +218,12 @@
         }
         [self.searchTextField resignFirstResponder];
         [self setupNavBar:self.searchTextField.text];
-        
+
         if (originalSearchQuery) [self searchWithString:self.searchTextField.text inputCompleted:YES];
         
         [self didEndSearch];
     } else if ([self hasSearchText]) {
-        self.clearSearchItemLabel.text = @"";
+        self.clearSearchItemLabel.attributedText = [[NSAttributedString alloc] initWithString:@"" attributes:[ThemeUtil navigationLeftActionButtonTextAttributes]];;
         self.searchItem.title = @"Search...";
     }
 }

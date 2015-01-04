@@ -238,7 +238,7 @@
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:search.context]];
     [fetchRequest setIncludesSubentities:NO];
-    [fetchRequest setFetchBatchSize:200];
+    [fetchRequest setFetchBatchSize:100];
     if (search.limit > 0) {
         [fetchRequest setFetchLimit:search.limit];
     }

@@ -11,14 +11,12 @@
 #import "ShowConfigurations.h"
 #import "OrderTotals.h"
 #import "CurrentSession.h"
-#import "OrderCoreDataManager.h"
 #import "CoreDataUtil.h"
 #import "Vendor.h"
 
 @interface CIOrderCell ()
 
 @property UIColor *savedStatusColor;
-@property UIColor *savedRowStripeColor;
 @property UIView *bar;
 @property BOOL activeOrder;
 @property BOOL initialized;
@@ -44,7 +42,7 @@
     if (self.activeOrder) {
         [self styleAsActive];
     } else {
-        self.savedRowStripeColor = self.backgroundColor = indexPath.row % 2 == 1 ? [ThemeUtil tableAltRowColor] : [UIColor whiteColor];
+        self.backgroundColor = indexPath.row % 2 == 1 ? [ThemeUtil tableAltRowColor] : [UIColor whiteColor];
     }
 }
 
@@ -82,25 +80,37 @@
         self.auth.text = @"";
         
         NSNumber *vendorId = [order.vendorId copy];
-        self.auth.tag = [vendorId intValue];
-        __weak CIOrderCell *weakSelf = self;
-        [[CurrentSession privateQueueContext] performBlock:^{
-            if (vendorId) {
-                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"vendorId == %@", vendorId];
-                Vendor *asyncVendor = (Vendor *) [[CoreDataUtil sharedManager] fetchObject:@"Vendor" inContext:[CurrentSession privateQueueContext] withPredicate:predicate];
-                if (asyncVendor && weakSelf && weakSelf.auth && weakSelf.auth.tag == [asyncVendor.vendorId intValue]) {
-                    if (asyncVendor.name) {
-                        weakSelf.auth.text = asyncVendor.name;
-                        weakSelf.auth.hidden = NO;
-                        [weakSelf.backgroundView setNeedsDisplay];
-                    } else if (asyncVendor.vendid) {
-                        weakSelf.auth.text = asyncVendor.vendid;
-                        weakSelf.auth.hidden = NO;
-                        [weakSelf.backgroundView setNeedsDisplay];
+
+        NSString *vendorName = (NSString *) [CurrentSession instance].vendorNameCache[[vendorId stringValue]];
+        if (vendorName) {
+            self.auth.text = vendorName;
+        } else {
+            self.auth.tag = [vendorId intValue];
+            __weak CIOrderCell *weakSelf = self;
+            [[CurrentSession privateQueueContext] performBlock:^{
+                if (vendorId) {
+                    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"vendorId == %@", vendorId];
+                    Vendor *asyncVendor = (Vendor *) [[CoreDataUtil sharedManager] fetchObject:@"Vendor" inContext:[CurrentSession privateQueueContext] withPredicate:predicate];
+
+                    NSString *authText = nil;
+                    NSNumber *vendorIdValue = nil;
+                    if (asyncVendor) {
+                        vendorIdValue = asyncVendor.vendorId;
+                        authText = asyncVendor.name ? asyncVendor.name : asyncVendor.vendid;
                     }
+
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (authText && vendorIdValue && weakSelf && weakSelf.auth && weakSelf.auth.tag == vendorIdValue.intValue) {
+                            weakSelf.auth.text = authText;
+                            weakSelf.auth.hidden = NO;
+                            [weakSelf.backgroundView setNeedsDisplay];
+                        }
+                        [CurrentSession instance].vendorNameCache[[vendorId stringValue]] = authText;
+                    });
                 }
-            }
-        }];
+            }];
+        }
+
     }
     
     self.numItems.text = [NSString stringWithFormat:@"%d Items", order.lineItems.count];
@@ -118,31 +128,44 @@
             self.total.text = [NumberUtil formatDollarAmount:totals.total];
         } else {
             NSManagedObjectID *orderObjectID = order.objectID;
+            NSNumber *orderId = order.orderId;
             static int pendingSaves = 0;
             [[CurrentSession privateQueueContext] performBlock:^{
-                NSError *error;
-                Order *asyncOrder = (Order *) [[CurrentSession privateQueueContext] existingObjectWithID:orderObjectID error:&error];
+                NSError *loadError;
+                Order *asyncOrder = (Order *) [[CurrentSession privateQueueContext] existingObjectWithID:orderObjectID error:&loadError];
 
-                if (error) {
+                if (loadError) {
                     NSLog(@"[CIOrderCell] There was an error loading the order for calculating totals.");
-                } else {
-                    if (asyncOrder && weakSelf && weakSelf.tag == [asyncOrder.orderId intValue]) {
-                        OrderTotals *totals = [asyncOrder calculateTotals];
-                        if (weakSelf && weakSelf.total) weakSelf.total.text = [NumberUtil formatDollarAmount:totals.total];
-                        
-                        pendingSaves++;
-                        if (pendingSaves >= 20 && [CurrentSession privateQueueContext].hasChanges) {
-                            [[CurrentSession privateQueueContext] save:&error];
-                            pendingSaves = 0;
-                            
-                            if (error) {
-                                NSLog(@"[CIOrderCell] There was an error saving the order after calculating totals.");
-                            }
+                }
+
+                OrderTotals *totals = nil;
+                if (asyncOrder) {
+                    totals = [asyncOrder calculateTotals];
+                }
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (weakSelf) {
+                        if (totals && weakSelf.tag == orderId.intValue) {
+                            weakSelf.total.text = [NumberUtil formatDollarAmount:totals.total];
                         } else {
-                            [weakSelf.backgroundView setNeedsDisplay];
+                            weakSelf.total.text = @"";
                         }
+
+                        [weakSelf.backgroundView setNeedsDisplay];
                     }
-                }                
+                });
+
+                pendingSaves++;
+                if (pendingSaves >= 20 && [CurrentSession privateQueueContext].hasChanges) {
+                    NSError *saveError;
+                    [[CurrentSession privateQueueContext] save:&saveError];
+                    
+                    if (saveError) {
+                        NSLog(@"[CIOrderCell] There was an error saving the order after calculating totals.");
+                    } else {
+                        pendingSaves = 0;
+                    }
+                }
             }];
         }
     }
@@ -227,7 +250,7 @@
     self.orderStatus.textColor = [UIColor whiteColor];
     self.orderStatus.backgroundColor = self.savedStatusColor;
     self.bar.hidden = YES;
-    self.contentView.backgroundColor = self.savedRowStripeColor ? self.savedRowStripeColor : [UIColor whiteColor];
+    self.contentView.backgroundColor = [UIColor clearColor];
 }
 
 

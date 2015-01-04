@@ -20,6 +20,8 @@
 
 - (double)subtotal;
 
+- (double)subtotalUsing:(NSString *)quantityValue shipDatesCount:(int)shipDatesCount;
+
 #pragma mark - Quantities
 
 - (int)getQuantityForShipDate:(NSDate *)date;
