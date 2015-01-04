@@ -88,7 +88,7 @@
             if (vendorId) {
                 NSPredicate *predicate = [NSPredicate predicateWithFormat:@"vendorId == %@", vendorId];
                 Vendor *asyncVendor = (Vendor *) [[CoreDataUtil sharedManager] fetchObject:@"Vendor" inContext:[CurrentSession privateQueueContext] withPredicate:predicate];
-                if (asyncVendor && weakSelf && weakSelf.auth.tag == [asyncVendor.vendorId intValue]) {
+                if (asyncVendor && weakSelf && weakSelf.auth && weakSelf.auth.tag == [asyncVendor.vendorId intValue]) {
                     if (asyncVendor.name) {
                         weakSelf.auth.text = asyncVendor.name;
                         weakSelf.auth.hidden = NO;
@@ -118,13 +118,31 @@
             self.total.text = [NumberUtil formatDollarAmount:totals.total];
         } else {
             NSManagedObjectID *orderObjectID = order.objectID;
+            static int pendingSaves = 0;
             [[CurrentSession privateQueueContext] performBlock:^{
-                Order *asyncOrder = (Order *) [[CurrentSession privateQueueContext] existingObjectWithID:orderObjectID error:nil];
-                if (asyncOrder && weakSelf && weakSelf.tag == [asyncOrder.orderId intValue]) {
-                    OrderTotals *totals = [asyncOrder calculateTotals];
-                    weakSelf.total.text = [NumberUtil formatDollarAmount:totals.total];
-                    [OrderCoreDataManager saveOrder:asyncOrder inContext:[CurrentSession privateQueueContext]];
-                }
+                NSError *error;
+                Order *asyncOrder = (Order *) [[CurrentSession privateQueueContext] existingObjectWithID:orderObjectID error:&error];
+
+                if (error) {
+                    NSLog(@"[CIOrderCell] There was an error loading the order for calculating totals.");
+                } else {
+                    if (asyncOrder && weakSelf && weakSelf.tag == [asyncOrder.orderId intValue]) {
+                        OrderTotals *totals = [asyncOrder calculateTotals];
+                        if (weakSelf && weakSelf.total) weakSelf.total.text = [NumberUtil formatDollarAmount:totals.total];
+                        
+                        pendingSaves++;
+                        if (pendingSaves >= 20 && [CurrentSession privateQueueContext].hasChanges) {
+                            [[CurrentSession privateQueueContext] save:&error];
+                            pendingSaves = 0;
+                            
+                            if (error) {
+                                NSLog(@"[CIOrderCell] There was an error saving the order after calculating totals.");
+                            }
+                        } else {
+                            [weakSelf.backgroundView setNeedsDisplay];
+                        }
+                    }
+                }                
             }];
         }
     }

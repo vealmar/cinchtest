@@ -122,6 +122,7 @@ static CoreDataUtil *sharedInstance;
     NSEntityDescription *entity = [NSEntityDescription
             entityForName:entityDescription inManagedObjectContext:context];
     [fetchRequest setEntity:entity];
+    fetchRequest.fetchLimit = 1;
 
     if (predicate != nil)
         [fetchRequest setPredicate:predicate];

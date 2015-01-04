@@ -338,7 +338,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
     switch (indexPath.section) {
         case 0: {
             Product *product = self.workingLineItem.product;
-            BOOL descr2Visible = product.descr2 && product.descr2.length > 0;
+            BOOL descr2Visible = (product.descr2 && product.descr2.length > 0) || product.partnbr;
             return 70.0f + //top
                     (descr2Visible ? 65.0f : 35.0f) + //mid
                     49.0f + //bottom
@@ -407,7 +407,7 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             [topView addSubview:subtitleLabel];
 
             ////////////////////////////////////////////////////////////////////////////////////////////////////////
-            BOOL descr2Visible = product.descr2 && product.descr2.length > 0;
+            BOOL descr2Visible = (product.descr2 && product.descr2.length > 0) || product.partnbr;
             
             UIView *middleView = [[UIView alloc] initWithFrame:CGRectMake(0, topView.bounds.size.height, backgroundView.bounds.size.width, (descr2Visible ? 65 : 35))];
             middleView.backgroundColor = [UIColor colorWithRed:1.000 green:1.000 blue:1.000 alpha:1];
@@ -420,13 +420,13 @@ static NSString *dateCellIdentifier = @"CISelectedShipDateCell";
             line1.text = product.descr;
             [middleView addSubview:line1];
 
-            if (descr2Visible || product.partnbr) {
+            if (descr2Visible) {
                 UILabel *line2 = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, 290, 25)];
                 line2.font = [UIFont regularFontOfSize:12];
                 line2.textAlignment = NSTextAlignmentLeft;
                 line2.textColor = [UIColor blackColor];
                 line2.text = [NSString stringWithFormat:@"%@ %@",
-                              (descr2Visible ? product.descr2 : @""),
+                              (product.descr2 ? product.descr2 : @""),
                               (product.partnbr ? [NSString stringWithFormat:@"MFG NO: %@", product.partnbr] : @"") ];
                 [middleView addSubview:line2];
             }

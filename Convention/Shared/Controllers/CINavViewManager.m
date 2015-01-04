@@ -13,7 +13,10 @@
 @property UITextField *searchTextField;
 @property BOOL searchable;
 @property UIBarButtonItem *clearSearchItem;
+@property UILabel *clearSearchItemLabel;
+@property UIBarButtonItem *searchItem;
 @property UIButton *dismissButton;
+
 @property BOOL inSearchMode;
 
 @end
@@ -27,9 +30,23 @@
         [self initClearSearchButton];
         [self initSearchTextField];
         [self initDismissButton];
+        [self initSearchItem];
         self.inSearchMode = NO;
     }
     return self;
+}
+
+- (void)initSearchItem {
+    __weak CINavViewManager *weakSelf = self;
+    self.searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"Search..." style:UIBarButtonItemStylePlain handler:^(id sender) {
+        if ([weakSelf allowSearch]) {
+            NSString *searchText = nil;
+            if (weakSelf && [weakSelf hasSearchText]) {
+                searchText = weakSelf.searchItem.title;
+            }
+            [weakSelf setupNavBarSearch:searchText];
+        }
+    }];
 }
 
 - (void)initDismissButton {
@@ -45,7 +62,7 @@
 - (void)initClearSearchButton {
     __weak CINavViewManager *weakSelf = self;
 
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 22, 44)];
+    UILabel *label = self.clearSearchItemLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 22, 44)];
     label.attributedText = [[NSAttributedString alloc] initWithString:@"\uf057" attributes:[ThemeUtil navigationLeftActionButtonTextAttributes]];
     UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 22, 44)];
     [button addSubview:label];
@@ -55,13 +72,6 @@
         [weakSelf exitSearchMode];
     } forControlEvents:UIControlEventTouchUpInside];
     self.clearSearchItem = [[UIBarButtonItem alloc] initWithCustomView:button];
-
-//    self.clearSearchItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf057" style:UIBarButtonItemStylePlain handler:^(id sender) {
-//        weakSelf.searchTextField.text = @"";
-//        [weakSelf searchWithString:weakSelf.searchTextField.text inputCompleted:YES];
-//        [weakSelf exitSearchMode];
-//    }];
-//    [self.clearSearchItem setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
 }
 
 - (void)initSearchTextField {
@@ -83,6 +93,10 @@
 
 - (void)setupNavBar {
     [self setupNavBar:nil];
+}
+
+- (BOOL)hasSearchText {
+    return self.searchItem && ![self.searchItem.title isEqualToString:@"Search..."];
 }
 
 -(void)setTitle:(NSAttributedString *)title {
@@ -123,17 +137,15 @@
     if (self.searchable) {
         NSString *term = @"Search...";
         if (searchText && searchText.length > 0) {
+            //set this again unless we cleared it in the clearSearch method
+            self.clearSearchItemLabel.attributedText = [[NSAttributedString alloc] initWithString:@"\uf057" attributes:[ThemeUtil navigationLeftActionButtonTextAttributes]];
             rightBarButtonItems = [rightBarButtonItems arrayByAddingObject:self.clearSearchItem];
             term = searchText;
         }
 
-        UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] bk_initWithTitle:[NSString stringWithFormat:@"   %@", term] style:UIBarButtonItemStylePlain handler:^(id sender) {
-            if ([self allowSearch]) {
-                [self setupNavBarSearch:searchText];
-            }
-        }];
-        [searchItem setTitleTextAttributes:[ThemeUtil navigationSearchLabelTextAttributes] forState:UIControlStateNormal];
-        leftBarButtonItems = [leftBarButtonItems arrayByAddingObject:searchItem];
+        self.searchItem.title = term;
+        [self.searchItem setTitleTextAttributes:[ThemeUtil navigationSearchLabelTextAttributes] forState:UIControlStateNormal];
+        leftBarButtonItems = [leftBarButtonItems arrayByAddingObject:self.searchItem];
     }
 
     navItem.titleView.hidden = NO;
@@ -195,7 +207,7 @@
 }
 
 - (void)clearSearch {
-//    if (self.inSearchMode) {
+    if (self.inSearchMode) {
         NSString *originalSearchQuery = self.searchTextField.text;
         self.searchTextField.text = nil;
         
@@ -208,8 +220,10 @@
         if (originalSearchQuery) [self searchWithString:self.searchTextField.text inputCompleted:YES];
         
         [self didEndSearch];
-
-//    }
+    } else if ([self hasSearchText]) {
+        self.clearSearchItemLabel.text = @"";
+        self.searchItem.title = @"Search...";
+    }
 }
 
 -(void)exitSearchMode {

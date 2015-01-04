@@ -81,9 +81,25 @@
     } else if (configurations.isLineItemShipDatesType && configurations.atOncePricing) {
         if (self.shipDates.count > 0) {
             NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
-            int atOnceQuantity = [self getQuantityForShipDate:fixedShipDates.firstObject];
-            return [self.product.showprc doubleValue] * atOnceQuantity +
-                    [self.product.regprc doubleValue] * (self.totalQuantity - atOnceQuantity);
+            NSDate *atOnceDate = fixedShipDates ? fixedShipDates.firstObject : nil;
+            
+            NSMutableDictionary *quantities = [self.quantity objectFromJSONString];
+            
+            double runningTotal = 0.0;
+            
+            for (NSDate *shipDate in fixedShipDates) {
+                NSString *key = [shipDate formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"];
+                int quantityOnDate = [[quantities allKeys] containsObject:key] ? [[quantities valueForKey:key] intValue] : 0;
+                if (quantityOnDate > 0) {
+                    if (atOnceDate && [atOnceDate isEqualToDate:shipDate]) {
+                        runningTotal += [self.product.showprc doubleValue] * quantityOnDate;
+                    } else {
+                        runningTotal += [self.product.regprc doubleValue] * quantityOnDate;
+                    }
+                }
+            }
+            
+            return runningTotal;
         } else {
             return 0;
         }
