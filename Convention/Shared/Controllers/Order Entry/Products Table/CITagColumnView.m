@@ -69,9 +69,10 @@ static CGFloat tagHeight = 20.0;
 }
 
 - (UILabel *)newLabel:(NSString *)tagText {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0 + tagMargin + tagMargin, 0.0, 40.0, tagHeight - 1.0)];
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0 + tagMargin + tagMargin, 0.0, 45.0, tagHeight - 1.0)];
     label.text = tagText;
     label.textColor = [UIColor whiteColor];
+    label.adjustsFontSizeToFitWidth = YES;
     label.font = [UIFont regularFontOfSize:11.0f];
     [ThemeUtil fitTextWidthTo:label];
     return label;

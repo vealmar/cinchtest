@@ -26,7 +26,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>http://ellett.cinchsales.com</string>
+			<string>http://192.168.0.5</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>

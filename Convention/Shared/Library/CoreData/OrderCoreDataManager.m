@@ -14,7 +14,6 @@
 #import "config.h"
 #import "CurrentSession.h"
 #import "SettingsManager.h"
-#import "CIProductViewControllerHelper.h"
 #import "LineItem+Extensions.h"
 #import "Product.h"
 #import "MBProgressHUD.h"
@@ -46,6 +45,24 @@
     }
 
     return fetchRequest;
+}
+
++ (void)headOrder:(NSNumber *)orderId
+        updatedAt:(NSDate *)updatedAt
+         onSuccess:(void (^)())successBlock {
+    if (orderId && updatedAt) {
+        [OrderCoreDataManager sendRequest:@"HEAD"
+                                      url:kDBGETORDER(orderId)
+                               parameters:@{ kAuthToken : [CurrentSession instance].authToken}
+                             successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                                successBlock();
+                             }
+                             failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+
+                             }
+                                     view:nil
+                              loadingText:nil];
+    }
 }
 
 + (void)reloadOrders:(BOOL)partialReturn
@@ -214,7 +231,7 @@
                  saveBlock(JSON);
              }
              failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                 if (response.statusCode == 422 && JSON) {
+                 if ((response.statusCode == 422 || response.statusCode == 409) && JSON) {
                      saveBlock(JSON);
                  } else {
                      [submit hide:NO];

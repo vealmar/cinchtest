@@ -29,6 +29,7 @@
 #import "CoreDataUtil.h"
 #import "CurrentSession.h"
 #import "KeyCommander.h"
+#import "Product.h"
 
 @interface CIOrderViewController () {
     ShowConfigurations *showConfig;
@@ -195,8 +196,9 @@
         _currentOrder = currentOrder;
         NSArray *lineItemsArray = _currentOrder.lineItems.allObjects;
         self.currentLineItems = [lineItemsArray sortedArrayUsingDescriptors:@[
-                [[NSSortDescriptor alloc] initWithKey:@"product.sequence" ascending:TRUE],
-                [[NSSortDescriptor alloc] initWithKey:@"product.invtid" ascending:TRUE]
+                [[NSSortDescriptor alloc] initWithKey:@"category" ascending:NO],
+                [[NSSortDescriptor alloc] initWithKey:@"product.sequence" ascending:YES],
+                [[NSSortDescriptor alloc] initWithKey:@"product.invtid" ascending:YES]
         ]];
     } else {
         _currentOrder = nil;
@@ -506,16 +508,26 @@
             ctotalLabel = (UILabel*)[cell.contentView viewWithTag:1006];
         }
 
-        LineItem *lineItem = self.currentLineItems[indexPath.row];
-        citemLabel.text = [NSString stringWithFormat:@"#%@", lineItem.productId];
-        cdescriptionLabel.text = [lineItem.description1 stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if ([ShowConfigurations instance].isOrderShipDatesType) {
-            csdLabel.text = [NSString stringWithFormat:@"%d", lineItem.shipDates.count];
+        if (indexPath.row < self.currentLineItems.count){
+            LineItem *lineItem = self.currentLineItems[indexPath.row];
+            citemLabel.text = lineItem.productId && lineItem.product ? [NSString stringWithFormat:@"#%@", lineItem.product.invtid] : @"";
+            NSString *description1Content = [lineItem.description1 stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            if (lineItem.isDiscount) {
+                description1Content = [NSString stringWithFormat:@"%@ %@", @"Discount: ", description1Content];
+                cdescriptionLabel.font = [UIFont boldFontOfSize:14];
+            } else {
+                cdescriptionLabel.font = [UIFont regularFontOfSize:14];
+            }
+            cdescriptionLabel.text = description1Content;
+            
+            if ([ShowConfigurations instance].isOrderShipDatesType) {
+                csdLabel.text = [NSString stringWithFormat:@"%d", lineItem.shipDates.count];
+            }
+            csqLabel.text = [NSString stringWithFormat:@"%d", [lineItem totalQuantity]];
+            
+            cpriceLabel.text = [NumberUtil formatDollarAmount:lineItem.price];
+            ctotalLabel.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:lineItem.subtotal]];
         }
-        csqLabel.text = [NSString stringWithFormat:@"%d", [lineItem totalQuantity]];
-
-        cpriceLabel.text = [NumberUtil formatDollarAmount:lineItem.price];
-        ctotalLabel.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:lineItem.subtotal]];
 
         return cell;
     }

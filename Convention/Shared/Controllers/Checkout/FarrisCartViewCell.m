@@ -34,7 +34,7 @@
 @synthesize price1;
 
 - (void)initializeWithDiscount:(LineItem *)discount tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
-    UIFont *discountFont = [UIFont italicSystemFontOfSize:14];
+    UIFont *discountFont = [UIFont boldFontOfSize:14];
     self.InvtID.text = @"Discount";
     [self setDescription:discount.description1 withSubtext:discount.description2];
     Product *product = discount.productId ? [Product findProduct:discount.productId] : nil;
@@ -51,6 +51,9 @@
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
     self.backgroundColor = [UIColor whiteColor];//since we are using same cell for products and discounts, if a product cell is being reused, it might have a green/red background. We display discounts with white background always.
     self.numOfShipDates.text = @"";
+    self.descr.font = [UIFont semiboldFontOfSize:14.0];
+    self.descr1.font = [UIFont semiboldFontOfSize:14.0];
+    self.descr2.font = [UIFont semiboldFontOfSize:14.0];
     [self updateErrorsView:nil];
 }
 
@@ -69,15 +72,17 @@
     if (lineItem.product.editable && lineItem.product.editable.intValue == 1) {
         self.price1.text = [NumberUtil formatDollarAmount:lineItem.price];
     }
-    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+//    if ([ShowConfigurations instance].isLineItemShipDatesType) {
         self.qtyLbl.text = [NSString stringWithFormat:@"%i", lineItem.totalQuantity];
         self.quantity.hidden = YES;
         self.qtyLbl.hidden = NO;
-    } else {
-        self.quantity.text = [NSString stringWithFormat:@"%i", lineItem.totalQuantity];
-        self.quantity.hidden = NO;
-        self.qtyLbl.hidden = YES;
-    }
+//    } else {
+//        self.quantity.text = [NSString stringWithFormat:@"%i", lineItem.totalQuantity];
+//        self.quantity.hidden = NO;
+//        self.qtyLbl.hidden = YES;
+//    }
+    
+    
 
     [self updateErrorsView:lineItem];
 }

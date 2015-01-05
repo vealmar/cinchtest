@@ -173,7 +173,7 @@
 
 - (LineItem *)findLineByProductId:(NSNumber *)productId {
     for (LineItem *lineItem in self.lineItems) {
-        if ([lineItem.productId intValue] == [productId intValue])
+        if ([lineItem.productId intValue] == [productId intValue] && !lineItem.isDiscount)
             return lineItem;
     }
     return nil;

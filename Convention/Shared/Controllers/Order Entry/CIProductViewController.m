@@ -82,10 +82,11 @@
     self.delegate = nil;
     self.order = nil;
     self.viewInitialized = NO;
-    initialVendor = ![ShowConfigurations instance].vendorMode &&
-            [CurrentSession instance].vendorId &&
-            ![[CurrentSession instance].vendorId isKindOfClass:[NSNull class]] ?
-            [[CurrentSession instance].vendorId intValue] : 0;
+//    initialVendor = ![ShowConfigurations instance].vendorMode &&
+//            [CurrentSession instance].vendorId &&
+//            ![[CurrentSession instance].vendorId isKindOfClass:[NSNull class]] ?
+//            [[CurrentSession instance].vendorId intValue] : 0;
+    initialVendor = 0;
     self.orderSubmitted = NO;
     self.selectedLineItems = [NSMutableSet set];
     
@@ -105,10 +106,11 @@
 
     self.view.backgroundColor = [UIColor colorWithRed:0.133 green:0.129 blue:0.137 alpha:1];
 
-    initialVendor = ![ShowConfigurations instance].vendorMode &&
-            [CurrentSession instance].vendorId &&
-            ![[CurrentSession instance].vendorId isKindOfClass:[NSNull class]] ?
-            [[CurrentSession instance].vendorId intValue] : 0;
+//    initialVendor = ![ShowConfigurations instance].vendorMode &&
+//            [CurrentSession instance].vendorId &&
+//            ![[CurrentSession instance].vendorId isKindOfClass:[NSNull class]] ?
+//            [[CurrentSession instance].vendorId intValue] : 0;
+    initialVendor = 0;
     currentVendor = initialVendor;
     self.tableHeader.hidden = NO;
     self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
@@ -227,6 +229,9 @@
             }];
         } else if (orderRecoverySelection == OrderRecoverySelectionNo) {
             [self.order.managedObjectContext refreshObject:self.order mergeChanges:NO];
+//            [OrderCoreDataManager headOrder:self.order.orderId updatedAt:self.order.updatedAt onSuccess:^{
+//
+//            }];
         }
     } else if (!self.order) {
         NSLog(@"Invalid state, product view has no order.");

@@ -141,9 +141,19 @@
 }
 
 - (void)refreshView {
+    NSMutableArray *productLinesBuilder = [NSMutableArray array]; //uses product id
+    NSMutableArray *discountLinesBuilder = [NSMutableArray array]; //uses lineitemid
+    for (LineItem *lineItem in self.order.lineItems) {
+        if (lineItem.isDiscount) {
+            [discountLinesBuilder addObject:lineItem.lineItemId];
+        } else if (lineItem.productId) {
+            [productLinesBuilder addObject:lineItem.productId];
+        }
+    }
+    
     self.savingOrder = NO;
-    self.productsInCart = [helper sortProductsBySequenceAndInvtId:[self.order productIds]];
-    self.discountsInCart = [helper sortDiscountsByLineItemId:[self.order discountLineItemIds]];
+    self.productsInCart = [helper sortProductsBySequenceAndInvtId:[NSArray arrayWithArray:productLinesBuilder]];
+    self.discountsInCart = [helper sortDiscountsByLineItemId:[NSArray arrayWithArray:discountLinesBuilder]];
     [self updateTotals];
     [self reloadTable];
 }

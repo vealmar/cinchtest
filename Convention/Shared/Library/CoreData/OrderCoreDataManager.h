@@ -19,6 +19,10 @@
            onSuccess:(void (^)())successBlock
            onFailure:(void (^)())failureBlock;
 
++ (void)headOrder:(NSNumber *)orderId
+        updatedAt:(NSDate *)updatedAt
+        onSuccess:(void (^)())successBlock;
+
 // Retrieves an order from the server. If it exists locally, it is overwritten. Otherwise, it is inserted.
 + (void)fetchOrder:(NSNumber *)orderId
        attachHudTo:(UIView *)view
