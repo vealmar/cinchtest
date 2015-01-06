@@ -516,7 +516,7 @@
             title = @"Unsynced Changes";
         }
         
-        [options addObject:@"Cancel & Continue with Order"];
+        [options addObject:@"Continue Working"];
         
         if (!self.order.updatedAt) {
             // if this is blank, the order has never been saved
@@ -558,7 +558,7 @@
                 }];
             } else if ([action isEqualToString:@"Submit This Order Now"]) {
                 [weakSelf reviewCart];
-            } else if ([action isEqualToString:@"Cancel & Continue with Order"]) {
+            } else if ([action isEqualToString:@"Continue Working"]) {
                 // do nothing
             } else {
                 [weakSelf Return];
