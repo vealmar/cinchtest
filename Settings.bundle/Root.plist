@@ -46,7 +46,7 @@
 			<key>Key</key>
 			<string>show</string>
 			<key>DefaultValue</key>
-			<string>28</string>
+			<string>33</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>

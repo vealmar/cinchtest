@@ -37,6 +37,7 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartQuantityChange:) name:LineQuantityChangedNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartSelection:) name:LineSelectionNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartDeselection:) name:LineDeselectionNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onProductsReturn:) name:ProductsReturnNotification object:nil];
     }
 
     return self;
@@ -165,6 +166,11 @@
         self.selected = NO;
         [self updateRowHighlight:nil];
     }
+}
+
+- (void)onProductsReturn:(NSNotification *)notification {
+    if (self.selected) self.selected = NO;
+    self.lineItem = nil;
 }
 
 - (void)dealloc {

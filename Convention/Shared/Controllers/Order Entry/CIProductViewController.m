@@ -153,9 +153,10 @@
     }
 
     // if we're looking at a different vendor's order, show those products by default
-    if (self.order && self.order.vendorId.intValue != currentVendor) {
-        currentVendor = self.order.vendorId.intValue;
-    }
+//    if (self.order && self.order.vendorId.intValue != currentVendor) {
+//        currentVendor = self.order.vendorId.intValue;
+//    }
+    // gonna just go with 0 for now
     
     [self loadProductsForCurrentVendorAndBulletin];
     [self deserializeOrder];
@@ -516,12 +517,12 @@
         }
         
         [options addObject:@"Cancel & Continue with Order"];
-        [options addObject:@"Save Locally & Resume Later"];
         
         if (!self.order.updatedAt) {
             // if this is blank, the order has never been saved
-            [options addObject:@"Cancel and Delete this Order"];
+            [options addObject:@"Delete Order"];
         } else {
+            [options addObject:@"Save Locally & Resume Later"]; //would prefer this elsewhere but not working otherwise
             [options addObject:@"Undo Changes Since Last Sync"];
         }
         
@@ -536,7 +537,7 @@
         }
         [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
             NSString *action = [alert buttonTitleAtIndex:buttonIndex];
-            if ([action isEqualToString:@"Cancel and Delete this Order"]) {
+            if ([action isEqualToString:@"Delete Order"]) {
                 [OrderCoreDataManager deleteOrder:weakSelf.order onSuccess:^{
                     [self Return];
                 } onFailure:^{
@@ -550,9 +551,11 @@
                     // do nothing
                 }];
             } else if ([action isEqualToString:@"Save Locally & Resume Later"]) {
-                if (weakSelf.order.isComplete) weakSelf.order.status = @"pending";
-                [OrderCoreDataManager saveOrder:weakSelf.order inContext:weakSelf.order.managedObjectContext];
-                [weakSelf Return];
+                [[CurrentSession mainQueueContext] performBlock:^{
+                    if (weakSelf.order.isComplete) weakSelf.order.status = @"pending";
+                    [OrderCoreDataManager saveOrder:weakSelf.order inContext:[CurrentSession mainQueueContext]];
+                    [weakSelf Return];
+                }];
             } else if ([action isEqualToString:@"Submit This Order Now"]) {
                 [weakSelf reviewCart];
             } else if ([action isEqualToString:@"Cancel & Continue with Order"]) {
@@ -810,6 +813,7 @@
             [weakSelf reinit]; //clear up memory
         }
     }];
+    [[NSNotificationCenter defaultCenter] postNotificationName:ProductsReturnNotification object:nil];
 }
 
 - (OrderUpdateStatus)orderStatus {

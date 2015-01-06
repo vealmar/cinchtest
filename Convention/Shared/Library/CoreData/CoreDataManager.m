@@ -97,6 +97,12 @@
 
 + (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSNumber *)vendorGroupId async:(BOOL)async usingQueueContext:(NSManagedObjectContext *)queueContext onSuccess:(void (^)())successBlock onFailure:(void (^)())failureBlock {
     [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadRequestedNotification object:nil];
+    
+    void (^completeWithSuccess)() = ^() {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
+        if (successBlock) successBlock();
+    };
+    
     [[CinchJSONAPIClient sharedInstance] GET:kDBGETPRODUCTS parameters:@{ kAuthToken: authToken, kVendorGroupID: [NSString stringWithFormat:@"%@", vendorGroupId] } success:^(NSURLSessionDataTask *task, id JSON) {
         if (JSON && ([(NSArray *) JSON count] > 0)) {
 
@@ -133,7 +139,7 @@
             int totalRemainingBatchCount = remainingBatches.count;
 
             if (totalRemainingBatchCount == 0) {
-                [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
+                completeWithSuccess();
             }
 
             for (NSArray *productsBatch in remainingBatches) {
@@ -146,7 +152,7 @@
 
                         remainingBatchCount += 1;
                         if (remainingBatchCount >= totalRemainingBatchCount) {
-                            [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
+                            completeWithSuccess();
                         }
                     }];
                 } else {
@@ -158,7 +164,7 @@
 
                         remainingBatchCount += 1;
                         if (remainingBatchCount >= totalRemainingBatchCount) {
-                            [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
+                            completeWithSuccess();
                         }
                     }];
                 }
@@ -168,9 +174,11 @@
             NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:start];
 
             NSLog(@"Execution Time: %f", executionTime);
+        } else {
+            completeWithSuccess();
         }
-
-        if (successBlock) successBlock();
+        
+        completeWithSuccess();
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         id JSON = error.userInfo[JSONResponseSerializerWithErrorDataKey];
         if (failureBlock) failureBlock();

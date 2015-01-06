@@ -28,16 +28,17 @@
 @implementation Order (Extensions)
 
 + (id)newOrderForCustomer:(NSDictionary *)customer {
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Order" inManagedObjectContext:[CurrentSession mainQueueContext]];
-    Order *newOrder = [[Order alloc] initWithEntity:entity insertIntoManagedObjectContext:[CurrentSession mainQueueContext]];
-    newOrder.inSync = NO;
-    newOrder.status = @"partial";
-    newOrder.customerId = customer[kID];
-    newOrder.custId = customer[kCustID];
-    newOrder.customerName = customer[kBillName];
-    newOrder.vendorId = [CurrentSession instance].vendorId;
+    __block Order *newOrder = nil;
 
     [[CurrentSession mainQueueContext] performBlockAndWait:^{
+        NSEntityDescription *entity = [NSEntityDescription entityForName:@"Order" inManagedObjectContext:[CurrentSession mainQueueContext]];
+        newOrder = [[Order alloc] initWithEntity:entity insertIntoManagedObjectContext:[CurrentSession mainQueueContext]];
+        newOrder.inSync = NO;
+        newOrder.status = @"partial";
+        newOrder.customerId = customer[kID];
+        newOrder.custId = customer[kCustID];
+        newOrder.customerName = customer[kBillName];
+        newOrder.vendorId = [CurrentSession instance].vendorId;
         [OrderCoreDataManager saveOrder:newOrder inContext:[CurrentSession mainQueueContext]];
     }];
 
@@ -173,7 +174,7 @@
 
 - (LineItem *)findLineByProductId:(NSNumber *)productId {
     for (LineItem *lineItem in self.lineItems) {
-        if ([lineItem.productId intValue] == [productId intValue] && !lineItem.isDiscount)
+        if ([lineItem.productId intValue] == [productId intValue] && ![lineItem isDiscount])
             return lineItem;
     }
     return nil;

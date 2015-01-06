@@ -105,7 +105,9 @@
                             weakSelf.auth.hidden = NO;
                             [weakSelf.backgroundView setNeedsDisplay];
                         }
-                        [CurrentSession instance].vendorNameCache[[vendorId stringValue]] = authText;
+                        if (authText) {
+                            [CurrentSession instance].vendorNameCache[[vendorId stringValue]] = authText;
+                        }
                     });
                 }
             }];
