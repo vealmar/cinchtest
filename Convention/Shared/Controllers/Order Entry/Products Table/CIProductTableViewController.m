@@ -72,6 +72,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 
 - (void)productsReloadComplete:(NSNotification *)notification {
     self.isLoadingProducts = NO;
+    [self.tableView reloadData];
 }
 
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate {
