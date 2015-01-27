@@ -4,16 +4,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CoreDataTableViewController.h"
 
 @class CITableViewHeader;
 @class CITableViewColumns;
 
-@interface CITableViewController : CoreDataTableViewController
+@interface CITableViewController : UITableViewController
 
 @property IBOutlet CITableViewHeader *header;
-
 @property CITableViewColumns *columns;
+@property NSArray *fixedData;
+
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath;
+- (void)prepareForDisplay;
 
 @end
 

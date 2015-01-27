@@ -43,9 +43,9 @@
     self.quantity.hidden = YES;
     self.qtyLbl.font = discountFont;
     self.qtyLbl.hidden = NO;
-    self.price2.text = @"";
-    self.price1.text = [NumberUtil formatDollarAmount:discount.price];
-    self.price1.font = discountFont;
+    self.price2.text = [NumberUtil formatDollarAmount:discount.price];
+    self.price1.text = @"";
+    self.price2.font = discountFont;
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
@@ -54,12 +54,33 @@
     self.descr.font = [UIFont semiboldFontOfSize:14.0];
     self.descr1.font = [UIFont semiboldFontOfSize:14.0];
     self.descr2.font = [UIFont semiboldFontOfSize:14.0];
+
+    self.InvtID.adjustsFontSizeToFitWidth = YES;
+    self.InvtID.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+    self.descr.adjustsFontSizeToFitWidth = YES;
+    self.descr.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+    self.descr1.adjustsFontSizeToFitWidth = YES;
+    self.descr1.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+    self.descr2.adjustsFontSizeToFitWidth = YES;
+    self.descr2.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+
     [self updateErrorsView:nil];
 }
 
 - (void)initializeWithCart:(LineItem *)lineItemInitial tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
     lineItem = lineItemInitial;
+
+    self.InvtID.adjustsFontSizeToFitWidth = YES;
+    self.InvtID.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+    self.descr.adjustsFontSizeToFitWidth = YES;
+    self.descr.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+    self.descr1.adjustsFontSizeToFitWidth = YES;
+    self.descr1.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+    self.descr2.adjustsFontSizeToFitWidth = YES;
+    self.descr2.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+
     self.InvtID.text = lineItem.product.invtid;
+
     [self setDescription:lineItem.product.descr withSubtext:lineItem.product.descr2];
     NSNumber *minNumber = (NSNumber *) [NilUtil nilOrObject:lineItem.product.min];
     self.min.text = minNumber ? [minNumber stringValue] : @"";
@@ -81,8 +102,6 @@
 //        self.quantity.hidden = NO;
 //        self.qtyLbl.hidden = YES;
 //    }
-    
-    
 
     [self updateErrorsView:lineItem];
 }

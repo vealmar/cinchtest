@@ -15,12 +15,6 @@
             <string>OpenSans</string>
             <string>OpenSans</string>
             <string>OpenSans</string>
-            <string>OpenSans</string>
-            <string>OpenSans</string>
-            <string>OpenSans</string>
-            <string>OpenSans</string>
-            <string>OpenSans</string>
-            <string>OpenSans</string>
         </mutableArray>
         <mutableArray key="OPENSANS-SEMIBOLD_1.TTF">
             <string>OpenSans-Semibold</string>
@@ -180,63 +174,15 @@
                                         <rect key="frame" x="0.0" y="276" width="670" height="354"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <subviews>
-                                            <view contentMode="scaleToFill" id="iBx-05-iRh">
+                                            <view contentMode="scaleToFill" id="iBx-05-iRh" customClass="CITableViewHeader">
                                                 <rect key="frame" x="0.0" y="0.0" width="670" height="32"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                                <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ITEM" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="J4v-Xs-aRw">
-                                                        <rect key="frame" x="15" y="5" width="112" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
-                                                        <color key="textColor" red="0.93333333333333335" green="0.93333333333333335" blue="0.93333333333333335" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DESCRIPTION" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Ph9-4Y-tzO">
-                                                        <rect key="frame" x="135" y="5" width="197" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
-                                                        <color key="textColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SD" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="coZ-Vg-hZV">
-                                                        <rect key="frame" x="340" y="5" width="64" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
-                                                        <color key="textColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SQ" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="oeS-tY-jzU">
-                                                        <rect key="frame" x="412" y="5" width="67" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
-                                                        <color key="textColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PRICE" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="JMJ-Wu-p04">
-                                                        <rect key="frame" x="482" y="5" width="88" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
-                                                        <color key="textColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TOTAL" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ezr-No-tEj">
-                                                        <rect key="frame" x="577" y="5" width="79" height="21"/>
-                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="13"/>
-                                                        <color key="textColor" red="0.93333333330000001" green="0.93333333330000001" blue="0.93333333330000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                </subviews>
                                                 <color key="backgroundColor" red="0.23529411764705882" green="0.24705882352941178" blue="0.25098039215686274" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </view>
-                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="YnO-ye-7jz">
+                                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="YnO-ye-7jz">
                                                 <rect key="frame" x="0.0" y="32" width="670" height="322"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                <connections>
-                                                    <outlet property="dataSource" destination="L2z-Wh-GlW" id="Hng-fK-xeJ"/>
-                                                    <outlet property="delegate" destination="L2z-Wh-GlW" id="AgJ-ea-O9b"/>
-                                                </connections>
                                             </tableView>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -260,18 +206,13 @@
                         <outlet property="orderDetailCustomerView" destination="ut5-uZ-9Na" id="gkk-SK-xgI"/>
                         <outlet property="orderDetailDeleteButton" destination="Xke-LG-Y6x" id="CAt-Zh-eqx"/>
                         <outlet property="orderDetailEditButton" destination="Lkc-Wc-nOa" id="Oom-sz-XaE"/>
+                        <outlet property="orderDetailHeaderView" destination="iBx-05-iRh" id="qOV-dr-cNZ"/>
                         <outlet property="orderDetailNotesLabel" destination="ES7-qA-HWv" id="ugD-7d-dky"/>
                         <outlet property="orderDetailNotesView" destination="zg4-kn-PPz" id="SxC-sg-KFO"/>
                         <outlet property="orderDetailOrderNumberLabel" destination="I2n-wZ-9VN" id="O0T-Xf-tJO"/>
                         <outlet property="orderDetailSaveButton" destination="Cng-qZ-sWf" id="Mow-wJ-efh"/>
-                        <outlet property="orderDetailTable" destination="YnO-ye-7jz" id="XYO-ZU-6g6"/>
-                        <outlet property="orderDetailTableDescriptionLabel" destination="Ph9-4Y-tzO" id="C3i-dG-sUm"/>
-                        <outlet property="orderDetailTableItemIdLabel" destination="J4v-Xs-aRw" id="jZr-JJ-Soc"/>
                         <outlet property="orderDetailTableParentView" destination="edG-jd-O4g" id="fuJ-Ol-dop"/>
-                        <outlet property="orderDetailTablePriceLabel" destination="JMJ-Wu-p04" id="Zqf-HL-GY7"/>
-                        <outlet property="orderDetailTableQuantityLabel" destination="oeS-tY-jzU" id="wtt-d7-aHY"/>
-                        <outlet property="orderDetailTableShipdatesLabel" destination="coZ-Vg-hZV" id="wyD-gB-TYF"/>
-                        <outlet property="orderDetailTableTotalLabel" destination="ezr-No-tEj" id="Wu1-Sd-nck"/>
+                        <outlet property="orderDetailTableView" destination="YnO-ye-7jz" id="uAp-I6-mDY"/>
                         <outlet property="orderDetailView" destination="89b-In-fVe" id="isr-9S-Bv9"/>
                     </connections>
                 </viewController>

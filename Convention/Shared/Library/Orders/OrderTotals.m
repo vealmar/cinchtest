@@ -30,7 +30,7 @@
 }
 
 - (NSNumber *)total {
-    return [NSNumber numberWithDouble:self.grossTotal.doubleValue - self.discountTotal.doubleValue];
+    return [NSNumber numberWithDouble:self.grossTotal.doubleValue + self.discountTotal.doubleValue];
 }
 
 @end

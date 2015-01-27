@@ -6,10 +6,11 @@
 #import <Foundation/Foundation.h>
 #import "CITableViewController.h"
 #import "PullToRefreshView.h"
+#import "CICoreDataTableViewController.h"
 
 @class Order;
 
-@interface CIOrdersTableViewController : CoreDataTableViewController <PullToRefreshViewDelegate>
+@interface CIOrdersTableViewController : CICoreDataTableViewController <PullToRefreshViewDelegate>
 
 @property (readonly) BOOL hasOrders;
 

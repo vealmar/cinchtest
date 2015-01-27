@@ -12,7 +12,7 @@
 			<key>Key</key>
 			<string>host</string>
 			<key>DefaultValue</key>
-			<string>Ellett</string>
+			<string>Camfour</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -26,7 +26,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>http://192.168.0.5</string>
+			<string>http://172.16.32.40</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -46,7 +46,7 @@
 			<key>Key</key>
 			<string>show</string>
 			<key>DefaultValue</key>
-			<string>28</string>
+			<string>35</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>

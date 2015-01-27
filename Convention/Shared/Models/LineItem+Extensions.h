@@ -12,6 +12,12 @@
 
 @property (readonly) int totalQuantity;
 
+//view helpers
+@property (readonly) NSNumber *totalQuantityNumber;
+@property (readonly) NSString *label;
+@property (readonly) NSNumber *shipDatesCount;
+@property (readonly) NSNumber *subtotalNumber;
+
 - (id)initWithProduct:(Product *)product context:(NSManagedObjectContext *)context;
 
 - (BOOL)isStandard;

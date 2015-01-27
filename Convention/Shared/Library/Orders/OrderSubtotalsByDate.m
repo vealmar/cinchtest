@@ -46,4 +46,13 @@
     };
 }
 
+- (BOOL)hasSubtotals {
+    __weak OrderSubtotalsByDate *weakSelf = self;
+    for (NSDate *shipDate in [self.shipDatesAggregation.array sortedArrayUsingSelector:@selector(compare:)]) {
+        NSNumber *subtotal = [weakSelf totalOn:shipDate];
+        if ([subtotal doubleValue] > 0.0) return YES;
+    };
+    return NO;
+}
+
 @end

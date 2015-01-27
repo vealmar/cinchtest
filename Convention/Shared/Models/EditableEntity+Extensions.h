@@ -11,5 +11,6 @@
 + (NSAttributedString *)buildMessageSummaryWithErrors:(NSArray *)errors withWarnings:(NSArray *)warnings;
 - (NSAttributedString *)buildMessageSummary;
 - (BOOL)hasErrorsOrWarnings;
+- (BOOL)hasErrors;
 
 @end

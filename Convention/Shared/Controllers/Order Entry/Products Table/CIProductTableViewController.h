@@ -4,13 +4,13 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CoreDataTableViewController.h"
+#import "CICoreDataTableViewController.h"
 #import "CITableViewController.h"
 #import "PullToRefreshView.h"
 
 @protocol ProductCellDelegate;
 
-@interface CIProductTableViewController : CITableViewController <PullToRefreshViewDelegate>
+@interface CIProductTableViewController : CICoreDataTableViewController <PullToRefreshViewDelegate>
 
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate;
 

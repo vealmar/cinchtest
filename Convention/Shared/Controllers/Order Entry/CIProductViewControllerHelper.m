@@ -117,7 +117,7 @@
             for (LineItem *lineItem in order.lineItems) {
                 Product *product = [Product findProduct:lineItem.productId];
                 BOOL hasQty = lineItem.totalQuantity > 0;
-                if (hasQty && ![CIProductViewControllerHelper itemIsVoucher:product]) {
+                if (hasQty && !lineItem.isDiscount && ![CIProductViewControllerHelper itemIsVoucher:product]) {
                     BOOL hasShipDates = [NilUtil objectOrEmptyArray:lineItem.shipDates].count > 0;
                     if (!hasShipDates) {
                         [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"All items in the cart must have ship date(s) before the order can be submitted. Check cart items and try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];

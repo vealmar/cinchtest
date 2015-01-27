@@ -45,19 +45,27 @@ static CGFloat tagHeight = 20.0;
     NSString *tagString = values.count > 0 ? values[0] : nil;
     NSArray *tags = tagString ? [[tagString stringByReplacingOccurrencesOfString:@", " withString:@","] componentsSeparatedByString:@","] : @[ ];
     float startingX = 0.0;
+    float maxWidth = self.frame.size.width / MAX(tags.count, 1);
     for (NSString *tag in tags) {
-        UIView *tagContainer = [self newContainerFor:[self newTagIcon] label:[self newLabel:tag] startingX:startingX];
+        UIView *tagContainer = [self newContainerFor:[self newTagIcon] label:[self newLabel:tag] startingX:startingX maxWidth:maxWidth];
         [self.tagContainers addObject:tagContainer];
         [self addSubview:tagContainer];
         startingX += tagSpacing + tagContainer.frame.size.width;
     }
 }
 
-- (UIView *)newContainerFor:(UIView *)icon label:(UIView *)label startingX:(CGFloat)startingX {
+- (UIView *)newContainerFor:(UIView *)icon label:(UIView *)label startingX:(CGFloat)startingX maxWidth:(CGFloat)maxWidth {
+    float totalWidth = tagMargin + icon.frame.size.width + tagMargin + label.frame.size.width + tagMargin;
+    if (totalWidth > maxWidth) {
+        float deltaWidth = totalWidth - maxWidth;
+        totalWidth = maxWidth;
+        label.frame = CGRectMake(label.frame.origin.x, label.frame.origin.y, label.frame.size.width - deltaWidth, label.frame.size.height);
+    }
+
     UIView *container = [[UIView alloc] initWithFrame:CGRectMake(
             startingX,
             (self.frame.size.height - tagHeight) / 2,
-            tagMargin + icon.frame.size.width + tagMargin + label.frame.size.width + tagMargin,
+            totalWidth,
             tagHeight
     )];
     [container addSubview:icon];
@@ -70,9 +78,10 @@ static CGFloat tagHeight = 20.0;
 
 - (UILabel *)newLabel:(NSString *)tagText {
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(12.0 + tagMargin + tagMargin, 0.0, 45.0, tagHeight - 1.0)];
-    label.text = tagText;
+    label.text = [tagText stringByReplacingOccurrencesOfString:@"\"" withString:@""];
     label.textColor = [UIColor whiteColor];
-    label.adjustsFontSizeToFitWidth = YES;
+    label.adjustsFontSizeToFitWidth = NO;
+    label.lineBreakMode = NSLineBreakByTruncatingTail;
     label.font = [UIFont regularFontOfSize:11.0f];
     [ThemeUtil fitTextWidthTo:label];
     return label;

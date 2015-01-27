@@ -358,8 +358,8 @@
 
 - (void)finishOrderSyncComplete:(Order *)order {
     self.order = order;
-    self.indicator.hidden = NO;
-    if (order.hasErrorsOrWarnings) {
+    self.indicator.hidden = YES;
+    if (order.hasErrors) {
         [self refreshView];
     } else {
         if (self.allowSignature) {

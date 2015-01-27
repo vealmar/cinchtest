@@ -119,7 +119,7 @@
             for (LineItem *lineItem in self.lineItems) {
                 [subtotals addTotal:[lineItem.price doubleValue] * [lineItem.quantity intValue] forDate:date];
             };
-        });
+    });
     } else if ([ShowConfigurations instance].isLineItemShipDatesType) {
         NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
 

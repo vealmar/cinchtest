@@ -172,7 +172,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CIProductTableViewCell *cell = (CIProductTableViewCell *)[self.tableView dequeueReusableCellWithIdentifier:PRODUCT_VIEW_CELL_KEY forIndexPath:indexPath];
     [cell prepareForDisplay:self.columns delegate:self.delegate];
-    [cell render:[self.fetchedResultsController objectAtIndexPath:indexPath]];
+    [cell render:[self objectAtIndexPath:indexPath]];
     return cell;
 }
 

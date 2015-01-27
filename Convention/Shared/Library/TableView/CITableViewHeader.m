@@ -47,10 +47,14 @@
     [self.columns each:(^(CITableViewColumn *column, NSUInteger index) {
         CGRect frame = [((NSValue *) frames[index]) CGRectValue];
         UILabel *columnLabel = [[UILabel alloc] initWithFrame:frame];
-        columnLabel.attributedText = [[NSAttributedString alloc] initWithString:column.title attributes:@{
+        NSDictionary *defaultAttributes = @{
                 NSFontAttributeName: [UIFont semiboldFontOfSize:14],
                 NSForegroundColorAttributeName: [ThemeUtil blackColor]
-        }];
+        };
+        NSDictionary *optionAttributes = column.options[ColumnOptionTitleTextAttributes];
+        if (optionAttributes) defaultAttributes = Underscore.dict(defaultAttributes).extend(optionAttributes).unwrap;
+
+        columnLabel.attributedText = [[NSAttributedString alloc] initWithString:column.title attributes:defaultAttributes];
         columnLabel.textAlignment = column.alignment;
 
         [self.cellViews addObject:columnLabel];

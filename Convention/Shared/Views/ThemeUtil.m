@@ -148,7 +148,7 @@ Generates a title label based on the format parameter.
         attributes = @{ NSFontAttributeName: label.font };
     }
 
-    CGRect totalHeightRect = [label.text boundingRectWithSize:CGSizeMake(label.frame.size.width, CGFLOAT_MAX)
+    CGRect totalHeightRect = [label.text boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, label.frame.size.height)
                                                       options:NSStringDrawingUsesLineFragmentOrigin
                                                    attributes:attributes
                                                       context:nil];

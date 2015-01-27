@@ -15,4 +15,6 @@
 
 - (void)each:(void (^)(NSDate *shipDate, NSNumber *totalOnShipDate))block;
 
+- (BOOL)hasSubtotals;
+
 @end

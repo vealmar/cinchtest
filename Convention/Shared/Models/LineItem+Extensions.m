@@ -48,6 +48,28 @@
     return [super primitiveValueForKey:@"shipDates"];
 }
 
+- (NSString *)label {
+    if (self.isDiscount) {
+        return @"Discount";
+    } else if (self.productId && self.product) {
+        return [NSString stringWithFormat:@"%@", self.product.invtid];
+    } else {
+        return @"";
+    }
+}
+
+- (NSNumber *)shipDatesCount {
+    return @(self.shipDates.count);
+}
+
+- (NSNumber *)subtotalNumber {
+    return @(self.subtotal);
+}
+
+- (NSNumber *)totalQuantityNumber {
+    return @(self.totalQuantity);
+}
+
 - (int)totalQuantity {
     return [LineItem totalQuantity:self.quantity];
 }
@@ -76,7 +98,7 @@
 }
 
 - (double)subtotal {
-    return [self subtotalUsing:self.quantity shipDatesCount:self.shipDates.count];
+    return [self subtotalUsing:self.quantity shipDatesCount:(self.shipDates.count < 1 ? 1 : self.shipDates.count)];
 }
 
 - (double)subtotalUsing:(NSString *)quantityValue shipDatesCount:(int)shipDatesCount {

@@ -18,8 +18,9 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
+#import "CITableViewController.h"
 
-@interface CoreDataTableViewController : UITableViewController <NSFetchedResultsControllerDelegate>
+@interface CICoreDataTableViewController : CITableViewController <NSFetchedResultsControllerDelegate>
 
 // The controller (this class fetches nothing if this is not set).
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -38,15 +39,13 @@
 @property NSManagedObjectContext *managedObjectContext;
 @property NSFetchRequest *fetchRequest;
 
-- (void)prepareForDisplay;
-
 - (void)pauseContextUpdates;
 
 - (void)resumeContextUpdates;
 
 @end
 
-@interface CoreDataTableViewController(AbstractMethods)
+@interface CICoreDataTableViewController (AbstractMethods)
 
 - (NSFetchRequest *)initialFetchRequest;
 

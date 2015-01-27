@@ -12,7 +12,7 @@ NSString *const ColumnOptionContentKey2 = @"ColumnOptionContentKey2";
 NSString *const ColumnOptionDesiredWidth = @"ColumnOptionDesiredWidth";
 NSString *const ColumnOptionHorizontalPadding = @"ColumnOptionHorizontalPadding";
 NSString *const ColumnOptionHorizontalInset = @"ColumnOptionHorizontalInset";
-
+NSString *const ColumnOptionTitleTextAttributes = @"ColumnOptionTitleTextAttributes";
 @implementation CITableViewColumn
 
 static int instanceIdCounter = 1;

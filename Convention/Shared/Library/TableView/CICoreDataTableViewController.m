@@ -5,17 +5,18 @@
 //  Copyright 2013 Stanford University. All rights reserved.
 //
 
-#import "CoreDataTableViewController.h"
+#import "CICoreDataTableViewController.h"
 #import "CurrentSession.h"
+#import "CITableViewCell.h"
 
-@interface CoreDataTableViewController ()
+@interface CICoreDataTableViewController ()
 
 @property BOOL pauseUpdates;
 @property NSMutableArray *pendingContextMerges;
 
 @end
 
-@implementation CoreDataTableViewController
+@implementation CICoreDataTableViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -24,6 +25,7 @@
 }
 
 - (void)prepareForDisplay {
+    [super prepareForDisplay];
     // use our own separate context so we can control merges from other context
     self.managedObjectContext = [CurrentSession mainQueueContext];
     self.fetchRequest = [self initialFetchRequest];
@@ -35,18 +37,7 @@
 
 - (void)resumeContextUpdates {
     self.pauseUpdates = NO;
-//    [self processMerges];
 }
-
-//- (void)processMerges {
-//    if (self.managedObjectContext) {
-//        while (!self.pauseUpdates && self.pendingContextMerges.count > 0) {
-//            NSNotification *notification = (NSNotification *) self.pendingContextMerges.firstObject;
-//            [self.pendingContextMerges removeObjectAtIndex:0];
-//            [self.managedObjectContext mergeChangesFromContextDidSaveNotification:notification];
-//        }
-//    }
-//}
 
 - (NSFetchRequest *)fetchRequest {
     return self.fetchedResultsController ? self.fetchedResultsController.fetchRequest : nil;
@@ -110,6 +101,10 @@
             [self.tableView reloadData];
         }
     }
+}
+
+- (id)objectAtIndexPath:(NSIndexPath *)indexPath {
+    return [self.fetchedResultsController objectAtIndexPath:indexPath];
 }
 
 #pragma mark - UITableViewDataSource

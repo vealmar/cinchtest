@@ -16,6 +16,11 @@
     return NO;
 }
 
+- (BOOL)hasErrors {
+    if (self.errors && self.errors.count > 0) return YES;
+    return NO;
+}
+
 - (NSAttributedString *)buildMessageSummary {
     return [EditableEntity buildMessageSummaryWithErrors:[self.errors valueForKey:@"message"]
                                             withWarnings:[self.warnings valueForKey:@"message"]];

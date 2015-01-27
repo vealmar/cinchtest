@@ -12,8 +12,6 @@
 #import "CINavViewManager.h"
 
 @interface CIOrderViewController : UIViewController <
-        UITableViewDataSource,
-        UITableViewDelegate,
         UITextViewDelegate,
         UIAlertViewDelegate,
         CIProductViewDelegate,

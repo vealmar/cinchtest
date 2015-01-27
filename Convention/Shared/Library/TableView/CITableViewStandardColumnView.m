@@ -22,9 +22,11 @@
     self = [super initColumn:column frame:frame];
     if (self) {
         self.primaryTextView = [[UILabel alloc] init];
+        self.primaryTextView.adjustsFontSizeToFitWidth = YES;
         [self addSubview:self.primaryTextView];
 
         self.secondaryTextView = [[UILabel alloc] init];
+        self.secondaryTextView.adjustsFontSizeToFitWidth = YES;
         [self addSubview:self.secondaryTextView];
 
         [self unhighlight];
@@ -33,7 +35,6 @@
             assert(false);
         }
     }
-
     return self;
 }
 
@@ -94,7 +95,7 @@
 -(void)useNoTextViews {
     self.primaryTextView.visible = NO;
     self.secondaryTextView.visible = NO;
-}
+}   
 
 -(NSString *)formatForDisplay:(id)data {
     if (ColumnTypeString == self.column.columnType) {
@@ -105,7 +106,7 @@
         return [NSString stringWithFormat:@"%@", data];
     } else if (ColumnTypeCurrency == self.column.columnType) {
         if ([data isKindOfClass:[NSNumber class]]) {
-            return [NSString stringWithFormat:@"$%@", [NumberUtil formatDollarAmountWithoutSymbol:((NSNumber *)data)]];
+            return [NSString stringWithFormat:@"%@", [NumberUtil formatDollarAmount:(NSNumber*)data]];
         }
     }
     return @"";
