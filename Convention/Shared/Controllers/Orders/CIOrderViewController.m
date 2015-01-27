@@ -200,8 +200,6 @@
         }
         self.orderDetailTableParentView.frame = CGRectMake(0, orderDetailTableOriginY, self.orderDetailTableParentView.frame.size.width, 630 - orderDetailTableOriginY);
 
-        self.customer.text = @"";
-        self.authorizer.text = @"";
         self.customer.text = [self.currentOrder getCustomerDisplayName];
         self.authorizer.text = order.authorizedBy != nil? order.authorizedBy : @"";
         
@@ -468,7 +466,7 @@
 }
 
 - (NSArray *)rightActionItems {
-    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf067" style:CIBarButtonStyleRoundButton handler:^(id sender) {
+    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf067" style:CIBarButtonStyleRoundButton orientation:(CIBarButtonOrientationRight) handler:^(id sender) {
         [self addNewOrder];
     }];
     return @[addItem];

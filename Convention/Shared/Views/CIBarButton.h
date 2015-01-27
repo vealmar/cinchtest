@@ -10,6 +10,11 @@ typedef NS_ENUM(NSInteger, CIBarButtonStyle) {
     CIBarButtonStyleTextButton
 };
 
+typedef NS_ENUM(NSInteger, CIBarButtonOrientation) {
+    CIBarButtonOrientationLeft,
+    CIBarButtonOrientationRight
+};
+
 @interface CIBarButton : UIButton
 
 @property (assign) BOOL active;
@@ -17,10 +22,12 @@ typedef NS_ENUM(NSInteger, CIBarButtonStyle) {
 
 + (UIBarButtonItem *)buttonItemWithText:(NSString *)string
                                   style:(CIBarButtonStyle)style
+                            orientation:(CIBarButtonOrientation)orientation
                                 handler:(void (^)(id sender))handler;
 
 - (id)initWithText:(NSString *)string
              style:(CIBarButtonStyle)style
+       orientation:(CIBarButtonOrientation)orientation
            handler:(void (^)(id sender))handler;
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor borderColor:(UIColor *)borderColor textColor:(UIColor *)textColor forControlState:(UIControlState)uiControlState;

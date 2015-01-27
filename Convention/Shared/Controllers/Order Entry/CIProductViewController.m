@@ -843,7 +843,7 @@
 }
 
 - (NSArray *)leftActionItems {
-    UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf00d" style:UIBarButtonItemStylePlain handler:^(id sender) {
+    UIBarButtonItem *cancelItem = [CIBarButton buttonItemWithText:@"\uf053" style:CIBarButtonStyleTextButton orientation:CIBarButtonOrientationLeft handler:^(id sender) {
         [self cancel];
     }];
     return @[cancelItem];
@@ -851,7 +851,7 @@
 
 - (NSArray *)rightActionItems {
     if (!self.filterBarButtonItem) {
-        CIBarButton *filterBarButton = [[CIBarButton alloc] initWithText:@"" style:CIBarButtonStyleRoundButton handler:^(id sender) {
+        CIBarButton *filterBarButton = [[CIBarButton alloc] initWithText:@"" style:CIBarButtonStyleRoundButton orientation:(CIBarButtonOrientationRight) handler:^(id sender) {
             [self toggleFilterView];
         }];
         NSDictionary *labelAttributes = [ThemeUtil navigationRightActionButtonTextAttributes];
@@ -864,7 +864,7 @@
         self.filterBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:filterBarButton];
     }
 
-    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf07a" style:CIBarButtonStyleRoundButton handler:^(id sender) {
+    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf07a" style:CIBarButtonStyleRoundButton orientation:(CIBarButtonOrientationRight) handler:^(id sender) {
         [self reviewCart];
     }];
     return @[addItem, self.filterBarButtonItem];

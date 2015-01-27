@@ -17,15 +17,17 @@
 @implementation CIBarButton
 
 - (id)initWithText:(NSString *)string
-              style:(CIBarButtonStyle)style
-            handler:(void (^)(id sender))handler {
-    return [self initWithFrame:CGRectMake(5.0, 0, 34.0, 44.0) text:string style:style handler:handler];
+             style:(CIBarButtonStyle)style
+       orientation:(CIBarButtonOrientation)orientation
+           handler:(void (^)(id sender))handler {
+    return [self initWithFrame:CGRectMake(0, 0, 44.0f, 44.0f) text:string style:style orientation:orientation handler:handler];
 }
 
 - (id)initWithFrame:(CGRect)frame
-                         text:(NSString *)string
-                        style:(CIBarButtonStyle)style
-                      handler:(void (^)(id sender))handler {
+               text:(NSString *)string
+              style:(CIBarButtonStyle)style
+        orientation:(CIBarButtonOrientation)orientation
+            handler:(void (^)(id sender))handler {
     self = [super initWithFrame:frame];
     if (self) {
         self.controlStateColors = [NSMutableDictionary dictionary];
@@ -39,40 +41,38 @@
         }
 
         [self bk_addEventHandler:handler forControlEvents:UIControlEventTouchUpInside];
-        [self initCircleView];
-        [self initLabel:string attributes:self.defaultLabelAttributes];
+        [self initCircleView:orientation];
+        [self initLabel:string attributes:self.defaultLabelAttributes orientation:orientation];
 
         [self setColorsForControlState:UIControlStateNormal];
         [self addSubview:self.circleView];
         [self addSubview:self.label];
 
         self.showsTouchWhenHighlighted = YES;
-//        button.imageEdgeInsets = UIEdgeInsetsMake(0, 5.0, 0, -5.0);
     }
 
     return self;
 }
 
 + (UIBarButtonItem *)buttonItemWithText:(NSString *)string
-                              style:(CIBarButtonStyle)style
-                            handler:(void (^)(id sender))handler {
-    CIBarButton *button = [[CIBarButton alloc] initWithText:string
-                                                       style:style
-                                                     handler:handler];
+                                  style:(CIBarButtonStyle)style
+                            orientation:(CIBarButtonOrientation)orientation
+                                handler:(void (^)(id sender))handler {
+    CIBarButton *button = [[CIBarButton alloc] initWithText:string style:style orientation:orientation handler:handler];
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithCustomView:button];
     return item;
 }   
 
-- (void)initCircleView {
-    UIView *circleView = [[UIView alloc] initWithFrame:CGRectMake(5.0, 5.0, 34.0, 34.0)];
+- (void)initCircleView:(CIBarButtonOrientation)orientation {
+    UIView *circleView = [[UIView alloc] initWithFrame:CGRectMake((orientation == CIBarButtonOrientationLeft ? 0 : 10.0f), 5.0f, 34.0f, 34.0f)];
     circleView.userInteractionEnabled = NO;
     circleView.layer.cornerRadius = 17.0;
     circleView.layer.borderWidth = 2.0;
     self.circleView = circleView;
 }
 
-- (void)initLabel:(NSString *)string attributes:(NSDictionary *)attributes {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(5.0, 0, 34.0, 44.0)];
+- (void)initLabel:(NSString *)string attributes:(NSDictionary *)attributes orientation:(CIBarButtonOrientation)orientation {
+    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake((orientation == CIBarButtonOrientationLeft ? 0 : 10.0f), 0, 34.0f, 44.0f)];
     label.userInteractionEnabled = NO;
     label.textAlignment = NSTextAlignmentCenter;
     label.attributedText = [[NSAttributedString alloc] initWithString:string attributes:attributes];

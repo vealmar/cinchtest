@@ -120,7 +120,7 @@
     self.tag = [order.orderId intValue];
 
     if (order.grossTotal) {
-        self.total.text = [NumberUtil formatDollarAmount:order.grossTotal];
+        self.total.text = [NumberUtil formatDollarAmount:[[OrderTotals alloc] initWithOrder:order].total];
     } else {
         self.total.text = @"Calculating...";
         

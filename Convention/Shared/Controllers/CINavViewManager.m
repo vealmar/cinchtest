@@ -7,6 +7,7 @@
 #import "CINavViewManager.h"
 #import "ThemeUtil.h"
 #import "CIAppDelegate.h"
+#import "CIBarButton.h"
 
 @interface CINavViewManager()
 
@@ -248,10 +249,10 @@
         return [self.delegate leftActionItems];
     } else {
         CIAppDelegate *appDelegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
-        UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf0c9" style:UIBarButtonItemStylePlain handler:^(id sender) {
+        UIBarButtonItem *menuItem = [CIBarButton buttonItemWithText:@"\uf0c9" style:CIBarButtonStyleTextButton orientation:CIBarButtonOrientationLeft handler:^(id sender) {
             [appDelegate.slideMenu showLeftMenu:YES];
         }];
-        [menuItem setTitleTextAttributes:[ThemeUtil navigationLeftActionButtonTextAttributes] forState:UIControlStateNormal];
+
         return @[ menuItem ];
     }
 }

@@ -468,7 +468,7 @@
 }
 
 - (NSArray *)leftActionItems {
-    UIBarButtonItem *menuItem = [[UIBarButtonItem alloc] bk_initWithTitle:@"\uf053" style:UIBarButtonItemStylePlain handler:^(id sender) {
+    UIBarButtonItem *menuItem = [CIBarButton buttonItemWithText:@"\uf053" style:CIBarButtonStyleTextButton orientation:CIBarButtonOrientationLeft handler:^(id sender) {
         if (!self.savingOrder) [self Cancel:nil];
     }];
 
@@ -476,7 +476,7 @@
 }
 
 - (NSArray *)rightActionItems {
-    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf00c" style:CIBarButtonStyleRoundButton handler:^(id sender) {
+    UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf00c" style:CIBarButtonStyleRoundButton orientation:(CIBarButtonOrientationRight) handler:^(id sender) {
         if (!self.savingOrder) [self finishOrder];
     }];
 
