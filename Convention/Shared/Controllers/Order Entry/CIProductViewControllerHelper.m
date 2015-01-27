@@ -130,34 +130,6 @@
     return YES;
 }
 
-- (void)sendSignature:(UIImage *)signature total:(NSNumber *)total orderId:(NSNumber *)orderId authToken:(NSString *)authToken successBlock:(void (^)())successBlock failureBlock:(void (^)(NSError *error))failureBlock view:(UIView *)view {
-    NSData *imageData = nil;
-//    @autoreleasepool {
-    imageData = UIImagePNGRepresentation(signature);
-//    }
-    if (imageData) {
-        MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
-        submit.removeFromSuperViewOnHide = YES;
-        submit.labelText = @"Saving signature";
-        [submit show:NO];
-
-        [[CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization] POST:kDBCAPTURESIG([orderId intValue]) parameters:@{ kAuthToken: authToken, @"total": total } constructingBodyWithBlock:^(id <AFMultipartFormData> formData) {
-            [formData appendPartWithFileData:imageData name:@"signature" fileName:@"signature" mimeType:@"image/png"];
-        } success:^(NSURLSessionDataTask *task, id JSON) {
-            [submit hide:NO];
-            if (successBlock) successBlock();
-        } failure:^(NSURLSessionDataTask *task, NSError *error) {
-            [submit hide:NO];
-            if (failureBlock) failureBlock(error);
-            NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-            NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
-            [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        }];
-    } else {
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"There was an error in capturing your signature. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-    }
-}
-
 - (NSArray *)sortProductsBySequenceAndInvtId:(NSArray *)productIdsOrProducts {
     NSArray *sortedArray;
     sortedArray = [productIdsOrProducts sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {

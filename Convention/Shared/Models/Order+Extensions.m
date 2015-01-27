@@ -11,11 +11,11 @@
 #import "Product.h"
 #import "Product+Extensions.h"
 #import "LineItem+Extensions.h"
-#import "OrderCoreDataManager.h"
+#import "OrderManager.h"
 #import "NilUtil.h"
 #import "config.h"
 #import "DateUtil.h"
-#import "OrderCoreDataManager.h"
+#import "OrderManager.h"
 #import "ShowCustomField.h"
 #import "ShowConfigurations.h"
 #import "CurrentSession.h"
@@ -39,7 +39,7 @@
         newOrder.custId = customer[kCustID];
         newOrder.customerName = customer[kBillName];
         newOrder.vendorId = [CurrentSession instance].vendorId;
-        [OrderCoreDataManager saveOrder:newOrder inContext:[CurrentSession mainQueueContext]];
+        [OrderManager saveOrder:newOrder inContext:[CurrentSession mainQueueContext]];
     }];
 
     return newOrder;
@@ -187,7 +187,7 @@
         lineItem = [[LineItem alloc] initWithProduct:product context:context];
         [self addLineItemsObject:lineItem];
         //@todo orders we should do this for all order saves
-        [OrderCoreDataManager saveOrder:self inContext:context];
+        [OrderManager saveOrder:self inContext:context];
     }
     
     return lineItem;
@@ -336,16 +336,21 @@
         return [lineItem asJsonReqParameter];
     }).unwrap;
 
-    NSDictionary *newOrder = [NSDictionary dictionaryWithObjectsAndKeys:[NilUtil objectOrNSNull:self.customerId], kOrderCustomerID,
-                                                                        [NilUtil objectOrNSNull:self.notes], kNotes,
-                                                                        [NilUtil objectOrNSNull:self.authorizedBy], kAuthorizedBy,
-                                                                        [NilUtil objectOrNSNull:self.status], kOrderStatus,
-                                                                        [NSArray arrayWithArray:lineItems], kOrderItems,
-                                                                        [NilUtil objectOrNSNull:self.purchaseOrderNumber], kOrderPoNumber,
-                                                                        [NilUtil objectOrNSNull:[DateUtil convertNSDateArrayToApiDateArray:self.shipDates]], kOrderShipDates,
-                                                                        [NSArray arrayWithArray:self.customFields], kCustomFields,
-                    nil];
-    return [NSDictionary dictionaryWithObjectsAndKeys:newOrder, kOrder, nil];
+    NSDictionary *newOrder = Underscore.dict([self asJsonReqParameterWithoutLines][kOrder]).extend(@{ kOrderItems : [NSArray arrayWithArray:lineItems] }).unwrap;
+    return @{kOrder : newOrder};
+}
+    
+- (NSDictionary *)asJsonReqParameterWithoutLines {
+    NSDictionary *newOrder = @{
+            kOrderCustomerID : [NilUtil objectOrNSNull:self.customerId],
+            kNotes : [NilUtil objectOrNSNull:self.notes],
+            kAuthorizedBy : [NilUtil objectOrNSNull:self.authorizedBy],
+            kOrderStatus : [NilUtil objectOrNSNull:self.status],
+            kOrderPoNumber : [NilUtil objectOrNSNull:self.purchaseOrderNumber],
+            kOrderShipDates : [NilUtil objectOrNSNull:[DateUtil convertNSDateArrayToApiDateArray:self.shipDates]],
+            kCustomFields : [NSArray arrayWithArray:self.customFields]
+    };
+    return @{kOrder : newOrder};
 }
 
 @end

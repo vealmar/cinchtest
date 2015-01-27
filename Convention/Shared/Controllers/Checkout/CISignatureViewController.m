@@ -8,6 +8,7 @@
 #import "NISignatureView.h"
 #import "CIProductViewControllerHelper.h"
 #import "NumberUtil.h"
+#import "OrderManager.h"
 
 @interface CISignatureViewController ()
 @property(nonatomic, strong) NSNumber *orderId;
@@ -41,15 +42,11 @@
 
 - (IBAction)submit:(UIButton *)sender {
     @try {
-        if (self.signatureView.drawnSignature) {
-            UIImage *signatureImage = [self.signatureView snapshot];
-            void (^successBlock)() = ^() {
-                [self signatureCaptured];
-            };
-            [self.helper sendSignature:signatureImage total:self.total orderId:self.orderId authToken:self.authToken successBlock:successBlock failureBlock:nil view:self.view];
-        } else {
+        void (^successBlock)() = ^() {
             [self signatureCaptured];
-        }
+        };
+
+        [OrderManager syncSignature:self.signatureView orderId:self.orderId showHUDAddedTo:self.view successBlock:successBlock failureBlock:nil];
     }
     @catch (NSException *exception) {
         NSLog(@"Exception occurred: %@, %@", exception, [exception userInfo]);

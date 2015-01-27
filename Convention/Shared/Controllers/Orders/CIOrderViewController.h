@@ -20,14 +20,11 @@
         CINavViewManagerDelegate> {
 }
 
-@property(nonatomic, strong) NSString *authToken;
 @property(weak, nonatomic) IBOutlet UILabel *NoOrdersLabel;
 
 // Order Detail
 @property(weak, nonatomic) IBOutlet UITextView *customer;
 @property(weak, nonatomic) IBOutlet UITextView *authorizer;
 @property(weak, nonatomic) IBOutlet UITextView *notes;
-
-- (void)logout;
 
 @end

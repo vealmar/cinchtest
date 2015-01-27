@@ -29,10 +29,4 @@
 
 - (NSString *)displayNameForVendor:(NSNumber *)vendorId;
 
-- (void)sendSignature:(UIImage *)signature
-                total:(NSNumber *)total
-              orderId:(NSNumber *)orderId
-            authToken:(NSString *)authToken
-         successBlock:(void (^)())successBlock
-         failureBlock:(void (^)(NSError *error))failureBlock view:(UIView *)view;
 @end

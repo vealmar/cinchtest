@@ -15,9 +15,8 @@
 
 @end
 
-@interface CICustomerInfoViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, PullToRefreshViewDelegate, UIGestureRecognizerDelegate>
+@interface CICustomerInfoViewController : UIViewController <UITextFieldDelegate, UIGestureRecognizerDelegate>
 @property(unsafe_unretained, nonatomic) IBOutlet UIView *tablelayer;
-@property(unsafe_unretained, nonatomic) IBOutlet UITableView *custTable;
 @property(strong, nonatomic) IBOutlet UIView *custView;
 
 @property(nonatomic, strong) NSArray *tableData;
@@ -26,14 +25,10 @@
 
 @property(nonatomic, strong) NSString *authToken;
 
-- (void)setCustomerData:(NSArray *)customerData;
-
 - (IBAction)back:(id)sender;
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 
 @property(nonatomic, assign) id <CICustomerDelegate> delegate;
-
-- (IBAction)submit:(id)sender;
 
 @end

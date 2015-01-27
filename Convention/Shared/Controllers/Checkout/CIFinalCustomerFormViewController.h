@@ -9,9 +9,11 @@
 #import <UIKit/UIKit.h>
 
 @class Order;
+@protocol CIFinalCustomerDelegate;
 
 @interface CIFinalCustomerFormViewController : UIViewController
 
 @property (strong, nonatomic) Order *order;
+@property(nonatomic, assign) id <CIFinalCustomerDelegate> delegate;
 
 @end

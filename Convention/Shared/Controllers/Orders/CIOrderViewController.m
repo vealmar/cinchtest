@@ -19,7 +19,7 @@
 #import "ThemeUtil.h"
 #import "CIBarButton.h"
 #import "CIOrdersTableViewController.h"
-#import "OrderCoreDataManager.h"
+#import "OrderManager.h"
 #import "Order+Extensions.h"
 #import "LineItem+Extensions.h"
 #import "NumberUtil.h"
@@ -192,7 +192,7 @@
         
         float orderDetailTableOriginY = self.orderDetailCustomerView.frame.origin.y + self.orderDetailCustomerView.frame.size.height + 8;
         if (config.enableOrderNotes && order.notes && order.notes.length > 0) {
-            self.orderDetailNotesLabel.text = order.notes;
+            self.orderDetailNotesLabel.text = [order.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
             self.orderDetailNotesView.hidden = NO;
             orderDetailTableOriginY += self.orderDetailNotesView.frame.size.height + 8;
         } else {
@@ -204,7 +204,7 @@
         self.authorizer.text = order.authorizedBy != nil? order.authorizedBy : @"";
         
         if (order && ![order.notes isKindOfClass:[NSNull class]]) {
-            self.notes.text = order.notes;
+            self.notes.text = [order.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         } else {
             self.notes.text = @"";
         }
@@ -267,7 +267,6 @@
     ci.modalPresentationStyle = UIModalPresentationFormSheet;
     ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     ci.delegate = self;
-    ci.authToken = self.authToken;
     [self presentViewController:ci animated:YES completion:nil];
 }
 
@@ -275,37 +274,14 @@
     [self startNewOrderForCustomer:info];
 }
 
-- (void)logout {
-    void (^clearSettings)(void) = ^{
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSettingsUsernameKey];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSettingsPasswordKey];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    };
-
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    if (self.authToken) parameters[kAuthToken] = self.authToken;
-
-    [[CinchJSONAPIClient sharedInstance] DELETE:kDBLOGOUT parameters:parameters success:^(NSURLSessionDataTask *task, id JSON) {
-        clearSettings();
-        [self dismissViewControllerAnimated:YES completion:nil];
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        [[[UIAlertView alloc] initWithTitle:@"Error"
-                                    message:[NSString stringWithFormat:@"There was an error logging out please try again! Error:%@", [error localizedDescription]]
-                                   delegate:nil
-                          cancelButtonTitle:@"OK"
-                          otherButtonTitles:nil] show];
-
-    }];
-}
-
 - (void)saveOrder {
     if (nil == self.currentOrder) {
         return;
     }
     __weak CIOrderViewController *weakSelf = self;
-    [OrderCoreDataManager syncOrder:self.currentOrder attachHudTo:self.view onSuccess:^(Order *order) {
+    [OrderManager syncOrder:self.currentOrder attachHudTo:self.view onSuccess:^{
         [weakSelf persistentOrderUpdated:weakSelf.currentOrder];
-    } onFailure:nil];
+    }             onFailure:nil];
 }
 
 - (void)requestDelete:(Order *)order {
@@ -341,13 +317,13 @@
 
     BOOL isSelectedOrder = self.currentOrder && [order.objectID isEqual:self.currentOrder.objectID];
     __weak CIOrderViewController *weakSelf = self;
-    [OrderCoreDataManager deleteOrder:order onSuccess:^{
+    [OrderManager deleteOrder:order onSuccess:^{
         if (isSelectedOrder) {
             weakSelf.orderDetailView.hidden = YES;
             weakSelf.currentOrder = nil;
         }
         [deleteHUD hide:NO];
-    } onFailure:^{
+    }               onFailure:^{
         [deleteHUD hide:NO];
     }];
 }
@@ -408,7 +384,7 @@
                 hud.labelText = @"Loading customer";
                 [hud show:NO];
 
-                [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMER([customerId stringValue]) parameters:@{ kAuthToken: self.authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+                [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMER([customerId stringValue]) parameters:@{ kAuthToken:[CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
                     [weakSelf launchCIProductViewController:NO order:orderObjectID customer:(NSDictionary *) JSON];
                     [hud hide:NO];
                 } failure:^(NSURLSessionDataTask *task, NSError *error) {

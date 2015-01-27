@@ -6,9 +6,10 @@
 #import <Foundation/Foundation.h>
 
 @class Order;
+@class NISignatureView;
 
 
-@interface OrderCoreDataManager : NSObject
+@interface OrderManager : NSObject
 
 + (NSFetchRequest *)buildOrderFetch:(NSString *)queryString
              inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
@@ -32,8 +33,21 @@
 // Saves order locally and then submits it to the server, syncing any returned changes.
 + (void)syncOrder:(Order *)order
       attachHudTo:(UIView *)view
-        onSuccess:(void (^)(Order *order))successBlock
+        onSuccess:(void (^)())successBlock
         onFailure:(void (^)())failureBlock;
+
+// Saves order locally and then submits only the order details to the server.
++ (void)syncOrderDetails:(Order *)order
+             attachHudTo:(UIView *)view
+               onSuccess:(void (^)())successBlock
+               onFailure:(void (^)())failureBlock;
+
+// Saves order signature to the server.
++ (void)syncSignature:(NISignatureView *)signatureView
+              orderId:(NSNumber *)orderId
+       showHUDAddedTo:(UIView *)view
+         successBlock:(void (^)())successBlock
+         failureBlock:(void (^)(NSError *error))failureBlock;
 
 // Saves order locally. May optionally perform this save asynchronously in a background thread if no insert/delete
 // operations are required.

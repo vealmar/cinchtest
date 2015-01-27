@@ -22,6 +22,10 @@
     return self;
 }
 
+- (NSString *)fieldKey {
+    return [NSString stringWithFormat:@"%@.%@", self.ownerType, self.fieldName];
+}
+
 - (BOOL)isStringValueType {
     return [self.valueType isEqualToString:@"String"];
 }

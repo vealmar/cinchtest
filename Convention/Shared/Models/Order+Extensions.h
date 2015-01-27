@@ -62,4 +62,6 @@
 
 - (NSDictionary *)asJsonReqParameter;
 
+- (NSDictionary *)asJsonReqParameterWithoutLines;
+
 @end

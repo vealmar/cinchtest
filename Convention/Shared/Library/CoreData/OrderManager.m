@@ -4,7 +4,7 @@
 //
 
 #import <Underscore.m/Underscore.h>
-#import "OrderCoreDataManager.h"
+#import "OrderManager.h"
 #import "JSONResponseSerializerWithErrorData.h"
 #import "NotificationConstants.h"
 #import "CoreDataUtil.h"
@@ -17,8 +17,9 @@
 #import "LineItem+Extensions.h"
 #import "Product.h"
 #import "MBProgressHUD.h"
+#import "NISignatureView.h"
 
-@implementation OrderCoreDataManager
+@implementation OrderManager
 
 + (NSFetchRequest *)buildOrderFetch:(NSString *)queryString
              inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
@@ -51,17 +52,17 @@
         updatedAt:(NSDate *)updatedAt
          onSuccess:(void (^)())successBlock {
     if (orderId && updatedAt) {
-        [OrderCoreDataManager sendRequest:@"HEAD"
-                                      url:kDBGETORDER(orderId)
-                               parameters:@{ kAuthToken : [CurrentSession instance].authToken}
-                             successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                                successBlock();
-                             }
-                             failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+        [OrderManager sendRequest:@"HEAD"
+                              url:kDBGETORDER(orderId)
+                       parameters:@{kAuthToken : [CurrentSession instance].authToken}
+                     successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                         successBlock();
+                     }
+                     failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
 
-                             }
-                                     view:nil
-                              loadingText:nil];
+                     }
+                             view:nil
+                      loadingText:nil];
     }
 }
 
@@ -163,87 +164,84 @@
     NSString *loadingText = existingOrder ? @"Restoring Order" : @"Retrieving Order";
     NSDictionary *parameters = @{ kAuthToken: [CurrentSession instance].authToken };
     
-    [OrderCoreDataManager sendRequest:@"GET"
-                                  url:kDBGETORDER(orderId)
-                           parameters:parameters
-                         successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                             dispatch_async(dispatch_get_main_queue(), ^{
-                                 [[CurrentSession mainQueueContext] performBlock:^{
-                                     Order *returnOrder;
-                                     if (existingOrder) {
-                                         returnOrder = existingOrder;
-                                         [existingOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
-                                     } else {
-                                         returnOrder = [[Order alloc] initWithJsonFromServer:JSON insertInto:[CurrentSession mainQueueContext]];
-                                     }
-                                     [[CurrentSession mainQueueContext] save:nil];
-                                     if (successBlock) successBlock(returnOrder);
-                                 }];
-                             });
-                         }
-                         failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                             //failure
-                             if (failureBlock) failureBlock();
-                         }
-                                 view:view
-                          loadingText:loadingText];
+    [OrderManager sendRequest:@"GET"
+                          url:kDBGETORDER(orderId)
+                   parameters:parameters
+                 successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                     dispatch_async(dispatch_get_main_queue(), ^{
+                         [[CurrentSession mainQueueContext] performBlock:^{
+                             Order *returnOrder;
+                             if (existingOrder) {
+                                 returnOrder = existingOrder;
+                                 [existingOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
+                             } else {
+                                 returnOrder = [[Order alloc] initWithJsonFromServer:JSON insertInto:[CurrentSession mainQueueContext]];
+                             }
+                             [[CurrentSession mainQueueContext] save:nil];
+                             if (successBlock) successBlock(returnOrder);
+                         }];
+                     });
+                 }
+                 failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                     //failure
+                     if (failureBlock) failureBlock();
+                 }
+                         view:view
+                  loadingText:loadingText];
     
 }
 
-+ (void)sy  ncOrder:(Order *)order
++ (void)syncOrder:(Order *)order
       attachHudTo:(UIView *)view
-        onSuccess:(void (^)(Order *order))successBlock
+        onSuccess:(void (^)())successBlock
         onFailure:(void (^)())failureBlock {
-
-    NSLog(@"Syncing Order");
-    
-    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:NO];
-    
-    submit.removeFromSuperViewOnHide = YES;
-    submit.labelText = @"Saving Order";
-    
-    NSString *method = [order.orderId intValue] > 0 ? @"PUT" : @"POST";
-    NSString *url = [order.orderId intValue] == 0 ? kDBORDER : kDBORDEREDITS([order.orderId intValue]);
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[order asJsonReqParameter]];
-    parameters[kAuthToken] = [CurrentSession instance].authToken;
+    NSString *url = [order.orderId intValue] == 0 ? kDBORDER : kDBORDEREDITS([order.orderId intValue]);
 
     NSManagedObjectID *orderObjectID = order.objectID;
-
     void(^saveBlock)(id) = ^(id JSON) {
         [[CurrentSession mainQueueContext] performBlock:^{
-            Order *contextOrder = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderObjectID error:nil];
-            if (contextOrder) {
-                [contextOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
-                contextOrder.inSync = YES;
-                [[CurrentSession mainQueueContext] save:nil];
+            if (JSON) {
+                Order *contextOrder = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderObjectID error:nil];
+                if (contextOrder) {
+                    [contextOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
+                    contextOrder.inSync = YES;
+                    [[CurrentSession mainQueueContext] save:nil];
+                }
             }
-            [submit hide:NO];
-            successBlock(contextOrder);
+            successBlock();
         }];
     };
 
-    if (order.hasNontransientChanges || !order.inSync) {
-        
-        [self sendRequest:method
-                      url:url
-               parameters:parameters
-             successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
-                 saveBlock(JSON);
-             }
-             failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
-                 if ((response.statusCode == 422 || response.statusCode == 409) && JSON) {
-                     saveBlock(JSON);
-                 } else {
-                     [submit hide:NO];
-                     if (failureBlock) failureBlock();
-                     NSLog(@"%@ Error Loading Orders: %@", [self class], [error localizedDescription]);
-                 }
-             }
-                     view:nil
-              loadingText:@"Saving order"];
+    [self syncOrderParameters:parameters order:order view:view url:url successBlock:saveBlock failureBlock:failureBlock];
+}
+
++ (void)syncOrderDetails:(Order *)order
+             attachHudTo:(UIView *)view
+               onSuccess:(void (^)())successBlock
+               onFailure:(void (^)())failureBlock {
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[order asJsonReqParameterWithoutLines]];
+    NSString *url = [order.orderId intValue] == 0 ? kDBORDER : kDBORDERDETAILEDITS([order.orderId intValue]);
+
+    void(^saveBlock)(id) = ^(id JSON) {
+        [[CurrentSession mainQueueContext] performBlock:^{
+            successBlock();
+        }];
+    };
+
+    [self syncOrderParameters:parameters order:order view:view url:url successBlock:saveBlock failureBlock:failureBlock];
+}
+
++ (void)syncSignature:(NISignatureView *)signatureView
+              orderId:(NSNumber *)orderId
+       showHUDAddedTo:(UIView *)view
+         successBlock:(void (^)())successBlock
+         failureBlock:(void (^)(NSError *error))failureBlock {
+    if (signatureView.drawnSignature) {
+        UIImage *signatureImage = [signatureView snapshot];
+        [self sendSignature:signatureImage orderId:orderId showHUDAddedTo:view successBlock:successBlock failureBlock:failureBlock];
     } else {
-        [submit hide:NO];
-        successBlock(order);
+        successBlock();
     }
 }
 
@@ -272,13 +270,13 @@
 
         NSLog(@"Saving Order Asynchronously");
         [[CurrentSession privateQueueContext] performBlock:^{
-            Order *asyncOrder = [OrderCoreDataManager load:@"Order" withId:order.objectID fromContext:[CurrentSession privateQueueContext]];
+            Order *asyncOrder = [OrderManager load:@"Order" withId:order.objectID fromContext:[CurrentSession privateQueueContext]];
             [asyncOrder setValuesForKeysWithDictionary:orderProperties];
 
             for (NSArray *lineItemIdAndProps in insertedLineProperties) {
                 NSManagedObjectID *objectID = [[NSNull null] isEqual:lineItemIdAndProps[0]] ? nil : lineItemIdAndProps[0];
                 NSDictionary *lineItemProperties = lineItemIdAndProps[1];
-                LineItem *asyncLineItem = [OrderCoreDataManager load:@"LineItem" withId:objectID fromContext:[CurrentSession privateQueueContext]];
+                LineItem *asyncLineItem = [OrderManager load:@"LineItem" withId:objectID fromContext:[CurrentSession privateQueueContext]];
                 [asyncLineItem setValuesForKeysWithDictionary:lineItemProperties];
                 if (!objectID && asyncLineItem.productId && (!asyncLineItem.product || ![asyncLineItem.productId isEqualToNumber:asyncLineItem.product.productId])) {
                     //in an insert, make sure we have the right product
@@ -295,7 +293,7 @@
         }];
     } else {
         if (threadsafeOrderOperationBlock) threadsafeOrderOperationBlock(order);
-        [OrderCoreDataManager saveOrder:order inContext:order.managedObjectContext];
+        [OrderManager saveOrder:order inContext:order.managedObjectContext];
         if (successBlock) successBlock();
     }
 }
@@ -402,6 +400,87 @@
     }];
 
     [task resume];
+}
+
++ (void)syncOrderParameters:(NSMutableDictionary *)parameters
+                      order:(Order *)order
+                       view:(UIView *)view
+                        url:(NSString *)url
+               successBlock:(void (^)(id JSON))successBlock
+               failureBlock:(void (^)())failureBlock {
+    NSLog(@"Syncing Order");
+
+    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:NO];
+
+    submit.removeFromSuperViewOnHide = YES;
+    submit.labelText = @"Saving Order";
+
+    NSString *method = [order.orderId intValue] > 0 ? @"PUT" : @"POST";
+    parameters[kAuthToken] = [CurrentSession instance].authToken;
+
+    void(^saveBlock)(id) = ^(id JSON) {
+        [[CurrentSession mainQueueContext] performBlock:^{
+            [submit hide:NO];
+            successBlock(JSON);
+        }];
+    };
+
+    if (order.hasNontransientChanges || !order.inSync) {
+
+        [self sendRequest:method
+                      url:url
+               parameters:parameters
+             successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
+                 saveBlock(JSON);
+             }
+             failureBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
+                 if ((response.statusCode == 422 || response.statusCode == 409) && JSON) {
+                     saveBlock(JSON);
+                 } else {
+                     [submit hide:NO];
+                     if (failureBlock) failureBlock();
+                     NSLog(@"%@ Error Syncing Order: %@", [self class], [error localizedDescription]);
+                 }
+             }
+                     view:nil
+              loadingText:@"Saving Order"];
+    } else {
+        [submit hide:NO];
+        successBlock(nil);
+    }
+}
+
+
++ (void)sendSignature:(UIImage *)signature
+              orderId:(NSNumber *)orderId
+       showHUDAddedTo:(UIView *)view
+         successBlock:(void (^)())successBlock
+         failureBlock:(void (^)(NSError *error))failureBlock {
+    NSData *imageData = nil;
+    imageData = UIImagePNGRepresentation(signature);
+    if (imageData) {
+        MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:YES];
+        submit.removeFromSuperViewOnHide = YES;
+        submit.labelText = @"Saving Signature";
+        [submit show:NO];
+
+        [[CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization] POST:kDBCAPTURESIG([orderId intValue])
+                                                                   parameters:@{ kAuthToken: [CurrentSession instance].authToken }
+                                                    constructingBodyWithBlock:^(id <AFMultipartFormData> formData) {
+            [formData appendPartWithFileData:imageData name:@"signature" fileName:@"signature" mimeType:@"image/png"];
+        } success:^(NSURLSessionDataTask *task, id JSON) {
+            [submit hide:NO];
+            if (successBlock) successBlock();
+        } failure:^(NSURLSessionDataTask *task, NSError *error) {
+            [submit hide:NO];
+            if (failureBlock) failureBlock(error);
+            NSInteger statusCode = [[error userInfo][AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+            NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
+            [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+        }];
+    } else {
+        [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"There was an error in capturing your signature. Please try again." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }
 }
 
 @end

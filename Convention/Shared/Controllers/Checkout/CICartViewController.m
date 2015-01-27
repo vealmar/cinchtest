@@ -16,7 +16,7 @@
 #import "ThemeUtil.h"
 #import "CIBarButton.h"
 #import "Order+Extensions.h"
-#import "OrderCoreDataManager.h"
+#import "OrderManager.h"
 #import "EditableEntity+Extensions.h"
 #import "OrderSubtotalsByDate.h"
 #import "OrderTotals.h"
@@ -130,10 +130,9 @@
         __weak CICartViewController *weakSelf = self;
         self.savingOrder = YES;
         self.order.status = @"pending";
-        [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
-//            weakSelf.order = order;
+        [OrderManager syncOrder:self.order attachHudTo:self.view onSuccess:^{
             [weakSelf refreshView];
-        } onFailure:^{
+        }             onFailure:^{
             weakSelf.savingOrder = NO;
         }];
     }
@@ -341,16 +340,15 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-
 - (void)finishOrder {
     if ([helper isOrderReadyForSubmission:self.order]) {
         __weak CICartViewController *weakSelf = self;
         self.order.status = @"complete";
         self.savingOrder = YES;
-        [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
+        [OrderManager syncOrderDetails:self.order attachHudTo:self.view onSuccess:^{
             [weakSelf finishOrderSyncComplete:weakSelf.order];
             weakSelf.savingOrder = NO;
-        } onFailure:^{
+        }             onFailure:^{
             weakSelf.savingOrder = NO;
         }];
     }

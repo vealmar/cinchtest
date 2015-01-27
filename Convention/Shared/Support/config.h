@@ -24,6 +24,7 @@
 #define kDBGETORDER(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%@.json",ShowID,ID]
 #define kDBORDER [NSString stringWithFormat:@"/vendor/shows/%@/orders.json",ShowID]
 #define kDBORDEREDITS(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%d.json",ShowID,ID]
+#define kDBORDERDETAILEDITS(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%d/details.json",ShowID,ID]
 #define kDBCAPTURESIG(ID)[NSString stringWithFormat:@"/vendor/orders/%d/signature.json",ID]
 
 #define kDBREPORTPRINTS [NSString stringWithFormat:@"/vendor/shows/%@/report_prints.json",ShowID]

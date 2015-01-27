@@ -14,8 +14,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CICustomerInfoViewController">
             <connections>
-                <outlet property="custTable" destination="34" id="40"/>
                 <outlet property="custView" destination="1" id="62"/>
+                <outlet property="customerTableViewController" destination="zTa-ak-i9R" id="gfr-bW-Ufr"/>
                 <outlet property="searchText" destination="87" id="88"/>
                 <outlet property="tablelayer" destination="81" id="82"/>
                 <outlet property="view" destination="1" id="67"/>
@@ -46,8 +46,8 @@
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <inset key="separatorInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             <connections>
-                                <outlet property="dataSource" destination="-1" id="35"/>
-                                <outlet property="delegate" destination="-1" id="36"/>
+                                <outlet property="dataSource" destination="zTa-ak-i9R" id="4Ly-VY-ClL"/>
+                                <outlet property="delegate" destination="zTa-ak-i9R" id="jH1-eD-Es5"/>
                             </connections>
                         </tableView>
                     </subviews>
@@ -99,6 +99,11 @@ start fresh with a new customer.</string>
                 <action selector="handleTap:" destination="-1" id="95"/>
             </connections>
         </tapGestureRecognizer>
+        <tableViewController id="zTa-ak-i9R" customClass="CICustomerTableViewController">
+            <connections>
+                <outlet property="view" destination="34" id="K0r-RW-4iN"/>
+            </connections>
+        </tableViewController>
     </objects>
     <resources>
         <image name="ico-add.png" width="36" height="36"/>

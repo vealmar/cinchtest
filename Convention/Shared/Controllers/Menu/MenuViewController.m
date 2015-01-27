@@ -15,6 +15,8 @@
 #import "NotificationConstants.h"
 #import "CurrentSession.h"
 #import "NilUtil.h"
+#import "config.h"
+#import "CinchJSONAPIClient.h"
 
 
 @interface MenuViewController ()
@@ -89,7 +91,7 @@
 
     [self.logoutButton bk_addEventHandler:^(id sender) {
         [self closeMenu];
-        [self.orderViewController logout];
+        [self logout];
     } forControlEvents:UIControlEventTouchUpInside];
 
     self.activeMenuLink = MenuLinkOrderWriter;
@@ -105,6 +107,29 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)logout {
+    void (^clearSettings)(void) = ^{
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSettingsUsernameKey];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSettingsPasswordKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    };
+
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    if ([CurrentSession instance].authToken) parameters[kAuthToken] = [CurrentSession instance].authToken;
+
+    [[CinchJSONAPIClient sharedInstance] DELETE:kDBLOGOUT parameters:parameters success:^(NSURLSessionDataTask *task, id JSON) {
+        clearSettings();
+        [self dismissViewControllerAnimated:YES completion:nil];
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        [[[UIAlertView alloc] initWithTitle:@"Error"
+                                    message:[NSString stringWithFormat:@"There was an error logging out please try again! Error:%@", [error localizedDescription]]
+                                   delegate:nil
+                          cancelButtonTitle:@"OK"
+                          otherButtonTitles:nil] show];
+
+    }];
 }
 
 -(void)updateTitles:(NSNotification *)notification {

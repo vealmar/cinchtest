@@ -30,9 +30,10 @@
 #import "CIBarButton.h"
 #import "Order+Extensions.h"
 #import "CurrentSession.h"
-#import "OrderCoreDataManager.h"
+#import "OrderManager.h"
 #import "OrderTotals.h"
 #import "LineItem+Extensions.h"
+#import "CIFinalCustomerFormViewController.h"
 
 @interface CIProductViewController () {
     NSInteger initialVendor;
@@ -41,7 +42,7 @@
     NSArray *vendorsData; //Vendors belonging to the same vendor group as the logged in vendors. These vendors are displayed in the bulletins drop down.
     NSDictionary *bulletins;
     CIProductViewControllerHelper *helper;
-    CIFinalCustomerInfoViewController *customerInfoViewController;
+    CIFinalCustomerFormViewController *customerInfoViewController;
 }
 @property CINavViewManager *navViewManager;
 @property BOOL isLoadingProducts;
@@ -370,7 +371,7 @@
         // The fetched results controller does watch for changes in the same context which aren't
         // saved to the store, but this only applies to the primary entity and not the children.
         // In this case, our fetch is on products, not lineitems.
-        [OrderCoreDataManager saveOrder:self.order inContext:self.order.managedObjectContext];
+        [OrderManager saveOrder:self.order inContext:self.order.managedObjectContext];
     }
     [self loadProductsForCurrentVendorAndBulletin];
     [self updateFilterButtonState];
@@ -538,22 +539,22 @@
         [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
             NSString *action = [alert buttonTitleAtIndex:buttonIndex];
             if ([action isEqualToString:@"Delete Order"]) {
-                [OrderCoreDataManager deleteOrder:weakSelf.order onSuccess:^{
+                [OrderManager deleteOrder:weakSelf.order onSuccess:^{
                     [self Return];
-                } onFailure:^{
+                }               onFailure:^{
                     // do nothing
                 }];
             } else if ([action isEqualToString:@"Undo Changes Since Last Sync"]) {
-                [OrderCoreDataManager fetchOrder:weakSelf.order.orderId attachHudTo:weakSelf.view onSuccess:^(Order *order) {
+                [OrderManager fetchOrder:weakSelf.order.orderId attachHudTo:weakSelf.view onSuccess:^(Order *order) {
                     weakSelf.order = order;
                     [weakSelf Return];
-                } onFailure:^{
+                }              onFailure:^{
                     // do nothing
                 }];
             } else if ([action isEqualToString:@"Save Locally & Resume Later"]) {
                 [[CurrentSession mainQueueContext] performBlock:^{
                     if (weakSelf.order.isComplete) weakSelf.order.status = @"pending";
-                    [OrderCoreDataManager saveOrder:weakSelf.order inContext:[CurrentSession mainQueueContext]];
+                    [OrderManager saveOrder:weakSelf.order inContext:[CurrentSession mainQueueContext]];
                     [weakSelf Return];
                 }];
             } else if ([action isEqualToString:@"Submit This Order Now"]) {
@@ -572,7 +573,7 @@
 - (void)loadNotesForm {
     if ([helper isOrderReadyForSubmission:self.order]) {
         if (customerInfoViewController == nil) {
-            customerInfoViewController = [[CIFinalCustomerInfoViewController alloc] init];
+            customerInfoViewController = [[CIFinalCustomerFormViewController alloc] init];
             customerInfoViewController.modalPresentationStyle = UIModalPresentationFormSheet;
             customerInfoViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
             customerInfoViewController.delegate = self;
@@ -663,10 +664,8 @@
 - (IBAction)submit:(id)sender {
     if ([helper isOrderReadyForSubmission:self.order]) {
         __weak CIProductViewController *weakSelf = self;
-        [OrderCoreDataManager syncOrder:self.order attachHudTo:self.view onSuccess:^(Order *order) {
-//            weakSelf.order = order;
+        [OrderManager syncOrderDetails:self.order attachHudTo:self.view onSuccess:^{
             [weakSelf reloadTable];
-//            [weakSelf updateTotals];
             [weakSelf updateErrorsView];
             [weakSelf Return];
         } onFailure:nil];
@@ -733,7 +732,7 @@
     if (self.order) {
         NSLog(@"Triggering Autosave...");
         BOOL hasInserts = self.order.managedObjectContext.insertedObjects.count > 0;
-        [OrderCoreDataManager saveOrder:self.order async:!hasInserts beforeSave:nil onSuccess:nil];
+        [OrderManager saveOrder:self.order async:!hasInserts beforeSave:nil onSuccess:nil];
     }
 }
 
@@ -802,7 +801,7 @@
     } else {
         [self.order removeZeroQuantityLines];
         [self.order calculateTotals];
-        [OrderCoreDataManager saveOrder:self.order inContext:self.order.managedObjectContext];
+        [OrderManager saveOrder:self.order inContext:self.order.managedObjectContext];
     }
 
     NSManagedObjectID *orderObjectID = self.order ? self.order.objectID : nil;

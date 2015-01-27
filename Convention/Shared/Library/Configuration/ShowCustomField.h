@@ -16,6 +16,8 @@
 @property NSArray *enumValues;
 @property int sequence;
 
+@property (readonly) NSString *fieldKey;
+
 - (id)init:(NSDictionary *)json;
 
 - (BOOL)isStringValueType;

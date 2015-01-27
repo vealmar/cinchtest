@@ -272,20 +272,8 @@
 }
 
 - (void)presentOrderViewController {
-//    static UIViewController *c;
-////    c = [[CIFinalCustomerInfoViewController alloc] init];
-//    c = [[CIFinalCustomerFormViewController alloc] init];
-//
-//    c.modalPresentationStyle = UIModalPresentationFormSheet;
-//    c.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-//    [self presentViewController:c animated:YES completion:nil];
-////    c.view.superview.bounds = CGRectMake(0, 0, 200, 200);
-////    c.view.superview.center = CGPointMake(roundf(self.view.center.x), roundf(self.view.center.y));
-//    return;
-
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"CIOrderViewController" bundle:nil];
     CIOrderViewController *masterViewController = [storyboard instantiateInitialViewController];
-    masterViewController.authToken = [CurrentSession instance].authToken;
 
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:masterViewController];
 

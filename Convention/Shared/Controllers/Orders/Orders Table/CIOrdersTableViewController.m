@@ -10,7 +10,7 @@
 #import "MBProgressHUD.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "Order.h"
-#import "OrderCoreDataManager.h"
+#import "OrderManager.h"
 #import "ShowConfigurations.h"
 #import "Order+Extensions.h"
 #import "LineItem+Extensions.h"
@@ -71,7 +71,7 @@
     self.isLoadingOrders = NO;
 
     if (!self.fetchRequest) {
-        self.fetchRequest = [OrderCoreDataManager buildOrderFetch:nil inManagedObjectContext:self.managedObjectContext];
+        self.fetchRequest = [OrderManager buildOrderFetch:nil inManagedObjectContext:self.managedObjectContext];
     } else {
         [self.tableView reloadData];
     }
@@ -83,7 +83,7 @@
 
 - (void)filterToQueryTerm:(NSString *)query {
     if (!self.isLoadingOrders) {
-        self.fetchRequest = [OrderCoreDataManager buildOrderFetch:query inManagedObjectContext:self.managedObjectContext];
+        self.fetchRequest = [OrderManager buildOrderFetch:query inManagedObjectContext:self.managedObjectContext];
     }
 }
 
@@ -221,20 +221,20 @@
             [weakSelf.pull finishedLoading];
         };
 
-        [OrderCoreDataManager reloadOrders:NO onSuccess:^{
+        [OrderManager reloadOrders:NO onSuccess:^{
             cleanup();
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (weakSelf && !weakSelf.fetchRequest) weakSelf.fetchRequest = [OrderCoreDataManager buildOrderFetch:nil inManagedObjectContext:weakSelf.managedObjectContext];
+                if (weakSelf && !weakSelf.fetchRequest) weakSelf.fetchRequest = [OrderManager buildOrderFetch:nil inManagedObjectContext:weakSelf.managedObjectContext];
             });
             [[CurrentSession privateQueueContext] performBlock:^{
                 if (selectOrderId) {
                     Order *reloadedOrderWithId = (Order *) [[CoreDataUtil sharedManager] fetchObject:@"Order"
-                                                                                       inContext:[CurrentSession privateQueueContext]
-                                                                                   withPredicate:[NSPredicate predicateWithFormat:@"orderId == %@", selectOrderId]];
+                                                                                           inContext:[CurrentSession privateQueueContext]
+                                                                                       withPredicate:[NSPredicate predicateWithFormat:@"orderId == %@", selectOrderId]];
                     if (reloadedOrderWithId) [weakSelf selectOrder:reloadedOrderWithId.objectID];
                 }
             }];
-        } onFailure:^{
+        }                onFailure:^{
             cleanup();
         }];
     } else {
