@@ -233,7 +233,7 @@
     if (self.dismissButton) {
         [self.dismissButton removeFromSuperview];
     }
-    [self.searchTextField resignFirstResponder];
+    if ([self.searchTextField isFirstResponder]) [self.searchTextField resignFirstResponder];
     [self setupNavBar:self.searchTextField.text];
     [self didEndSearch];
 }

@@ -12,7 +12,7 @@
 			<key>Key</key>
 			<string>host</string>
 			<key>DefaultValue</key>
-			<string>Camfour</string>
+			<string>Farris Brothers</string>
 		</dict>
 		<dict>
 			<key>Title</key>
@@ -26,7 +26,7 @@
 			<key>AutocorrectionType</key>
 			<string>No</string>
 			<key>DefaultValue</key>
-			<string>http://172.16.32.40</string>
+			<string>http://10.10.10.5</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>Key</key>
@@ -46,7 +46,7 @@
 			<key>Key</key>
 			<string>show</string>
 			<key>DefaultValue</key>
-			<string>35</string>
+			<string>1</string>
 			<key>IsSecure</key>
 			<false/>
 			<key>KeyboardType</key>
@@ -80,6 +80,6 @@
 		</dict>
 	</array>
 	<key>StringsTable</key>
-	<string>Root</string>
+	<string>d</string>
 </dict>
 </plist>

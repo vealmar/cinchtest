@@ -864,6 +864,7 @@
     }
 
     UIBarButtonItem *addItem = [CIBarButton buttonItemWithText:@"\uf07a" style:CIBarButtonStyleRoundButton orientation:(CIBarButtonOrientationRight) handler:^(id sender) {
+        [self.productTableViewController.tableView endEditing:YES];
         [self reviewCart];
     }];
     return @[addItem, self.filterBarButtonItem];

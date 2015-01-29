@@ -42,8 +42,8 @@
 @property CIFinalCustomerFormNavigationViewController *formNavigationController;
 @property (strong, nonatomic) UIView *contentView;
 @property (strong, nonatomic) XLFormViewController *formController;
-@property (weak, nonatomic) XLFormRowDescriptor *authorizedByRow;
-@property (weak, nonatomic) XLFormRowDescriptor *notesRow;
+@property (strong, nonatomic) XLFormRowDescriptor *authorizedByRow;
+@property (strong, nonatomic) XLFormRowDescriptor *notesRow;
 
 @end
 
@@ -113,6 +113,7 @@
             descriptor.selectorOptions = Underscore.array(showCustomField.enumValues).map(^id(NSString *enumValue) {
                 return [XLFormOptionsObject formOptionsObjectWithValue:enumValue displayText:enumValue];
             }).unwrap;
+            descriptor.required = YES;
         } else if (showCustomField.isDateValueType) {
             descriptor = [XLFormRowDescriptor formRowDescriptorWithTag:showCustomField.fieldKey
                                                                                     rowType:XLFormRowDescriptorTypeDate
@@ -194,7 +195,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-
+    
     self.authorizedByRow.value = self.order && self.order.authorizedBy ? self.order.authorizedBy : authorizedBy ? authorizedBy.value : @"";
     self.notesRow.value = self.order && self.order.notes ? self.order.notes : @"";
 
@@ -202,11 +203,14 @@
         XLFormRowDescriptor *descriptor = [self.formController.form formRowWithTag:showCustomField.fieldKey];
         NSString *value = [self.order customFieldValueFor:showCustomField];
         if (showCustomField.isEnumValueType) {
-            descriptor.value = [XLFormOptionsObject formOptionsObjectWithValue:value displayText:value];
+            if (value) descriptor.value = [XLFormOptionsObject formOptionsObjectWithValue:value displayText:value];
+            else descriptor.value = descriptor.selectorOptions.firstObject;
         } else {
-            descriptor.value = value;
+            descriptor.value = value ? value : @"";
         }
     });
+    
+    [self.formController.tableView reloadData];
 }
 
 - (void)back:(id)sender {
@@ -214,7 +218,7 @@
 }
 
 - (void)submit:(id)sender {
-    NSString *authorizedByText = self.authorizedByRow.value;
+    NSString *authorizedByText = self.authorizedByRow.value ? self.authorizedByRow.value : @"";
     [self updateSetting:@"authorizedBy" newValue:authorizedByText setupInfo:authorizedBy];
 
     self.order.notes = self.notesRow.value;

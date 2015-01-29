@@ -81,9 +81,9 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 }
 
 - (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId inCart:(BOOL)inCart queryTerm:(NSString *)query {
-    // todo not sure if we need to use productsearchqueue anymore, it may have solved a performance problem that no longer exists
-    //         [self.productSearchQueue search:productSearch];
-
+    //resign quantity first responder here if we are using non-shipdate style; we don't want a lineitem saving while we are changing the fetchresults
+    [self.tableView endEditing:YES];
+    
     NSFetchRequest *request = [CoreDataManager buildProductFetch:[ProductSearch searchFor:query inBulletin:bulletinId forVendor:vendorId limitResultSize:0 usingContext:self.managedObjectContext]];
     if (inCart && self.delegate.currentOrderForCell) {
         NSPredicate *inCartPredicate = [NSPredicate predicateWithFormat:@"ANY lineItems.order == %@ AND ANY lineItems.quantity != nil", self.delegate.currentOrderForCell.objectID];
