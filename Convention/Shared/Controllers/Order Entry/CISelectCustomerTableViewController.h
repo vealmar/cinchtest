@@ -6,10 +6,8 @@
 #import <Foundation/Foundation.h>
 #import "CICoreDataTableViewController.h"
 #import "PullToRefreshView.h"
+#import "CISelectRecordTableViewController.h"
 
-
-@interface CICustomerTableViewController : CICoreDataTableViewController <PullToRefreshViewDelegate>
-
-- (NSFetchRequest *)queryCustomers:(NSString *)queryString;
+@interface CISelectCustomerTableViewController : CISelectRecordTableViewController <PullToRefreshViewDelegate>
 
 @end

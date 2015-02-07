@@ -28,25 +28,26 @@ static __weak id currentFirstResponder;
 @end
 
 @implementation CIApplication
-
-- (BOOL)mayBecomeFirstResponder {
-    if (![self isFirstResponder]) {
-        [self becomeFirstResponder];
-    }
-    return [self isFirstResponder];
-}
-
-- (BOOL)canBecomeFirstResponder {
-    return YES;
-}
-
-- (BOOL)becomeFirstResponder {
-    return NO;
-}
-
-- (NSArray *)keyCommands {
-    return [CIApplication allKeys];
-}
+//
+//- (BOOL)mayBecomeFirstResponder {
+//    if (![self isFirstResponder]) {
+//        [self becomeFirstResponder];
+//    }
+//    return [self isFirstResponder];
+//}
+//
+//- (BOOL)canBecomeFirstResponder {
+////    return YES;
+//    return NO;
+//}
+//
+//- (BOOL)becomeFirstResponder {
+//    return NO;
+//}
+//
+//- (NSArray *)keyCommands {
+//    return [CIApplication allKeys];
+//}
 
 + (NSArray *)allKeys {
     static NSArray *keys;

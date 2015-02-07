@@ -65,6 +65,7 @@
 #define kVendorUpdatedAt @"updated_at"
 #define kVendorUsername @"username"
 #define kVendorVendID @"vendid"
+#define kVendorGroupName @"groupname"
 #define kVendorID @"id"
 
 #define kVendorGroupID @"vendorgroup_id"
@@ -156,6 +157,7 @@
 #define kCustomerEmail @"email"
 #define kCustomerInitialShow @"initial_show"
 #define kCustomerStores @"stores"
+#define kCustomerDefaultShippingAddressSummary @"default_shipping_address_summary"
 
 #define kBulletinId @"id"
 #define kBulletinName @"name"

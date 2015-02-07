@@ -24,6 +24,7 @@
 #import "MenuViewController.h"
 #import "CurrentSession.h"
 #import "NotificationConstants.h"
+#import "VendorDataLoader.h"
 
 
 @implementation CIViewController {
@@ -36,7 +37,7 @@
 @synthesize password;
 @synthesize error;
 @synthesize authToken;
-@synthesize vendorInfo;
+@synthesize userInfo;
 @synthesize lblVersion;
 @synthesize managedObjectContext;
 #pragma mark - View lifecycle
@@ -46,13 +47,13 @@
     loginBg.image = [[ShowConfigurations instance] loginScreen];
     originalBounds = self.view.bounds;
     authToken = nil;
-    self.vendorInfo = nil;
+    self.userInfo = nil;
 }
 
 - (void)viewDidUnload {
     [self setEmail:nil];
     [self setPassword:nil];
-    [self setVendorInfo:nil];
+    [self setUserInfo:nil];
     [self setError:nil];
     [self setLblVersion:nil];
     [super viewDidUnload];
@@ -73,19 +74,14 @@
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productLoadComplete) name:ProductsLoadedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(customerLoadComplete) name:CustomersLoadedNotification object:nil];
 
     [super viewWillAppear:animated];
-
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     // unregister for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:CustomersLoadedNotification object:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -118,11 +114,15 @@
         [loginHud hide:NO];
         if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
             authToken = [JSON objectForKey:kAuthToken];
-            vendorInfo = [NSDictionary dictionaryWithDictionary:JSON];
+            userInfo = [NSDictionary dictionaryWithDictionary:JSON];
             [CurrentSession instance].authToken = authToken;
-            [CurrentSession instance].vendorInfo = vendorInfo;
-            [[CurrentSession instance] dispatchSessionDidChange];
-            [self loadCustomers];
+            [CurrentSession instance].userInfo = userInfo;
+
+            __weak CIViewController *weakSelf = self;
+            [VendorDataLoader load:[CurrentSession instance] inView:self.view onComplete:^{
+                [[CurrentSession instance] dispatchSessionDidChange];
+                [weakSelf presentOrderViewController];
+            }];
         }
     } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
         id JSON = apiError.userInfo[JSONResponseSerializerWithErrorDataKey];
@@ -138,136 +138,6 @@
             [[[UIAlertView alloc] initWithTitle:@"Error" message:@"An unknown error occurred. Please try login again."
                                        delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         }
-    }];
-}
-
-- (void)loadCustomers {
-    __weak MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.removeFromSuperViewOnHide = YES;
-    hud.labelText = @"Loading customers";
-    [hud show:NO];
-
-    __weak CIViewController *weakSelf = self;
-    [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMERS parameters:@{ kAuthToken: authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-        [[CurrentSession privateQueueContext] performBlock:^{
-            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Customer" withContext:[CurrentSession privateQueueContext]];
-
-            if (JSON && ([(NSArray *) JSON count] > 0)) {
-                NSArray *customers = (NSArray *) JSON;
-                for (NSDictionary *customer in customers) {
-                    [[CurrentSession privateQueueContext] insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:[CurrentSession privateQueueContext]]];
-                }
-                [[CurrentSession privateQueueContext] save:nil];
-            }
-            [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (hud) [hud hide:NO];
-            });
-            [weakSelf loadProducts];
-        }];
-    } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
-        [[CurrentSession privateQueueContext] performBlock:^{
-            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Customer" withContext:[CurrentSession privateQueueContext]];
-        }];
-        [hud hide:NO];
-        [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        NSLog(@"%@ Error loading customers: %@", [self class], [apiError localizedDescription]);
-    }];
-}
-
-- (void)customerLoadComplete {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:CustomersLoadedNotification object:nil];
-}
-
-- (void)loadProducts {
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.removeFromSuperViewOnHide = YES;
-    hud.labelText = @"Loading products";
-    [hud show:NO];
-
-    void (^successBlock)() = ^() { };
-
-    void (^failureBlock)() = ^() {
-        [hud hide:NO];
-    };
-
-    [CoreDataManager reloadProducts:self.authToken
-                      vendorGroupId:[self.vendorInfo objectForKey:kVendorGroupID]
-                              async:YES
-                  usingQueueContext:[CurrentSession privateQueueContext]
-                          onSuccess:successBlock
-                          onFailure:failureBlock];
-}
-
-- (void)productLoadComplete {
-    __weak CIViewController *weakSelf = self;
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[MBProgressHUD HUDForView:weakSelf.view] hide:NO];
-        [weakSelf loadVendors];
-    });
-}
-
-- (void)loadVendors {
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.removeFromSuperViewOnHide = YES;
-    hud.labelText = @"Loading vendors";
-    [hud show:NO];
-
-    NSNumber *vendorGroupId = (NSNumber *) [NilUtil nilOrObject:[vendorInfo objectForKey:kVendorGroupID]];
-    if (vendorGroupId) {
-        [[CinchJSONAPIClient sharedInstance] GET:kDBGETVENDORSWithVG parameters:@{ kAuthToken: authToken, kVendorGroupID: vendorGroupId } success:^(NSURLSessionDataTask *task, id JSON) {
-            [[CurrentSession mainQueueContext] performBlockAndWait:^{
-                [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Vendor" withContext:[CurrentSession mainQueueContext]];
-
-                if (JSON) {
-                    NSArray *results = [NSArray arrayWithArray:JSON];
-                    NSArray *vendors = results.count > 0 ? [[results objectAtIndex:0] objectForKey:@"vendors"] : [NSArray array];
-                    for (NSDictionary *vendor in vendors) {
-                        [[CurrentSession mainQueueContext] insertObject:[[Vendor alloc] initWithVendorFromServer:vendor context:[CurrentSession mainQueueContext]]];
-                    }
-                    [[CurrentSession mainQueueContext] save:nil];
-                    [hud hide:NO];
-                    [self loadBulletins];
-                }
-            }];
-        } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
-            [[CurrentSession mainQueueContext] performBlockAndWait:^{
-                [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Vendor" withContext:[CurrentSession mainQueueContext]];
-            }];
-            [hud hide:NO];
-            [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-            NSLog(@"%@ Error loading vendors: %@", [self class], [apiError localizedDescription]);
-        }];
-    }
-}
-
-- (void)loadBulletins {
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.removeFromSuperViewOnHide = YES;
-    hud.labelText = @"Loading bulletins";
-    [hud show:NO];
-
-    [[CinchJSONAPIClient sharedInstance] GET:kDBGETBULLETINS parameters:@{ kAuthToken: authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-        [[CurrentSession mainQueueContext] performBlockAndWait:^{
-            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Bulletin" withContext:[CurrentSession mainQueueContext]];
-
-            if (JSON) {
-                for (NSDictionary *bulletin in JSON) {
-                    [[CurrentSession mainQueueContext] insertObject:[[Bulletin alloc] initWithBulletinFromServer:bulletin context:[CurrentSession mainQueueContext]]];
-                }
-                [[CurrentSession mainQueueContext] save:nil];
-            }
-            [hud hide:NO];
-            [self presentOrderViewController];
-        }];
-    } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
-        [[CurrentSession mainQueueContext] performBlockAndWait:^{
-            [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Bulletin" withContext:[CurrentSession mainQueueContext]];
-        }];
-        [hud hide:NO];
-        [[[UIAlertView alloc] initWithTitle:@"Error" message:[apiError localizedDescription] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        NSLog(@"%@ Error loading bulletins: %@", [self class], [apiError localizedDescription]);
     }];
 }
 

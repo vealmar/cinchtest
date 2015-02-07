@@ -7,6 +7,7 @@
 
 typedef enum {
     MenuLinkOrderWriter,
+    MenuLinkChangeVendor,
     MenuLinkProducts,
     MenuLinkCustomers,
     MenuLinkDiscountGuide,

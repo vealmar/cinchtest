@@ -262,9 +262,7 @@
 
 - (void)addNewOrder {
     [self.navViewManager clearSearch]; // our search uses a contains query, this cannot be used in conjunction with NSFetchResultsController when doing inserts/deletes
-    CICustomerInfoViewController *ci = [[CICustomerInfoViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
-    ci.modalPresentationStyle = UIModalPresentationFormSheet;
-    ci.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    CISelectCustomerViewController *ci = [[CISelectCustomerViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
     ci.delegate = self;
     [self presentViewController:ci animated:YES completion:nil];
 }

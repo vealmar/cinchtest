@@ -16,8 +16,8 @@
         <attribute name="billname" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="custid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="customer_id" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="defaultShippingAddressSummary" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="stores" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="EditableEntity" representedClassName="EditableEntity" isAbstract="YES" syncable="YES">
         <relationship name="errors" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Error" syncable="YES"/>
@@ -138,6 +138,7 @@
         <attribute name="dept" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="dlybill" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="email" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="groupName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="hideshprice" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="hidewsprice" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="initial_show" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
@@ -162,6 +163,6 @@
         <element name="Order" positionX="-263" positionY="99" width="128" height="388"/>
         <element name="Product" positionX="-119" positionY="18" width="128" height="495"/>
         <element name="SetupInfo" positionX="18" positionY="-90" width="128" height="75"/>
-        <element name="Vendor" positionX="196" positionY="-99" width="128" height="360"/>
+        <element name="Vendor" positionX="196" positionY="-99" width="128" height="373"/>
     </elements>
 </model>

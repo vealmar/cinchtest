@@ -46,6 +46,12 @@ static MenuLinkMetadataProvider *provider = nil;
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
+        m.menuLink = MenuLinkChangeVendor;
+        m.iconCharacter = @"\ue010";
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s", @"Change Vendor"];
+        [builder addObject:m];
+
+        m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkProducts;
         m.iconCharacter = @"\ue203";
         m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.productCount, @"Products"];

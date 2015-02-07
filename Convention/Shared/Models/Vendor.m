@@ -12,6 +12,7 @@
 
 @implementation Vendor
 
+@dynamic groupName;
 @dynamic vendorId;
 @dynamic email;
 @dynamic company;
@@ -37,6 +38,7 @@
 - (id)initWithVendorFromServer:(NSDictionary *)vendorFromServer context:(NSManagedObjectContext *)context {
     self = [super initWithEntity:[NSEntityDescription entityForName:@"Vendor" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
     if (self) {
+        self.groupName = (NSString *) vendorFromServer[kVendorGroupName];
         self.vendorId = (NSNumber *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorID]];
         self.email = (NSString *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorEmail]];
         self.company = (NSString *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorCompany]];

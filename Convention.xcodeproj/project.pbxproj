@@ -29,7 +29,7 @@
 		6DDC913413C1FC0477AFBEA5 /* Detail2.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9FAB13E136E8F7FEB1A3 /* Detail2.png */; };
 		6DDC913A3DECF793C4D605D9 /* customer-cancelout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC95AA2A984A6674D3916C /* customer-cancelout.png */; };
 		6DDC9166E05CACAA2BDFE1AF /* CIApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC902243CAA66C98A7D1EA /* CIApplication.m */; };
-		6DDC9167DB349616DFED9ABE /* CICustomerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9BDD8302D0984F169761 /* CICustomerTableViewController.m */; };
+		6DDC9167DB349616DFED9ABE /* CISelectCustomerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9BDD8302D0984F169761 /* CISelectCustomerTableViewController.m */; };
 		6DDC91683800E384B47955FE /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9E6BF85018452D08D3BE /* SettingsManager.m */; };
 		6DDC918D13B07B6D4A580E57 /* order_template_areaRIGHT.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9DF89A62D4B5C5B7CC2D /* order_template_areaRIGHT.png */; };
 		6DDC918D955F5D3035430E95 /* orangebutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9B0F1CCA6B068E19A151 /* orangebutton.png */; };
@@ -42,6 +42,7 @@
 		6DDC92102889DA6CFCB2E7ED /* deletein.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9C9A3548F1E8C66FFB19 /* deletein.png */; };
 		6DDC9227037013689DCB27C9 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC968C21B202D075591F13 /* MenuViewController.m */; };
 		6DDC923E446CEF97D100A10D /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9D51E09668770848DFA1 /* OpenSans-Bold.ttf */; };
+		6DDC924A7420CAEB6729F0CE /* CISelectRecordTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9119A3EBCD835C43D5D2 /* CISelectRecordTableViewController.m */; };
 		6DDC924A7A1A913FBFAE7BAC /* printbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9B446F4D960E38446A94 /* printbutton.png */; };
 		6DDC92577909154C834B3BCF /* VendorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9A9020D8B94E9ED41731 /* VendorViewController.xib */; };
 		6DDC9278B2C2E21DE60D492B /* left_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9EB204F420681AE3D8FB /* left_arrow.png */; };
@@ -88,7 +89,7 @@
 		6DDC9550B216826F6B46D572 /* EditableEntity+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC96229CBFE4D95F8485FD /* EditableEntity+Extensions.m */; };
 		6DDC955E336312BFBD92F5C5 /* printin.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC94761C17CF4BAFE7995B /* printin.png */; };
 		6DDC958D72F558327FA45A19 /* ReachabilityDelegation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC923E1DB8B98106EBBFFC /* ReachabilityDelegation.m */; };
-		6DDC95B18B894B04EE3F114E /* CICustomerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC91E4CBCE10A80C9B66D6 /* CICustomerInfoViewController.m */; };
+		6DDC95B18B894B04EE3F114E /* CISelectCustomerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC91E4CBCE10A80C9B66D6 /* CISelectCustomerViewController.m */; };
 		6DDC95BE23A9C1EBD4A1CD62 /* NSNumber+Boost.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9A03062E0C38AE05A769 /* NSNumber+Boost.m */; };
 		6DDC95E10F9DA00CDC26B22B /* CIAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC96543B5FF82D6E108AA4 /* CIAppDelegate.m */; };
 		6DDC95F90AE8FEBCEFF72C91 /* calendar.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC964A15CE0108D27BCFBD /* calendar.png */; };
@@ -114,6 +115,7 @@
 		6DDC970AE75B07563C126618 /* ShowCustomField.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9FA9C637030F992AC114 /* ShowCustomField.m */; };
 		6DDC971817BF56A69E0A0683 /* save2out.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC92F069F60AF41F9148C3 /* save2out.png */; };
 		6DDC971885D8CE3104F7962B /* CICalendarViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9631C42BE6062B874077 /* CICalendarViewController.xib */; };
+		6DDC9725EC896FFCD488AC58 /* CISelectVendorTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9FFD887C3B6B9A7B6F1D /* CISelectVendorTableViewController.m */; };
 		6DDC973439A12AB922E399B4 /* itemcode.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9B5C54AB10C64390D0C6 /* itemcode.png */; };
 		6DDC974CDC666FA439F5DE27 /* OrdersBg.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC942B730B3D615F6E239E /* OrdersBg.png */; };
 		6DDC976A8B07AD1F3C48F3D6 /* CIShipDateTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9F5F5555960E816DA80E /* CIShipDateTableViewCell.m */; };
@@ -192,6 +194,7 @@
 		6DDC9BF6896D9358FAA715CE /* PullToRefreshView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9390BB7CAF3B5E25A0A6 /* PullToRefreshView.m */; };
 		6DDC9C052CCB2755347FDD33 /* left-arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9AD08A6421DD43170D79 /* left-arrow@2x.png */; };
 		6DDC9C1CC75A34C21B751875 /* LaunchViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC963F141FE4EE00B2C933 /* LaunchViewController.storyboard */; };
+		6DDC9C4F26F522F946875EA2 /* VendorDataLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9C674103A588EA7E804F /* VendorDataLoader.m */; };
 		6DDC9C63A47A83096376C62F /* CartViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9D2324E841B008F64F66 /* CartViewCell.m */; };
 		6DDC9C7F22DE14BEF62690B1 /* CIOrderViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9AC079181C953CA680FF /* CIOrderViewController.storyboard */; };
 		6DDC9C8C46BA42FD8902B635 /* NumberUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9910746F998E77CFF1A5 /* NumberUtil.m */; };
@@ -207,6 +210,7 @@
 		6DDC9D305F0A7D2FEB927D73 /* Customer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC986552B48CFFFCDD4A0C /* Customer.m */; };
 		6DDC9D36204C87E51247C067 /* CIProductViewControllerHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC978C9B9B7D7FC6F6DAE3 /* CIProductViewControllerHelper.m */; };
 		6DDC9D3D8CFBF2021A71B3F8 /* DDCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC974E367C51D9DC90BED6 /* DDCalendarView.m */; };
+		6DDC9D4BC74112A902B20C23 /* CISelectVendorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC92890BD9B42D58DD898A /* CISelectVendorViewController.m */; };
 		6DDC9D74AB65683EF372DB37 /* CIOrderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9B0550A8CC25835E9E8B /* CIOrderCell.m */; };
 		6DDC9D7B4793FFB4BE0669F7 /* LineItem+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC94FD1E839F8A38BC0EFF /* LineItem+Extensions.m */; };
 		6DDC9D83EDF05B6814DDA4D5 /* EditButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC97263327406FFCEE3143 /* EditButton.png */; };
@@ -215,6 +219,7 @@
 		6DDC9DC36225DE6572F745CC /* FarrisCartViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9FE4119B8E46DC86C044 /* FarrisCartViewCell.xib */; };
 		6DDC9DC379688BF9D7D0742E /* CICoreDataTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC92ABC26C7EAD497C0729 /* CICoreDataTableViewController.m */; };
 		6DDC9DC39255CE1C3A2D2DEF /* NilUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9A1ED44517E615A545A7 /* NilUtil.m */; };
+		6DDC9DCCB013A4DF28DD2017 /* CISelectRecordViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC908359FFB6447A5C28F3 /* CISelectRecordViewController.m */; };
 		6DDC9DD56296AA3D69F9CBD7 /* GroupedObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC95A02D88F905DC0E7CA6 /* GroupedObject.m */; };
 		6DDC9DDEBA61797E6E161262 /* neworderin.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9681A7E74860AAC85520 /* neworderin.png */; };
 		6DDC9DE2F561BB3ACAC7F865 /* CICartViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9730DF139B2471ABE7FB /* CICartViewController.m */; };
@@ -332,11 +337,13 @@
 		6DDC903627868FD10FEC1A5B /* ProductCellDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductCellDelegate.h; sourceTree = "<group>"; };
 		6DDC903CFA23CC7BF6756E6B /* StringManipulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringManipulation.h; sourceTree = "<group>"; };
 		6DDC903E8CC21397AF90E0A3 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = Convention/en.lproj/CIViewController_iPad.xib; sourceTree = SOURCE_ROOT; };
+		6DDC90406C5920C7A257716A /* CISelectRecordTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISelectRecordTableViewController.h; sourceTree = "<group>"; };
 		6DDC9041AD870E0BFD8A6E8A /* CIOrderCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CIOrderCell.xib; sourceTree = "<group>"; };
 		6DDC904A4519DAD64F1B422A /* CI-Logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "CI-Logo.png"; sourceTree = "<group>"; };
 		6DDC905A126D9C4A0A9A522D /* CISignatureViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CISignatureViewController.xib; sourceTree = "<group>"; };
 		6DDC90672ED287E72E8D820C /* left-arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left-arrow.png"; sourceTree = "<group>"; };
 		6DDC907918406FAE0130E99C /* app_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = app_bg.png; sourceTree = "<group>"; };
+		6DDC908359FFB6447A5C28F3 /* CISelectRecordViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectRecordViewController.m; sourceTree = "<group>"; };
 		6DDC90879AD60087DE92EBF8 /* CICalendarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICalendarViewController.m; sourceTree = "<group>"; };
 		6DDC9088BE47DCCF30784B99 /* DateRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateRange.h; sourceTree = "<group>"; };
 		6DDC90983643D88775E22845 /* FarrisOrderDetail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisOrderDetail.png; sourceTree = "<group>"; };
@@ -346,7 +353,9 @@
 		6DDC910E06ECAA1BC5B9FD96 /* CICartViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICartViewController.h; sourceTree = "<group>"; };
 		6DDC910E102FAC9E3761E44D /* bump_build_on_archive.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = bump_build_on_archive.sh; sourceTree = "<group>"; };
 		6DDC91127AEDB6CD32CCB0D0 /* submitorderbutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = submitorderbutton.png; sourceTree = "<group>"; };
+		6DDC91159113771191DCC0F7 /* CISelectVendorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISelectVendorViewController.h; sourceTree = "<group>"; };
 		6DDC9115AF65DFFE931AC705 /* VendorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VendorViewController.m; sourceTree = "<group>"; };
+		6DDC9119A3EBCD835C43D5D2 /* CISelectRecordTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectRecordTableViewController.m; sourceTree = "<group>"; };
 		6DDC9140344B33B671190909 /* SynchronousRequestUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SynchronousRequestUtil.h; sourceTree = "<group>"; };
 		6DDC9159677E2822C1C7D93A /* LaunchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchViewController.m; sourceTree = "<group>"; };
 		6DDC9163F03F2EED361C0528 /* ProductCart.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart.xcdatamodel; sourceTree = "<group>"; };
@@ -358,7 +367,7 @@
 		6DDC919CF73E411F6A0A10E1 /* cart-cancelin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cart-cancelin.png"; sourceTree = "<group>"; };
 		6DDC91B0DA4F52DCF2A5302F /* CITableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CITableViewController.m; sourceTree = "<group>"; };
 		6DDC91BC49FBF08AE6BF71CB /* NSDate+Boost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+Boost.h"; sourceTree = "<group>"; };
-		6DDC91E4CBCE10A80C9B66D6 /* CICustomerInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICustomerInfoViewController.m; sourceTree = "<group>"; };
+		6DDC91E4CBCE10A80C9B66D6 /* CISelectCustomerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectCustomerViewController.m; sourceTree = "<group>"; };
 		6DDC91EBC7D135BCE06A85A6 /* Error+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Error+Extensions.m"; sourceTree = "<group>"; };
 		6DDC91F45EF4A3EF5672D8D6 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
 		6DDC920F635806F4C6CC71FC /* Detail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Detail.png; sourceTree = "<group>"; };
@@ -374,6 +383,7 @@
 		6DDC925AA37F4194F15EE762 /* FarrisBrosWhiteLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = FarrisBrosWhiteLogo.png; sourceTree = "<group>"; };
 		6DDC92718F5028A099AB3E63 /* NilUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NilUtil.h; sourceTree = "<group>"; };
 		6DDC927A9B91504FC080B3FA /* CITableViewColumn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableViewColumn.h; sourceTree = "<group>"; };
+		6DDC92890BD9B42D58DD898A /* CISelectVendorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectVendorViewController.m; sourceTree = "<group>"; };
 		6DDC92940191A2A27FFA423E /* Bulletin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Bulletin.m; sourceTree = "<group>"; };
 		6DDC92ABC26C7EAD497C0729 /* CICoreDataTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICoreDataTableViewController.m; sourceTree = "<group>"; };
 		6DDC92B2CDC03504CFC375FF /* SettingsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsManager.h; sourceTree = "<group>"; };
@@ -393,12 +403,13 @@
 		6DDC934D1939EC2B8A09A7F1 /* right_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right_arrow@2x.png"; sourceTree = "<group>"; };
 		6DDC93532B3FC06C7D0AACCE /* logoutin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logoutin.png; sourceTree = "<group>"; };
 		6DDC936F6C422AE86D8550F1 /* AccDisclosure.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = AccDisclosure.png; sourceTree = "<group>"; };
+		6DDC936F956E723D5B36E63C /* VendorDataLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VendorDataLoader.h; sourceTree = "<group>"; };
 		6DDC937218587303DB0F5319 /* ProductSearchQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductSearchQueue.h; sourceTree = "<group>"; };
 		6DDC937AD638B7ECA3609DCD /* magnify.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = magnify.png; sourceTree = "<group>"; };
 		6DDC938DC1B03DAD2A25CE7D /* cart-cancelout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cart-cancelout.png"; sourceTree = "<group>"; };
 		6DDC9390BB7CAF3B5E25A0A6 /* PullToRefreshView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PullToRefreshView.m; sourceTree = "<group>"; };
 		6DDC939591E268A6984A4162 /* OrderManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderManager.h; sourceTree = "<group>"; };
-		6DDC9397F54F2B73F6CDC158 /* CICustomerInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICustomerInfoViewController.h; sourceTree = "<group>"; };
+		6DDC9397F54F2B73F6CDC158 /* CISelectCustomerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISelectCustomerViewController.h; sourceTree = "<group>"; };
 		6DDC939B69B4F4331148BDF5 /* logoutout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logoutout.png; sourceTree = "<group>"; };
 		6DDC939DE42B2DF11923B948 /* CIFinalCustomerInfoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CIFinalCustomerInfoViewController.xib; sourceTree = "<group>"; };
 		6DDC93BD46728B6ECFD4135B /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
@@ -430,7 +441,7 @@
 		6DDC949704A165F36DC911C5 /* MenuLinkMetadataProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuLinkMetadataProvider.m; sourceTree = "<group>"; };
 		6DDC9497FB5EABD9F9199DC0 /* OrderShipDateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrderShipDateViewController.m; sourceTree = "<group>"; };
 		6DDC9499EB2C65D9E71F560D /* CISlidingProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISlidingProductViewController.m; sourceTree = "<group>"; };
-		6DDC949AE518339D897522D3 /* CICustomerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CICustomerTableViewController.h; sourceTree = "<group>"; };
+		6DDC949AE518339D897522D3 /* CISelectCustomerTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISelectCustomerTableViewController.h; sourceTree = "<group>"; };
 		6DDC94A77A9C5C23E31B5BC2 /* homeBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = homeBG.png; sourceTree = "<group>"; };
 		6DDC94EB8B727A7BEC3D6F72 /* left_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "left_arrow@2x.png"; sourceTree = "<group>"; };
 		6DDC94FD1E839F8A38BC0EFF /* LineItem+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "LineItem+Extensions.m"; sourceTree = "<group>"; };
@@ -608,13 +619,14 @@
 		6DDC9BCB2E429C258AC4DF29 /* NISignatureView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NISignatureView.h; sourceTree = "<group>"; };
 		6DDC9BD231B00D06CA3C76F9 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		6DDC9BDD2CD78920CC5BB96E /* continuein.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = continuein.png; sourceTree = "<group>"; };
-		6DDC9BDD8302D0984F169761 /* CICustomerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICustomerTableViewController.m; sourceTree = "<group>"; };
+		6DDC9BDD8302D0984F169761 /* CISelectCustomerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectCustomerTableViewController.m; sourceTree = "<group>"; };
 		6DDC9BE91F7CB769D13ABDC7 /* CICartViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = CICartViewController.xib; path = ../../../iPad/CICartViewController.xib; sourceTree = "<group>"; };
 		6DDC9C262778347168CA4141 /* CIProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductViewController.m; sourceTree = "<group>"; };
 		6DDC9C3AD129D324297DE989 /* ProductCart8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart8.xcdatamodel; sourceTree = "<group>"; };
 		6DDC9C4180DC3354D1879B13 /* ProductCart2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart2.xcdatamodel; sourceTree = "<group>"; };
 		6DDC9C5FBA57830AB4A3BBFC /* NSNumber+Boost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNumber+Boost.h"; sourceTree = "<group>"; };
 		6DDC9C63C277626236D41B70 /* CISlidingProductViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISlidingProductViewController.h; sourceTree = "<group>"; };
+		6DDC9C674103A588EA7E804F /* VendorDataLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VendorDataLoader.m; sourceTree = "<group>"; };
 		6DDC9C76B7AA236AFE88FF24 /* customerlistNOBACKGROUND.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = customerlistNOBACKGROUND.png; sourceTree = "<group>"; };
 		6DDC9C7B6FDD40877348A441 /* NSArray+Boost.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Boost.m"; sourceTree = "<group>"; };
 		6DDC9C912FF77B429E59828A /* refresh.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = refresh.png; sourceTree = "<group>"; };
@@ -639,6 +651,7 @@
 		6DDC9D571B83F7283725E804 /* checkbox_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_ticked.png; sourceTree = "<group>"; };
 		6DDC9D5C85AFC1E4F0E83C47 /* deleteout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = deleteout.png; sourceTree = "<group>"; };
 		6DDC9D68210A7C596A703261 /* CIShipDatesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIShipDatesViewController.h; sourceTree = "<group>"; };
+		6DDC9D6E2D7CC6BB93C99B59 /* CISelectVendorTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISelectVendorTableViewController.h; sourceTree = "<group>"; };
 		6DDC9D71973D441F074FBE6A /* SaveButton-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SaveButton-in.png"; sourceTree = "<group>"; };
 		6DDC9D75736A36B24BEF8C8C /* CIViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIViewController.h; sourceTree = "<group>"; };
 		6DDC9D7E48C778614B113B76 /* LineItem+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "LineItem+Extensions.h"; sourceTree = "<group>"; };
@@ -665,6 +678,7 @@
 		6DDC9E2D32C9294997B9FFFC /* ProductCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductCell.h; sourceTree = "<group>"; };
 		6DDC9E3C2C4EFB9ABB6FB069 /* MyOrders.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MyOrders.png; sourceTree = "<group>"; };
 		6DDC9E58B24B08B42C45A316 /* MenuViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewCell.m; sourceTree = "<group>"; };
+		6DDC9E5C20A2C1F883F19848 /* CISelectRecordViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISelectRecordViewController.h; sourceTree = "<group>"; };
 		6DDC9E6A2FAF5D478CB4BFDD /* GroupedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GroupedObject.h; sourceTree = "<group>"; };
 		6DDC9E6BF85018452D08D3BE /* SettingsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsManager.m; sourceTree = "<group>"; };
 		6DDC9E7001F01194A67EB3BE /* NISignatureView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NISignatureView.m; sourceTree = "<group>"; };
@@ -709,6 +723,7 @@
 		6DDC9FEF7E255E8FF864B92F /* CIShowPriceColumnView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIShowPriceColumnView.h; sourceTree = "<group>"; };
 		6DDC9FF3BD81E3B3F848313C /* finalsubmit.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = finalsubmit.png; sourceTree = "<group>"; };
 		6DDC9FFBDDE75E6EDF6F29BC /* CITagColumnView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITagColumnView.h; sourceTree = "<group>"; };
+		6DDC9FFD887C3B6B9A7B6F1D /* CISelectVendorTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectVendorTableViewController.m; sourceTree = "<group>"; };
 		6E118561145F2F2200568ED1 /* Convention.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Convention.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E118565145F2F2200568ED1 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		6E118567145F2F2200568ED1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -818,8 +833,8 @@
 				6DDC9165B71E6B2FCA5252C6 /* CIProductViewController.h */,
 				6DDC9C262778347168CA4141 /* CIProductViewController.m */,
 				6DDC9E86A471335D39203D8F /* CIProductViewController.xib */,
-				6DDC9397F54F2B73F6CDC158 /* CICustomerInfoViewController.h */,
-				6DDC91E4CBCE10A80C9B66D6 /* CICustomerInfoViewController.m */,
+				6DDC9397F54F2B73F6CDC158 /* CISelectCustomerViewController.h */,
+				6DDC91E4CBCE10A80C9B66D6 /* CISelectCustomerViewController.m */,
 				6DDC990D06D9A0FBEA4E10F1 /* CICustomerInfoViewController.xib */,
 				6DDC975CD42FF20487C7728A /* BulletinViewController.m */,
 				6DDC993FC0A9E16CF56D91F8 /* BulletinViewController.h */,
@@ -839,8 +854,8 @@
 				6DDC95B61DCF19D4EC6CC592 /* ProductCell.m */,
 				6DDC9497FB5EABD9F9199DC0 /* OrderShipDateViewController.m */,
 				6DDC9C2BEEE63B07639804CA /* Products Table */,
-				6DDC9BDD8302D0984F169761 /* CICustomerTableViewController.m */,
-				6DDC949AE518339D897522D3 /* CICustomerTableViewController.h */,
+				6DDC9BDD8302D0984F169761 /* CISelectCustomerTableViewController.m */,
+				6DDC949AE518339D897522D3 /* CISelectCustomerTableViewController.h */,
 			);
 			path = "Order Entry";
 			sourceTree = "<group>";
@@ -997,6 +1012,8 @@
 				6DDC9F248996720F17152BC9 /* TableView */,
 				6DDC9CFB6DFD5A22991A5B04 /* CoreData */,
 				6DDC9D3916AD3327F575BB4A /* Orders */,
+				6DDC9C674103A588EA7E804F /* VendorDataLoader.m */,
+				6DDC936F956E723D5B36E63C /* VendorDataLoader.h */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -1101,6 +1118,10 @@
 				6DDC98D9CD8BDBC20243FD9A /* CIMenuWebViewController.h */,
 				6DDC949704A165F36DC911C5 /* MenuLinkMetadataProvider.m */,
 				6DDC999F309A5D568A9BDB50 /* MenuLinkMetadataProvider.h */,
+				6DDC9FFD887C3B6B9A7B6F1D /* CISelectVendorTableViewController.m */,
+				6DDC9D6E2D7CC6BB93C99B59 /* CISelectVendorTableViewController.h */,
+				6DDC92890BD9B42D58DD898A /* CISelectVendorViewController.m */,
+				6DDC91159113771191DCC0F7 /* CISelectVendorViewController.h */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -1195,6 +1216,10 @@
 				6DDC97198745230BCA317033 /* Menu */,
 				6DDC9E8004EAFD9921E7B153 /* CINavViewManager.m */,
 				6DDC9227B748620228F3DE52 /* CINavViewManager.h */,
+				6DDC9119A3EBCD835C43D5D2 /* CISelectRecordTableViewController.m */,
+				6DDC90406C5920C7A257716A /* CISelectRecordTableViewController.h */,
+				6DDC908359FFB6447A5C28F3 /* CISelectRecordViewController.m */,
+				6DDC9E5C20A2C1F883F19848 /* CISelectRecordViewController.h */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -2036,7 +2061,7 @@
 				6DDC99E10168419081BD680F /* CIViewController.m in Sources */,
 				6DDC9BB4D582A0B0C54DF78B /* CIOrderViewController.m in Sources */,
 				D8B385241A3E0022007FA957 /* JMStaticContentTableViewCell.m in Sources */,
-				6DDC95B18B894B04EE3F114E /* CICustomerInfoViewController.m in Sources */,
+				6DDC95B18B894B04EE3F114E /* CISelectCustomerViewController.m in Sources */,
 				D8B385251A3E0022007FA957 /* JMStaticContentTableViewController.m in Sources */,
 				6DDC9A2956150B005FFA756A /* BulletinViewController.m in Sources */,
 				6DDC9F4C2FD18D6E060170E4 /* CIProductViewController.m in Sources */,
@@ -2134,9 +2159,14 @@
 				6DDC920E079171CCEAD4F286 /* OrderSubtotalsByDate.m in Sources */,
 				6DDC961335B61025C1247CA8 /* CITagColumnView.m in Sources */,
 				6DDC9B7AA5E57836EA9623E6 /* CIOrderDetailTableViewController.m in Sources */,
-				6DDC9167DB349616DFED9ABE /* CICustomerTableViewController.m in Sources */,
+				6DDC9167DB349616DFED9ABE /* CISelectCustomerTableViewController.m in Sources */,
 				6DDC92952052ABE78B87DE2D /* CITableViewHeaderColumnView.m in Sources */,
 				6DDC9166E05CACAA2BDFE1AF /* CIApplication.m in Sources */,
+				6DDC924A7420CAEB6729F0CE /* CISelectRecordTableViewController.m in Sources */,
+				6DDC9DCCB013A4DF28DD2017 /* CISelectRecordViewController.m in Sources */,
+				6DDC9725EC896FFCD488AC58 /* CISelectVendorTableViewController.m in Sources */,
+				6DDC9D4BC74112A902B20C23 /* CISelectVendorViewController.m in Sources */,
+				6DDC9C4F26F522F946875EA2 /* VendorDataLoader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -5,7 +5,6 @@
 
 //notifications
 extern NSString *const CustomersLoadedNotification;
-extern NSString *const CustomerSelectionNotification;
 
 extern NSString *const ProductsLoadRequestedNotification;
 extern NSString *const ProductsLoadedNotification;

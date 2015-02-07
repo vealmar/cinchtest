@@ -17,6 +17,7 @@
 @property(nonatomic, retain) NSString *company;
 @property(nonatomic, retain) NSString *vendid;
 @property(nonatomic, retain) NSString *name;
+@property(nonatomic, retain) NSString *groupName;
 @property(nonatomic, retain) NSString *season;
 @property(nonatomic, retain) NSNumber *hidewsprice;
 @property(nonatomic, retain) NSNumber *hideshprice;

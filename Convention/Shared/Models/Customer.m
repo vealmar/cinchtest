@@ -12,11 +12,12 @@
 
 
 @implementation Customer
+
 @dynamic customer_id;
 @dynamic billname;
 @dynamic email;
-@dynamic stores;
 @dynamic custid;
+@dynamic defaultShippingAddressSummary;
 
 - (id)initWithCustomerFromServer:(NSDictionary *)customerFromServer context:(NSManagedObjectContext *)context {
     self = [super initWithEntity:[NSEntityDescription entityForName:@"Customer" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
@@ -25,8 +26,7 @@
         self.custid = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerCustId]];
         self.billname = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerBillName]];
         self.email = (NSString *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerEmail]];
-        NSArray *storesArray = (NSArray *) [NilUtil nilOrObject:[customerFromServer objectForKey:kCustomerStores]];
-        self.stores = storesArray && storesArray.count > 0 ? [storesArray componentsJoinedByString:@","] : nil;
+        self.defaultShippingAddressSummary = (NSString *) [NilUtil nilOrObject:customerFromServer[kCustomerDefaultShippingAddressSummary]];
     }
     return self;
 }
@@ -41,14 +41,6 @@
         [dictionary setObject:self.billname forKey:kCustomerBillName];
     if (self.email)
         [dictionary setObject:self.email forKey:kCustomerEmail];
-    if (self.stores) {
-        NSArray *storesStrArray = [self.stores componentsSeparatedByString:@","];
-        NSMutableArray *storesNumArray = [[NSMutableArray alloc] init];
-        for (NSString *storeStr in storesStrArray) {
-            [storesNumArray addObject:[NSNumber numberWithInt:[storeStr intValue]]];
-        }
-        [dictionary setObject:storesNumArray forKey:kCustomerStores];
-    }
     return dictionary;
 }
 

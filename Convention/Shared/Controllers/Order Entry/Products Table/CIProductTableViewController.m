@@ -163,7 +163,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     };
 
     [CoreDataManager reloadProducts:[CurrentSession instance].authToken
-                      vendorGroupId:[NSNumber numberWithInt:[[CurrentSession instance].loggedInVendorGroupId intValue]]
+                      vendorGroupId:[NSNumber numberWithInt:[[CurrentSession instance].vendorGroupId intValue]]
                               async:YES
                   usingQueueContext:[CurrentSession privateQueueContext]
                           onSuccess:successBlock

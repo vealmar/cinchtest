@@ -32,17 +32,21 @@ static CurrentSession *currentSession = nil;
 }
 
 - (NSNumber *)showId {
-    NSNumber *showId = (NSNumber *) [self.vendorInfo objectForKey:@"current_show"][kID];
+    NSNumber *showId = (NSNumber *) [self.userInfo objectForKey:@"current_show"][kID];
     return showId;
 }
 
-- (NSNumber *)loggedInVendorGroupId {
-    NSNumber *vendorgroupId = (NSNumber *) [self.vendorInfo objectForKey:kVendorGroupID];
+- (BOOL)hasAdminAccess {
+    return ((NSNumber *) self.userInfo[@"admin"]).boolValue;
+}
+
+- (NSNumber *)vendorGroupId {
+    NSNumber *vendorgroupId = (NSNumber *) [self.userInfo objectForKey:kVendorGroupID];
     return vendorgroupId;
 }
 
 - (NSNumber *)vendorId {
-    NSNumber *vendorId = (NSNumber *) [self.vendorInfo objectForKey:kID];
+    NSNumber *vendorId = (NSNumber *) [self.userInfo objectForKey:kID];
     return vendorId;
 }
 

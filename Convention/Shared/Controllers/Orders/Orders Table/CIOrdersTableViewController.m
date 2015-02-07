@@ -39,6 +39,7 @@
     [self.tableView addSubview:self.pull];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ordersReloading:) name:OrderReloadStartedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ordersReloadComplete:) name:OrderReloadCompleteNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleSessionDidChange:) name:SessionDidChangeNotification object:nil];
 
     // wait until the controller loads have completed for notification observation
     __weak CIOrdersTableViewController *weakSelf = self;
@@ -59,6 +60,10 @@
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     self.view.hidden = YES;
+}
+
+- (void)handleSessionDidChange:(NSNotification *)notification {
+    [self loadOrders:YES selectOrder:nil];
 }
 
 - (void)ordersReloading:(NSNotification *)notification {

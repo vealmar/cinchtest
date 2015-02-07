@@ -8,9 +8,10 @@
 @interface CurrentSession : NSObject
 
 @property NSString *authToken;
-@property NSDictionary* vendorInfo;
+@property NSDictionary *userInfo;
+@property (readonly) BOOL hasAdminAccess;
 @property (readonly) NSNumber* showId;
-@property (readonly) NSString* loggedInVendorGroupId;
+@property (readonly) NSString* vendorGroupId;
 @property (readonly) NSNumber* vendorId;
 @property (strong, nonatomic) NSMutableDictionary *vendorNameCache;
 

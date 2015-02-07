@@ -78,8 +78,8 @@
         [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Order" withContext:[CurrentSession privateQueueContext]];
     }];
 
-    [[CinchJSONAPIClient sharedInstance] GET:kDBORDER parameters:@{ kAuthToken: [CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-        if (JSON && ([(NSArray *) JSON count] > 0)) {
+    [[CinchJSONAPIClient sharedInstance] GET:kDBORDER parameters:@{ kAuthToken: [CurrentSession instance].authToken, kVendorGroupID: [CurrentSession instance].vendorGroupId } success:^(NSURLSessionDataTask *task, id JSON) {
+        if (JSON) {
             NSArray *orders = (NSArray *) JSON;
 
             int batchSize = 75;
@@ -417,6 +417,7 @@
 
     NSString *method = [order.orderId intValue] > 0 ? @"PUT" : @"POST";
     parameters[kAuthToken] = [CurrentSession instance].authToken;
+    parameters[@"vendor_id"] = [CurrentSession instance].vendorId;
 
     void(^saveBlock)(id) = ^(id JSON) {
         [[CurrentSession mainQueueContext] performBlock:^{

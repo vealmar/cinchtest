@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CICustomerInfoViewController.h"
+#import "CISelectCustomerViewController.h"
 #import "CIFinalCustomerInfoViewController.h"
 #import "CICartViewController.h"
 #import "ReachabilityDelegation.h"

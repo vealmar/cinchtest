@@ -1,4 +1,4 @@
-        //
+//
 // Created by David Jafari on 12/24/14.
 // Copyright (c) 2014 Urban Coding. All rights reserved.
 //
@@ -77,7 +77,7 @@
         [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Order" withContext:[CurrentSession privateQueueContext]];
     }];
 
-    [[CinchJSONAPIClient sharedInstance] GET:kDBORDER parameters:@{ kAuthToken: [CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+    [[CinchJSONAPIClient sharedInstance] GET:kDBORDER parameters:@{ kAuthToken: [CurrentSession instance].authToken, kVendorGroupID: [CurrentSession instance].vendorGroupId } success:^(NSURLSessionDataTask *task, id JSON) {
         if (JSON && ([(NSArray *) JSON count] > 0)) {
             NSArray *orders = (NSArray *) JSON;
 
@@ -190,7 +190,7 @@
     
 }
 
-+ (void)sy  ncOrder:(Order *)order
++ (void)syncOrder:(Order *)order
       attachHudTo:(UIView *)view
         onSuccess:(void (^)(Order *order))successBlock
         onFailure:(void (^)())failureBlock {

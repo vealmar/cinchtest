@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CICustomerInfoViewController.h"
+#import "CISelectCustomerViewController.h"
 #import "CISignatureViewController.h"
 #import "ProductCellDelegate.h"
 #import "CINavViewManager.h"
