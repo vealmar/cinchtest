@@ -19,6 +19,7 @@ typedef NS_ENUM(NSInteger, ColumnType) {
 -(void)each:(void (^)(CITableViewColumn *column, NSUInteger index))block;
 -(CITableViewColumns *)add:(ColumnType)columnType titled:(NSString *)title forKey:(NSString *)rowDataKey;
 -(CITableViewColumns *)add:(ColumnType)columnType titled:(NSString *)title using:(NSDictionary *)options;
+-(NSArray *)createPaddedFramesForWidth:(int)allowedWidth height:(int)frameHeight;
 -(NSArray *)createFramesForWidth:(int)allowedWidth height:(int)frameHeight;
 -(NSDictionary *)calculateColumnWidths:(int)allowedWidth;
 

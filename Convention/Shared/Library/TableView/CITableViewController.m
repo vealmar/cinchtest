@@ -5,7 +5,7 @@
 
 #import "CITableViewController.h"
 #import "CITableViewColumns.h"
-#import "CITableViewHeader.h"
+#import "CITableViewHeaderView.h"
 #import "CITableViewCell.h"
 
 @implementation CITableViewController
@@ -31,6 +31,9 @@ static NSString *STATIC_CELL_REUSE_KEY = @"STATIC_CELL_REUSE_KEY";
     self.columns = [self createColumns];
 
     if (self.header) {
+        if ([self conformsToProtocol:@protocol(CITableSortDelegate)]) {
+            self.header.sortDelegate = (id<CITableSortDelegate>) self;
+        }
         [self.header prepareForDisplay:self.columns];
         self.fixedData = [NSArray array];
     }
@@ -39,6 +42,10 @@ static NSString *STATIC_CELL_REUSE_KEY = @"STATIC_CELL_REUSE_KEY";
 - (CITableViewColumns *)createColumns {
     CITableViewColumns *columns = [CITableViewColumns new];
     return columns;
+}
+
+- (NSArray *)currentSortDescriptors {
+    return [self.header currentSortDescriptors];
 }
 
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath {

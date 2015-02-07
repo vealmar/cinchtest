@@ -6,9 +6,13 @@
 #import <Foundation/Foundation.h>
 
 @class CITableViewColumns;
+@protocol CITableSortDelegate;
 
-@interface CITableViewHeader : UIView
+@interface CITableViewHeaderView : UIView
+
+@property (weak) id<CITableSortDelegate> sortDelegate;
 
 -(id)prepareForDisplay:(CITableViewColumns *)columns;
+- (NSArray *)currentSortDescriptors;
 
 @end

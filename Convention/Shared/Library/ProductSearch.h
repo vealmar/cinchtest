@@ -12,9 +12,9 @@
 @property NSInteger currentBulletin;
 @property NSInteger currentVendor;
 @property NSInteger limit;
+@property NSArray *sortDescriptors;
 
-+ (ProductSearch *) searchFor:(NSString *)query inBulletin:(NSInteger)bulletin forVendor:(NSInteger)vendor limitResultSize:(NSInteger)limit usingContext:(NSManagedObjectContext *)context;
-- (NSArray *) sortDescriptors;
++ (ProductSearch *)searchFor:(NSString *)query inBulletin:(NSInteger)bulletin forVendor:(NSInteger)vendor sortedBy:(NSArray *)sortDescriptors limitResultSize:(NSInteger)limit usingContext:(NSManagedObjectContext *)context;
 - (NSArray *) split:(NSString *)separator;
 - (NSManagedObjectContext *)context;
 

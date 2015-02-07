@@ -61,6 +61,10 @@
     return [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
 }
 
++ (UIColor *)blueHighlightColor {
+    return [UIColor colorWithRed:27.0f/255.0f green:186.0f/255.0f blue:225.0f/255.0f alpha:1];
+}
+
 + (NSDictionary *)navigationTitleTextAttributes:(int)size {
     NSShadow *shadow = [NSShadow new];
     shadow.shadowColor = [UIColor blackColor];

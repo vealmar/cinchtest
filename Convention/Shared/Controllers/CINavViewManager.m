@@ -18,8 +18,6 @@
 @property UIBarButtonItem *searchItem;
 @property UIButton *dismissButton;
 
-@property BOOL inSearchMode;
-
 @end
 
 @implementation CINavViewManager

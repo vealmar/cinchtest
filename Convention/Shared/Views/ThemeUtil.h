@@ -21,6 +21,7 @@
 + (UIColor *)lightGreenBorderColor;
 + (UIColor *)greenColor;
 + (UIColor *)tableAltRowColor;
++ (UIColor *)blueHighlightColor;
 
 + (NSDictionary *)navigationTitleTextAttributes:(int)size;
 

@@ -1,32 +1,33 @@
 //
-// Created by David Jafari on 1/2/15.
+// Created by David Jafari on 1/29/15.
 // Copyright (c) 2015 Urban Coding. All rights reserved.
 //
 
-#import "KeyCommander.h"
+#import "CIApplication.h"
 
-@interface KeyCommander ()
+@interface CIApplication ()
 
 @property BOOL isDisabled;
 
 @end
 
+static __weak id currentFirstResponder;
 
-@implementation KeyCommander
+@implementation UIResponder (FirstResponder)
 
-- (id)initWithDelegate:(id <KeyCommanderDelegate>)delegate inView:(UIView *)view {
-    self = [super initWithFrame:CGRectMake(0,0,0,0)];
-    if (self) {
-        self.isDisabled = NO;
-        self.delegate = delegate;
-        [view addSubview:self];
-    }
-    return self;
++(id)currentFirstResponder {
+    currentFirstResponder = nil;
+    [[UIApplication sharedApplication] sendAction:@selector(cifindFirstResponder:) to:nil from:nil forEvent:nil];
+    return currentFirstResponder;
 }
 
-- (void)disable:(BOOL)disabled {
-    self.isDisabled = disabled;
+-(void)cifindFirstResponder:(id)sender {
+    currentFirstResponder = self;
 }
+
+@end
+
+@implementation CIApplication
 
 - (BOOL)mayBecomeFirstResponder {
     if (![self isFirstResponder]) {
@@ -39,12 +40,12 @@
     return YES;
 }
 
-- (NSArray *)keyCommands {
-    return [KeyCommander allKeys];
+- (BOOL)becomeFirstResponder {
+    return NO;
 }
 
-- (void)alphaNumericKeyPressed {
-//    [self.navViewManager ]
+- (NSArray *)keyCommands {
+    return [CIApplication allKeys];
 }
 
 + (NSArray *)allKeys {
@@ -52,27 +53,31 @@
     static dispatch_once_t pred;
     dispatch_once(&pred, ^{
         NSMutableArray *keyBuilder = [NSMutableArray array];
-        [keyBuilder addObjectsFromArray:[KeyCommander alphanumericKeys:@selector(alphaNumericKeyPressed)]];
-        [keyBuilder addObject:[KeyCommander up:@selector(upKeyPressed)]];
-        [keyBuilder addObject:[KeyCommander down:@selector(downKeyPressed)]];
-        [keyBuilder addObject:[KeyCommander enter:@selector(enterKeyPressed)]];
-        [keyBuilder addObject:[KeyCommander escape:@selector(escapeKeyPressed)]];
+        [keyBuilder addObjectsFromArray:[CIApplication alphanumericKeys]];
+        [keyBuilder addObject:[CIApplication up:@selector(upKeyPressed)]];
+        [keyBuilder addObject:[CIApplication down:@selector(downKeyPressed)]];
+        [keyBuilder addObject:[CIApplication left:@selector(leftKeyPressed)]];
+        [keyBuilder addObject:[CIApplication right:@selector(rightKeyPressed)]];
+        [keyBuilder addObject:[CIApplication enter:@selector(enterKeyPressed)]];
+        [keyBuilder addObject:[CIApplication escape:@selector(escapeKeyPressed)]];
         keys = [NSArray arrayWithArray:keyBuilder];
     });
     return keys;
 }
 
-+ (NSArray *)alphanumericKeys:(SEL)targetAction {
++ (NSArray *)alphanumericKeys {
     NSMutableArray *keys = [NSMutableArray array];
 
     for (NSString *key in [self alphabet]) {
-        [keys addObject:[UIKeyCommand keyCommandWithInput:key modifierFlags:0 action:targetAction]];
-        [keys addObject:[UIKeyCommand keyCommandWithInput:key modifierFlags:UIKeyModifierShift action:targetAction]];
+        SEL keyMethod = NSSelectorFromString([key stringByAppendingString:@"KeyPressed"]);
+        [keys addObject:[UIKeyCommand keyCommandWithInput:key modifierFlags:0 action:keyMethod]];
+        [keys addObject:[UIKeyCommand keyCommandWithInput:key modifierFlags:UIKeyModifierShift action:keyMethod]];
     }
 
     for (NSString *key in [self numbers]) {
-        [keys addObject:[UIKeyCommand keyCommandWithInput:key modifierFlags:0 action:targetAction]];
-        [keys addObject:[UIKeyCommand keyCommandWithInput:key modifierFlags:UIKeyModifierNumericPad action:targetAction]];
+        SEL keyMethod = NSSelectorFromString([NSString stringWithFormat:@"n%@KeyPressed", key]);
+        [keys addObject:[UIKeyCommand keyCommandWithInput:key modifierFlags:0 action:keyMethod]];
+        [keys addObject:[UIKeyCommand keyCommandWithInput:key modifierFlags:UIKeyModifierNumericPad action:keyMethod]];
     }
 
     return [NSArray arrayWithArray:keys];
@@ -105,8 +110,9 @@
 #pragma mark - Private
 
 - (void)keyPressed:(KeyPressType)keyPressType withValue:(NSString *)value {
+    NSLog(@"key pressed: %@", value);
     if (!self.isDisabled && [self.delegate respondsToSelector:@selector(keyPressed:withValue:)]) {
-        [self.delegate keyPressed:keyPressType withValue:value];
+//        [self.delegate keyPressed:keyPressType withValue:value];
     }
 }
 
@@ -127,11 +133,11 @@
 }
 
 - (void)enterKeyPressed {
-    [self keyPressed:KeyPressTypeArrow withValue:@"\r"];
+    [self keyPressed:KeyPressTypeEnter withValue:@"\r"];
 }
 
 - (void)escapeKeyPressed {
-    [self keyPressed:KeyPressTypeArrow withValue:UIKeyInputEscape];
+    [self keyPressed:KeyPressTypeEscape withValue:UIKeyInputEscape];
 }
 
 - (void)aKeyPressed {
@@ -238,11 +244,51 @@
     [self keyPressed:KeyPressTypeAlphanumeric withValue:@"z"];
 }
 
+- (void)n0KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"0"];
+}
+
+- (void)n1KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"1"];
+}
+
+- (void)n2KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"2"];
+}
+
+- (void)n3KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"3"];
+}
+
+- (void)n4KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"4"];
+}
+
+- (void)n5KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"5"];
+}
+
+- (void)n6KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"6"];
+}
+
+- (void)n7KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"7"];
+}
+
+- (void)n8KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"8"];
+}
+
+- (void)n9KeyPressed {
+    [self keyPressed:KeyPressTypeAlphanumeric withValue:@"9"];
+}
+
 + (NSArray *)alphabet {
     static NSArray *keys;
     static dispatch_once_t pred;
     dispatch_once(&pred, ^{
-       keys = @[@"a", @"b", @"c", @"d", @"e", @"f", @"g", @"h", @"i", @"j", @"k", @"l", @"m", @"n", @"o", @"p", @"q", @"r", @"s", @"t", @"u", @"v", @"w", @"x", @"y", @"z"];
+        keys = @[@"a", @"b", @"c", @"d", @"e", @"f", @"g", @"h", @"i", @"j", @"k", @"l", @"m", @"n", @"o", @"p", @"q", @"r", @"s", @"t", @"u", @"v", @"w", @"x", @"y", @"z"];
     });
     return keys;
 }

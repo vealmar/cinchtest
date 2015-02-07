@@ -27,7 +27,7 @@
             <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="397" userLabel="Table Header" customClass="CITableViewHeader">
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="397" userLabel="Table Header" customClass="CITableViewHeaderView">
                     <rect key="frame" x="0.0" y="0.0" width="1024" height="44"/>
                     <color key="backgroundColor" red="0.82352941180000006" green="0.83921568629999999" blue="0.85882352939999995" alpha="1" colorSpace="calibratedRGB"/>
                     <constraints>

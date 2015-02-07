@@ -36,13 +36,13 @@ static int instanceIdCounter = 1;
     });
 }
 
--(CITableViewColumns *)add:(ColumnType *)columnType titled:(NSString *)title forKey:(NSString *)rowDataKey {
+-(CITableViewColumns *)add:(ColumnType)columnType titled:(NSString *)title forKey:(NSString *)rowDataKey {
     return [self add:columnType titled:title using:@{
             ColumnOptionContentKey: rowDataKey
     }];
 }
 
--(CITableViewColumns *)add:(ColumnType *)columnType titled:(NSString *)title using:(NSDictionary *)options {
+-(CITableViewColumns *)add:(ColumnType)columnType titled:(NSString *)title using:(NSDictionary *)options {
     CITableViewColumn *column = [CITableViewColumn new];
     column.title = title;
     column.columnType = columnType;
@@ -52,6 +52,28 @@ static int instanceIdCounter = 1;
 
     return self;
 }
+
+-(NSArray *)createPaddedFramesForWidth:(int)allowedWidth height:(int)frameHeight {
+    NSMutableArray *frames = [NSMutableArray array];
+    NSDictionary *widthsByColumn = [self calculateColumnWidths:allowedWidth];
+
+    __block int currentXPosition = 0;
+    [self each:(^(CITableViewColumn *column, NSUInteger index) {
+        int width = [((NSNumber *) widthsByColumn[column.instanceId]) intValue];
+        int horizontalPadding = [((NSNumber *) [column.options objectForKey:ColumnOptionHorizontalPadding]) intValue];
+        if (0 == currentXPosition) {
+            int horizontalInset = [((NSNumber *) [column.options objectForKey:ColumnOptionHorizontalInset]) intValue];
+            currentXPosition += horizontalInset;
+        }
+
+        CGRect frame = CGRectMake(currentXPosition + horizontalPadding, 0, width - (2 * horizontalPadding), frameHeight);
+        [frames addObject:[NSValue valueWithCGRect:frame]];
+        currentXPosition += width + 2 * horizontalPadding;
+    })];
+
+    return [NSArray arrayWithArray:frames];
+}
+
 
 -(NSArray *)createFramesForWidth:(int)allowedWidth height:(int)frameHeight {
     NSMutableArray *frames = [NSMutableArray array];
@@ -66,7 +88,7 @@ static int instanceIdCounter = 1;
             currentXPosition += horizontalInset;
         }
 
-        CGRect frame = CGRectMake(currentXPosition + horizontalPadding, 0, width - (2 * horizontalPadding), frameHeight);
+        CGRect frame = CGRectMake(currentXPosition, 0, width, frameHeight);
         [frames addObject:[NSValue valueWithCGRect:frame]];
         currentXPosition += width + 2 * horizontalPadding;
     })];

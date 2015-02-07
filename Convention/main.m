@@ -9,10 +9,11 @@
 #import <UIKit/UIKit.h>
 
 #import "CIAppDelegate.h"
+#import "CIApplication.h"
 
 int main(int argc, char *argv[])
 {
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([CIAppDelegate class]));
+        return UIApplicationMain(argc, argv, NSStringFromClass([CIApplication class]), NSStringFromClass([CIAppDelegate class]));
     }
 }

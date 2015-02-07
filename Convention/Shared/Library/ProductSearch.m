@@ -16,7 +16,7 @@
 
 @implementation ProductSearch
 
-+ (ProductSearch *)searchFor:(NSString *)query inBulletin:(NSInteger)bulletin forVendor:(NSInteger)vendor limitResultSize:(NSInteger)limit usingContext:(NSManagedObjectContext *)context {
++ (ProductSearch *)searchFor:(NSString *)query inBulletin:(NSInteger)bulletin forVendor:(NSInteger)vendor sortedBy:(NSArray *)sortDescriptors limitResultSize:(NSInteger)limit usingContext:(NSManagedObjectContext *)context {
     ProductSearch *search = [[ProductSearch alloc] init];
     if (query) {
         search.queryString = [query stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -27,6 +27,14 @@
     search.currentVendor = vendor;
     search.limit = limit;
     search.coordinator = context.persistentStoreCoordinator;
+    if (sortDescriptors && sortDescriptors.count > 0) {
+        search.sortDescriptors = sortDescriptors;
+    } else {
+        search.sortDescriptors = @[
+                [NSSortDescriptor sortDescriptorWithKey:@"sequence" ascending:YES],
+                [NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]
+        ];
+    }
 
     return search;
 }
@@ -40,13 +48,6 @@
     return context;
 }
 
-- (NSArray *)sortDescriptors {
-    return @[
-            [NSSortDescriptor sortDescriptorWithKey:@"sequence" ascending:YES],
-            [NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]
-    ];
-}
-
 - (NSArray *)split:(NSString *)separator {
     if (![self.queryString contains:@","]) {
         return [NSArray arrayWithObject:self];
@@ -55,7 +56,7 @@
     NSMutableArray *searches = [NSMutableArray array];
     [[self.queryString componentsSeparatedByString:separator] enumerateObjectsUsingBlock:^(NSString *query, NSUInteger idx, BOOL *stop) {
         if ([query stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]].length > 0) {
-            [searches addObject:[ProductSearch searchFor:query inBulletin:self.currentBulletin forVendor:self.currentVendor limitResultSize:self.limit usingContext:self.context]];
+            [searches addObject:[ProductSearch searchFor:query inBulletin:self.currentBulletin forVendor:self.currentVendor sortedBy:nil limitResultSize:self.limit usingContext:self.context]];
         }
     }];
     return searches;

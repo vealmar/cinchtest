@@ -14,6 +14,7 @@ extern NSString *const ColumnOptionDesiredWidth;        // NSNumber* (int)
 extern NSString *const ColumnOptionHorizontalPadding;   // NSNumber* (int)
 extern NSString *const ColumnOptionHorizontalInset;     // NSNumber* (int)
 extern NSString *const ColumnOptionTitleTextAttributes;
+extern NSString *const ColumnOptionSortableKey;         // NSNumber* (bool)
 
 @interface CITableViewColumn : NSObject <NSCopying>
 

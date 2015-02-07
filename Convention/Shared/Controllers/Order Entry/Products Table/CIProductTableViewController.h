@@ -7,10 +7,11 @@
 #import "CICoreDataTableViewController.h"
 #import "CITableViewController.h"
 #import "PullToRefreshView.h"
+#import "CITableSortDelegate.h"
 
 @protocol ProductCellDelegate;
 
-@interface CIProductTableViewController : CICoreDataTableViewController <PullToRefreshViewDelegate>
+@interface CIProductTableViewController : CICoreDataTableViewController <PullToRefreshViewDelegate, CITableSortDelegate>
 
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate;
 

@@ -5,15 +5,16 @@
 
 #import <Foundation/Foundation.h>
 
-@class CITableViewHeader;
+@class CITableViewHeaderView;
 @class CITableViewColumns;
 
 @interface CITableViewController : UITableViewController
 
-@property IBOutlet CITableViewHeader *header;
+@property IBOutlet CITableViewHeaderView *header;
 @property CITableViewColumns *columns;
 @property NSArray *fixedData;
 
+- (NSArray *)currentSortDescriptors;
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath;
 - (void)prepareForDisplay;
 

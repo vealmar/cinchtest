@@ -28,6 +28,7 @@
 		6DDC912A966512C2CAE58D2E /* continueout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC99683A938C2FBA5D10E4 /* continueout.png */; };
 		6DDC913413C1FC0477AFBEA5 /* Detail2.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9FAB13E136E8F7FEB1A3 /* Detail2.png */; };
 		6DDC913A3DECF793C4D605D9 /* customer-cancelout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC95AA2A984A6674D3916C /* customer-cancelout.png */; };
+		6DDC9166E05CACAA2BDFE1AF /* CIApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC902243CAA66C98A7D1EA /* CIApplication.m */; };
 		6DDC9167DB349616DFED9ABE /* CICustomerTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9BDD8302D0984F169761 /* CICustomerTableViewController.m */; };
 		6DDC91683800E384B47955FE /* SettingsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9E6BF85018452D08D3BE /* SettingsManager.m */; };
 		6DDC918D13B07B6D4A580E57 /* order_template_areaRIGHT.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9DF89A62D4B5C5B7CC2D /* order_template_areaRIGHT.png */; };
@@ -44,6 +45,7 @@
 		6DDC924A7A1A913FBFAE7BAC /* printbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9B446F4D960E38446A94 /* printbutton.png */; };
 		6DDC92577909154C834B3BCF /* VendorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9A9020D8B94E9ED41731 /* VendorViewController.xib */; };
 		6DDC9278B2C2E21DE60D492B /* left_arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9EB204F420681AE3D8FB /* left_arrow.png */; };
+		6DDC92952052ABE78B87DE2D /* CITableViewHeaderColumnView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC97A7893F3F1B37C66762 /* CITableViewHeaderColumnView.m */; };
 		6DDC92AD8A1A86F6D706C03C /* submitorderout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9180EB2BBC3D9E39F46A /* submitorderout.png */; };
 		6DDC92CB3456424BA9C0BA16 /* DateRange.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9A4BA4F65A8E139B2636 /* DateRange.m */; };
 		6DDC92E6E30CA999CE190BC1 /* StringManipulation.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC99A1B452662069354324 /* StringManipulation.m */; };
@@ -130,7 +132,7 @@
 		6DDC98650DAAE73DCFC13553 /* bump_build_number.sh in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC98B681246E6B32B63458 /* bump_build_number.sh */; };
 		6DDC9885AAF58C5656CD05B9 /* left-arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC90672ED287E72E8D820C /* left-arrow.png */; };
 		6DDC98994E6826A83BDAC703 /* EditButton-out.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9BC453500DB43A36392F /* EditButton-out.png */; };
-		6DDC989D6EBE8755B9DDA7E2 /* CITableViewHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC933CA3B803D89A002474 /* CITableViewHeader.m */; };
+		6DDC989D6EBE8755B9DDA7E2 /* CITableViewHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC933CA3B803D89A002474 /* CITableViewHeaderView.m */; };
 		6DDC98AD5AD4EA61208150E4 /* CIOrdersTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC95C53BD1D4816D9BECBA /* CIOrdersTableViewController.m */; };
 		6DDC98EB7FAC0E4F6AE2E74F /* white_plaster.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9AE5CCEB76F6932E14D9 /* white_plaster.png */; };
 		6DDC990742A783ABD9748FFC /* right-arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9EFAB5C3D2702643461C /* right-arrow@2x.png */; };
@@ -139,7 +141,6 @@
 		6DDC9965CC129DFCFDBB4618 /* refresh.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9C912FF77B429E59828A /* refresh.png */; };
 		6DDC996FAAF23CD30546FEB0 /* OrderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9B8A9CC21F6E3654396D /* OrderManager.m */; };
 		6DDC997B92CEB765800F2BF9 /* submit-button-out-green.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9E08FC804A26FAED96D6 /* submit-button-out-green.png */; };
-		6DDC997F161D0D87586BF2E6 /* KeyCommander.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9C095322C31DCC47C7DA /* KeyCommander.m */; };
 		6DDC9989D5C7619C1F43AED8 /* logoutout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC939B69B4F4331148BDF5 /* logoutout.png */; };
 		6DDC999204AECDD7139DFBC6 /* ProductCart.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9C257E1F421C5B8AB6BB /* ProductCart.xcdatamodeld */; };
 		6DDC9993AE2BC70AAF64535D /* Bulletin.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC92940191A2A27FFA423E /* Bulletin.m */; };
@@ -325,7 +326,8 @@
 		692824751989930C0020FC1E /* EditableEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableEntity.m; sourceTree = "<group>"; };
 		69C981581A3E5EBB00C7E47A /* sidemenu-cinch-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidemenu-cinch-logo.png"; sourceTree = "<group>"; };
 		69C981591A3E5EBB00C7E47A /* sidemenu-cinch-logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sidemenu-cinch-logo@2x.png"; sourceTree = "<group>"; };
-		6DDC901615311EF544E032DD /* CITableViewHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableViewHeader.h; sourceTree = "<group>"; };
+		6DDC901615311EF544E032DD /* CITableViewHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableViewHeaderView.h; sourceTree = "<group>"; };
+		6DDC902243CAA66C98A7D1EA /* CIApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIApplication.m; sourceTree = "<group>"; };
 		6DDC9022E5C9FFCDCA929F6B /* launch_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_bg.png; sourceTree = "<group>"; };
 		6DDC903627868FD10FEC1A5B /* ProductCellDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProductCellDelegate.h; sourceTree = "<group>"; };
 		6DDC903CFA23CC7BF6756E6B /* StringManipulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringManipulation.h; sourceTree = "<group>"; };
@@ -386,7 +388,7 @@
 		6DDC931E325EE34D06364A87 /* addtocartbutton.old.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = addtocartbutton.old.png; sourceTree = "<group>"; };
 		6DDC932148EFD2D8D2034ED4 /* CIProductViewControllerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIProductViewControllerHelper.h; sourceTree = "<group>"; };
 		6DDC932DD682D051DC695E1B /* shipdatesNEW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shipdatesNEW.png; sourceTree = "<group>"; };
-		6DDC933CA3B803D89A002474 /* CITableViewHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CITableViewHeader.m; sourceTree = "<group>"; };
+		6DDC933CA3B803D89A002474 /* CITableViewHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CITableViewHeaderView.m; sourceTree = "<group>"; };
 		6DDC933D810A7DCE3A33FE36 /* backbutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backbutton.png; sourceTree = "<group>"; };
 		6DDC934D1939EC2B8A09A7F1 /* right_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "right_arrow@2x.png"; sourceTree = "<group>"; };
 		6DDC93532B3FC06C7D0AACCE /* logoutin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = logoutin.png; sourceTree = "<group>"; };
@@ -478,6 +480,7 @@
 		6DDC9688361C00EDD636003A /* CIProductTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductTableViewCell.m; sourceTree = "<group>"; };
 		6DDC968C21B202D075591F13 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
 		6DDC968F609DFA52A1EE1451 /* CITableViewStandardColumnView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CITableViewStandardColumnView.m; sourceTree = "<group>"; };
+		6DDC969530BA8C2AD5D6C6EC /* CITableSortDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableSortDelegate.h; sourceTree = "<group>"; };
 		6DDC96A0333B7C31385339AB /* cancel.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cancel.png; sourceTree = "<group>"; };
 		6DDC96B33EF8AAE0D30595A5 /* Order+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Order+Extensions.h"; sourceTree = "<group>"; };
 		6DDC96B4ABB43947A612A7EB /* MICheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MICheckBox.h; sourceTree = "<group>"; };
@@ -499,11 +502,11 @@
 		6DDC974E367C51D9DC90BED6 /* DDCalendarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDCalendarView.m; sourceTree = "<group>"; };
 		6DDC97503FF234FC78B42689 /* right_arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = right_arrow.png; sourceTree = "<group>"; };
 		6DDC9751BEC28683AD7ECEEE /* CIOrderViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIOrderViewController.m; sourceTree = "<group>"; };
-		6DDC975426D33F352EB3CDEF /* KeyCommander.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyCommander.h; sourceTree = "<group>"; };
 		6DDC975CD42FF20487C7728A /* BulletinViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BulletinViewController.m; sourceTree = "<group>"; };
 		6DDC97771967AD43C297C5FD /* PWHome.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PWHome.png; sourceTree = "<group>"; };
 		6DDC977F53E12C1D88907422 /* CITableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableViewCell.h; sourceTree = "<group>"; };
 		6DDC978C9B9B7D7FC6F6DAE3 /* CIProductViewControllerHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductViewControllerHelper.m; sourceTree = "<group>"; };
+		6DDC97A7893F3F1B37C66762 /* CITableViewHeaderColumnView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CITableViewHeaderColumnView.m; sourceTree = "<group>"; };
 		6DDC97AA00D90F9760E1C6D3 /* neworderout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = neworderout.png; sourceTree = "<group>"; };
 		6DDC97B1EEF9E6C0885A6412 /* CITableViewColumnView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CITableViewColumnView.m; sourceTree = "<group>"; };
 		6DDC97B967BD91A4359AA76A /* BEBAS.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; path = BEBAS.ttf; sourceTree = "<group>"; };
@@ -607,7 +610,6 @@
 		6DDC9BDD2CD78920CC5BB96E /* continuein.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = continuein.png; sourceTree = "<group>"; };
 		6DDC9BDD8302D0984F169761 /* CICustomerTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CICustomerTableViewController.m; sourceTree = "<group>"; };
 		6DDC9BE91F7CB769D13ABDC7 /* CICartViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = CICartViewController.xib; path = ../../../iPad/CICartViewController.xib; sourceTree = "<group>"; };
-		6DDC9C095322C31DCC47C7DA /* KeyCommander.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyCommander.m; sourceTree = "<group>"; };
 		6DDC9C262778347168CA4141 /* CIProductViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductViewController.m; sourceTree = "<group>"; };
 		6DDC9C3AD129D324297DE989 /* ProductCart8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart8.xcdatamodel; sourceTree = "<group>"; };
 		6DDC9C4180DC3354D1879B13 /* ProductCart2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart2.xcdatamodel; sourceTree = "<group>"; };
@@ -675,6 +677,7 @@
 		6DDC9EBA6BB2B94DC1DC0E25 /* PWOrder1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PWOrder1.png; sourceTree = "<group>"; };
 		6DDC9EBB3C15BD66D251A6E1 /* CIProductTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIProductTableViewController.h; sourceTree = "<group>"; };
 		6DDC9EDA0D5329C391D25A89 /* APLSlideMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APLSlideMenuViewController.h; sourceTree = "<group>"; };
+		6DDC9EDDC3E6AB426C16E6C2 /* CITableViewHeaderColumnView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableViewHeaderColumnView.h; sourceTree = "<group>"; };
 		6DDC9EE76F1A72E1738F8E09 /* CITableViewColumns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableViewColumns.h; sourceTree = "<group>"; };
 		6DDC9EEB4BA15E82FCEEFFF4 /* OrderTotals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrderTotals.h; sourceTree = "<group>"; };
 		6DDC9EF9EBA3D7C5B439A2A8 /* OrderSubtotalsByDate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrderSubtotalsByDate.m; sourceTree = "<group>"; };
@@ -695,6 +698,7 @@
 		6DDC9F9672AC003367793939 /* DeleteButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = DeleteButton.png; sourceTree = "<group>"; };
 		6DDC9F9C0D8D7055357A5516 /* NotificationConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationConstants.m; sourceTree = "<group>"; };
 		6DDC9FA9C637030F992AC114 /* ShowCustomField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowCustomField.m; sourceTree = "<group>"; };
+		6DDC9FAA49C9A20CAE9F6A74 /* CIApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIApplication.h; sourceTree = "<group>"; };
 		6DDC9FAB13E136E8F7FEB1A3 /* Detail2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Detail2.png; sourceTree = "<group>"; };
 		6DDC9FBE9BFC9E3F0CD961CC /* square-paper.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "square-paper.png"; sourceTree = "<group>"; };
 		6DDC9FC241C8BA61916E3E8D /* ThemeUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThemeUtil.h; sourceTree = "<group>"; };
@@ -993,8 +997,6 @@
 				6DDC9F248996720F17152BC9 /* TableView */,
 				6DDC9CFB6DFD5A22991A5B04 /* CoreData */,
 				6DDC9D3916AD3327F575BB4A /* Orders */,
-				6DDC9C095322C31DCC47C7DA /* KeyCommander.m */,
-				6DDC975426D33F352EB3CDEF /* KeyCommander.h */,
 			);
 			path = Library;
 			sourceTree = "<group>";
@@ -1538,6 +1540,8 @@
 			children = (
 				6DDC96543B5FF82D6E108AA4 /* CIAppDelegate.m */,
 				6DDC949214C8B61DB47DD631 /* CIAppDelegate.h */,
+				6DDC902243CAA66C98A7D1EA /* CIApplication.m */,
+				6DDC9FAA49C9A20CAE9F6A74 /* CIApplication.h */,
 			);
 			path = Application;
 			sourceTree = "<group>";
@@ -1549,8 +1553,8 @@
 				6DDC947AD72E135341901F63 /* CITableViewController.h */,
 				6DDC97E1993C4458BB729EAA /* CITableViewColumn.m */,
 				6DDC927A9B91504FC080B3FA /* CITableViewColumn.h */,
-				6DDC933CA3B803D89A002474 /* CITableViewHeader.m */,
-				6DDC901615311EF544E032DD /* CITableViewHeader.h */,
+				6DDC933CA3B803D89A002474 /* CITableViewHeaderView.m */,
+				6DDC901615311EF544E032DD /* CITableViewHeaderView.h */,
 				6DDC92ABC26C7EAD497C0729 /* CICoreDataTableViewController.m */,
 				6DDC9511A25CCA267C2990E9 /* CICoreDataTableViewController.h */,
 				6DDC98B51985B3061D3E74E6 /* CITableViewColumns.m */,
@@ -1561,6 +1565,9 @@
 				6DDC96FCF61547ADD1D2FB9C /* CITableViewStandardColumnView.h */,
 				6DDC99C93F57B23D02186F67 /* CITableViewCell.m */,
 				6DDC977F53E12C1D88907422 /* CITableViewCell.h */,
+				6DDC97A7893F3F1B37C66762 /* CITableViewHeaderColumnView.m */,
+				6DDC9EDDC3E6AB426C16E6C2 /* CITableViewHeaderColumnView.h */,
+				6DDC969530BA8C2AD5D6C6EC /* CITableSortDelegate.h */,
 			);
 			path = TableView;
 			sourceTree = "<group>";
@@ -2103,7 +2110,7 @@
 				6DDC9AAFEEE854D2C161B69D /* CIKeyboardUtil.m in Sources */,
 				6DDC94B7CCB2C7E2C5FB5B88 /* CITableViewController.m in Sources */,
 				6DDC94969448350F637FD21F /* CITableViewColumn.m in Sources */,
-				6DDC989D6EBE8755B9DDA7E2 /* CITableViewHeader.m in Sources */,
+				6DDC989D6EBE8755B9DDA7E2 /* CITableViewHeaderView.m in Sources */,
 				6DDC9DC379688BF9D7D0742E /* CICoreDataTableViewController.m in Sources */,
 				6DDC9082EABA8EB79955F8C7 /* CITableViewColumns.m in Sources */,
 				6DDC94946A0892B0683A76B9 /* CITableViewColumnView.m in Sources */,
@@ -2126,9 +2133,10 @@
 				6DDC9FA22336A8C92E1D1EE4 /* OrderTotals.m in Sources */,
 				6DDC920E079171CCEAD4F286 /* OrderSubtotalsByDate.m in Sources */,
 				6DDC961335B61025C1247CA8 /* CITagColumnView.m in Sources */,
-				6DDC997F161D0D87586BF2E6 /* KeyCommander.m in Sources */,
 				6DDC9B7AA5E57836EA9623E6 /* CIOrderDetailTableViewController.m in Sources */,
 				6DDC9167DB349616DFED9ABE /* CICustomerTableViewController.m in Sources */,
+				6DDC92952052ABE78B87DE2D /* CITableViewHeaderColumnView.m in Sources */,
+				6DDC9166E05CACAA2BDFE1AF /* CIApplication.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

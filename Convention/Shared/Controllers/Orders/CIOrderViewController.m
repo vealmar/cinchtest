@@ -28,10 +28,9 @@
 #import "MBProgressHUD.h"
 #import "CoreDataUtil.h"
 #import "CurrentSession.h"
-#import "KeyCommander.h"
 #import "Product.h"
 #import "CIOrderDetailTableViewController.h"
-#import "CITableViewHeader.h"
+#import "CITableViewHeaderView.h"
 
 @interface CIOrderViewController () {
     ShowConfigurations *showConfig;
@@ -58,7 +57,7 @@
 
 @property CIOrderDetailTableViewController *orderDetailTableViewController;
 @property (weak, nonatomic) IBOutlet UIView *orderDetailTableParentView;
-@property (weak, nonatomic) IBOutlet CITableViewHeader *orderDetailHeaderView;
+@property (weak, nonatomic) IBOutlet CITableViewHeaderView *orderDetailHeaderView;
 @property (weak, nonatomic) IBOutlet UITableView *orderDetailTableView;
 
 @end
@@ -465,36 +464,5 @@
 - (void)navViewDidEndSearch {
     //[self.keyCommander mayBecomeFirstResponder];
 }
-
-#pragma mark - Keyboard
-
-//- (BOOL)canBecomeFirstResponder {
-//    return YES;
-//}
-//
-//- (NSArray *)keyCommands {
-//    return @[];
-////    return [self.keyCommander allKeys];
-//}
-//
-//- (void)alphaNumericKeyPressed {
-//    [self.navViewManager ]
-//}
-//
-//- (void)upKeyPressed {
-//    [self.ordersTableViewController selectSibling:YES];
-//}
-//
-//- (void)downKeyPressed {
-//    [self.ordersTableViewController selectSibling:NO];
-//}
-//
-//- (void)enterKeyPressed {
-//    [self addNewOrder];
-//}
-//
-//- (void)escapeKeyPressed {
-//    NSLog(@"key pressed");
-//}
 
 @end

@@ -57,7 +57,7 @@
     });
     [self.cellViews removeAllObjects];
 
-    NSArray *frames = [self.columns createFramesForWidth:self.frame.size.width height:self.frame.size.height];
+    NSArray *frames = [self.columns createPaddedFramesForWidth:self.frame.size.width height:self.frame.size.height];
     [self.columns each:(^(CITableViewColumn *column, NSUInteger index) {
         CGRect frame = [((NSValue *) frames[index]) CGRectValue];
         CITableViewColumnView *columnView = [self viewForColumn:column frame:frame];

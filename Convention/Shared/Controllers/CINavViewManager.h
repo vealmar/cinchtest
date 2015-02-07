@@ -31,6 +31,7 @@
 
 @property (nonatomic, weak) id <CINavViewManagerDelegate> delegate;
 @property NSAttributedString *title;
+@property BOOL inSearchMode;
 
 - (id)init:(BOOL)searchable;
 

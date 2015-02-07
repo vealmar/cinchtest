@@ -13,6 +13,8 @@ NSString *const ColumnOptionDesiredWidth = @"ColumnOptionDesiredWidth";
 NSString *const ColumnOptionHorizontalPadding = @"ColumnOptionHorizontalPadding";
 NSString *const ColumnOptionHorizontalInset = @"ColumnOptionHorizontalInset";
 NSString *const ColumnOptionTitleTextAttributes = @"ColumnOptionTitleTextAttributes";
+NSString *const ColumnOptionSortableKey = @"ColumnOptionSortableKey";
+
 @implementation CITableViewColumn
 
 static int instanceIdCounter = 1;

@@ -34,6 +34,7 @@
 #import "OrderTotals.h"
 #import "LineItem+Extensions.h"
 #import "CIFinalCustomerFormViewController.h"
+#import "CIApplication.h"
 
 @interface CIProductViewController () {
     NSInteger initialVendor;
@@ -50,6 +51,7 @@
 @property (strong, nonatomic) UIBarButtonItem *filterBarButtonItem;
 @property (strong, nonatomic) JMStaticContentTableViewController *filterStaticController;
 @property (strong, nonatomic) UISwitch *filterCartSwitch;
+
 @end
 
 @implementation CIProductViewController
@@ -647,6 +649,16 @@
     if (self.order) {
         OrderTotals *totals = [self.order calculateTotals];
         self.totalCost.text = [NumberUtil formatDollarAmount:totals.grossTotal];
+    }
+}
+
+#pragma mark - Keyboard
+
+- (void)keyPressed:(KeyPressType)keyPressType withValue:(NSString *)value {
+    NSLog(@"key pressed: %@", value);
+    if (!self.navViewManager.inSearchMode) {
+//        [self.navViewManager clearSearch];
+//        [self.navViewManager enterSearchMode];
     }
 }
 

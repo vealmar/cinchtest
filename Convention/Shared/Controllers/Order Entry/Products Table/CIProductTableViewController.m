@@ -84,7 +84,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     //resign quantity first responder here if we are using non-shipdate style; we don't want a lineitem saving while we are changing the fetchresults
     [self.tableView endEditing:YES];
     
-    NSFetchRequest *request = [CoreDataManager buildProductFetch:[ProductSearch searchFor:query inBulletin:bulletinId forVendor:vendorId limitResultSize:0 usingContext:self.managedObjectContext]];
+    NSFetchRequest *request = [CoreDataManager buildProductFetch:[ProductSearch searchFor:query inBulletin:bulletinId forVendor:vendorId sortedBy:[self currentSortDescriptors] limitResultSize:0 usingContext:self.managedObjectContext]];
     if (inCart && self.delegate.currentOrderForCell) {
         NSPredicate *inCartPredicate = [NSPredicate predicateWithFormat:@"ANY lineItems.order == %@ AND ANY lineItems.quantity != nil", self.delegate.currentOrderForCell.objectID];
         request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[request.predicate, inCartPredicate]];
@@ -95,7 +95,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 }
 
 - (NSFetchRequest *)initialFetchRequest {
-    return [CoreDataManager buildProductFetch:[ProductSearch searchFor:@"" inBulletin:0 forVendor:0 limitResultSize:0 usingContext:self.managedObjectContext]];
+    return [CoreDataManager buildProductFetch:[ProductSearch searchFor:@"" inBulletin:0 forVendor:0 sortedBy:nil limitResultSize:0 usingContext:self.managedObjectContext]];
 }
 
 - (CITableViewColumns *)createColumns {
@@ -103,17 +103,20 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     CITableViewColumns *columns = [CITableViewColumns new];
     [columns add:ColumnTypeString titled:@"Item #" using:@{
             ColumnOptionContentKey: @"invtid",
-            ColumnOptionDesiredWidth: [NSNumber numberWithInt:100]
+            ColumnOptionDesiredWidth: @100,
+            ColumnOptionSortableKey: @YES
     }];
     if (config.productEnableManufacturerNo) {
         [columns add:ColumnTypeString titled:@"MFG #" using:@{
                 ColumnOptionContentKey: @"partnbr",
-                ColumnOptionDesiredWidth: [NSNumber numberWithInt:100]
+                ColumnOptionDesiredWidth: @100,
+                ColumnOptionSortableKey: @YES
         }];
     }
     [columns add:ColumnTypeString titled:@"Description" using:@{
             ColumnOptionContentKey: @"descr",
-            ColumnOptionContentKey2: @"descr2"
+            ColumnOptionContentKey2: @"descr2",
+            ColumnOptionSortableKey: @YES
     }];
     if (config.discounts) {
         [columns add:ColumnTypeCustom titled:@"Tags" using:@{
@@ -131,12 +134,14 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
             ColumnOptionContentKey: @"showprc",
             ColumnOptionTextAlignment: [NSNumber numberWithInt:NSTextAlignmentRight],
             ColumnOptionDesiredWidth: [NSNumber numberWithInt:90],
-            ColumnOptionCustomTypeClass: [CIShowPriceColumnView class]
+            ColumnOptionCustomTypeClass: [CIShowPriceColumnView class],
+            ColumnOptionSortableKey: @YES
     }];
     [columns add:ColumnTypeCurrency titled:config.price2Label using:@{
             ColumnOptionContentKey: @"regprc",
             ColumnOptionTextAlignment: [NSNumber numberWithInt:NSTextAlignmentRight],
-            ColumnOptionDesiredWidth: [NSNumber numberWithInt:90]
+            ColumnOptionDesiredWidth: [NSNumber numberWithInt:90],
+            ColumnOptionSortableKey: @YES
     }];
     return columns;
 }
@@ -195,5 +200,12 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     }];
 }
 
+#pragma mark - CITableSortDelegate
+
+- (void)sortSelected:(NSArray *)sortDescriptors {
+    NSFetchRequest *newFetchRequest = [self.fetchRequest copy];
+    newFetchRequest.sortDescriptors = sortDescriptors;
+    self.fetchRequest = newFetchRequest;
+}
 
 @end
