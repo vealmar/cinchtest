@@ -4,11 +4,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "CITableViewColumnView.h"
+#import "CITableViewStandardColumnView.h"
 
 @class LineItem;
 
-@interface CIProductDescriptionColumnView : CITableViewColumnView <UITextFieldDelegate>
+@interface CIProductDescriptionColumnView : CITableViewStandardColumnView <UITextFieldDelegate>
 
 @property UITextField *editableDescriptionTextField;
 

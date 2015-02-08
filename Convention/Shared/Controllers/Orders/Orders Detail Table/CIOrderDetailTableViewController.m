@@ -106,7 +106,7 @@ static NSString *SUBTOTAL_CELL_REUSE_KEY = @"SUBTOTAL_CELL_REUSE_KEY";
 
     [columns add:ColumnTypeString titled:@"ITEM" using:@{
             ColumnOptionContentKey: @"label",
-            ColumnOptionDesiredWidth: @90,
+            ColumnOptionDesiredWidth: @100,
             ColumnOptionHorizontalPadding: @7,
             ColumnOptionHorizontalInset: @8,
             ColumnOptionTitleTextAttributes: @{ NSForegroundColorAttributeName: [UIColor whiteColor] }
@@ -114,6 +114,7 @@ static NSString *SUBTOTAL_CELL_REUSE_KEY = @"SUBTOTAL_CELL_REUSE_KEY";
     [columns add:ColumnTypeString titled:@"DESCRIPTION" using:@{
             ColumnOptionContentKey: @"description1",
             ColumnOptionContentKey2: @"description2",
+            ColumnOptionLineBreakMode: @(NSLineBreakByTruncatingTail),
             ColumnOptionTitleTextAttributes: @{ NSForegroundColorAttributeName: [UIColor whiteColor] }
     }];
 

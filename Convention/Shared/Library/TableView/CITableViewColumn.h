@@ -8,6 +8,7 @@
 
 extern NSString *const ColumnOptionCustomTypeClass;     // Class*
 extern NSString *const ColumnOptionTextAlignment;       // NSNumber* with NSTextAlignment
+extern NSString *const ColumnOptionLineBreakMode;       // NSNumber* with NSLineBreakMode
 extern NSString *const ColumnOptionContentKey;          // NSString*
 extern NSString *const ColumnOptionContentKey2;         // NSString*
 extern NSString *const ColumnOptionDesiredWidth;        // NSNumber* (int)

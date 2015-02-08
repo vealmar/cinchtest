@@ -7,6 +7,7 @@
 
 NSString *const ColumnOptionCustomTypeClass = @"ColumnOptionCustomTypeClass";
 NSString *const ColumnOptionTextAlignment = @"ColumnOptionTextAlignment";
+NSString *const ColumnOptionLineBreakMode = @"ColumnOptionLineBreakMode";
 NSString *const ColumnOptionContentKey = @"ColumnOptionContentKey";
 NSString *const ColumnOptionContentKey2 = @"ColumnOptionContentKey2";
 NSString *const ColumnOptionDesiredWidth = @"ColumnOptionDesiredWidth";

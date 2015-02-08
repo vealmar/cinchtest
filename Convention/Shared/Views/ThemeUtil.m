@@ -162,4 +162,34 @@ Generates a title label based on the format parameter.
     return label.frame;
 }
 
++ (UIColor *)lighten:(UIColor *)color by:(CGFloat)value {
+    const CGFloat *components = CGColorGetComponents(color.CGColor);
+    CGFloat r = sRGB2Linear(components[0] + 1) * value;
+    CGFloat g = sRGB2Linear(components[1] + 1) * value;
+    CGFloat b = sRGB2Linear(components[2] + 1) * value;
+    r = MAX(0, MIN(1, linear2sRGB(r)));
+    g = MAX(0, MIN(1, linear2sRGB(g)));
+    b = MAX(0, MIN(1, linear2sRGB(b)));
+
+    return [UIColor colorWithRed:r green:g blue:b alpha:components[3]];
+}
+
+CGFloat sRGB2Linear(CGFloat x) {
+    CGFloat a = 0.055;
+    if (x <= 0.04045) {
+        return x * ( 1.0f / 12.92f );
+    } else {
+        return pow( ( x + a ) * ( 1.0 / ( 1 + a ) ), 2.4 );
+    }
+}
+
+CGFloat linear2sRGB(CGFloat x) {
+    CGFloat a = 0.055;
+    if (x <= 0.0031308) {
+        return x * 12.92f;
+    } else {
+        return ( 1 + a ) * pow( x, 1 / 2.4 ) - a;
+    }
+}
+
 @end

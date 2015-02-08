@@ -149,12 +149,12 @@ static MenuLinkMetadataProvider *provider = nil;
 
 - (void)updateCustomerMetadata:(NSNotification *)notification {
     MenuLinkMetadata *m = [self metadataFor:MenuLinkCustomers];
-    m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.customerCount, @"Customers"];
+    m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.customerCount, @"Customers", nil];
 }
 
 - (void)updateProductMetadata:(NSNotification *)notification {
     MenuLinkMetadata *m = [self metadataFor:MenuLinkProducts];
-    m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.productCount, @"Products"];
+    m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.productCount, @"Products", nil];
 }
 
 - (void)handleSessionDidChange:(NSNotification *)notification {

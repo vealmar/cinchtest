@@ -22,18 +22,22 @@
     self = [super initColumn:column frame:frame];
     if (self) {
         self.primaryTextView = [[UILabel alloc] init];
-        self.primaryTextView.adjustsFontSizeToFitWidth = YES;
+        if (column.options[ColumnOptionLineBreakMode]) {
+            self.primaryTextView.lineBreakMode = (NSLineBreakMode) [column.options[ColumnOptionLineBreakMode] intValue];
+        } else {
+            self.primaryTextView.adjustsFontSizeToFitWidth = YES;
+        }
         [self addSubview:self.primaryTextView];
 
         self.secondaryTextView = [[UILabel alloc] init];
-        self.secondaryTextView.adjustsFontSizeToFitWidth = YES;
+        if (column.options[ColumnOptionLineBreakMode]) {
+            self.secondaryTextView.lineBreakMode = (NSLineBreakMode) [column.options[ColumnOptionLineBreakMode] intValue];
+        } else {
+            self.secondaryTextView.adjustsFontSizeToFitWidth = YES;
+        }
         [self addSubview:self.secondaryTextView];
 
         [self unhighlight];
-
-        if (!(ColumnTypeCurrency == column.columnType || ColumnTypeInt == column.columnType || ColumnTypeString == column.columnType)) {
-            assert(false);
-        }
     }
     return self;
 }
@@ -95,19 +99,17 @@
 -(void)useNoTextViews {
     self.primaryTextView.visible = NO;
     self.secondaryTextView.visible = NO;
-}   
+}
 
 -(NSString *)formatForDisplay:(id)data {
-    if (ColumnTypeString == self.column.columnType) {
-        if ([data isKindOfClass:[NSString class]]) {
-            return data;
-        }
-    } else if (ColumnTypeInt == self.column.columnType) {
+    if (ColumnTypeInt == self.column.columnType) {
         return [NSString stringWithFormat:@"%@", data];
     } else if (ColumnTypeCurrency == self.column.columnType) {
         if ([data isKindOfClass:[NSNumber class]]) {
             return [NSString stringWithFormat:@"%@", [NumberUtil formatDollarAmount:(NSNumber*)data]];
         }
+    } else if ([data isKindOfClass:[NSString class]]) {
+        return data;
     }
     return @"";
 }

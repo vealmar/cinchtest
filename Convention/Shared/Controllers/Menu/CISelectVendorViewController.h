@@ -7,4 +7,7 @@
 #import "CISelectRecordViewController.h"
 
 @interface CISelectVendorViewController : CISelectRecordViewController
+
+@property (nonatomic, copy) void (^onComplete)();
+
 @end

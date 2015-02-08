@@ -200,6 +200,27 @@
     }
 }
 
+- (void)setPrice:(NSNumber *)price {
+    NSNumber *originalPrice = self.price;
+
+    NSNumber *setPrice = price;
+    if (!price) {
+        setPrice = @(0);
+    }
+
+    [self willChangeValueForKey:@"price"];
+    [super setPrimitiveValue:setPrice forKey:@"price"];
+    [self didChangeValueForKey:@"price"];
+
+    if (![setPrice isEqualToNumber:originalPrice]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            @autoreleasepool {
+                [[NSNotificationCenter defaultCenter] postNotificationName:LinePriceChangedNotification object:self userInfo:@{ @"originalPrice" : (originalPrice ? originalPrice : @(0)) }];
+            }
+        });
+    }
+}
+
 #pragma mark - Syncing
 
 - (id)initWithJsonFromServer:(NSDictionary *)json inContext:(NSManagedObjectContext *)managedObjectContext {
@@ -258,6 +279,7 @@
     if (self.totalQuantity > 0) { //only include items that have non-zero quantity specified
         return [NSDictionary dictionaryWithObjectsAndKeys:[self.lineItemId intValue] == 0 ? [NSNull null] : self.lineItemId, kID,
                                                           self.productId, kLineItemProductID,
+                                                          self.description1, @"desc",
                                                           [NilUtil objectOrNSNull:self.quantity], kLineItemQuantity,
                                                           [NumberUtil formatDollarAmountWithoutSymbol:self.price], kLineItemPrice,
                                                           [ShowConfigurations instance].shipDates ? self.shipDatesAsStringArray : @[], kLineItemShipDates,

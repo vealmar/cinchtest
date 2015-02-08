@@ -20,10 +20,12 @@
 #import "Order+Extensions.h"
 #import "LineItem+Extensions.h"
 #import "CIProductDescriptionColumnView.h"
+#import "OrderManager.h"
+#import "NumberUtil.h"
 
 @interface CIProductTableViewCell()
 
-@property id<ProductCellDelegate> delegate;
+@property id<ProductCellDelegate> productCellDelegate;
 @property UIColor *lastStripeColor;
 @property BOOL initialized;
 
@@ -43,13 +45,12 @@
     return self;
 }
 
-
--(id)prepareForDisplay:(CITableViewColumns *)columns delegate:(id<ProductCellDelegate>)delegate {
-    self.delegate = delegate;
+-(id)prepareForDisplay:(CITableViewColumns *)columns productCellDelegate:(id<ProductCellDelegate>)productCellDelegate {
+    self.productCellDelegate = productCellDelegate;
     return [super prepareForDisplay:columns];
 }
 
--(id)render:(id)rowData lineItem:lineItem {
+-(id)render:(id)rowData lineItem:(LineItem *)lineItem {
     self.lineItem = lineItem;
     return [super render:rowData];
 }
@@ -82,12 +83,15 @@
 
         [view.quantityTextField setBk_shouldBeginEditingBlock:^BOOL(UITextField *field) {
             bool liShipDates = [ShowConfigurations instance].isLineItemShipDatesType;
-            if (liShipDates) [weakSelf.delegate quantityWillBeginEditing:((Product *) weakSelf.rowData).productId lineItem:weakSelf.lineItem];
+            if (liShipDates) [weakSelf.productCellDelegate quantityWillBeginEditing:((Product *) weakSelf.rowData).productId lineItem:weakSelf.lineItem];
             return !liShipDates;
         }];
         [view.quantityTextField setBk_didEndEditingBlock:^(UITextField *field) {
-            Order *order = [weakSelf.delegate currentOrderForCell];
-            if (!weakSelf.lineItem) weakSelf.lineItem = [order createLineForProductId:((Product *) weakSelf.rowData).productId context:[CurrentSession mainQueueContext]];
+            Order *order = [weakSelf.productCellDelegate currentOrderForCell];
+            if (!weakSelf.lineItem) {
+                weakSelf.lineItem = [order createLineForProductId:((Product *) weakSelf.rowData).productId context:[CurrentSession mainQueueContext]];
+                [OrderManager saveOrder:order inContext:[CurrentSession mainQueueContext]];
+            }
             [weakSelf.lineItem setQuantity:field.text];
         }];
 
@@ -96,7 +100,16 @@
         CIShowPriceColumnView *view = [[CIShowPriceColumnView alloc] initColumn:column frame:frame];
 
         [view.editablePriceTextField setBk_didEndEditingBlock:^(UITextField *field) {
-            [weakSelf.delegate showPriceChanged:[field.text doubleValue] productId:((Product *) weakSelf.rowData).productId lineItem:weakSelf.lineItem];
+            NSNumber *price = [NumberUtil convertStringToDollars:field.text];
+            // immediately set it back in the event the price changed because of a formatting error (needs to be visible)
+            field.text = [NumberUtil formatDollarAmount:price];
+            
+            Order *order = [weakSelf.productCellDelegate currentOrderForCell];
+            if (!weakSelf.lineItem) {
+                weakSelf.lineItem = [order createLineForProductId:((Product *) weakSelf.rowData).productId context:[CurrentSession mainQueueContext]];
+            }
+            [weakSelf.lineItem setPrice:price];
+            [OrderManager saveOrder:order inContext:[CurrentSession mainQueueContext]];
         }];
 
         return view;
@@ -104,9 +117,12 @@
         CIProductDescriptionColumnView *view = [[CIProductDescriptionColumnView alloc] initColumn:column frame:frame];
 
         [view.editableDescriptionTextField setBk_didEndEditingBlock:^(UITextField *field) {
-            Order *order = [weakSelf.delegate currentOrderForCell];
-            if (!weakSelf.lineItem) weakSelf.lineItem = [order createLineForProductId:((Product *) weakSelf.rowData).productId context:[CurrentSession mainQueueContext]];
+            Order *order = [weakSelf.productCellDelegate currentOrderForCell];
+            if (!weakSelf.lineItem) {
+                weakSelf.lineItem = [order createLineForProductId:((Product *) weakSelf.rowData).productId context:[CurrentSession mainQueueContext]];
+            }
             weakSelf.lineItem.description1 = field.text;
+            [OrderManager saveOrder:order inContext:[CurrentSession mainQueueContext]];
         }];
 
         return view;
@@ -150,7 +166,8 @@
 - (void)onCartQuantityChange:(NSNotification *)notification {
     LineItem *lineItem = (LineItem *) notification.object;
     NSNumber *productId = ((Product *) self.rowData).productId;
-    if (productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId]) {
+    if ((self.lineItem && [self.lineItem.objectID isEqual:lineItem.objectID]) ||
+            (!self.lineItem && productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId])) {
         self.lineItem = lineItem;
         [self updateRowHighlight:nil];
         Underscore.array(self.cellViews).each(^(CITableViewColumnView *view) {
@@ -160,11 +177,27 @@
         });
     }
 }
+//
+//- (void)onCartPriceChange:(NSNotification *)notification {
+//    LineItem *lineItem = (LineItem *) notification.object;
+//    NSNumber *productId = ((Product *) self.rowData).productId;
+//    if ((self.lineItem && [self.lineItem.objectID isEqual:lineItem.objectID]) ||
+//            (!self.lineItem && productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId])) {
+//        self.lineItem = lineItem;
+//        [self updateRowHighlight:nil];
+//        Underscore.array(self.cellViews).each(^(CITableViewColumnView *view) {
+//            if ([view isKindOfClass:[CIQuantityColumnView class]]) {
+//                [((CIShowPriceColumnView *) view) updatePrice:lineItem];
+//            }
+//        });
+//    }
+//}
 
 - (void)onCartSelection:(NSNotification *)notification {
     LineItem *lineItem = (LineItem *) notification.object;
     NSNumber *productId = ((Product *) self.rowData).productId;
-    if (productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId]) {
+    if ((self.lineItem && [self.lineItem.objectID isEqual:lineItem.objectID]) ||
+            (!self.lineItem && productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId])) {
         self.lineItem = lineItem;
         self.selected = YES;
         [self updateRowHighlight:nil];
@@ -174,7 +207,8 @@
 - (void)onCartDeselection:(NSNotification *)notification {
     LineItem *lineItem = (LineItem *) notification.object;
     NSNumber *productId = ((Product *) self.rowData).productId;
-    if (productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId]) {
+    if ((self.lineItem && [self.lineItem.objectID isEqual:lineItem.objectID]) ||
+            (!self.lineItem && productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId])) {
         self.lineItem = lineItem;
         self.selected = NO;
         [self updateRowHighlight:nil];

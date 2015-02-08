@@ -57,12 +57,12 @@
 
     self.InvtID.adjustsFontSizeToFitWidth = YES;
     self.InvtID.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
-    self.descr.adjustsFontSizeToFitWidth = YES;
-    self.descr.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
-    self.descr1.adjustsFontSizeToFitWidth = YES;
-    self.descr1.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
-    self.descr2.adjustsFontSizeToFitWidth = YES;
-    self.descr2.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+    self.descr.adjustsFontSizeToFitWidth = NO;
+    self.descr.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.descr1.adjustsFontSizeToFitWidth = NO;
+    self.descr1.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.descr2.adjustsFontSizeToFitWidth = NO;
+    self.descr2.lineBreakMode = NSLineBreakByTruncatingTail;
 
     [self updateErrorsView:nil];
 }
@@ -72,16 +72,16 @@
 
     self.InvtID.adjustsFontSizeToFitWidth = YES;
     self.InvtID.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
-    self.descr.adjustsFontSizeToFitWidth = YES;
-    self.descr.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
-    self.descr1.adjustsFontSizeToFitWidth = YES;
-    self.descr1.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
-    self.descr2.adjustsFontSizeToFitWidth = YES;
-    self.descr2.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+    self.descr.adjustsFontSizeToFitWidth = NO;
+    self.descr.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.descr1.adjustsFontSizeToFitWidth = NO;
+    self.descr1.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.descr2.adjustsFontSizeToFitWidth = NO;
+    self.descr2.lineBreakMode = NSLineBreakByTruncatingTail;
 
     self.InvtID.text = lineItem.product.invtid;
 
-    [self setDescription:lineItem.product.descr withSubtext:lineItem.product.descr2];
+    [self setDescription:(lineItemInitial.description1 ? lineItemInitial.description1 : lineItem.product.descr) withSubtext:(lineItemInitial.description2 ? lineItemInitial.description2 : lineItem.product.descr2)];
     NSNumber *minNumber = (NSNumber *) [NilUtil nilOrObject:lineItem.product.min];
     self.min.text = minNumber ? [minNumber stringValue] : @"";
     self.price1.text = [NumberUtil formatDollarAmount:lineItem.product.showprc];

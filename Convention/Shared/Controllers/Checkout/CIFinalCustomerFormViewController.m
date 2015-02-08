@@ -60,27 +60,6 @@
     self.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400.0f, 600.0f)];
     self.view.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:237.0f/255.0f blue:241.0f/255.0f alpha:1.000]; // #eaedf1 234,237,241
 
-//    UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400.0f, 220.0f)];
-//    header.backgroundColor = [UIColor whiteColor];
-//    UIImageView *headerImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ico-title"]];
-//    headerImage.frame = CGRectMake((400.0f - headerImage.image.size.width)/2.0f, 35.0f, headerImage.image.size.width, 73.0);
-//    UILabel *headerTitle = [[UILabel alloc] initWithFrame:CGRectMake(0.0, 113.0f, 400.0f, 43.0f)];
-//    headerTitle.font = [UIFont regularFontOfSize:24.0];
-//    headerTitle.textAlignment = NSTextAlignmentCenter;
-//    headerTitle.textColor = [UIColor colorWith256Red:145 green:182 blue:43];
-//    headerTitle.text = @"Order Confirmation";
-//    UILabel *headerSubtitle = [[UILabel alloc] initWithFrame:CGRectMake(75.0f, 135.0f, 250.0f, 70.0f)];
-//    headerSubtitle.font = [UIFont regularFontOfSize:17.0];
-//    headerSubtitle.textAlignment = NSTextAlignmentCenter;
-//    headerSubtitle.textColor = [UIColor colorWith256Red:155 green:155 blue:155];
-//    headerSubtitle.lineBreakMode = NSLineBreakByTruncatingTail;
-//    headerSubtitle.numberOfLines = 2;
-//    headerSubtitle.text = @"Post-order authorization and detail, record handling information.";
-//    [header addSubview:headerImage];
-//    [header addSubview:headerTitle];
-//    [header addSubview:headerSubtitle];
-//    [self.view addSubview:header];
-
     float w = self.view.frame.size.width;
     float h = self.view.frame.size.height;
 
@@ -104,7 +83,7 @@
         XLFormRowDescriptor *descriptor = nil;
         if (showCustomField.isStringValueType) {
             descriptor = [XLFormRowDescriptor formRowDescriptorWithTag:showCustomField.fieldKey
-                                                                                    rowType:XLFormRowDescriptorTypeTextView
+                                                                                    rowType:XLFormRowDescriptorTypeText
                                                                                       title:showCustomField.label];
         } else if (showCustomField.isEnumValueType) {
             descriptor = [XLFormRowDescriptor formRowDescriptorWithTag:showCustomField.fieldKey

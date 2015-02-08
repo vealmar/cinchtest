@@ -9,6 +9,6 @@
 
 @interface CITableViewStandardColumnView : CITableViewColumnView
 
-
+-(void)useNoTextViews;
 
 @end

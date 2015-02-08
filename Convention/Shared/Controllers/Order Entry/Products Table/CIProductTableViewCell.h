@@ -7,13 +7,13 @@
 #import "CITableViewCell.h"
 
 @protocol ProductCellDelegate;
-
+@class LineItem;
 
 @interface CIProductTableViewCell : CITableViewCell
 
 @property LineItem *lineItem;
 
--(id)prepareForDisplay:(CITableViewColumns *)columns delegate:(id<ProductCellDelegate>)delegate;
--(id)render:(id)rowData lineItem:lineItem;
+-(id)prepareForDisplay:(CITableViewColumns *)columns productCellDelegate:(id<ProductCellDelegate>)productCellDelegate;
+-(id)render:(id)rowData lineItem:(LineItem *)lineItem;
 
 @end

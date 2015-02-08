@@ -25,6 +25,8 @@
 #import "CurrentSession.h"
 #import "NotificationConstants.h"
 #import "VendorDataLoader.h"
+#import "ThemeUtil.h"
+#import "CISelectVendorViewController.h"
 
 
 @implementation CIViewController {
@@ -48,6 +50,11 @@
     originalBounds = self.view.bounds;
     authToken = nil;
     self.userInfo = nil;
+
+    self.error.layer.cornerRadius = 5.0f;
+    self.error.font = [UIFont semiboldFontOfSize:16.0];
+    self.error.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.4];
+    self.error.hidden = YES;
 }
 
 - (void)viewDidUnload {
@@ -106,12 +113,13 @@
     NSString *Password = (password.text) ? password.text : @"";
 
     MBProgressHUD *__weak loginHud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    loginHud.labelText = @"Logging in";
+    loginHud.labelText = @"Logging In";
     loginHud.removeFromSuperViewOnHide = YES;
     [loginHud show:NO];
 
     [[CinchJSONAPIClient sharedInstance] POST:kDBLOGIN parameters:@{ kEmailKey: Email, kPasswordKey: Password } success:^(NSURLSessionDataTask *task, id JSON) {
         [loginHud hide:NO];
+        self.error.hidden = YES;
         if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
             authToken = [JSON objectForKey:kAuthToken];
             userInfo = [NSDictionary dictionaryWithDictionary:JSON];
@@ -119,15 +127,27 @@
             [CurrentSession instance].userInfo = userInfo;
 
             __weak CIViewController *weakSelf = self;
-            [VendorDataLoader load:[CurrentSession instance] inView:self.view onComplete:^{
-                [[CurrentSession instance] dispatchSessionDidChange];
-                [weakSelf presentOrderViewController];
+
+            [VendorDataLoader load:@[ @(VendorDataTypeCustomers), @(VendorDataTypeVendors) ] inView:self.view onComplete:^{
+                if ([CurrentSession instance].hasAdminAccess) {
+                    CISelectVendorViewController *ci = [[CISelectVendorViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
+                    ci.onComplete = ^{
+                        [weakSelf presentOrderViewController];
+                    };
+                    [weakSelf presentViewController:ci animated:YES completion:nil];
+                } else {
+                    [VendorDataLoader load:@[@(VendorDataTypeProducts), @(VendorDataTypeBulletins)] inView:self.view onComplete:^{
+                        [[CurrentSession instance] dispatchSessionDidChange];
+                        [weakSelf presentOrderViewController];
+                    }];
+                }
             }];
         }
     } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
         id JSON = apiError.userInfo[JSONResponseSerializerWithErrorDataKey];
         if (JSON) {
             self.error.text = [JSON objectForKey:@"error"];
+            self.error.hidden = NO;
             [loginHud hide:NO];
         } else if (apiError) {
             [loginHud hide:NO];

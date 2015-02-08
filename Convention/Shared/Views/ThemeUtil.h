@@ -42,4 +42,6 @@
 
 + (CGRect)fitTextWidthTo:(UILabel *)label;
 
++ (UIColor *)lighten:(UIColor *)color by:(CGFloat)value;
+
 @end

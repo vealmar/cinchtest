@@ -103,10 +103,6 @@
     [super viewDidLoad];
 
     self.isLoadingProducts = NO;
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloading:) name:ProductsLoadRequestedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloadComplete:) name:ProductsLoadedNotification object:nil];
-
     self.view.backgroundColor = [UIColor colorWithRed:0.133 green:0.129 blue:0.137 alpha:1];
 
 //    initialVendor = ![ShowConfigurations instance].vendorMode &&
@@ -133,14 +129,13 @@
     [self loadProductsForCurrentVendorAndBulletin];
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadRequestedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloading:) name:ProductsLoadRequestedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloadComplete:) name:ProductsLoadedNotification object:nil];
+
     if (!self.viewInitialized) {
-        [self.productTableViewController prepareForDisplay:self];
 
         if (self.order == nil) {
             if (self.newOrder) {
@@ -150,6 +145,8 @@
                 [self loadOrder:OrderRecoverySelectionNone];
             }
         }
+        
+        [self.productTableViewController prepareForDisplay:self];
         [self loadVendors];
         [self loadBulletins];
         self.viewInitialized = YES;
@@ -174,13 +171,16 @@
     // notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardWillHideNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onCartQuantityChange:) name:LineQuantityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onGrossTotalChangeUpdate:) name:LineQuantityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onGrossTotalChangeUpdate:) name:LinePriceChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onLineDeselection:) name:LineDeselectionNotification object:nil];
     
     CINavViewManager *navViewManager = self.navViewManager = [[CINavViewManager alloc] init:YES];
     navViewManager.delegate = self;
     [navViewManager setupNavBar];
     [self updateNavigationTitle];
+
+    [self.productTableViewController viewWillAppear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -192,10 +192,19 @@
             [self submit:nil];
         }
     }
+
+    [self.productTableViewController viewDidAppear:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [self.productTableViewController viewDidDisappear:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.productTableViewController viewWillDisappear:animated];
 }
 
 # pragma mark - Initialization
@@ -205,7 +214,9 @@
     if (vendors && vendors.count > 0) {//todo use AVendor objects
         NSMutableArray *vendorDataMutable = [[NSMutableArray alloc] init];
         for (Vendor *vendor in vendors) {
-            [vendorDataMutable addObject:[vendor asDictionary]];
+            if ([vendor.vendorgroup_id isEqualToNumber:@([CurrentSession instance].vendorGroupId.intValue)]) {
+                [vendorDataMutable addObject:[vendor asDictionary]];
+            }
         }
         [vendorDataMutable insertObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil] atIndex:0];
         vendorsData = vendorDataMutable;
@@ -686,7 +697,7 @@
 
 #pragma mark - ProductCellDelegate
 
-- (void)onCartQuantityChange:(NSNotification *)notification {
+- (void)onGrossTotalChangeUpdate:(NSNotification *)notification {
     LineItem *lineItem = notification.object;
     if (lineItem && lineItem.order && self.order && [self.order.objectID isEqual:lineItem.order.objectID]) {
 
@@ -757,8 +768,8 @@
 
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
         if (!lineItem) {
-            lineItem = [self.order createLineForProductId:productId
-                                                  context:self.order.managedObjectContext];
+            lineItem = [self.order createLineForProductId:productId context:self.order.managedObjectContext];
+            [OrderManager saveOrder:self.order inContext:self.order.managedObjectContext];
         }
 
         if (self.selectedLineItems.count == 1) {
@@ -778,11 +789,12 @@
 }
 
 - (void)showPriceChanged:(double)price productId:(NSNumber *)productId lineItem:(LineItem *)lineItem {
-    if (!lineItem) {
-        lineItem = [self.order createLineForProductId:productId context:[CurrentSession mainQueueContext]];
-    }
-    lineItem.price = @(price);
-    [self updateTotals];
+//    if (!lineItem) {
+//        lineItem = [self.order createLineForProductId:productId context:[CurrentSession mainQueueContext]];
+//    }
+//    lineItem.price = @(price);
+//    [self updateTotals];
+    //deprecated
 }
 
 #pragma mark - UIAlertViewDelegate

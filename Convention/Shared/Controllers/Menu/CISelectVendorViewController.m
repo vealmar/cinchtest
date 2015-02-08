@@ -16,7 +16,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self registerTableViewController:[[CISelectVendorTableViewController alloc] initWithStyle:UITableViewStylePlain]];
-    self.selectTitle.text = @"Change Vendor";
+    self.selectTitle.text = @"Select Vendor";
     self.selectSubtitle.text = @"Switch to a different vendor\n and take orders as them.";
 }
 
@@ -29,17 +29,18 @@
         [self.view.window removeGestureRecognizer:self.outsideTapRecognizer];
         self.outsideTapRecognizer = nil;
 
+        void (^complete)() = ^{
+            [[CurrentSession instance] dispatchSessionDidChange];
+            [self dismissViewControllerAnimated:YES completion:self.onComplete];
+        };
+
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:[CurrentSession instance].userInfo];
         userInfo[kID] = selectedVendor.vendorId;
         userInfo[kVendorGroupID] = selectedVendor.vendorgroup_id;
         userInfo[kName] = selectedVendor.name;
         [CurrentSession instance].userInfo = [NSDictionary dictionaryWithDictionary:userInfo];
 
-        [VendorDataLoader reload:[CurrentSession instance] inView:self.view onComplete:^{
-            [[CurrentSession instance] dispatchSessionDidChange];
-            [self dismissViewControllerAnimated:YES completion:^{ }];
-        }];
-
+        [VendorDataLoader load:@[ @(VendorDataTypeProducts), @(VendorDataTypeBulletins) ] inView:self.view onComplete:complete];
     }
 }
 

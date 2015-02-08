@@ -23,6 +23,7 @@
 @property CurrentSession *currentSession;
 @property (nonatomic, copy) void (^onComplete)();
 @property BOOL isChangingVendors;
+@property NSMutableArray *dataTypes;
 
 @property (strong) VendorDataLoader *retainedSelf;
 
@@ -31,32 +32,33 @@
 @implementation VendorDataLoader
 
 // loads customers -> products -> vendors -> bulletins
-+ (VendorDataLoader *)load:(CurrentSession *)currentSession inView:(UIView *)view onComplete:(void (^)())onComplete {
++ (VendorDataLoader *)load:(NSArray *)dataTypes inView:(UIView *)view onComplete:(void (^)())onComplete {
     VendorDataLoader *loader = [VendorDataLoader new];
-    loader.currentSession = currentSession;
+    loader.currentSession = [CurrentSession instance];
     loader.view = view;
     loader.retainedSelf = loader;
+    loader.dataTypes = [NSMutableArray arrayWithArray:dataTypes];
     loader.onComplete = ^{
         onComplete();
         loader.retainedSelf = nil;
     };
-    [loader loadCustomers];
+    [loader loadNext];
     return loader;
 }
 
-// loads products -> bulletins
-+ (VendorDataLoader *)reload:(CurrentSession *)currentSession inView:(UIView *)view onComplete:(void (^)())onComplete {
-    VendorDataLoader *loader = [VendorDataLoader new];
-    loader.currentSession = currentSession;
-    loader.view = view;
-    loader.retainedSelf = loader;
-    loader.onComplete = ^{
-        onComplete();
-        loader.retainedSelf = nil;
-    };
-    loader.isChangingVendors = YES;
-    [loader loadProducts]; // skip straight to products
-    return loader;
+- (void)loadNext {
+    if (self.dataTypes.count > 0) {
+        id dataType = self.dataTypes.firstObject;
+        [self.dataTypes removeObject:dataType];
+        switch ([dataType intValue]) {
+            case (VendorDataTypeCustomers): [self loadCustomers]; break;
+            case (VendorDataTypeVendors): [self loadVendors]; break;
+            case (VendorDataTypeBulletins): [self loadBulletins]; break;
+            case (VendorDataTypeProducts): [self loadProducts]; break;
+        }
+    } else {
+        self.onComplete();
+    }
 }
 
 - (id)init {
@@ -94,7 +96,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (hud) [hud hide:NO];
-                [self loadProducts];
+                [self loadNext];
             });
         }];
     } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
@@ -135,7 +137,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
     dispatch_async(dispatch_get_main_queue(), ^{
         [[MBProgressHUD HUDForView:self.view] hide:NO];
-        self.isChangingVendors ? [self loadBulletins] : [self loadVendors];
+        [self loadNext];
     });
 }
 
@@ -167,7 +169,7 @@
                     }
                     [[CurrentSession mainQueueContext] save:nil];
                     [hud hide:NO];
-                    [self loadBulletins];
+                    [self loadNext];
                 }
             }];
         } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
@@ -199,7 +201,7 @@
                 [[CurrentSession mainQueueContext] save:nil];
             }
             [hud hide:NO];
-            self.onComplete();
+            [self loadNext];
         }];
     } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
         [[CurrentSession mainQueueContext] performBlockAndWait:^{

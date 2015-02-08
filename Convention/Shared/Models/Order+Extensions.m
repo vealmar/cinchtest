@@ -182,24 +182,21 @@
 }
 
 - (NSArray *)findWriteInLines {
-    return Underscore.array(self.lineItems).filter(^BOOL(LineItem *lineItem) {
+    return [self.lineItems filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(LineItem *lineItem, NSDictionary *bindings) {
         return lineItem.isWriteIn;
-    }).unwrap;
+    }]].allObjects;
 }
 
 - (NSArray *)findLinesByProductId:(NSNumber *)productId {
-    return Underscore.array(self.lineItems).filter(^BOOL(LineItem *lineItem) {
+    return [self.lineItems filteredSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(LineItem *lineItem, NSDictionary *bindings) {
         return ([lineItem.productId intValue] == [productId intValue] && ![lineItem isDiscount]);
-    }).unwrap;
+    }]].allObjects;
 }
 
 - (LineItem *)createLineForProductId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
     Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" inContext:context withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", productId]];
     LineItem *lineItem = [[LineItem alloc] initWithProduct:product context:context];
     [self addLineItemsObject:lineItem];
-    //@todo orders we should do this for all order saves
-    [OrderManager saveOrder:self inContext:context];
-
     return lineItem;
 }
 

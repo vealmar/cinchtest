@@ -229,6 +229,7 @@
 		6DDC9DE8E78A8B53317E0B0E /* EditButton-in.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC96EA219EC9BC7946EA39 /* EditButton-in.png */; };
 		6DDC9DEC3D7CBB0BF34D09F1 /* afc-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9A4EED104B47462D8D5B /* afc-logo.png */; };
 		6DDC9DF1174AE86E3FAB650B /* CurrentSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC90D822B18750FFE5445D /* CurrentSession.m */; };
+		6DDC9E2514D4BB1E03E25744 /* ResponseStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC957D843348A340EF420D /* ResponseStatus.m */; };
 		6DDC9E26158E1C08563EC406 /* printform.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC957C708303A704A68F96 /* printform.png */; };
 		6DDC9E4092B7388A9358BE4D /* deleteout.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9D5C85AFC1E4F0E83C47 /* deleteout.png */; };
 		6DDC9E42FB40FC4ED0ADFC9A /* CGContext+Boost.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9DFBF5B8ADB38A2399B3 /* CGContext+Boost.m */; };
@@ -456,6 +457,7 @@
 		6DDC95510BD8EDB89A27EC66 /* arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "arrow@2x.png"; sourceTree = "<group>"; };
 		6DDC955441D215476C392368 /* VendorViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VendorViewDelegate.h; sourceTree = "<group>"; };
 		6DDC957C708303A704A68F96 /* printform.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = printform.png; sourceTree = "<group>"; };
+		6DDC957D843348A340EF420D /* ResponseStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResponseStatus.m; sourceTree = "<group>"; };
 		6DDC958292C775F7C9EE80FE /* NEWbackground.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = NEWbackground.jpg; sourceTree = "<group>"; };
 		6DDC9592372E73EB55C09B51 /* PullToRefreshView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PullToRefreshView.h; sourceTree = "<group>"; };
 		6DDC9597D5DB674F9DD3A672 /* DDCalendarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDCalendarView.h; sourceTree = "<group>"; };
@@ -703,6 +705,7 @@
 		6DDC9F199F37EEEEE724832E /* loginBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loginBG.png; sourceTree = "<group>"; };
 		6DDC9F229ABB32B773CEBDE0 /* Vendor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vendor.h; sourceTree = "<group>"; };
 		6DDC9F47A40DCD2FEA0C9CBC /* CoreDataUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataUtil.h; sourceTree = "<group>"; };
+		6DDC9F4A404B356FC8694104 /* ResponseStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResponseStatus.h; sourceTree = "<group>"; };
 		6DDC9F5F5555960E816DA80E /* CIShipDateTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIShipDateTableViewCell.m; sourceTree = "<group>"; };
 		6DDC9F63F4775DD7DE80A2D5 /* CIOrderDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIOrderDetailTableViewController.h; sourceTree = "<group>"; };
 		6DDC9F6BCE38FC595F81D569 /* Futura Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.ttf; path = "Futura Medium.ttf"; sourceTree = "<group>"; };
@@ -926,6 +929,8 @@
 				6DDC95E599B5BE7AC1060A19 /* SynchronousResponse.m */,
 				6DDC97046E10CDB76D7654F5 /* JSONResponseSerializerWithErrorData.m */,
 				6DDC9AEC97A0FA7326D05FB8 /* JSONResponseSerializerWithErrorData.h */,
+				6DDC957D843348A340EF420D /* ResponseStatus.m */,
+				6DDC9F4A404B356FC8694104 /* ResponseStatus.h */,
 			);
 			path = Api;
 			sourceTree = "<group>";
@@ -2173,6 +2178,7 @@
 				6DDC9D4BC74112A902B20C23 /* CISelectVendorViewController.m in Sources */,
 				6DDC9C4F26F522F946875EA2 /* VendorDataLoader.m in Sources */,
 				6DDC9644E5A8E8CA339A5E5D /* CIProductDescriptionColumnView.m in Sources */,
+				6DDC9E2514D4BB1E03E25744 /* ResponseStatus.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

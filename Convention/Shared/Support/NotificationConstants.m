@@ -18,6 +18,7 @@ NSString *const OrderDeleteRequestedNotification = @"OrderDeleteRequestedNotific
 NSString *const OrderReloadCompleteNotification = @"OrderReloadCompleteNotification";
 
 NSString *const LineQuantityChangedNotification = @"LineQuantityChangedNotification";
+NSString *const LinePriceChangedNotification = @"LinePriceChangedNotification";
 NSString *const LineSelectionNotification = @"LineSelectionNotification";
 NSString *const LineDeselectionNotification = @"LineDeselectionNotification";
 NSString *const LineTabbedNotification = @"LineTabbedNotification";

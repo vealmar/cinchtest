@@ -38,6 +38,8 @@
 
 - (void)setQuantity:(NSString *)quantity;
 
+- (void)setPrice:(NSNumber *)price;
+
 #pragma mark - Syncing
 
 - (id)initWithJsonFromServer:(NSDictionary *)json inContext:(NSManagedObjectContext *)managedObjectContext;

@@ -7,10 +7,15 @@
 
 @class CurrentSession;
 
+typedef enum  {
+    VendorDataTypeCustomers,
+    VendorDataTypeBulletins,
+    VendorDataTypeVendors,
+    VendorDataTypeProducts
+} VendorDataType;
 
 @interface VendorDataLoader : NSObject
 
-+ (VendorDataLoader *)load:(CurrentSession *)currentSession inView:(UIView *)view onComplete:(void (^)())onComplete;
-+ (VendorDataLoader *)reload:(CurrentSession *)currentSession inView:(UIView *)view onComplete:(void (^)())onComplete;
++ (VendorDataLoader *)load:(NSArray *)dataTypes inView:(UIView *)view onComplete:(void (^)())onComplete;
 
 @end

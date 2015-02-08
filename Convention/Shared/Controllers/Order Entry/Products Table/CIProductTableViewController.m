@@ -4,6 +4,7 @@
 //
 
 #import <MGSwipeTableCell/MGSwipeButton.h>
+#import <Underscore.m/Underscore.h>
 #import "CIProductTableViewController.h"
 #import "CITableViewColumns.h"
 #import "CITableViewCell.h"
@@ -28,13 +29,16 @@
 #import "LineItem+Extensions.h"
 #import "CIProductDescriptionColumnView.h"
 #import "ThemeUtil.h"
+#import "OrderManager.h"
+#import "DateRange.h"
 
 @interface CIProductTableViewController()
 
-@property id<ProductCellDelegate> delegate;
+@property id<ProductCellDelegate> productCellDelegate;
 @property ProductSearchQueue *productSearchQueue;
 @property PullToRefreshView *pull;
 @property BOOL isLoadingProducts;
+@property NSArray *lastFilterOperationSortDescriptors;
 
 // contains a collection of lineitems/products in the form:
 //   lineitem - line written for product
@@ -52,12 +56,9 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     [super viewDidLoad];
 
     self.writeInLines = [NSMutableArray array];
-
+    self.lastFilterOperationSortDescriptors = @[ ];
     self.isLoadingProducts = NO;
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloading:) name:ProductsLoadRequestedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloadComplete:) name:ProductsLoadedNotification object:nil];
-
+    
     self.pull = [[PullToRefreshView alloc] initWithScrollView:self.tableView];
     [self.pull setDelegate:self];
     [self.tableView addSubview:self.pull];
@@ -67,17 +68,13 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-//    self.productSearchQueue = [[ProductSearchQueue alloc] initWithProductController:self];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloading:) name:ProductsLoadRequestedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloadComplete:) name:ProductsLoadedNotification object:nil];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-//    self.productSearchQueue = nil;
-}
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadRequestedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)productsReloading:(NSNotification *)notification {
@@ -91,7 +88,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 }
 
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate {
-    self.delegate = delegate;
+    self.productCellDelegate = delegate;
     [super prepareForDisplay];
 }
 
@@ -100,26 +97,37 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     [self.tableView endEditing:YES];
     
     NSFetchRequest *request = [CoreDataManager buildProductFetch:[ProductSearch searchFor:query inBulletin:bulletinId forVendor:vendorId sortedBy:[self currentSortDescriptors] limitResultSize:0 usingContext:self.managedObjectContext]];
-    if (inCart && self.delegate.currentOrderForCell) {
-        NSPredicate *inCartPredicate = [NSPredicate predicateWithFormat:@"ANY lineItems.order == %@ AND ANY lineItems.quantity != nil", self.delegate.currentOrderForCell.objectID];
+    if (inCart && self.productCellDelegate.currentOrderForCell) {
+        NSPredicate *inCartPredicate = [NSPredicate predicateWithFormat:@"ANY lineItems.order == %@ AND ANY lineItems.quantity != nil", self.productCellDelegate.currentOrderForCell.objectID];
         request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[request.predicate, inCartPredicate]];
     }
     
-    // add write-in sorting
-    NSSortDescriptor *sectionSort = [NSSortDescriptor sortDescriptorWithKey:@"section" ascending:YES];
-    request.sortDescriptors = [@[sectionSort] arrayByAddingObjectsFromArray:request.sortDescriptors];
-    
+    self.lastFilterOperationSortDescriptors = request.sortDescriptors;
+    request.sortDescriptors = [self prependSectionSortDescriptor:request.sortDescriptors];
     request.includesPendingChanges = YES;
     request.includesSubentities = NO;
 
     self.fetchRequest = request;
 }
 
+- (NSArray *)prependSectionSortDescriptor:(NSArray *)sortDescriptors {
+    if (sortDescriptors.count == 0 || ![((NSSortDescriptor *) sortDescriptors.firstObject).key isEqualToString:@"section"]) {
+        // add write-in sorting
+        NSSortDescriptor *sectionSort = [NSSortDescriptor sortDescriptorWithKey:@"section" ascending:YES];
+        return [@[sectionSort] arrayByAddingObjectsFromArray:sortDescriptors];
+    } else {
+        return sortDescriptors;
+    }
+
+}
+
 - (NSFetchedResultsController *)initializeFetchedResultsController:(NSFetchRequest *)fetchRequest {
-    return [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+    id c = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                managedObjectContext:self.managedObjectContext
                                                  sectionNameKeyPath:@"section"
                                                           cacheName:nil];
+    
+    return c;
 }
 
 - (NSFetchRequest *)initialFetchRequest {
@@ -131,7 +139,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     CITableViewColumns *columns = [CITableViewColumns new];
     [columns add:ColumnTypeString titled:@"Item #" using:@{
             ColumnOptionContentKey: @"invtid",
-            ColumnOptionDesiredWidth: @100,
+            ColumnOptionDesiredWidth: config.discounts ? @100 : @150,
             ColumnOptionSortableKey: @YES
     }];
     if (config.productEnableManufacturerNo) {
@@ -141,7 +149,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
                 ColumnOptionSortableKey: @YES
         }];
     }
-    [columns add:ColumnTypeString titled:@"Description" using:@{
+    [columns add:ColumnTypeCustom titled:@"Description" using:@{
             ColumnOptionContentKey: @"descr",
             ColumnOptionContentKey2: @"descr2",
             ColumnOptionCustomTypeClass: [CIProductDescriptionColumnView class],
@@ -199,79 +207,12 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
                           onFailure:failureBlock];
 }
 
-- (NSArray *)mapIndexPathsFromFetchResultsController:(NSIndexPath *)indexPath {
-    NSMutableArray *indexPaths = [NSMutableArray array];
-    
-    if (indexPath.section == 1) {
-        Product *product = [self.fetchedResultsController objectAtIndexPath:indexPath];
-
-        [self.writeInLines enumerateObjectsUsingBlock:^(id line, NSUInteger idx, BOOL *stop) {
-            if (([line isKindOfClass:[Product class]] && [product.productId isEqualToNumber:((Product *)line).productId]) ||
-                    ([line isKindOfClass:[LineItem class]] && [product.productId isEqualToNumber:((LineItem *)line).productId]))
-            [indexPaths addObject:[NSIndexPath indexPathForRow:idx inSection:1]];
-        }];
-    } else {
-        [indexPaths addObject:indexPath];
-    }
-
-    return [NSArray arrayWithArray:indexPaths];
-}
-
-- (NSIndexPath *)mapIndexPathToFetchResultsController:(NSIndexPath *)indexPath {
-    if (indexPath.section == 1) {
-        id line = self.writeInLines[indexPath.row];
-        if ([line isKindOfClass:[Product class]]) {
-            return [self.fetchedResultsController indexPathForObject:line];
-        } else {
-            return [self.fetchedResultsController indexPathForObject:((LineItem *)line).product];
-        }
-    } else {
-        return indexPath;
-    }
-}
-
-#pragma mark - NSFetchedResultsControllerDelegate
-
-- (void)controller:(NSFetchedResultsController *)controller
-   didChangeObject:(id)anObject
-       atIndexPath:(NSIndexPath *)indexPath
-     forChangeType:(NSFetchedResultsChangeType)type
-      newIndexPath:(NSIndexPath *)newIndexPath {
-
-    NSArray *indexPaths = [self mapIndexPathsFromFetchResultsController:indexPath];
-    NSArray *newIndexPaths = [self mapIndexPathsFromFetchResultsController:newIndexPath];
-    [indexPaths enumerateObjectsUsingBlock:^(NSIndexPath *indexPath, NSUInteger idx, BOOL *stop) {
-        [super controller:controller
-          didChangeObject:anObject 
-              atIndexPath:indexPath 
-            forChangeType:type 
-             newIndexPath:newIndexPaths[idx]];
-    }];
-}
-
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    [super controllerDidChangeContent:controller];
-
-    [self.writeInLines removeAllObjects];
-
-    id<NSFetchedResultsSectionInfo> sectionInfo = [self.fetchedResultsController.sections objectAtIndex:1];
-    for (Product *product in sectionInfo.objects) {
-        NSArray *lines = [self.delegate.currentOrderForCell findLinesByProductId:product.productId];
-        [self.writeInLines addObjectsFromArray:lines];
-        [self.writeInLines addObject:product];
-    }
-}
-
 #pragma UITableViewDelegate
 
 #pragma UITableViewDataSource
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (section == 1) {
-        return [self.writeInLines count];
-    } else {
-        return [super tableView:tableView numberOfRowsInSection:section];
-    }
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+    return nil;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
@@ -281,18 +222,11 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CIProductTableViewCell *cell = (CIProductTableViewCell *)[self.tableView dequeueReusableCellWithIdentifier:PRODUCT_VIEW_CELL_KEY forIndexPath:indexPath];
     cell.delegate = self;
-    [cell prepareForDisplay:self.columns delegate:self.delegate];
+    [cell prepareForDisplay:self.columns productCellDelegate:self.productCellDelegate];
 
-    Product *product = [self objectAtIndexPath:[self mapIndexPathToFetchResultsController:indexPath]];
-
-    if (indexPath.section == 1) {
-        id line = self.writeInLines[indexPath.row];
-        if (![line isKindOfClass:[LineItem class]]) line = nil;
-        [cell render:product lineItem:line];
-    } else {
-        LineItem *line = [self.delegate.currentOrderForCell findLinesByProductId:product.productId].firstObject;
-        [cell render:product lineItem:line];
-    }
+    Product *product = [self objectAtIndexPath:indexPath];
+    LineItem *line = [self.productCellDelegate.currentOrderForCell findLinesByProductId:product.productId].firstObject;
+    [cell render:product lineItem:line];
 
     return cell;
 }
@@ -319,12 +253,14 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 #pragma mark - CITableSortDelegate
 
 - (void)sortSelected:(NSArray *)sortDescriptors {
+    //resign quantity first responder here if we are using non-shipdate style; we don't want a lineitem saving while we are changing the fetchresults
+    [self.tableView endEditing:YES];
+
     NSFetchRequest *newFetchRequest = [self.fetchRequest copy];
-    newFetchRequest.sortDescriptors = sortDescriptors;
+    NSArray *sortSelectionOnExistingSort = [sortDescriptors arrayByAddingObjectsFromArray:self.lastFilterOperationSortDescriptors];
+    newFetchRequest.sortDescriptors = [self prependSectionSortDescriptor:sortSelectionOnExistingSort];
     self.fetchRequest = newFetchRequest;
 }
-
-
 
 #pragma mark - MGSwipeTableCellDelegate
 
@@ -333,7 +269,8 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 * @return YES if swipe is allowed
 **/
 -(BOOL) swipeTableCell:(MGSwipeTableCell*) cell canSwipe:(MGSwipeDirection) direction {
-    return YES;
+    BOOL hasFixedShipDates = ([ShowConfigurations instance].shipDates && [ShowConfigurations instance].orderShipDates.fixedDates.count > 0);
+    return MGSwipeDirectionRightToLeft == direction || (![ShowConfigurations instance].shipDates || hasFixedShipDates);
 }
 
 /**
@@ -349,12 +286,51 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 * Called when the user clicks a swipe button or when a expandable button is automatically triggered
 * @return YES to autohide the current swipe buttons
 **/
--(BOOL) swipeTableCell:(MGSwipeTableCell*) cell tappedButtonAtIndex:(NSInteger) index direction:(MGSwipeDirection)direction fromExpansion:(BOOL) fromExpansion {
-    CIProductTableViewCell *producCell = (CIProductTableViewCell *)cell;
+-(BOOL) swipeTableCell:(MGSwipeTableCell*) cell tappedButtonAtIndex:(NSInteger)index direction:(MGSwipeDirection)direction fromExpansion:(BOOL) fromExpansion {
+    CIProductTableViewCell *productCell = (CIProductTableViewCell *)cell;
 
-    if (producCell.lineItem) {
-        Order *order = [self.delegate currentOrderForCell];
-        [order removeLineItems:[NSSet setWithObject:producCell.lineItem]];
+    if (MGSwipeDirectionRightToLeft == direction) {
+        if (0 == index) {
+            if (productCell.lineItem) {
+                if ([ShowConfigurations instance].shipDates && [ShowConfigurations instance].orderShipDates.fixedDates.count > 0) {
+                    for (NSDate *shipDate in productCell.lineItem.shipDates) {
+                        [productCell.lineItem setQuantity:0 forShipDate:shipDate];
+                    }
+                } else if (![ShowConfigurations instance].shipDates) {
+                    [productCell.lineItem setQuantity:@"0"];
+                }
+
+                Order *order = [self.productCellDelegate currentOrderForCell];
+                [OrderManager saveOrder:order inContext:[CurrentSession mainQueueContext]];
+
+                [self.tableView reloadData];
+            }
+        }
+    } else {
+        LineItem *lineItem = productCell.lineItem;
+        Order *order = [self.productCellDelegate currentOrderForCell];
+
+        if (!lineItem) {
+            lineItem = [order createLineForProductId:((Product *) productCell.rowData).productId context:[CurrentSession mainQueueContext]];
+        }
+
+        int quantityIncrement = 0;
+        if (0 == index) {
+            quantityIncrement = 1;
+        } else if (1 == index) {
+            quantityIncrement = 10;
+        } else if (2 == index) {
+            quantityIncrement = 100;
+        }
+
+        if ([ShowConfigurations instance].shipDates && [ShowConfigurations instance].orderShipDates.fixedDates.count > 0) {
+            NSDate *shipDate = (NSDate *) [ShowConfigurations instance].orderShipDates.fixedDates.firstObject;
+            [lineItem setQuantity:( [lineItem getQuantityForShipDate:shipDate] + quantityIncrement ) forShipDate:shipDate];
+        } else if (![ShowConfigurations instance].shipDates) {
+            [lineItem setQuantity:@( lineItem.totalQuantity + quantityIncrement ).stringValue];
+        }
+
+        [OrderManager saveOrder:order inContext:[CurrentSession mainQueueContext]];
     }
 
     return YES;
@@ -372,19 +348,32 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 **/
 -(NSArray*) swipeTableCell:(MGSwipeTableCell*) cell swipeButtonsForDirection:(MGSwipeDirection)direction
              swipeSettings:(MGSwipeSettings*) swipeSettings expansionSettings:(MGSwipeExpansionSettings*) expansionSettings {
+    NSArray *buttons = @[ ];
+    
     if (MGSwipeDirectionRightToLeft == direction) {
         expansionSettings.buttonIndex = 0;
         expansionSettings.fillOnTrigger = YES;
 
-        CIProductTableViewCell *producCell = (CIProductTableViewCell *)cell;
-        if (producCell.lineItem) {
-            return @[[MGSwipeButton buttonWithTitle:@"Remove from Order" backgroundColor:[ThemeUtil orangeColor]];
+        CIProductTableViewCell *productCell = (CIProductTableViewCell *)cell;
+        if (productCell.lineItem) {
+            buttons = @[ [MGSwipeButton buttonWithTitle:@"Remove" backgroundColor:[UIColor redColor]] ];
         } else {
-            return @[ ];
+            buttons = @[ ];
         }
     } else {
-        return @[ ];
+//        UIColor *baseColor = [ThemeUtil greenColor];
+//        buttons = @[ [MGSwipeButton buttonWithTitle:@"+1" backgroundColor:[ThemeUtil lighten:baseColor by:0.76]],
+//                [MGSwipeButton buttonWithTitle:@"+10" backgroundColor:[ThemeUtil lighten:baseColor by:0.82]],
+//                [MGSwipeButton buttonWithTitle:@"+100" backgroundColor:[ThemeUtil lighten:baseColor by:0.9]] ];
+        
+//        UIColor *baseColor = [ThemeUtil greenColor];
+        buttons = @[ [MGSwipeButton buttonWithTitle:@"+1" backgroundColor:[UIColor colorWithRed:0.153 green:0.682 blue:0.376 alpha:0.900]],
+                     [MGSwipeButton buttonWithTitle:@"+10" backgroundColor:[UIColor colorWithRed:0.153 green:0.682 blue:0.376 alpha:0.800]],
+                     [MGSwipeButton buttonWithTitle:@"+100" backgroundColor:[UIColor colorWithRed:0.153 green:0.682 blue:0.376 alpha:0.700]] ];
+
     }
+    
+    return buttons;
 }
 
 

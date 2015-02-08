@@ -23,7 +23,7 @@
 #import "NotificationConstants.h"
 #import "ShowConfigurations.h"
 #import "CurrentSession.h"
-
+#import "ResponseStatus.h"
 
 @implementation CoreDataManager
 
@@ -106,10 +106,12 @@
     [[CinchJSONAPIClient sharedInstance] GET:kDBGETPRODUCTS parameters:@{ kAuthToken: authToken, kVendorGroupID: [NSString stringWithFormat:@"%@", vendorGroupId] } success:^(NSURLSessionDataTask *task, id JSON) {
         if (JSON && ([(NSArray *) JSON count] > 0)) {
 
-            //always perform the delete synchronously so we dont delete stuff we pull from the server later
-            [queueContext performBlockAndWait:^{
-                [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Product" withContext:queueContext];
-            }];
+            if (ResponseStatusTypeNotModified != [ResponseStatus statusOfTask:task]) {
+                //always perform the delete synchronously so we dont delete stuff we pull from the server later
+                [queueContext performBlockAndWait:^{
+                    [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Product" withContext:queueContext];
+                }];
+            }
 
             NSArray *products = (NSArray *) JSON;
             int batchSize = 500;
@@ -177,8 +179,6 @@
         } else {
             completeWithSuccess();
         }
-        
-        completeWithSuccess();
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
         id JSON = error.userInfo[JSONResponseSerializerWithErrorDataKey];
         if (failureBlock) failureBlock();
