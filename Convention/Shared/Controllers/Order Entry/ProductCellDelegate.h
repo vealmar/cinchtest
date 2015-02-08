@@ -9,15 +9,16 @@
 #import <Foundation/Foundation.h>
 
 @class Order;
+@class LineItem;
 
 @protocol ProductCellDelegate <NSObject>
 @required
 
 // farris product cell
-- (void)ShowPriceChange:(double)price productId:(NSNumber *)productId;
+- (void)showPriceChanged:(double)price productId:(NSNumber *)productId lineItem:(LineItem *)lineItem;
 
 // farris product cell
-- (void)QtyTouchForIndex:(NSNumber *)productId;
+- (void)quantityWillBeginEditing:(NSNumber *)productId lineItem:(LineItem *)lineItem;
 
 - (Order *)currentOrderForCell;
 

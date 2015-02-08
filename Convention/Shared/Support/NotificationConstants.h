@@ -8,7 +8,7 @@ extern NSString *const CustomersLoadedNotification;
 
 extern NSString *const ProductsLoadRequestedNotification;
 extern NSString *const ProductsLoadedNotification;
-extern NSString *const ProductsReturnNotification;
+extern NSString *const ProductSelectionCompleteNotification;
 extern NSString *const   kCustomerUserInfoKey;
 extern NSString *const PrintersLoadedNotification;
 

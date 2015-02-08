@@ -18,6 +18,8 @@
 #import "CoreDataUtil.h"
 #import "Error+Extensions.h"
 #import "Error.h"
+#import "StringManipulation.h"
+#import "Product+Extensions.h"
 
 @implementation LineItem (Extensions)
 
@@ -95,6 +97,10 @@
 
 - (BOOL)isDiscount {
     return [self.category isEqualToString:@"discount"];
+}
+
+- (BOOL)isWriteIn {
+    return self.product && [self.product isWriteIn];
 }
 
 - (double)subtotal {

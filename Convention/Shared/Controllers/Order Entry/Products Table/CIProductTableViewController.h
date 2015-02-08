@@ -4,6 +4,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MGSwipeTableCell.h"
 #import "CICoreDataTableViewController.h"
 #import "CITableViewController.h"
 #import "PullToRefreshView.h"
@@ -11,7 +12,7 @@
 
 @protocol ProductCellDelegate;
 
-@interface CIProductTableViewController : CICoreDataTableViewController <PullToRefreshViewDelegate, CITableSortDelegate>
+@interface CIProductTableViewController : CICoreDataTableViewController <MGSwipeTableCellDelegate, PullToRefreshViewDelegate, CITableSortDelegate>
 
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate;
 

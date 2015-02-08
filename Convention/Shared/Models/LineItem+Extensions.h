@@ -24,6 +24,8 @@
 
 - (BOOL)isDiscount;
 
+- (BOOL)isWriteIn;
+
 - (double)subtotal;
 
 - (double)subtotalUsing:(NSString *)quantityValue shipDatesCount:(int)shipDatesCount;

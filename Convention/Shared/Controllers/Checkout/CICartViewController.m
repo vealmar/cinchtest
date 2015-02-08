@@ -21,6 +21,7 @@
 #import "OrderSubtotalsByDate.h"
 #import "OrderTotals.h"
 #import "LineItem+Extensions.h"
+#import "LineItem.h"
 
 
 @interface CICartViewController ()
@@ -28,8 +29,8 @@
 @property(strong, nonatomic) Order *order;
 @property(nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property(nonatomic, strong) NSNumber *selectedVendorId;
-@property(nonatomic, strong) NSArray *productsInCart;
-@property(nonatomic, strong) NSArray *discountsInCart;
+@property(nonatomic, strong) NSArray *productsLines;
+@property(nonatomic, strong) NSArray *discountLines;
 @property(nonatomic) BOOL initialized;
 
 @property (assign) float totalGross;
@@ -54,8 +55,8 @@
     if (self) {
         helper = [[CIProductViewControllerHelper alloc] init];
         self.order = coreDataOrder;
-        self.productsInCart = [[NSArray alloc] init];
-        self.discountsInCart = [[NSArray alloc] init];
+        self.productsLines = [[NSArray alloc] init];
+        self.discountLines = [[NSArray alloc] init];
         self.subtotalLines = [NSMutableArray array];
         self.managedObjectContext = managedObjectContext;
         self.customer = customerDictionary;
@@ -144,15 +145,15 @@
     NSMutableArray *discountLinesBuilder = [NSMutableArray array]; //uses lineitemid
     for (LineItem *lineItem in self.order.lineItems) {
         if (lineItem.isDiscount) {
-            [discountLinesBuilder addObject:lineItem.lineItemId];
+            [discountLinesBuilder addObject:lineItem];
         } else if (lineItem.productId) {
-            [productLinesBuilder addObject:lineItem.productId];
+            [productLinesBuilder addObject:lineItem];
         }
     }
     
     self.savingOrder = NO;
-    self.productsInCart = [helper sortProductsBySequenceAndInvtId:[NSArray arrayWithArray:productLinesBuilder]];
-    self.discountsInCart = [helper sortDiscountsByLineItemId:[NSArray arrayWithArray:discountLinesBuilder]];
+    self.productsLines = [helper sortProductsBySequenceAndInvtId:[NSArray arrayWithArray:productLinesBuilder]];
+    self.discountLines = [helper sortDiscountsByLineItemId:[NSArray arrayWithArray:discountLinesBuilder]];
     [self updateTotals];
     [self reloadTable];
 }
@@ -219,10 +220,10 @@
 - (NSInteger)tableView:(UITableView *)myTableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
         case 0: {
-            return self.productsInCart.count;
+            return self.productsLines.count;
         }
         case 1: {
-            return self.discountsInCart.count;
+            return self.discountLines.count;
         }
         case 2: {
             return self.subtotalLines.count + 1;
@@ -234,15 +235,13 @@
 - (UITableViewCell *)tableView:(UITableView *)myTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case 0: {
-            NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-            LineItem *newLineItem = [self.order findLineByProductId:productId];
+            LineItem *productLineItem = self.productsLines[(NSUInteger) [indexPath row]];
             FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
-            [cell initializeWithCart:newLineItem tag:[indexPath row] ProductCellDelegate:self];
+            [cell initializeWithCart:productLineItem tag:[indexPath row] ProductCellDelegate:self];
             return cell;
         }
         case 1: {
-            NSNumber *lineItemId = self.discountsInCart[(NSUInteger) [indexPath row]];
-            LineItem *discountLineItem = [self.order findLineById:lineItemId];
+            LineItem *discountLineItem = self.discountLines[(NSUInteger) [indexPath row]];
             FarrisCartViewCell *cell = (FarrisCartViewCell *) [helper dequeueReusableCartViewCell:myTableView];
             [cell initializeWithDiscount:discountLineItem tag:[indexPath row] ProductCellDelegate:self];
             return cell;
@@ -301,8 +300,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
-        NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-        LineItem *lineItem = [self.order findLineByProductId:productId];
+        LineItem *lineItem = self.productsLines[(NSUInteger) [indexPath row]];
         if (lineItem.warnings.count > 0 || lineItem.errors.count > 0)
             return 44 + ((lineItem.warnings.count + lineItem.errors.count) * 42);
     }
@@ -311,8 +309,7 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
-        NSNumber *productId = self.productsInCart[(NSUInteger) [indexPath row]];
-        LineItem *lineItem = [self.order findLineByProductId:productId];
+        LineItem *lineItem = self.productsLines[(NSUInteger) [indexPath row]];
         [helper updateCellBackground:cell order:self.order lineItem:lineItem];
     }
 
@@ -379,8 +376,8 @@
 //    }
 }
 
-- (void)ShowPriceChange:(double)price productId:(NSNumber *)productId {
-    [self.order updateItemShowPrice:@(price) productId:productId context:self.managedObjectContext];
+- (void)showPriceChange:(double)price productId:(NSNumber *)productId lineItem:(LineItem *)lineItem {
+    //deprecated
 }
 
 - (void)QtyTouchForIndex:(NSNumber *)productId {

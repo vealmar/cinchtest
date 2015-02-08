@@ -9,6 +9,7 @@
 #import "DateUtil.h"
 #import "CoreDataUtil.h"
 #import "NumberUtil.h"
+#import "StringManipulation.h"
 
 
 @implementation Product (Extensions)
@@ -68,8 +69,16 @@
         self.editable = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductEditable]];
         NSArray *tagsArray = [NilUtil objectOrEmptyArray:[productFromServer objectForKey:kProductTags]];
         self.tags = tagsArray.count > 0 ? [tagsArray componentsJoinedByString:@","] : nil;
+
+        if ([self.tags contains:@"Write-In"]) {
+            self.section = @1;
+        }
     }
     return self;
+}
+
+- (BOOL)isWriteIn {
+    return [self.tags contains:@"Write-In"];
 }
 
 + (Product *)findProduct:(NSNumber *)productId {

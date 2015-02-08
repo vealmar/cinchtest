@@ -6,6 +6,7 @@ pod 'JSONKit', '~> 1.5pre'
 pod 'XLForm'
 pod 'BlocksKit'
 pod "AFNetworking", "~> 2.0"
+pod 'MGSwipeTableCell'
 
 # Remove 64-bit build architecture from Pods targets
 post_install do |installer|

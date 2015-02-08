@@ -7,7 +7,11 @@
 #import "Product.h"
 
 @interface Product (Extensions)
+
 - (id)initWithProductFromServer:(NSDictionary *)productFromServer context:(NSManagedObjectContext *)context;
 
+- (BOOL)isWriteIn;
+
 + (Product *)findProduct:(NSNumber *)productId;
+
 @end

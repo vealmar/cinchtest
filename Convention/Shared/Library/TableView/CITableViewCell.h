@@ -4,12 +4,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "MGSwipeTableCell.h"
 
 @class CITableViewColumns;
 @class CITableViewColumn;
 @class CITableViewColumnView;
 
-@interface CITableViewCell : UITableViewCell
+@interface CITableViewCell : MGSwipeTableCell
 
 @property id rowData;
 

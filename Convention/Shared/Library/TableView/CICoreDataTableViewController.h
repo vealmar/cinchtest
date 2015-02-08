@@ -43,6 +43,8 @@
 
 - (void)resumeContextUpdates;
 
+- (NSFetchedResultsController *)initializeFetchedResultsController:(NSFetchRequest *)fetchRequest;
+
 @end
 
 @interface CICoreDataTableViewController (AbstractMethods)

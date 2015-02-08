@@ -104,6 +104,7 @@
 		6DDC96213040C05A3D05BC51 /* Vendor.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9D39B5696C4021ADDC71 /* Vendor.m */; };
 		6DDC9622685A7986A3EFD7F9 /* CinchJSONAPIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC99305AB529C2BF79C40A /* CinchJSONAPIClient.m */; };
 		6DDC963F42715DC65C683C4F /* MenuViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9E58B24B08B42C45A316 /* MenuViewCell.m */; };
+		6DDC9644E5A8E8CA339A5E5D /* CIProductDescriptionColumnView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC991230481B05C2702839 /* CIProductDescriptionColumnView.m */; };
 		6DDC965B446788116832AC23 /* square-paper.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9FBE9BFC9E3F0CD961CC /* square-paper.png */; };
 		6DDC9679F0BF1B0955D83864 /* ProductCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC9219BC5825DF79586254 /* ProductCache.m */; };
 		6DDC967D65079E66618FB875 /* CIOrderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9041AD870E0BFD8A6E8A /* CIOrderCell.xib */; };
@@ -551,6 +552,7 @@
 		6DDC990D06D9A0FBEA4E10F1 /* CICustomerInfoViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = CICustomerInfoViewController.xib; path = ../../../iPad/CICustomerInfoViewController.xib; sourceTree = "<group>"; };
 		6DDC990E0F42599369B92356 /* SynchronousRequestUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SynchronousRequestUtil.m; sourceTree = "<group>"; };
 		6DDC9910746F998E77CFF1A5 /* NumberUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NumberUtil.m; sourceTree = "<group>"; };
+		6DDC991230481B05C2702839 /* CIProductDescriptionColumnView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIProductDescriptionColumnView.m; sourceTree = "<group>"; };
 		6DDC99305AB529C2BF79C40A /* CinchJSONAPIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CinchJSONAPIClient.m; sourceTree = "<group>"; };
 		6DDC993FC0A9E16CF56D91F8 /* BulletinViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BulletinViewController.h; sourceTree = "<group>"; };
 		6DDC99403F56CC36E8263908 /* ReachabilityDelegation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReachabilityDelegation.h; sourceTree = "<group>"; };
@@ -580,6 +582,7 @@
 		6DDC9A42FA3B29774CC08F41 /* checkbox_flat_not_ticked.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checkbox_flat_not_ticked.png; sourceTree = "<group>"; };
 		6DDC9A4BA4F65A8E139B2636 /* DateRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateRange.m; sourceTree = "<group>"; };
 		6DDC9A4EED104B47462D8D5B /* afc-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "afc-logo.png"; sourceTree = "<group>"; };
+		6DDC9A5F901F9964D3863839 /* CIProductDescriptionColumnView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIProductDescriptionColumnView.h; sourceTree = "<group>"; };
 		6DDC9A68B5B3458821734618 /* CISignatureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISignatureViewController.m; sourceTree = "<group>"; };
 		6DDC9A8FA4C2D5089B8807DB /* BooleanOrderCustomFieldView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BooleanOrderCustomFieldView.h; sourceTree = "<group>"; };
 		6DDC9A9020D8B94E9ED41731 /* VendorViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VendorViewController.xib; sourceTree = "<group>"; };
@@ -1395,6 +1398,8 @@
 				6DDC9BAFAE83B95064F20B27 /* CIProductTableViewCell.h */,
 				6DDC9BC51C4CAD00C21B2059 /* CITagColumnView.m */,
 				6DDC9FFBDDE75E6EDF6F29BC /* CITagColumnView.h */,
+				6DDC991230481B05C2702839 /* CIProductDescriptionColumnView.m */,
+				6DDC9A5F901F9964D3863839 /* CIProductDescriptionColumnView.h */,
 			);
 			path = "Products Table";
 			sourceTree = "<group>";
@@ -2167,6 +2172,7 @@
 				6DDC9725EC896FFCD488AC58 /* CISelectVendorTableViewController.m in Sources */,
 				6DDC9D4BC74112A902B20C23 /* CISelectVendorViewController.m in Sources */,
 				6DDC9C4F26F522F946875EA2 /* VendorDataLoader.m in Sources */,
+				6DDC9644E5A8E8CA339A5E5D /* CIProductDescriptionColumnView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2276,6 +2282,16 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Mark  Veal (7JN56J2NT7)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Convention/Convention-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/AFNetworking\"",
+					"\"${PODS_ROOT}/Headers/Public/BlocksKit\"",
+					"\"${PODS_ROOT}/Headers/Public/ECSlidingViewController\"",
+					"\"${PODS_ROOT}/Headers/Public/JSONKit\"",
+					"\"${PODS_ROOT}/Headers/Public/MGSwipeTableCell\"",
+					"\"${PODS_ROOT}/Headers/Public/Underscore.m\"",
+					"\"${PODS_ROOT}/Headers/Public/XLForm\"",
+				);
 				INFOPLIST_FILE = "Convention/Convention-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -2301,6 +2317,16 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Convention Innovation, LLC";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Convention/Convention-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/AFNetworking\"",
+					"\"${PODS_ROOT}/Headers/Public/BlocksKit\"",
+					"\"${PODS_ROOT}/Headers/Public/ECSlidingViewController\"",
+					"\"${PODS_ROOT}/Headers/Public/JSONKit\"",
+					"\"${PODS_ROOT}/Headers/Public/MGSwipeTableCell\"",
+					"\"${PODS_ROOT}/Headers/Public/Underscore.m\"",
+					"\"${PODS_ROOT}/Headers/Public/XLForm\"",
+				);
 				INFOPLIST_FILE = "Convention/Convention-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";

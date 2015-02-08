@@ -7,7 +7,7 @@ NSString *const CustomersLoadedNotification = @"CustomersLoadedNotification";
 
 NSString *const ProductsLoadRequestedNotification = @"ProductsLoadRequestedNotification";
 NSString *const ProductsLoadedNotification = @"ProductsLoadedNotification";
-NSString *const ProductsReturnNotification = @"ProductsReturnNotification";
+NSString *const ProductSelectionCompleteNotification = @"ProductSelectionCompleteNotification";
 
 NSString *const   kCustomerUserInfoKey = @"kCustomerUserInfoKey";
 NSString *const PrintersLoadedNotification = @"PrintersLoadedNotification";

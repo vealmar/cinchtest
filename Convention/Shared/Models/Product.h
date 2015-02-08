@@ -39,7 +39,7 @@
 @property(nonatomic, retain) NSNumber *vendor_id;
 @property(nonatomic, retain) NSNumber *voucher;
 @property(nonatomic, retain) NSNumber *editable;
-
+@property(nonatomic, retain) NSNumber *section; // meta-property used to order products by sections
 @property(nonatomic, retain) NSString *tags; // tags are stored in the form "Tag1, Tag2, Tag3" to enable easier querying
 @property(nonatomic, retain) NSSet *lineItems;
 

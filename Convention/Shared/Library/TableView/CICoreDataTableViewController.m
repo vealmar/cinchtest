@@ -48,16 +48,18 @@
         [NSException raise:NSObjectNotAvailableException format:@"Cannot set a NSFetchRequest until context has been created."];
     }
     if (fetchRequest) {
-        self.fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                            managedObjectContext:self.managedObjectContext
-                                                                              sectionNameKeyPath:nil
-                                                                                       cacheName:nil];
+        self.fetchedResultsController = [self initializeFetchedResultsController:fetchRequest];
     } else {
         self.fetchedResultsController = nil;
     }
 }
 
-
+- (NSFetchedResultsController *)initializeFetchedResultsController:(NSFetchRequest *)fetchRequest {
+    return [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                               managedObjectContext:self.managedObjectContext
+                                                 sectionNameKeyPath:nil
+                                                          cacheName:nil];
+}
 
 - (NSFetchRequest *)initialFetchRequest {
     assert(false);

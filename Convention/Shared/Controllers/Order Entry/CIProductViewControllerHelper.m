@@ -132,9 +132,9 @@
 
 - (NSArray *)sortProductsBySequenceAndInvtId:(NSArray *)productIdsOrProducts {
     NSArray *sortedArray;
-    sortedArray = [productIdsOrProducts sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        Product *product1 = [a isKindOfClass:[Product class]] ? a : [Product findProduct:a];
-        Product *product2 = [b isKindOfClass:[Product class]] ? b : [Product findProduct:b];
+    sortedArray = [productIdsOrProducts sortedArrayUsingComparator:^NSComparisonResult(LineItem *a, LineItem *b) {
+        Product *product1 = a.product;
+        Product *product2 = b.product;
 
         NSNumber *firstSequence = (NSNumber *) [NilUtil nilOrObject:product1.sequence];
         NSNumber *secondSequence = (NSNumber *) [NilUtil nilOrObject:product2.sequence];
@@ -156,10 +156,8 @@
 
 - (NSArray *)sortDiscountsByLineItemId:(NSArray *)lineItemIds {
     NSArray *sortedArray;
-    sortedArray = [lineItemIds sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
-        NSNumber *first = (NSNumber *) a;
-        NSNumber *second = (NSNumber *) b;
-        return [first compare:second];
+    sortedArray = [lineItemIds sortedArrayUsingComparator:^NSComparisonResult(LineItem *a, LineItem *b) {
+        return [a.lineItemId compare:b.lineItemId];
     }];
     return sortedArray;
 }

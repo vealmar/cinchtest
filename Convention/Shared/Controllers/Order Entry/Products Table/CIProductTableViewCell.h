@@ -11,6 +11,9 @@
 
 @interface CIProductTableViewCell : CITableViewCell
 
+@property LineItem *lineItem;
+
 -(id)prepareForDisplay:(CITableViewColumns *)columns delegate:(id<ProductCellDelegate>)delegate;
+-(id)render:(id)rowData lineItem:lineItem;
 
 @end

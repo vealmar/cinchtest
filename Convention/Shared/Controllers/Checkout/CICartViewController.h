@@ -15,6 +15,7 @@
 @class Product;
 @class Order;
 @class CISignatureViewController;
+@class LineItem;
 
 @protocol CICartViewDelegate <NSObject>
 
@@ -61,7 +62,7 @@
 
 - (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token selectedVendorId:(NSNumber *)selectedVendorId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
-- (void)ShowPriceChange:(double)price productId:(NSNumber *)idx;
+- (void)showPriceChange:(double)price productId:(NSNumber *)idx lineItem:(LineItem *)lineItem;
 
 - (IBAction)Cancel:(id)sender;
 

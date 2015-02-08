@@ -40,11 +40,13 @@
 
 - (LineItem *)findLineById:(NSNumber *)lineItemId;
 
-- (LineItem *)findLineByProductId:(NSNumber *)productId;
+- (int)countWriteInLines;
 
-- (LineItem *)findOrCreateLineForProductId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+- (NSArray *)findWriteInLines;
 
-- (void)updateItemShowPrice:(NSNumber *)price productId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
+- (NSArray *)findLinesByProductId:(NSNumber *)productId;
+
+- (LineItem *)createLineForProductId:(NSNumber *)productId context:(NSManagedObjectContext *)context;
 
 - (void)removeZeroQuantityLines;
 

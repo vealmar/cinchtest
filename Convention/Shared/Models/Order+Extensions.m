@@ -164,6 +164,7 @@
     return [NSArray arrayWithArray:discountLineItemIds];
 }
 
+// @todo deprecate?
 - (LineItem *)findLineById:(NSNumber *)lineItemId {
     for (LineItem *lineItem in self.lineItems) {
         if ([lineItem.lineItemId intValue] == [lineItemId intValue])
@@ -172,35 +173,34 @@
     return nil;
 }
 
-- (LineItem *)findLineByProductId:(NSNumber *)productId {
+- (int)countWriteInLines {
+    int count = 0;
     for (LineItem *lineItem in self.lineItems) {
-        if ([lineItem.productId intValue] == [productId intValue] && ![lineItem isDiscount])
-            return lineItem;
+        if (lineItem.isWriteIn) count++;
     }
-    return nil;
+    return count;
 }
 
-- (LineItem *)findOrCreateLineForProductId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
-    LineItem *lineItem = [self findLineByProductId:productId];
-    if (!lineItem) {
-        Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" inContext:context withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", productId]];
-        lineItem = [[LineItem alloc] initWithProduct:product context:context];
-        [self addLineItemsObject:lineItem];
-        //@todo orders we should do this for all order saves
-        [OrderManager saveOrder:self inContext:context];
-    }
-    
+- (NSArray *)findWriteInLines {
+    return Underscore.array(self.lineItems).filter(^BOOL(LineItem *lineItem) {
+        return lineItem.isWriteIn;
+    }).unwrap;
+}
+
+- (NSArray *)findLinesByProductId:(NSNumber *)productId {
+    return Underscore.array(self.lineItems).filter(^BOOL(LineItem *lineItem) {
+        return ([lineItem.productId intValue] == [productId intValue] && ![lineItem isDiscount]);
+    }).unwrap;
+}
+
+- (LineItem *)createLineForProductId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
+    Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" inContext:context withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", productId]];
+    LineItem *lineItem = [[LineItem alloc] initWithProduct:product context:context];
+    [self addLineItemsObject:lineItem];
+    //@todo orders we should do this for all order saves
+    [OrderManager saveOrder:self inContext:context];
+
     return lineItem;
-}
-
-- (void)updateItemShowPrice:(NSNumber *)price productId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
-    LineItem *lineItem = [self findOrCreateLineForProductId:productId context:context];
-    lineItem.price = price;
-    NSError *error = nil;
-    if (![context save:&error]) {
-        NSString *msg = [NSString stringWithFormat:@"There was an error saving the product item. %@", error.localizedDescription];
-        [[[UIAlertView alloc] initWithTitle:@"Error" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
-    }
 }
 
 - (void)removeZeroQuantityLines {

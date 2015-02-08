@@ -489,7 +489,7 @@
     }
 }
 
-- (void)closeCalendar {
+- (void)closeProductDetail {
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
         // close calendar
         if (self.selectedLineItems.count == 1) {
@@ -748,7 +748,7 @@
     }
 }
 
-- (void)QtyTouchForIndex:(NSNumber *)productId {
+- (void)quantityWillBeginEditing:(NSNumber *)productId lineItem:(LineItem *)lineItem {
     if (self.isLoadingProducts) {
         [[[UIAlertView alloc] initWithTitle:@"Products Reloading" message:@"Products are currently being reloaded from the server in the background. Product searches cannot be conducted until complete." delegate:nil
                           cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -756,11 +756,13 @@
     }
 
     if ([ShowConfigurations instance].isLineItemShipDatesType) {
-        LineItem *lineItem = [self.order findOrCreateLineForProductId:productId
-                                                        context:self.order.managedObjectContext];
+        if (!lineItem) {
+            lineItem = [self.order createLineForProductId:productId
+                                                  context:self.order.managedObjectContext];
+        }
 
         if (self.selectedLineItems.count == 1) {
-            [self closeCalendar];
+            [self closeProductDetail];
         } else {
             [self toggleLineSelection:lineItem];
             self.slidingProductViewControllerDelegate.shipDateController.workingLineItem = lineItem;
@@ -775,8 +777,11 @@
     return self.order;
 }
 
-- (void)ShowPriceChange:(double)price productId:(NSNumber *)productId {
-    [self.order updateItemShowPrice:@(price) productId:productId context:[CurrentSession mainQueueContext]];
+- (void)showPriceChanged:(double)price productId:(NSNumber *)productId lineItem:(LineItem *)lineItem {
+    if (!lineItem) {
+        lineItem = [self.order createLineForProductId:productId context:[CurrentSession mainQueueContext]];
+    }
+    lineItem.price = @(price);
     [self updateTotals];
 }
 
@@ -824,7 +829,7 @@
             [weakSelf reinit]; //clear up memory
         }
     }];
-    [[NSNotificationCenter defaultCenter] postNotificationName:ProductsReturnNotification object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:ProductSelectionCompleteNotification object:nil];
 }
 
 - (OrderUpdateStatus)orderStatus {
