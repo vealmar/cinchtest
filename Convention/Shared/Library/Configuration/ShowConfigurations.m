@@ -16,6 +16,14 @@
 
 static ShowConfigurations *showConfigurations = nil;
 
+@interface ShowConfigurations()
+
+@property NSString *pricingStrategy;
+@property NSArray *pricingTiers;
+@property NSString *pricingTierDefault;
+
+@end
+
 @implementation ShowConfigurations
 
 + (ShowConfigurations *)instance {
@@ -26,10 +34,12 @@ static ShowConfigurations *showConfigurations = nil;
 + (void)createInstanceFromJson:(NSDictionary *)json {
     showConfigurations = [[[self class] alloc] init];
     if (showConfigurations) {
+        showConfigurations.pricingTierDefault = json[@"pricingTierDefault"];
+        showConfigurations.pricingTiers = [json objectForKey:@"pricingTiers"];
+        showConfigurations.pricingStrategy = [json objectForKey:@"pricingStrategy"];
         showConfigurations.enableOrderAuthorizedBy = [[json objectForKey:@"enableOrderAuthorizedBy"] boolValue];
         showConfigurations.enableOrderNotes = [[json objectForKey:@"enableOrderNotes"] boolValue];
         showConfigurations.productEnableManufacturerNo = [[json objectForKey:@"productEnableManufacturerNo"] boolValue];
-        showConfigurations.atOncePricing = [[json objectForKey:@"atOncePricing"] boolValue];
         showConfigurations.discounts = [[json objectForKey:@"discounts"] boolValue];
         showConfigurations.discountsGuide = [[json objectForKey:@"discountsGuide"] boolValue];
         NSString *shipDatesValue = [NilUtil objectOrEmptyString:[json objectForKey:@"shipDates"]];
@@ -70,7 +80,6 @@ static ShowConfigurations *showConfigurations = nil;
         }
         @catch (NSException *e) {
             NSLog(@"Could Not Load Image: %@. Exception: %@", url, e);
-
         }
     }
     return image == nil? [UIImage imageNamed:imageName] : image;
@@ -92,18 +101,71 @@ static ShowConfigurations *showConfigurations = nil;
 }
 
 - (NSString *)price1Label {
-    if (self.atOncePricing) {
+    if (self.isAtOncePricing) {
         return @"At Once";
+    } else if (self.isTieredPricing) {
+        return @"Current";
     } else {
         return @"Show";
     }
 }
 
 - (NSString *)price2Label {
-    if (self.atOncePricing) {
+    if (self.isAtOncePricing) {
         return @"Future";
+    } else if (self.isTieredPricing) {
+        return @"Base Tier";
     } else {
         return @"Regular";
     }
 }
+
+- (BOOL)isShowPricing {
+    return [@"Show Pricing" isEqualToString:self.pricingStrategy];
+}
+
+- (BOOL)isAtOncePricing {
+    return [@"At Once Pricing" isEqualToString:self.pricingStrategy];
+}
+
+- (BOOL)isTieredPricing {
+    return [@"Tiered Pricing" isEqualToString:self.pricingStrategy];
+}
+
+- (int)priceTiersAvailable {
+    if ([self isShowPricing]) return 2;
+    else if ([self isAtOncePricing]) return 2;
+    else if ([self isTieredPricing]) return self.pricingTiers.count;
+    else return 0;
+}
+
+- (int)defaultPriceTierIndex {
+    if ([self isTieredPricing] && self.pricingTierDefault && [self.pricingTiers containsObject:self.pricingTierDefault]) {
+        return [self.pricingTiers indexOfObject:self.pricingTierDefault];
+    } else {
+        return 0;
+    }
+}
+
+- (NSString *)priceTierLabelAt:(int)index {
+    if ([self isShowPricing]) {
+        switch(index) {
+            case 0: return @"Show";
+            case 1: return @"Regular";
+            default: return nil;
+        }
+    } else if ([self isAtOncePricing]) {
+        switch(index) {
+            case 0: return @"At Once";
+            case 1: return @"Future";
+            default: return nil;
+        }
+    } else if ([self isTieredPricing]) {
+        return self.pricingTiers[index];
+    } else {
+        return nil;
+    }
+    return nil;
+}
+
 @end

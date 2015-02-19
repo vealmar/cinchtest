@@ -14,6 +14,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CISelectCustomerViewController">
             <connections>
+                <outlet property="addButton" destination="1S0-cS-EkB" id="I2A-LK-f9g"/>
                 <outlet property="custView" destination="1" id="62"/>
                 <outlet property="searchText" destination="87" id="88"/>
                 <outlet property="selectSubtitle" destination="umy-kj-afN" id="erK-zZ-9ad"/>
@@ -72,7 +73,7 @@ start fresh with a new customer.</string>
                     <rect key="frame" x="230" y="30" width="81" height="73"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 </imageView>
-                <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="1S0-cS-EkB">
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="1S0-cS-EkB">
                     <rect key="frame" x="496" y="8" width="36" height="36"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                     <state key="normal" image="ico-add.png">

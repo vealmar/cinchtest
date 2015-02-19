@@ -17,67 +17,44 @@
 #import "CurrentSession.h"
 #import "Order+Extensions.h"
 #import "ShowCustomField.h"
-#import "UIColor+Boost.h"
-#import "ThemeUtil.h"
-
-@interface CIFinalCustomerFormNavigationViewController : UINavigationController
-
-@end
-
-@implementation CIFinalCustomerFormNavigationViewController
-
--(void)viewDidLoad
-{
-    [super viewDidLoad];
-    [self.view setTintColor:[ThemeUtil orangeColor]];
-}
-
-@end
+#import "Customer.h"
 
 @interface CIFinalCustomerFormViewController () {
     SetupInfo *authorizedBy;
-    NSManagedObjectContext *context;
 }
 
-@property CIFinalCustomerFormNavigationViewController *formNavigationController;
 @property (strong, nonatomic) UIView *contentView;
-@property (strong, nonatomic) XLFormViewController *formController;
 @property (strong, nonatomic) XLFormRowDescriptor *authorizedByRow;
+@property (strong, nonatomic) XLFormRowDescriptor *orderShipDateRow;
 @property (strong, nonatomic) XLFormRowDescriptor *notesRow;
+@property (strong, nonatomic) XLFormRowDescriptor *sendEmailRow;
+@property (strong, nonatomic) XLFormRowDescriptor *sendEmailToRow;
 
 @end
 
 @implementation CIFinalCustomerFormViewController
 
 - (id)init {
-    self = [super init];
+    self = [super initWithTitle:@"Order Details"];
     if (self) {
-        self.preferredContentSize = CGSizeMake(400, 600);
     }
     return self;
 }
-- (void)loadView {
-    self.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 400.0f, 600.0f)];
-    self.view.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:237.0f/255.0f blue:241.0f/255.0f alpha:1.000]; // #eaedf1 234,237,241
 
-    float w = self.view.frame.size.width;
-    float h = self.view.frame.size.height;
-
-    [[UILabel appearanceWhenContainedIn:[CIFinalCustomerFormViewController class], [UITableViewHeaderFooterView class], nil] setFont:[UIFont boldFontOfSize:13.0]];
-    [[UILabel appearanceWhenContainedIn:[CIFinalCustomerFormViewController class], [UITableViewHeaderFooterView class], nil] setTextColor:[UIColor whiteColor]];
-    [[UILabel appearanceWhenContainedIn:[CIFinalCustomerFormViewController class], [UITableViewHeaderFooterView class], nil] setFont:[UIFont regularFontOfSize:16.0]];
-
-    XLFormDescriptor *formDescriptor = [XLFormDescriptor formDescriptor];
+- (void)addSections:(XLFormDescriptor *)formDescriptor {
     XLFormSectionDescriptor *section = [XLFormSectionDescriptor formSection];
     section.title = @"Order Details";
-
     [formDescriptor addFormSection:section];
-    self.authorizedByRow = [XLFormRowDescriptor formRowDescriptorWithTag:section.title
-                                                                 rowType:XLFormRowDescriptorTypeText
-                                                                   title:@"Authorized By"];
-    [self.authorizedByRow.cellConfig setObject:[UIFont semiboldFontOfSize:16.0] forKey:@"textLabel.font"];
-    [self.authorizedByRow.cellConfig setObject:[UIColor lightGrayColor] forKey:@"textLabel.color"];
+    
+    self.authorizedByRow = [XLFormRowDescriptor formRowDescriptorWithTag:section.title rowType:XLFormRowDescriptorTypeText title:@"Authorized By"];
+    [self setDefaultStyle:self.authorizedByRow];
     [section addFormRow:self.authorizedByRow];
+    
+    if ([ShowConfigurations instance].isOrderShipDatesType) {
+        self.orderShipDateRow = [XLFormRowDescriptor formRowDescriptorWithTag:section.title rowType:XLFormRowDescriptorTypeDateInline title:@"Ship Date"];
+        [self setDefaultStyle:self.orderShipDateRow];
+        [section addFormRow:self.orderShipDateRow];
+    }
 
     Underscore.array([[ShowConfigurations instance] orderCustomFields]).each(^(ShowCustomField *showCustomField) {
         XLFormRowDescriptor *descriptor = nil;
@@ -105,9 +82,8 @@
             NSLog(@"Unsupported Custom Field Value Type.");
         }
 
+        [self setDefaultStyle:descriptor];
         if (descriptor) {
-            [descriptor.cellConfig setObject:[UIFont semiboldFontOfSize:16.0] forKey:@"textLabel.font"];
-            [descriptor.cellConfig setObject:[UIColor lightGrayColor] forKey:@"textLabel.color"];
             [section addFormRow:descriptor];
         }
     });
@@ -120,63 +96,52 @@
     [self.notesRow.cellConfig setObject:@"Order Notes" forKey:@"textView.placeholder"];
     [section addFormRow:self.notesRow];
 
-    self.formController = [[XLFormViewController alloc] initWithForm:formDescriptor];
-    self.formController.view.frame = CGRectMake(0, 0, w, h - 60);
-    self.formController.view.backgroundColor = [UIColor clearColor];
-    self.formController.tableView.backgroundColor = [UIColor clearColor];
-    self.formController.navigationItem.title = @"Order Details";
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @"Email";
+    [formDescriptor addFormSection:section];
+    self.sendEmailRow = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendEmail"
+                                                          rowType:XLFormRowDescriptorTypeBooleanSwitch
+                                                                title:@"Send Email"];
+    [self setDefaultStyle:self.sendEmailRow];
+    [section addFormRow:self.sendEmailRow];
 
-    self.formNavigationController = [[CIFinalCustomerFormNavigationViewController alloc] initWithRootViewController:self.formController];
-    self.formNavigationController.view.frame = CGRectMake(0, 0, w, h - 60);
-    [self.view addSubview:self.formNavigationController.view];
-
-    UIView *buttonsView = [[UIView alloc] initWithFrame:CGRectMake(0.0, self.formController.view.frame.origin.y + self.formController.view.frame.size.height, 400.0f, 60.0f)];
-    buttonsView.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:buttonsView];
-
-    UIButton *cancelButton = [[UIButton alloc] initWithFrame:CGRectMake(15.0f, (buttonsView.frame.size.height - 30.0f)/2.0f, 75.0, 30.0)];
-    cancelButton.userInteractionEnabled = YES;
-    cancelButton.layer.borderColor = [UIColor colorWithRed:194.0f/255.0f green:200.0f/255.0f blue:207.0f/255.0f alpha:1.000].CGColor; // #c2c8cf 194 200 207
-    cancelButton.backgroundColor = [UIColor colorWithRed:234.0f/255.0f green:237.0f/255.0f blue:241.0f/255.0f alpha:1.000]; // #eaedf1 234,237,241
-    cancelButton.layer.borderWidth = 1.0f;
-    cancelButton.layer.cornerRadius = 3.0f;
-    NSDictionary *cancelButtonTitleAttributes = @{
-            NSFontAttributeName: [UIFont regularFontOfSize:13],
-            NSForegroundColorAttributeName: [UIColor colorWithRed:194.0f/255.0f green:200.0f/255.0f blue:207.0f/255.0f alpha:1.000]
-    };
-    [cancelButton setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Cancel" attributes:cancelButtonTitleAttributes] forState:UIControlStateNormal];
-    [cancelButton addTarget:self action:@selector(back:) forControlEvents:UIControlEventTouchDown];
-    [buttonsView addSubview:cancelButton];
-
-    UIButton *submitButton = [[UIButton alloc] initWithFrame:CGRectMake(buttonsView.frame.size.width - 15.0f - 75.0f, (buttonsView.frame.size.height - 30.0f)/2.0f, 75.0, 30.0)];
-    submitButton.userInteractionEnabled = YES;
-    submitButton.layer.borderColor = [UIColor colorWithRed:0.902 green:0.494 blue:0.129 alpha:1.000].CGColor;
-    submitButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.647 blue:0.416 alpha:1.000];
-    submitButton.layer.borderWidth = 1.0f;
-    submitButton.layer.cornerRadius = 3.0f;
-    NSDictionary *submitButtonTitleAttributes = @{
-            NSFontAttributeName: [UIFont regularFontOfSize:13],
-            NSForegroundColorAttributeName: [UIColor whiteColor]
-    };
-    [submitButton setAttributedTitle:[[NSAttributedString alloc] initWithString:@"Submit" attributes:submitButtonTitleAttributes] forState:UIControlStateNormal];
-    [submitButton addTarget:self action:@selector(submit:) forControlEvents:UIControlEventTouchDown];
-    [buttonsView addSubview:submitButton];
-
-    context = [CurrentSession mainQueueContext];
-    authorizedBy = [CoreDataManager getSetupInfo:@"authorizedBy"];
-}
-
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-
-    self.view.superview.bounds = CGRectMake(0, 0, 400, 600);
+    self.sendEmailToRow = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendEmail"
+                                                                rowType:XLFormRowDescriptorTypeEmail
+                                                                  title:@"Email Address"];
+    [self setDefaultStyle:self.sendEmailToRow];
+    [section addFormRow:self.sendEmailToRow];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
+
+    // set defaults
+
+    if (nil == authorizedBy) {
+        authorizedBy = [CoreDataManager getSetupInfo:@"authorizedBy"];
+        if ([ShowConfigurations instance].vendorMode) {
+            [self updateSetting:@"authorizedBy" newValue:[CurrentSession instance].vendorName setupInfo:authorizedBy];
+        }
+    }
     self.authorizedByRow.value = self.order && self.order.authorizedBy ? self.order.authorizedBy : authorizedBy ? authorizedBy.value : @"";
     self.notesRow.value = self.order && self.order.notes ? self.order.notes : @"";
+    self.sendEmailRow.value = @(NO);
+
+    if ([ShowConfigurations instance].isOrderShipDatesType) {
+        id shipDate = self.order.shipDates.firstObject;
+        if (shipDate) {
+            self.orderShipDateRow.value = shipDate;
+        } else {
+            self.orderShipDateRow.value = [NSDate date];
+        }
+    }
+
+    Customer *customer = (Customer *) [[CoreDataUtil sharedManager] fetchObject:@"Customer" inContext:[CurrentSession mainQueueContext] withPredicate:[NSPredicate predicateWithFormat:@"customer_id = %@", self.order.customerId]];
+    if (customer) {
+        self.sendEmailToRow.value = customer.email;
+    } else {
+        self.sendEmailToRow.value = @"";
+    }
 
     Underscore.array([[ShowConfigurations instance] orderCustomFields]).each(^(ShowCustomField *showCustomField) {
         XLFormRowDescriptor *descriptor = [self.formController.form formRowWithTag:showCustomField.fieldKey];
@@ -192,16 +157,15 @@
     [self.formController.tableView reloadData];
 }
 
-- (void)back:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 - (void)submit:(id)sender {
     NSString *authorizedByText = self.authorizedByRow.value ? self.authorizedByRow.value : @"";
     [self updateSetting:@"authorizedBy" newValue:authorizedByText setupInfo:authorizedBy];
 
     self.order.notes = self.notesRow.value;
     self.order.authorizedBy = self.authorizedByRow.value;
+    if ([ShowConfigurations instance].isOrderShipDatesType) {
+        self.order.shipDates = @[self.orderShipDateRow.value];
+    }
 
     Underscore.array([[ShowConfigurations instance] orderCustomFields]).each(^(ShowCustomField *showCustomField) {
         id value = self.formController.form.formValues[showCustomField.fieldKey];
@@ -211,7 +175,9 @@
         [self.order setCustomFieldValueFor:showCustomField value:(NSString *)value];
     });
 
-    [self.delegate submit:nil];
+    NSString *sendEmailTo = ((NSNumber *) self.sendEmailRow.value).boolValue ? self.sendEmailToRow.value : nil;
+
+    [self.delegate submit:sendEmailTo];
     [self.delegate dismissFinalCustomerViewController];
 }
 
@@ -224,7 +190,7 @@
         if (!setupInfo.value || ![setupInfo.value isEqualToString:newValue]) {
             setupInfo.value = newValue;
             NSError *error;
-            [context save:&error];
+            [[CurrentSession mainQueueContext] save:&error];
         }
     }
 }

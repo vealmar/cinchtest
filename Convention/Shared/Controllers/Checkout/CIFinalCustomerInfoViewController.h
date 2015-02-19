@@ -18,7 +18,7 @@
 
 @protocol CIFinalCustomerDelegate <NSObject>
 - (NSDictionary *)getCustomerInfo;
-- (IBAction)submit:(id)sender;
+- (IBAction)submit:(NSString *)sendEmailTo;
 - (void)dismissFinalCustomerViewController;
 @end
 

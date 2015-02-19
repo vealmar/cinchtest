@@ -18,8 +18,10 @@
 #import "Product.h"
 #import "MBProgressHUD.h"
 #import "NISignatureView.h"
+#import "CIAlertView.h"
+#import "ApiDataService.h"
 
-@implementation OrderManager
+        @implementation OrderManager
 
 + (NSFetchRequest *)buildOrderFetch:(NSString *)queryString
              inManagedObjectContext:(NSManagedObjectContext *)managedObjectContext {
@@ -52,7 +54,7 @@
         updatedAt:(NSDate *)updatedAt
          onSuccess:(void (^)())successBlock {
     if (orderId && updatedAt) {
-        [OrderManager sendRequest:@"HEAD"
+        [ApiDataService sendRequest:@"HEAD"
                               url:kDBGETORDER(orderId)
                        parameters:@{kAuthToken : [CurrentSession instance].authToken}
                      successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
@@ -164,7 +166,7 @@
     NSString *loadingText = existingOrder ? @"Restoring Order" : @"Retrieving Order";
     NSDictionary *parameters = @{ kAuthToken: [CurrentSession instance].authToken };
     
-    [OrderManager sendRequest:@"GET"
+    [ApiDataService sendRequest:@"GET"
                           url:kDBGETORDER(orderId)
                    parameters:parameters
                  successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
@@ -217,10 +219,12 @@
 }
 
 + (void)syncOrderDetails:(Order *)order
+             sendEmailTo:(NSString *)email
              attachHudTo:(UIView *)view
                onSuccess:(void (^)())successBlock
                onFailure:(void (^)())failureBlock {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:[order asJsonReqParameterWithoutLines]];
+    if (email) parameters[@"send_email_to"] = email;
     NSString *url = [order.orderId intValue] == 0 ? kDBORDER : kDBORDERDETAILEDITS([order.orderId intValue]);
 
     void(^saveBlock)(id) = ^(id JSON) {
@@ -362,46 +366,6 @@
 
 #pragma mark - Private
 
-+ (void)sendRequest:(NSString *)httpMethod url:(NSString *)url parameters:(NSDictionary *)parameters
-       successBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))successBlock
-       failureBlock:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failureBlock
-               view:(UIView *)hudView loadingText:(NSString *)loadingText {
-
-    MBProgressHUD *submit = nil;
-    if (hudView) {
-        submit = [MBProgressHUD showHUDAddedTo:hudView animated:YES];
-        submit.removeFromSuperViewOnHide = YES;
-        submit.labelText = loadingText;
-        [submit show:NO];
-    }
-
-    CinchJSONAPIClient *client = [CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization];
-    NSMutableURLRequest *request = [client.requestSerializer requestWithMethod:httpMethod URLString:[NSString stringWithFormat:@"%@%@", kBASEURL, url] parameters:parameters error:nil];
-    __block NSURLSessionDataTask *task = [client dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id json, NSError *error) {
-        if (error) {
-            if (submit) [submit hide:NO];
-            if (failureBlock) failureBlock(request, (NSHTTPURLResponse *)response, error, json);
-            NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-            NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
-            if (statusCode == 422) {
-                NSArray *validationErrors = json ? [((NSDictionary *) json) objectForKey:kErrors] : nil;
-                if (validationErrors && validationErrors.count > 0) {
-                    alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
-                }
-            } else if (statusCode == 0) {
-                alertMessage = @"Request timed out.";
-            }
-            [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        } else {
-            if (submit) [submit hide:NO];
-
-            if (successBlock) successBlock(request, (NSHTTPURLResponse *)response, json);
-        }
-    }];
-
-    [task resume];
-}
-
 + (void)syncOrderParameters:(NSMutableDictionary *)parameters
                       order:(Order *)order
                        view:(UIView *)view
@@ -426,9 +390,9 @@
         }];
     };
 
-    if (order.hasNontransientChanges || !order.inSync) {
+    if (order.hasNontransientChanges || !order.inSync || parameters[@"send_email_to"]) {
 
-        [self sendRequest:method
+        [ApiDataService sendRequest:method
                       url:url
                parameters:parameters
              successBlock:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
@@ -440,6 +404,7 @@
                  } else {
                      [submit hide:NO];
                      if (failureBlock) failureBlock();
+                     [CIAlertView alertErrorEvent:[error localizedDescription]];
                      NSLog(@"%@ Error Syncing Order: %@", [self class], [error localizedDescription]);
                  }
              }

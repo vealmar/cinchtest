@@ -31,6 +31,7 @@
 #import "Product.h"
 #import "CIOrderDetailTableViewController.h"
 #import "CITableViewHeaderView.h"
+#import "CIAlertView.h"
 
 @interface CIOrderViewController () {
     ShowConfigurations *showConfig;
@@ -51,7 +52,7 @@
 @property (weak, nonatomic) IBOutlet VALabel *orderDetailNotesLabel;
 
 
-@property (weak, nonatomic) IBOutlet UIButton *orderDetailSaveButton;
+@property (weak, nonatomic) IBOutlet UIButton *orderDetailEmailButton;
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailEditButton;
 @property (weak, nonatomic) IBOutlet UIButton *orderDetailDeleteButton;
 
@@ -89,8 +90,8 @@
 
     self.orderDetailEditButton.layer.borderWidth = 1.0f;
     self.orderDetailEditButton.layer.cornerRadius = 3.0f;
-    self.orderDetailSaveButton.layer.borderWidth = 1.0f;
-    self.orderDetailSaveButton.layer.cornerRadius = 3.0f;
+    self.orderDetailEmailButton.layer.borderWidth = 1.0f;
+    self.orderDetailEmailButton.layer.cornerRadius = 3.0f;
     self.orderDetailDeleteButton.layer.cornerRadius = 3.0f;
     self.orderDetailDeleteButton.layer.borderWidth = 1.0f;
     self.orderDetailDeleteButton.layer.borderColor = [UIColor colorWithRed:0.906 green:0.298 blue:0.235 alpha:1.000].CGColor;
@@ -140,8 +141,38 @@
 
 #pragma mark - Order detail display
 
-- (IBAction)orderDetailSaveButtonTapped:(id)sender {
-    [self saveOrder];
+- (IBAction)orderDetailEmailButtonTapped:(id)sender {
+    if (self.currentOrder && [self.currentOrder.status isEqualToString:@"complete"]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Email Invoice"
+                                                        message:@"Please provide the recipient's email address."
+                                                       delegate:self
+                                              cancelButtonTitle:@"Cancel"
+                                              otherButtonTitles:@"Send", nil];
+        alert.alertViewStyle = UIAlertViewStylePlainTextInput;
+        Customer *customer = (Customer *) [[CoreDataUtil sharedManager] fetchObject:@"Customer" inContext:[CurrentSession mainQueueContext] withPredicate:[NSPredicate predicateWithFormat:@"customer_id = %@", self.currentOrder.customerId]];
+        if (customer) {
+            [alert textFieldAtIndex:0].text = customer.email;
+        }
+        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) { 
+            if (1 == buttonIndex) {
+                NSString *emailTo = [alert textFieldAtIndex:0].text;
+                if (emailTo) {
+                    __weak CIOrderViewController *weakSelf = self;
+                    [OrderManager syncOrderDetails:self.currentOrder sendEmailTo:emailTo attachHudTo:self.view onSuccess:^{
+                        [weakSelf persistentOrderUpdated:weakSelf.currentOrder];
+                        [CIAlertView alertSyncEvent:@"Invoice Emailed"];
+                    } onFailure:nil];
+                }
+            }
+        }];
+    } else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Pending Order"
+                                                        message:@"Order must be completed before emailing."
+                                                       delegate:self
+                                              cancelButtonTitle:@"Ok"
+                                              otherButtonTitles:nil];
+        [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) { }];
+    }
 }
 
 - (IBAction)orderDetailEditButtonTapped:(id)sender {
@@ -233,14 +264,14 @@
         self.orderDetailEditButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.800 blue:0.682 alpha:1.000];
     }
 
-    if (orderAccessible && self.currentOrder && self.currentOrder.hasNontransientChanges) {
-        self.orderDetailSaveButton.userInteractionEnabled = YES;
-        self.orderDetailSaveButton.layer.borderColor = [UIColor colorWithRed:0.902 green:0.494 blue:0.129 alpha:1.000].CGColor;
-        self.orderDetailSaveButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.647 blue:0.416 alpha:1.000];
+    if (orderAccessible && self.currentOrder && [self.currentOrder.status isEqualToString:@"complete"]) {
+        self.orderDetailEmailButton.userInteractionEnabled = YES;
+        self.orderDetailEmailButton.layer.borderColor = [UIColor colorWithRed:0.902 green:0.494 blue:0.129 alpha:1.000].CGColor;
+        self.orderDetailEmailButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.647 blue:0.416 alpha:1.000];
     } else {
-        self.orderDetailSaveButton.userInteractionEnabled = NO;
-        self.orderDetailSaveButton.layer.borderColor = [UIColor colorWithRed:0.922 green:0.800 blue:0.682 alpha:1.000].CGColor;
-        self.orderDetailSaveButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.800 blue:0.682 alpha:1.000];
+        self.orderDetailEmailButton.userInteractionEnabled = NO;
+        self.orderDetailEmailButton.layer.borderColor = [UIColor colorWithRed:0.922 green:0.800 blue:0.682 alpha:1.000].CGColor;
+        self.orderDetailEmailButton.backgroundColor = [UIColor colorWithRed:0.922 green:0.800 blue:0.682 alpha:1.000];
     }
 }
 
@@ -269,16 +300,6 @@
 
 - (void)customerSelected:(NSDictionary *)info {
     [self startNewOrderForCustomer:info];
-}
-
-- (void)saveOrder {
-    if (nil == self.currentOrder) {
-        return;
-    }
-    __weak CIOrderViewController *weakSelf = self;
-    [OrderManager syncOrder:self.currentOrder attachHudTo:self.view onSuccess:^{
-        [weakSelf persistentOrderUpdated:weakSelf.currentOrder];
-    }             onFailure:nil];
 }
 
 - (void)requestDelete:(Order *)order {
@@ -417,13 +438,7 @@
         productViewController.order = nil;
     }
 
-    static CISlidingProductViewController *slidingProductViewController;
-    static dispatch_once_t loadSlidingViewControllerOnce;
-    dispatch_once(&loadSlidingViewControllerOnce, ^{
-        slidingProductViewController = [[CISlidingProductViewController alloc] initWithTopViewController:productViewController];
-    });
-
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:slidingProductViewController];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:productViewController];
     navController.navigationBarHidden = NO;
     [self presentViewController:navController animated:YES completion:nil];
 }

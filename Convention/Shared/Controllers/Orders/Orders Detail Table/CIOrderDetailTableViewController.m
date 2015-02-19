@@ -118,7 +118,7 @@ static NSString *SUBTOTAL_CELL_REUSE_KEY = @"SUBTOTAL_CELL_REUSE_KEY";
             ColumnOptionTitleTextAttributes: @{ NSForegroundColorAttributeName: [UIColor whiteColor] }
     }];
 
-    if ([ShowConfigurations instance].isOrderShipDatesType) {
+    if ([ShowConfigurations instance].isLineItemShipDatesType) {
         [columns add:ColumnTypeInt titled:@"SD" using:@{
                 ColumnOptionContentKey : @"shipDatesCount",
                 ColumnOptionTextAlignment : @(NSTextAlignmentRight),

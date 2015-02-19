@@ -37,10 +37,7 @@
         onFailure:(void (^)())failureBlock;
 
 // Saves order locally and then submits only the order details to the server.
-+ (void)syncOrderDetails:(Order *)order
-             attachHudTo:(UIView *)view
-               onSuccess:(void (^)())successBlock
-               onFailure:(void (^)())failureBlock;
++ (void)syncOrderDetails:(Order *)order sendEmailTo:(NSString *)email attachHudTo:(UIView *)view onSuccess:(void (^)())successBlock onFailure:(void (^)())failureBlock;
 
 // Saves order signature to the server.
 + (void)syncSignature:(NISignatureView *)signatureView

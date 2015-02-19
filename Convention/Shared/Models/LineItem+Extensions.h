@@ -7,6 +7,7 @@
 #import "LineItem.h"
 
 @class Product;
+@class Order;
 
 @interface LineItem (Extensions)
 
@@ -18,7 +19,7 @@
 @property (readonly) NSNumber *shipDatesCount;
 @property (readonly) NSNumber *subtotalNumber;
 
-- (id)initWithProduct:(Product *)product context:(NSManagedObjectContext *)context;
+- (id)initWithProduct:(Product *)product order:(Order *)order context:(NSManagedObjectContext *)context;
 
 - (BOOL)isStandard;
 
@@ -37,6 +38,8 @@
 - (void)setQuantity:(int)quantity forShipDate:(NSDate *)date;
 
 - (void)setQuantity:(NSString *)quantity;
+
+- (NSNumber *)priceOn:(NSDate *)shipDate;
 
 - (void)setPrice:(NSNumber *)price;
 

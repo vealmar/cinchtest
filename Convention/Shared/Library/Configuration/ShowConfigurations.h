@@ -15,7 +15,6 @@
 @property BOOL enableOrderNotes;
 @property BOOL enableOrderAuthorizedBy;
 @property BOOL productEnableManufacturerNo;
-@property BOOL atOncePricing;
 @property BOOL discounts;
 @property BOOL discountsGuide;
 @property BOOL shipDates; //uses or requires shipdates
@@ -46,4 +45,12 @@
 - (NSString *)price1Label;
 
 - (NSString *)price2Label;
+
+- (BOOL)isShowPricing;
+- (BOOL)isAtOncePricing;
+- (BOOL)isTieredPricing;
+- (int)priceTiersAvailable;
+- (int)defaultPriceTierIndex;
+- (NSString *)priceTierLabelAt:(int)index;
+
 @end

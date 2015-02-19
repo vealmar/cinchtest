@@ -59,6 +59,9 @@
 @property NSNumber *voucherTotal;
 @property NSNumber *discountTotal;
 
+@property NSNumber *pricingTierIndex;
+@property NSNumber *discountPercentage;
+
 @property NSSet *lineItems; //NSSet[LineItem]
 @property NSArray *customFields; //NSArray[NSDictionary[kCustomFieldFieldName, kCustomFieldValue]]
 

@@ -12,6 +12,8 @@
 
 - (BOOL)isWriteIn;
 
+- (NSNumber *)priceAtTier:(int)index;
+
 + (Product *)findProduct:(NSNumber *)productId;
 
 @end

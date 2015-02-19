@@ -6,7 +6,9 @@
 #import "CISelectRecordViewController.h"
 
 @interface CISelectRecordViewController ()
-@property (strong, nonatomic) CISelectRecordTableViewController *tableViewController;
+
+@property (strong, nonatomic) IBOutlet UIButton *addButton;
+
 @end
 
 @implementation CISelectRecordViewController
@@ -32,10 +34,17 @@
     controller.delegate = self;
 }
 
+- (BOOL)allowAddAction {
+    return NO;
+}
+
 #pragma mark - View lifecycle
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    self.addButton.hidden = ![self allowAddAction];
+
     self.tablelayer.layer.masksToBounds = YES;
 
     UIView *paddingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 20, 20)];
@@ -64,6 +73,7 @@
 }
 
 - (IBAction)buttonAddTapped:(id)sender {
+
 }
 
 - (void)viewDidAppear:(BOOL)animated {

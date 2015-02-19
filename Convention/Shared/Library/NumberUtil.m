@@ -102,8 +102,10 @@ static NSNumberFormatter *currencyFormatter = nil;
 }
 
 + (NSNumber *)convertStringToDollars:(NSString *)string {
-    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    NSNumberFormatter *formatter = [self currencyFormatter];
     formatter.numberStyle = NSNumberFormatterDecimalStyle;
+    formatter.roundingMode = NSNumberFormatterRoundFloor;
+
     return [formatter numberFromString:string];
 }
 @end

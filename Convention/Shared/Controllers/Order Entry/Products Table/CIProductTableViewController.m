@@ -62,7 +62,8 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     self.pull = [[PullToRefreshView alloc] initWithScrollView:self.tableView];
     [self.pull setDelegate:self];
     [self.tableView addSubview:self.pull];
-
+    self.tableView.allowsSelection = YES;
+    self.tableView.allowsSelectionDuringEditing = NO;
     [self.tableView registerClass:[CIProductTableViewCell class] forCellReuseIdentifier:PRODUCT_VIEW_CELL_KEY];
 }
 
@@ -70,6 +71,8 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloading:) name:ProductsLoadRequestedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloadComplete:) name:ProductsLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderPriceTierChanged:) name:OrderPriceTierChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(linePriceChanged:) name:LinePriceChangedNotification object:nil];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -87,27 +90,49 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     [self.tableView reloadData];
 }
 
+- (void)orderPriceTierChanged:(NSNotification *)notification {
+    [self.tableView reloadData];
+}
+
+- (void)linePriceChanged:(NSNotification *)notification {
+    [self.tableView reloadData];
+}
+
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate {
     self.productCellDelegate = delegate;
     [super prepareForDisplay];
 }
 
-- (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId inCart:(BOOL)inCart queryTerm:(NSString *)query {
+- (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId inCart:(BOOL)inCart queryTerm:(NSString *)query summarySearch:(BOOL)summarySearch {
     //resign quantity first responder here if we are using non-shipdate style; we don't want a lineitem saving while we are changing the fetchresults
     [self.tableView endEditing:YES];
     
     NSFetchRequest *request = [CoreDataManager buildProductFetch:[ProductSearch searchFor:query inBulletin:bulletinId forVendor:vendorId sortedBy:[self currentSortDescriptors] limitResultSize:0 usingContext:self.managedObjectContext]];
     if (inCart && self.productCellDelegate.currentOrderForCell) {
         NSPredicate *inCartPredicate = [NSPredicate predicateWithFormat:@"ANY lineItems.order == %@ AND ANY lineItems.quantity != nil", self.productCellDelegate.currentOrderForCell.objectID];
-        request.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[request.predicate, inCartPredicate]];
+        request.predicate = request.predicate ? [NSCompoundPredicate andPredicateWithSubpredicates:@[request.predicate, inCartPredicate]] : inCartPredicate;
     }
     
     self.lastFilterOperationSortDescriptors = request.sortDescriptors;
     request.sortDescriptors = [self prependSectionSortDescriptor:request.sortDescriptors];
-    request.includesPendingChanges = YES;
+    request.includesPendingChanges = NO;
     request.includesSubentities = NO;
 
-    self.fetchRequest = request;
+    if (summarySearch) {
+        request.fetchBatchSize = 20;
+        request.fetchLimit = 20;
+    }
+
+//    if (self.fetchRequest) {
+//        self.fetchedResultsController.fetchRequest.fetchBatchSize = request.fetchBatchSize;
+//        self.fetchedResultsController.fetchRequest.fetchLimit = request.fetchLimit;
+//        self.fetchedResultsController.fetchRequest.predicate = request.predicate;
+//        self.fetchedResultsController.fetchRequest.sortDescriptors = request.sortDescriptors;
+//        [self.fetchedResultsController performFetch:nil];
+//        [self.tableView reloadData];
+//    } else {
+        self.fetchRequest = request;
+//    }
 }
 
 - (NSArray *)prependSectionSortDescriptor:(NSArray *)sortDescriptors {
@@ -131,7 +156,9 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 }
 
 - (NSFetchRequest *)initialFetchRequest {
-    return [CoreDataManager buildProductFetch:[ProductSearch searchFor:@"" inBulletin:0 forVendor:0 sortedBy:nil limitResultSize:0 usingContext:self.managedObjectContext]];
+    NSFetchRequest *request = [CoreDataManager buildProductFetch:[ProductSearch searchFor:@"" inBulletin:0 forVendor:0 sortedBy:nil limitResultSize:0 usingContext:self.managedObjectContext]];
+    request.sortDescriptors = [self prependSectionSortDescriptor:request.sortDescriptors];
+    return request;
 }
 
 - (CITableViewColumns *)createColumns {
@@ -175,7 +202,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
             ColumnOptionSortableKey: @YES
     }];
     [columns add:ColumnTypeCurrency titled:config.price2Label using:@{
-            ColumnOptionContentKey: @"regprc",
+            ColumnOptionContentKey: ([ShowConfigurations instance].isTieredPricing ? @"showprc" : @"regprc"),
             ColumnOptionTextAlignment: [NSNumber numberWithInt:NSTextAlignmentRight],
             ColumnOptionDesiredWidth: [NSNumber numberWithInt:90],
             ColumnOptionSortableKey: @YES
@@ -231,6 +258,21 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     return cell;
 }
 
+- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    CIProductTableViewCell *cell = (CIProductTableViewCell *) [self tableView:tableView cellForRowAtIndexPath:indexPath];
+    [self.productCellDelegate toggleProductDetail:((Product *) cell.rowData).productId lineItem:cell.lineItem];
+
+    return nil;
+}
+
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return UITableViewCellEditingStyleNone;
+}
+
+- (BOOL)tableView:(UITableView *)tableView shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath *)indexPath {
+    return NO;
+}
+
 #pragma mark - PullToRefreshViewDelegate
 
 - (void)pullToRefreshViewShouldRefresh:(PullToRefreshView *)view; {
@@ -269,8 +311,9 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 * @return YES if swipe is allowed
 **/
 -(BOOL) swipeTableCell:(MGSwipeTableCell*) cell canSwipe:(MGSwipeDirection) direction {
-    BOOL hasFixedShipDates = ([ShowConfigurations instance].shipDates && [ShowConfigurations instance].orderShipDates.fixedDates.count > 0);
-    return MGSwipeDirectionRightToLeft == direction || (![ShowConfigurations instance].shipDates || hasFixedShipDates);
+    return NO;
+//    BOOL hasFixedShipDates = ([ShowConfigurations instance].shipDates && [ShowConfigurations instance].orderShipDates.fixedDates.count > 0);
+//    return MGSwipeDirectionRightToLeft == direction || (![ShowConfigurations instance].shipDates || hasFixedShipDates);
 }
 
 /**

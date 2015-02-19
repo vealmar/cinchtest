@@ -21,6 +21,7 @@
 #define kDBGETVENDORSWithVG [NSString stringWithFormat:@"/vendor/shows/%@/vendorgroups.json",ShowID]
 #define kDBGETCUSTOMERS [NSString stringWithFormat:@"/vendor/shows/%@/customers.json",ShowID]
 #define kDBGETCUSTOMER(customerId) [NSString stringWithFormat:@"/vendor/shows/%@/customers/%@.json?",ShowID, customerId]
+#define kDBCUSTOMER [NSString stringWithFormat:@"/vendor/shows/%@/customers.json",ShowID]
 #define kDBGETORDER(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%@.json",ShowID,ID]
 #define kDBORDER [NSString stringWithFormat:@"/vendor/shows/%@/orders.json",ShowID]
 #define kDBORDEREDITS(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%d.json",ShowID,ID]
@@ -110,9 +111,10 @@
 #define kLineItemVoucherPrice @"voucherPrice"
 #define kLineItemShipDates @"shipdates"
 #define kOrderStatus @"status"
+#define kOrderPricingTierIndex @"pricing_tier_index"
+#define kOrderDiscountPercentage @"discount_percentage"
 #define kPartialOrder @"partial"
 
-#define kProductShowPrice @"showprc"
 #define kProductIdx @"idx"
 #define kProductInvtid @"invtid"
 #define kProductDescr @"descr"
@@ -123,7 +125,6 @@
 #define kProductDirShip @"dirship"
 #define kProductSequence @"sequence"
 #define kProductAdv @"adv"
-#define kProductRegPrc @"regprc"
 #define kProductShipDate1 @"shipdate1"
 #define kProductShipDate2 @"shipdate2"
 #define kProductVoucher @"voucher"
@@ -140,6 +141,7 @@
 #define kProductManufacturerNo @"manufacturer_no"
 #define kProductCategory @"category"
 #define kProductEditable @"editable"
+#define kProductPrices @"prices"
 #define kProductTags @"tags"
 
 #define kLineItemPRICE @"price"

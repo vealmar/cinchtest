@@ -18,8 +18,12 @@
 - (void)showPriceChanged:(double)price productId:(NSNumber *)productId lineItem:(LineItem *)lineItem;
 
 // farris product cell
-- (void)quantityWillBeginEditing:(NSNumber *)productId lineItem:(LineItem *)lineItem;
+- (void)toggleProductDetail:(NSNumber *)productId lineItem:(LineItem *)lineItem;
 
 - (Order *)currentOrderForCell;
+
+- (BOOL)isLineSelected:(LineItem *)lineItem;
+
+- (void)setEditingMode:(BOOL)isEditing;
 
 @end

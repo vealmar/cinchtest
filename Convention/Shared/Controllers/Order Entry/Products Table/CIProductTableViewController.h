@@ -14,8 +14,10 @@
 
 @interface CIProductTableViewController : CICoreDataTableViewController <MGSwipeTableCellDelegate, PullToRefreshViewDelegate, CITableSortDelegate>
 
+@property BOOL isEditingQuantity;
+
 - (void)prepareForDisplay:(id<ProductCellDelegate>)delegate;
 
-- (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId inCart:(BOOL)inCart queryTerm:(NSString *)query;
+- (void)filterToVendorId:(int)vendorId bulletinId:(int)bulletinId inCart:(BOOL)inCart queryTerm:(NSString *)query summarySearch:(BOOL)summarySearch;
 
 @end

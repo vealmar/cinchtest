@@ -39,6 +39,7 @@
         newOrder.custId = customer[kCustID];
         newOrder.customerName = customer[kBillName];
         newOrder.vendorId = [CurrentSession instance].vendorId;
+        newOrder.pricingTierIndex = @([[ShowConfigurations instance] defaultPriceTierIndex]);
         [OrderManager saveOrder:newOrder inContext:[CurrentSession mainQueueContext]];
     }];
 
@@ -128,7 +129,7 @@
             Underscore.dict(quantities).each(^(NSString *date, NSNumber *quantity) {
                 NSDate *shipDate = [DateUtil convertApiDateTimeToNSDate:date];
                 NSNumber *price = lineItem.price;
-                if ([ShowConfigurations instance].atOncePricing && fixedShipDates.count > 0) {
+                if ([ShowConfigurations instance].isAtOncePricing && fixedShipDates.count > 0) {
                     if ([((NSDate *) fixedShipDates.firstObject) isEqualToDate:shipDate]) {
                         price = lineItem.product.showprc;
                     } else {
@@ -195,7 +196,7 @@
 
 - (LineItem *)createLineForProductId:(NSNumber *)productId context:(NSManagedObjectContext *)context {
     Product *product = (Product *) [[CoreDataUtil sharedManager] fetchObject:@"Product" inContext:context withPredicate:[NSPredicate predicateWithFormat:@"(productId == %@)", productId]];
-    LineItem *lineItem = [[LineItem alloc] initWithProduct:product context:context];
+    LineItem *lineItem = [[LineItem alloc] initWithProduct:product order:self context:context];
     [self addLineItemsObject:lineItem];
     return lineItem;
 }
@@ -273,6 +274,10 @@
     self.purchaseOrderNumber = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"po_number"]];
     self.shipDates = [DateUtil convertApiDateArrayToNSDateArray:[NilUtil objectOrEmptyArray:[JSON objectForKey:@"ship_dates"]]];
     self.customFields = [JSON objectForKey:@"custom_fields"];
+    self.pricingTierIndex = (NSNumber *) [NilUtil objectOrDefault:[JSON objectForKey:@"pricing_tier_index"] defaultObject:@(0)];
+
+    NSString *discountPercentageCopy = (NSString *) [[NilUtil objectOrDefault:JSON[@"discount_percentage"] defaultObject:@"0"] copy];
+    self.discountPercentage = @(discountPercentageCopy.doubleValue);
     
     if (JSON[@"updated_at"]) {
         NSString *updatedAtStringCopy = [JSON[@"updated_at"] copy];
@@ -343,6 +348,8 @@
             kNotes : [NilUtil objectOrNSNull:self.notes],
             kAuthorizedBy : [NilUtil objectOrNSNull:self.authorizedBy],
             kOrderStatus : [NilUtil objectOrNSNull:self.status],
+            kOrderPricingTierIndex: self.pricingTierIndex,
+            kOrderDiscountPercentage: self.discountPercentage,
             kOrderPoNumber : [NilUtil objectOrNSNull:self.purchaseOrderNumber],
             kOrderShipDates : [NilUtil objectOrNSNull:[DateUtil convertNSDateArrayToApiDateArray:self.shipDates]],
             kCustomFields : [NSArray arrayWithArray:self.customFields]

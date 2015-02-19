@@ -7,6 +7,7 @@
 #import "NotificationConstants.h"
 #import "config.h"
 #import "CIAppDelegate.h"
+#import "NilUtil.h"
 
 @interface CurrentSession ()
 
@@ -37,7 +38,7 @@ static CurrentSession *currentSession = nil;
 }
 
 - (BOOL)hasAdminAccess {
-    return ((NSNumber *) self.userInfo[@"admin"]).boolValue;
+    return self.userInfo && ((NSNumber *) self.userInfo[@"admin"]).boolValue;
 }
 
 - (NSNumber *)vendorGroupId {
@@ -48,6 +49,10 @@ static CurrentSession *currentSession = nil;
 - (NSNumber *)vendorId {
     NSNumber *vendorId = (NSNumber *) [self.userInfo objectForKey:kID];
     return vendorId;
+}
+
+- (NSString *)vendorName {
+    return [NilUtil objectOrEmptyString:self.userInfo[@"name"]];
 }
 
 - (void)dispatchSessionDidChange {
@@ -112,6 +117,7 @@ static CurrentSession *currentSession = nil;
         _mainQueueContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         _mainQueueContext.persistentStoreCoordinator = coordinator;
         _mainQueueContext.mergePolicy = NSOverwriteMergePolicy;
+        _mainQueueContext.undoManager = nil;
 //        _mainQueueContext.mergePolicy = NSErrorMergePolicyType;
     }
 

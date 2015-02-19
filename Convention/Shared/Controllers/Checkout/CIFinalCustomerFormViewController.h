@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CIModalFormViewController.h"
 
 @class Order;
 @protocol CIFinalCustomerDelegate;
 
-@interface CIFinalCustomerFormViewController : UIViewController
+@interface CIFinalCustomerFormViewController : CIModalFormViewController
 
 @property (strong, nonatomic) Order *order;
 @property(nonatomic, assign) id <CIFinalCustomerDelegate> delegate;

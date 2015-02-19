@@ -13,7 +13,7 @@
 #import "ReachabilityDelegation.h"
 #import "VendorViewController.h"
 #import "UIView+FindAndResignFirstResponder.h"
-#import "CISlidingProductViewController.h"
+#import "CISlidingProductDetailViewController.h"
 #import "CINavViewManager.h"
 
 @class CIViewController;
@@ -45,15 +45,16 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
         CINavViewManagerDelegate
         >
 
-@property (nonatomic, weak) CISlidingProductViewController *slidingProductViewControllerDelegate;
 @property(weak, nonatomic) IBOutlet UITextField *searchText;
 @property(strong, nonatomic) IBOutlet UITableView *vendorTable;
 @property(strong, nonatomic) IBOutlet UILabel *customerLabel;
 @property(strong, nonatomic) IBOutlet UILabel *vendorLabel; //todo: this does not seem to be associated to any ui element
 @property(weak, nonatomic) IBOutlet UIButton *btnSelectShipDates;
-@property(weak, nonatomic) IBOutlet UILabel *totalCost;
 
 @property(weak, nonatomic) IBOutlet UIView *tableHeader;
+@property(weak, nonatomic) IBOutlet UIView *summaryView;
+@property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
+@property(weak, nonatomic) IBOutlet UILabel *totalCost;
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderMinColumnLabel;
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderPrice1Label;
 @property(weak, nonatomic) IBOutlet UILabel *tableHeaderPrice2Label;
@@ -77,11 +78,9 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 //Cart objects (in the coreDataOrder) which have been selected by the user.
 @property(nonatomic, strong) NSMutableSet *selectedLineItems;
 
-@property(weak, nonatomic) IBOutlet UITextView *errorMessageTextView;
-
 - (void)reinit;
 
-- (void)toggleLineSelection:(LineItem *)lineItem;
+-(void)deselectAllLines;
 
 - (void)setVendor:(NSInteger)vendorId;
 
@@ -91,6 +90,6 @@ typedef NS_ENUM(NSInteger, OrderUpdateStatus) {
 
 - (void)reviewCart;
 
-- (IBAction)submit:(id)sender;
+- (IBAction)submit:(NSString *)sendEmailTo;
 
 @end

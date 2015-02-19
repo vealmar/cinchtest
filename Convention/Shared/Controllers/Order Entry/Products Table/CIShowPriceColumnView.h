@@ -7,11 +7,13 @@
 #import "CITableViewColumnView.h"
 
 @class LineItem;
+@protocol ProductCellDelegate;
 
 
 @interface CIShowPriceColumnView : CITableViewColumnView <UITextFieldDelegate>
 
 @property UITextField *editablePriceTextField;
+@property id<ProductCellDelegate> productCellDelegate;
 
 - (void)render:(id)rowData lineItem:(LineItem *)lineItem;
 

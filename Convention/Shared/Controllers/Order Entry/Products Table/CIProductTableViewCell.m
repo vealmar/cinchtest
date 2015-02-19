@@ -28,6 +28,7 @@
 @property id<ProductCellDelegate> productCellDelegate;
 @property UIColor *lastStripeColor;
 @property BOOL initialized;
+@property BOOL active; // basically self.selected without the baggage
 
 @end
 
@@ -46,12 +47,18 @@
 }
 
 -(id)prepareForDisplay:(CITableViewColumns *)columns productCellDelegate:(id<ProductCellDelegate>)productCellDelegate {
-    self.productCellDelegate = productCellDelegate;
-    return [super prepareForDisplay:columns];
+    if (!self.initialized) {
+        self.productCellDelegate = productCellDelegate;
+        self.initialized = YES;
+        return [super prepareForDisplay:columns];
+    } else {
+        return self;
+    }
 }
 
 -(id)render:(id)rowData lineItem:(LineItem *)lineItem {
     self.lineItem = lineItem;
+    self.active = [self.productCellDelegate isLineSelected:lineItem];
     return [super render:rowData];
 }
 
@@ -82,9 +89,21 @@
         CIQuantityColumnView *view = [[CIQuantityColumnView alloc] initColumn:column frame:frame];
 
         [view.quantityTextField setBk_shouldBeginEditingBlock:^BOOL(UITextField *field) {
-            bool liShipDates = [ShowConfigurations instance].isLineItemShipDatesType;
-            if (liShipDates) [weakSelf.productCellDelegate quantityWillBeginEditing:((Product *) weakSelf.rowData).productId lineItem:weakSelf.lineItem];
-            return !liShipDates;
+            BOOL allowDirectEditing = ![ShowConfigurations instance].isLineItemShipDatesType;
+
+            if (allowDirectEditing) {
+//                [weakSelf setEditing:YES animated:NO];
+                [weakSelf.productCellDelegate setEditingMode:YES];
+            } else {
+                if (!weakSelf.lineItem) {
+                    Order *order = [weakSelf.productCellDelegate currentOrderForCell];
+                    weakSelf.lineItem = [order createLineForProductId:((Product *) weakSelf.rowData).productId context:[CurrentSession mainQueueContext]];
+                    [OrderManager saveOrder:order inContext:[CurrentSession mainQueueContext]];
+                }
+                [weakSelf.productCellDelegate toggleProductDetail:((Product *) weakSelf.rowData).productId lineItem:weakSelf.lineItem];
+            }
+
+            return allowDirectEditing;
         }];
         [view.quantityTextField setBk_didEndEditingBlock:^(UITextField *field) {
             Order *order = [weakSelf.productCellDelegate currentOrderForCell];
@@ -93,11 +112,14 @@
                 [OrderManager saveOrder:order inContext:[CurrentSession mainQueueContext]];
             }
             [weakSelf.lineItem setQuantity:field.text];
+//            [weakSelf setEditing:NO animated:NO];
+            [weakSelf.productCellDelegate setEditingMode:NO];
         }];
 
         return view;
     } else if (ColumnTypeCustom == column.columnType && [CIShowPriceColumnView class] == [column.options objectForKey:ColumnOptionCustomTypeClass]) {
         CIShowPriceColumnView *view = [[CIShowPriceColumnView alloc] initColumn:column frame:frame];
+        view.productCellDelegate = self.productCellDelegate;
 
         [view.editablePriceTextField setBk_didEndEditingBlock:^(UITextField *field) {
             NSNumber *price = [NumberUtil convertStringToDollars:field.text];
@@ -137,11 +159,11 @@
     }
 
     [self unhighlightColumns];
-    if (self.lineItem && self.lineItem.totalQuantity > 0) {
-        self.backgroundColor = [ThemeUtil greenColor];
-        [self highlightColumns];
-    } else if (self.selected) {
+    if (self.active) {
         self.backgroundColor = [ThemeUtil darkBlueColor];
+        [self highlightColumns];
+    } else if (self.lineItem && self.lineItem.totalQuantity > 0) {
+        self.backgroundColor = [ThemeUtil greenColor];
         [self highlightColumns];
     } else {
         self.backgroundColor = self.lastStripeColor;
@@ -166,8 +188,7 @@
 - (void)onCartQuantityChange:(NSNotification *)notification {
     LineItem *lineItem = (LineItem *) notification.object;
     NSNumber *productId = ((Product *) self.rowData).productId;
-    if ((self.lineItem && [self.lineItem.objectID isEqual:lineItem.objectID]) ||
-            (!self.lineItem && productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId])) {
+    if (productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId]) {
         self.lineItem = lineItem;
         [self updateRowHighlight:nil];
         Underscore.array(self.cellViews).each(^(CITableViewColumnView *view) {
@@ -177,7 +198,7 @@
         });
     }
 }
-//
+
 //- (void)onCartPriceChange:(NSNotification *)notification {
 //    LineItem *lineItem = (LineItem *) notification.object;
 //    NSNumber *productId = ((Product *) self.rowData).productId;
@@ -199,7 +220,7 @@
     if ((self.lineItem && [self.lineItem.objectID isEqual:lineItem.objectID]) ||
             (!self.lineItem && productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId])) {
         self.lineItem = lineItem;
-        self.selected = YES;
+        self.active = YES;
         [self updateRowHighlight:nil];
     }
 }
@@ -210,13 +231,13 @@
     if ((self.lineItem && [self.lineItem.objectID isEqual:lineItem.objectID]) ||
             (!self.lineItem && productId && lineItem.productId && [lineItem.productId isEqualToNumber:productId])) {
         self.lineItem = lineItem;
-        self.selected = NO;
+        self.active = NO;
         [self updateRowHighlight:nil];
     }
 }
 
 - (void)onProductsReturn:(NSNotification *)notification {
-    if (self.selected) self.selected = NO;
+    self.active = NO;
     self.lineItem = nil;
 }
 

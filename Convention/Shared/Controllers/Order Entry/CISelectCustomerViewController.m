@@ -9,6 +9,9 @@
 #import "CISelectCustomerViewController.h"
 #import "Customer.h"
 #import "CISelectCustomerTableViewController.h"
+#import "ShowConfigurations.h"
+#import "NotificationConstants.h"
+#import "CICustomerRecordViewController.h"
 
 @implementation CISelectCustomerViewController
 
@@ -17,6 +20,32 @@
     [self registerTableViewController:[[CISelectCustomerTableViewController alloc] initWithStyle:UITableViewStylePlain]];
     self.selectTitle.text = @"Create New Order";
     self.selectSubtitle.text = @"Select from your buyers, or\nstart fresh with a new customer.";
+
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [self.tableViewController prepareForDisplay];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(customerCreated:) name:CustomerCreatedNotification object:nil];
+}
+
+- (BOOL)allowAddAction {
+    return [ShowConfigurations instance].vendorMode;
+}
+
+- (IBAction)buttonAddTapped:(id)sender {
+    CICustomerRecordViewController *customerRecordViewController = [[CICustomerRecordViewController alloc] init];
+    customerRecordViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+    customerRecordViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    [customerRecordViewController prepareForDisplay:nil];
+    [self presentViewController:customerRecordViewController animated:YES completion:nil];
+}
+
+- (void)customerCreated:(NSNotification *)notification {
+    Customer *customer = notification.object;
+    if (customer) {
+        self.searchText.text = customer.billname;
+        [self.tableViewController query:customer.billname];
+    }
 }
 
 - (void)recordSelected:(NSManagedObject *)selectedRecord {

@@ -110,6 +110,7 @@ static MenuLinkMetadataProvider *provider = nil;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleSessionDidChange:) name:SessionDidChangeNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateProductMetadata:) name:ProductsLoadedNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCustomerMetadata:) name:CustomersLoadedNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCustomerMetadata:) name:CustomerCreatedNotification object:nil];
     }
     return self;
 }

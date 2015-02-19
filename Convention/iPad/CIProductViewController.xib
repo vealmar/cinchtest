@@ -18,6 +18,7 @@
                 <outlet property="errorMessageTextView" destination="Cu4-Hz-2yO" id="teS-FE-k0m"/>
                 <outlet property="keyboardHeightFooter" destination="vBg-YY-Ysd" id="2jn-ge-u3z"/>
                 <outlet property="productTableViewController" destination="aTh-7M-3Mn" id="dpZ-q9-XCL"/>
+                <outlet property="summaryView" destination="407" id="SMS-dq-hal"/>
                 <outlet property="totalCost" destination="408" id="410"/>
                 <outlet property="view" destination="14" id="29"/>
             </connections>

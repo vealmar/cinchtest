@@ -10,6 +10,10 @@
 #import "StringManipulation.h"
 #import "CITableViewColumn.h"
 #import "LineItem.h"
+#import "ShowConfigurations.h"
+#import "Order.h"
+#import "Product+Extensions.h"
+#import "ProductCellDelegate.h"
 
 @interface CIShowPriceColumnView()
 
@@ -72,7 +76,15 @@
     }
 
     if (product) {
-        self.priceLabel.text = [NumberUtil formatDollarAmount:product.showprc];
+        NSNumber *price = nil;
+        if (lineItem) {
+            price = lineItem.price;
+        } else if ([ShowConfigurations instance].isAtOncePricing) {
+            price = product.showprc;
+        } else {
+            price = [product priceAtTier:[self.productCellDelegate currentOrderForCell].pricingTierIndex.intValue];
+        }
+        self.priceLabel.text = [NumberUtil formatDollarAmount:price];
     }
 }
 
@@ -94,6 +106,8 @@
         self.priceLabel.textColor = color;
     }
 }
+
+#pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [textField resignFirstResponder];

@@ -136,9 +136,11 @@
                     };
                     [weakSelf presentViewController:ci animated:YES completion:nil];
                 } else {
-                    [VendorDataLoader load:@[@(VendorDataTypeProducts), @(VendorDataTypeBulletins)] inView:self.view onComplete:^{
-                        [[CurrentSession instance] dispatchSessionDidChange];
-                        [weakSelf presentOrderViewController];
+                    [VendorDataLoader load:@[@(VendorDataTypeBulletins), @(VendorDataTypeProducts)] inView:self.view onComplete:^{
+                        [[CurrentSession mainQueueContext] performBlock:^{
+//                            [[CurrentSession instance] dispatchSessionDidChange]; 1
+                            [weakSelf presentOrderViewController];
+                        }];
                     }];
                 }
             }];

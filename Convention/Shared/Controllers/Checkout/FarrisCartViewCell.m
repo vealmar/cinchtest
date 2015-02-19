@@ -15,6 +15,7 @@
 #import "ShowConfigurations.h"
 #import "LineItem.h"
 #import "LineItem+Extensions.h"
+#import "Order.h"
 
 @interface FarrisCartViewCell () {
     LineItem *lineItem;
@@ -34,6 +35,8 @@
 @synthesize price1;
 
 - (void)initializeWithDiscount:(LineItem *)discount tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
+    [self applyViewStyles];
+
     UIFont *discountFont = [UIFont boldFontOfSize:14];
     self.InvtID.text = @"Discount";
     [self setDescription:discount.description1 withSubtext:discount.description2];
@@ -55,37 +58,30 @@
     self.descr1.font = [UIFont semiboldFontOfSize:14.0];
     self.descr2.font = [UIFont semiboldFontOfSize:14.0];
 
-    self.InvtID.adjustsFontSizeToFitWidth = YES;
-    self.InvtID.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
-    self.descr.adjustsFontSizeToFitWidth = NO;
-    self.descr.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.descr1.adjustsFontSizeToFitWidth = NO;
-    self.descr1.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.descr2.adjustsFontSizeToFitWidth = NO;
-    self.descr2.lineBreakMode = NSLineBreakByTruncatingTail;
-
     [self updateErrorsView:nil];
 }
 
 - (void)initializeWithCart:(LineItem *)lineItemInitial tag:(NSInteger)tag ProductCellDelegate:(id <ProductCellDelegate>)productCellDelegate {
-    lineItem = lineItemInitial;
+    [self applyViewStyles];
 
-    self.InvtID.adjustsFontSizeToFitWidth = YES;
-    self.InvtID.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
-    self.descr.adjustsFontSizeToFitWidth = NO;
-    self.descr.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.descr1.adjustsFontSizeToFitWidth = NO;
-    self.descr1.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.descr2.adjustsFontSizeToFitWidth = NO;
-    self.descr2.lineBreakMode = NSLineBreakByTruncatingTail;
+    lineItem = lineItemInitial;
 
     self.InvtID.text = lineItem.product.invtid;
 
     [self setDescription:(lineItemInitial.description1 ? lineItemInitial.description1 : lineItem.product.descr) withSubtext:(lineItemInitial.description2 ? lineItemInitial.description2 : lineItem.product.descr2)];
     NSNumber *minNumber = (NSNumber *) [NilUtil nilOrObject:lineItem.product.min];
     self.min.text = minNumber ? [minNumber stringValue] : @"";
-    self.price1.text = [NumberUtil formatDollarAmount:lineItem.product.showprc];
-    self.price2.text = [NumberUtil formatDollarAmount:lineItem.product.regprc];
+
+    if (lineItem.order.discountPercentage.doubleValue != 0) {
+        self.price1.numberOfLines = 2;
+        self.price2.numberOfLines = 2;
+        self.price1.attributedText = [self priceOverride:lineItem.price by:lineItem.order.discountPercentage];
+        self.price2.attributedText = [self priceOverride:lineItem.subtotalNumber by:lineItem.order.discountPercentage];
+    } else {
+        self.price1.text = [NumberUtil formatDollarAmount:lineItem.price];
+        self.price2.text = [NumberUtil formatDollarAmount:lineItem.subtotalNumber];
+    }
+
     self.delegate = productCellDelegate;
     self.tag = tag;
     self.min.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
@@ -93,17 +89,47 @@
     if (lineItem.product.editable && lineItem.product.editable.intValue == 1) {
         self.price1.text = [NumberUtil formatDollarAmount:lineItem.price];
     }
-//    if ([ShowConfigurations instance].isLineItemShipDatesType) {
-        self.qtyLbl.text = [NSString stringWithFormat:@"%i", lineItem.totalQuantity];
-        self.quantity.hidden = YES;
-        self.qtyLbl.hidden = NO;
-//    } else {
-//        self.quantity.text = [NSString stringWithFormat:@"%i", lineItem.totalQuantity];
-//        self.quantity.hidden = NO;
-//        self.qtyLbl.hidden = YES;
-//    }
+    self.qtyLbl.text = [NSString stringWithFormat:@"%i", lineItem.totalQuantity];
+    self.quantity.hidden = YES;
+    self.qtyLbl.hidden = NO;
 
     [self updateErrorsView:lineItem];
+}
+
+- (NSMutableAttributedString *)priceOverride:(NSNumber *)price by:(NSNumber *)percentage {
+    NSNumber *overrideNumber = @(price.doubleValue - (percentage.doubleValue * price.doubleValue / 100));
+
+    NSMutableAttributedString *string = [[NSMutableAttributedString alloc] init];
+    [string appendAttributedString:[[NSAttributedString alloc] initWithString:[NumberUtil formatDollarAmount:price] attributes:@{
+                NSFontAttributeName: [UIFont regularFontOfSize:14],
+                NSStrikethroughStyleAttributeName: @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
+        }]];
+    [string appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
+    [string appendAttributedString:[[NSAttributedString alloc] initWithString:[NumberUtil formatDollarAmount:overrideNumber] attributes:@{
+                NSFontAttributeName: [UIFont boldFontOfSize:14]
+        }]];
+
+    return string;
+}
+
+- (void)applyViewStyles {
+    self.InvtID.adjustsFontSizeToFitWidth = YES;
+    self.InvtID.minimumScaleFactor = 9.0f / self.InvtID.font.pointSize;
+
+    self.descr.adjustsFontSizeToFitWidth = NO;
+    self.descr.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.descr.autoresizingMask = UIViewAutoresizingNone;
+
+    self.descr1.adjustsFontSizeToFitWidth = NO;
+    self.descr1.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.descr1.autoresizingMask = UIViewAutoresizingNone;
+
+    self.descr2.adjustsFontSizeToFitWidth = NO;
+    self.descr2.lineBreakMode = NSLineBreakByTruncatingTail;
+    self.descr2.autoresizingMask = UIViewAutoresizingNone;
+
+    self.price1.numberOfLines = 1;
+    self.price2.numberOfLines = 2;
 }
 
 - (void)setDescription:(NSString *)description1 withSubtext:(NSString *)description2 {

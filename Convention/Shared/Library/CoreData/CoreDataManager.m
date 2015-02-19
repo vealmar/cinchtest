@@ -6,6 +6,7 @@
 //
 
 
+#import <Underscore.m/Underscore.h>
 #import "CoreDataManager.h"
 #import "Customer.h"
 #import "config.h"
@@ -24,6 +25,9 @@
 #import "ShowConfigurations.h"
 #import "CurrentSession.h"
 #import "ResponseStatus.h"
+#import "APLNormalizedStringTransformer.h"
+
+static NSPredicate *productSearchPredicate = nil;
 
 @implementation CoreDataManager
 
@@ -114,7 +118,7 @@
             }
 
             NSArray *products = (NSArray *) JSON;
-            int batchSize = 500;
+            int batchSize = 1000;
             int productsCount = [products count];
             NSRange range = NSMakeRange(0, productsCount > batchSize ? batchSize : productsCount);
 
@@ -123,12 +127,15 @@
             while (range.length > 0) {
                 NSArray *productsBatch = [products subarrayWithRange:range];
                 // always wait for the first iteration, we can return from this method with data to display immediately
-                [queueContext performBlockAndWait:^{
-                    for (NSDictionary *productJson in productsBatch) {
-                        [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
-                    }
-                    [queueContext save:nil];
-                }];
+                @autoreleasepool {
+                    [queueContext performBlockAndWait:^{
+                        for (NSDictionary *productJson in productsBatch) {
+//                            [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
+                            [[Product alloc] initWithProductFromServer:productJson context:queueContext];
+                        }
+                        [queueContext save:nil];
+                    }];
+                }
                 int newStartLocation = range.location + range.length;
                 range = NSMakeRange(newStartLocation, productsCount - newStartLocation > batchSize ? batchSize : productsCount - newStartLocation);
             }
@@ -241,12 +248,11 @@
 }
 
 + (NSFetchRequest *)buildProductFetch:(ProductSearch *)search {
-    ShowConfigurations *configurations = [ShowConfigurations instance];
-    
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:search.context]];
     [fetchRequest setIncludesSubentities:NO];
-    [fetchRequest setFetchBatchSize:100];
+    [fetchRequest setIncludesPendingChanges:NO];
+    [fetchRequest setFetchBatchSize:200];
     if (search.limit > 0) {
         [fetchRequest setFetchLimit:search.limit];
     }
@@ -261,17 +267,15 @@
         [predicates addObject:[NSPredicate predicateWithFormat:@"bulletin_id = %d", search.currentBulletin]];
     }
     if (search.queryString.length > 0) {
-        NSMutableArray *queryMatches = [NSMutableArray array];
-        [queryMatches addObject:[NSPredicate predicateWithFormat:@"invtid CONTAINS[cd] %@ or descr CONTAINS[cd] %@ or descr2 CONTAINS[cd] %@", search.queryString, search.queryString, search.queryString]];
-        if (configurations.productEnableManufacturerNo) {
-            [queryMatches addObject:[NSPredicate predicateWithFormat:@"partnbr CONTAINS[cd] %@", search.queryString]];
+        if (nil == productSearchPredicate) {
+            productSearchPredicate = [NSPredicate predicateWithFormat:@"normalizedSearchText CONTAINS[CD] $lowBound"];
         }
-        if (configurations.discounts) {
-            [queryMatches addObject:[NSPredicate predicateWithFormat:@"tags CONTAINS[cd] %@", search.queryString]];
-        }
-        [predicates addObject:[NSCompoundPredicate orPredicateWithSubpredicates:queryMatches]];
+        NSPredicate *searchQuery = [productSearchPredicate predicateWithSubstitutionVariables:@{ @"lowBound" : [APLNormalizedStringTransformer normalizeString:search.queryString] }];
+        [predicates addObject:searchQuery];
     }
-    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
+    if (predicates.count > 0) {
+        fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:predicates];
+    }
     return fetchRequest;
 }
 

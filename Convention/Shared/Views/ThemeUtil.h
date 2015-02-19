@@ -22,6 +22,10 @@
 + (UIColor *)greenColor;
 + (UIColor *)tableAltRowColor;
 + (UIColor *)blueHighlightColor;
++ (UIColor *)grayBackgroundColor;
++ (UIColor *)redBackgroundColor;
++ (UIColor *)redBorderColor;
++ (UIColor *)themeBackgroundColor;
 
 + (NSDictionary *)navigationTitleTextAttributes:(int)size;
 
@@ -39,8 +43,6 @@
 + (NSDictionary *)navigationLeftActionButtonTextAttributes;
 
 + (NSDictionary *)navigationRightActionButtonTextAttributes;
-
-+ (CGRect)fitTextWidthTo:(UILabel *)label;
 
 + (UIColor *)lighten:(UIColor *)color by:(CGFloat)value;
 

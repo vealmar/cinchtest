@@ -19,13 +19,15 @@
 #import "Error+Extensions.h"
 #import "Error.h"
 #import "StringManipulation.h"
+#import "Order.h"
 #import "Product+Extensions.h"
 
 @implementation LineItem (Extensions)
 
-- (id)initWithProduct:(Product *)product context:(NSManagedObjectContext *)context {
+- (id)initWithProduct:(Product *)product order:(Order *)order context:(NSManagedObjectContext *)context {
     self = [self initWithEntity:[NSEntityDescription entityForName:@"LineItem" inManagedObjectContext:context] insertIntoManagedObjectContext:context];
     if (self) {
+        self.initializing = YES;
         self.category = @"standard";
         self.product = product;
         self.productId = product.productId;
@@ -34,6 +36,12 @@
         self.price = product.showprc;
         self.quantity = @"0";
         self.shipDates = [NSOrderedSet orderedSet];
+        if ([ShowConfigurations instance].isTieredPricing) {
+            self.price = [product priceAtTier:order.pricingTierIndex.intValue];
+        } else {
+            self.price = product.showprc;
+        }
+        self.initializing = NO;
     }
     return self;
 }
@@ -114,7 +122,7 @@
         return [self.price doubleValue] * [LineItem totalQuantity:quantityValue];
     } else if (configurations.isOrderShipDatesType) {
         return shipDatesCount * [self.price doubleValue] * [LineItem totalQuantity:quantityValue];
-    } else if (configurations.isLineItemShipDatesType && configurations.atOncePricing) {
+    } else if (configurations.isLineItemShipDatesType && configurations.isAtOncePricing) {
         if (shipDatesCount > 0) {
             NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
             NSDate *atOnceDate = fixedShipDates ? fixedShipDates.firstObject : nil;
@@ -149,33 +157,41 @@
 #pragma mark - Quantities
 
 - (int)getQuantityForShipDate:(NSDate *)date {
-    NSMutableDictionary *quantities = [self.quantity objectFromJSONString];
-    NSString *key = [date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"];
-    return [[quantities allKeys] containsObject:key] ? [[quantities valueForKey:key] intValue] : 0;
+    if (date) {
+        NSMutableDictionary *quantities = [self.quantity objectFromJSONString];
+        NSString *key = [date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"];
+        return [[quantities allKeys] containsObject:key] ? [[quantities valueForKey:key] intValue] : 0;
+    } else {
+        return self.quantity ? self.quantity.intValue : 0;
+    }
 }
 
 - (void)setQuantity:(int)quantity forShipDate:(NSDate *)date {
-    id quantityFromJSON = [self.quantity objectFromJSONString];
-    NSMutableDictionary *quantities;
-    if (quantityFromJSON && [quantityFromJSON isKindOfClass:[NSDictionary class]]) {
-        quantities = [quantityFromJSON mutableCopy];
+    if (date) {
+        id quantityFromJSON = [self.quantity objectFromJSONString];
+        NSMutableDictionary *quantities;
+        if (quantityFromJSON && [quantityFromJSON isKindOfClass:[NSDictionary class]]) {
+            quantities = [quantityFromJSON mutableCopy];
+        } else {
+            quantities = [NSMutableDictionary dictionary];
+        }
+
+        NSString *key = [date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"];
+        [quantities setValue:[NSNumber numberWithInt:quantity] forKey:key];
+        if (quantity <= 0) {
+            [quantities removeObjectForKey:key];
+        }
+        if (quantities.count == 0) quantities = nil;
+        self.quantity = [quantities JSONString];
+
+        NSMutableOrderedSet *tempShipDates = [NSMutableOrderedSet orderedSetWithOrderedSet:self.shipDates];
+        BOOL containsDate = [self.shipDates containsObject:date];
+        if (quantity > 0 && !containsDate) [tempShipDates addObject:date];
+        if (quantity == 0 && containsDate) [tempShipDates removeObject:date];
+        self.shipDates = [NSOrderedSet orderedSetWithSet:[tempShipDates set]];
     } else {
-        quantities = [NSMutableDictionary dictionary];
+        [self setQuantity:[@(quantity) stringValue]];
     }
-    
-    NSString *key = [date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"];
-    [quantities setValue:[NSNumber numberWithInt:quantity] forKey:key];
-    if (quantity <= 0) {
-        [quantities removeObjectForKey:key];
-    }
-    if (quantities.count == 0) quantities = nil;
-    self.quantity = [quantities JSONString];
-    
-    NSMutableOrderedSet *tempShipDates = [NSMutableOrderedSet orderedSetWithOrderedSet:self.shipDates];
-    BOOL containsDate = [self.shipDates containsObject:date];
-    if (quantity > 0 && !containsDate) [tempShipDates addObject:date];
-    if (quantity == 0 && containsDate) [tempShipDates removeObject:date];
-    self.shipDates = [NSOrderedSet orderedSetWithSet:[tempShipDates set]];
 }
 
 - (void)setQuantity:(NSString *)quantity {
@@ -191,13 +207,30 @@
     [super setPrimitiveValue:setQuantity forKey:@"quantity"];
     [self didChangeValueForKey:@"quantity"];
     
-    if ((!setQuantity && originalQuantity) || (setQuantity && !originalQuantity) || (setQuantity && originalQuantity && ![setQuantity isEqualToString:originalQuantity])) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            @autoreleasepool {
-                [[NSNotificationCenter defaultCenter] postNotificationName:LineQuantityChangedNotification object:self userInfo:@{ @"originalQuantity" : (originalQuantity ? originalQuantity : [NSNull null]), @"originalShipDatesCount" : @(originalShipDateCount) }];
-            }
-        });
+    if (!self.initializing) {
+        if ((!setQuantity && originalQuantity) || (setQuantity && !originalQuantity) || (setQuantity && originalQuantity && ![setQuantity isEqualToString:originalQuantity])) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                @autoreleasepool {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:LineQuantityChangedNotification object:self userInfo:@{ @"originalQuantity" : (originalQuantity ? originalQuantity : [NSNull null]), @"originalShipDatesCount" : @(originalShipDateCount) }];
+                }
+            });
+        }
     }
+}
+
+- (NSNumber *)priceOn:(NSDate *)shipDate {
+    NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
+    NSNumber *price = self.price;
+
+    if ([ShowConfigurations instance].isAtOncePricing && fixedShipDates.count > 0) {
+        if ([((NSDate *) fixedShipDates.firstObject) isEqualToDate:shipDate]) {
+            price = self.product.showprc;
+        } else {
+            price = self.product.regprc;
+        }
+    }
+
+    return price;
 }
 
 - (void)setPrice:(NSNumber *)price {
@@ -212,12 +245,14 @@
     [super setPrimitiveValue:setPrice forKey:@"price"];
     [self didChangeValueForKey:@"price"];
 
-    if (![setPrice isEqualToNumber:originalPrice]) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            @autoreleasepool {
-                [[NSNotificationCenter defaultCenter] postNotificationName:LinePriceChangedNotification object:self userInfo:@{ @"originalPrice" : (originalPrice ? originalPrice : @(0)) }];
-            }
-        });
+    if (!self.initializing) {
+        if (![setPrice isEqualToNumber:originalPrice]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                @autoreleasepool {
+                    [[NSNotificationCenter defaultCenter] postNotificationName:LinePriceChangedNotification object:self userInfo:@{ @"originalPrice" : (originalPrice ? originalPrice : @(0)) }];
+                }
+            });
+        }
     }
 }
 

@@ -8,6 +8,7 @@
 #import "ThemeUtil.h"
 #import "CIAppDelegate.h"
 #import "CIBarButton.h"
+#import "CurrentSession.h"
 
 @interface CINavViewManager()
 
@@ -67,7 +68,9 @@
     [button addSubview:label];
     [button bk_addEventHandler:^(id sender) {
         weakSelf.searchTextField.text = @"";
-        [weakSelf searchWithString:weakSelf.searchTextField.text inputCompleted:YES];
+        if (!weakSelf.inSearchMode || !weakSelf.searchTextField.isEditing) {
+            [weakSelf searchWithString:weakSelf.searchTextField.text inputCompleted:YES];
+        }
         if (weakSelf.inSearchMode || [weakSelf hasSearchText]) {
             [weakSelf exitSearchMode];
         }
@@ -152,6 +155,7 @@
     navItem.titleView.hidden = NO;
     navItem.leftBarButtonItems = leftBarButtonItems;
     navItem.rightBarButtonItems = rightBarButtonItems;
+
     
     self.inSearchMode = NO;
 }
@@ -189,7 +193,13 @@
 
     if (allowSearch) {
         if ([self.delegate respondsToSelector:@selector(navViewDidSearch:inputCompleted:)]) {
-            [self.delegate navViewDidSearch:searchTerm inputCompleted:inputCompleted];
+            // let ui refresh finish
+            __weak typeof(self) weakSelf = self;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[CurrentSession mainQueueContext] performBlock:^{
+                    [weakSelf.delegate navViewDidSearch:searchTerm inputCompleted:inputCompleted];
+                }];
+            });
         }
     }
 }

@@ -16,8 +16,13 @@
 @property(strong, nonatomic) IBOutlet UILabel *selectTitle;
 @property(strong, nonatomic) IBOutlet UILabel *selectSubtitle;
 @property(weak, nonatomic) IBOutlet UITextField *searchText;
+@property (strong, nonatomic) CISelectRecordTableViewController *tableViewController;
 
 @property (strong, nonatomic) UITapGestureRecognizer *outsideTapRecognizer;
+
+- (BOOL)allowAddAction;
+
+- (IBAction)buttonAddTapped:(id)sender;
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;
 

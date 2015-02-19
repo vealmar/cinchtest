@@ -7,7 +7,7 @@
 //
 
 #import <Underscore.m/Underscore.h>
-#import "CISlidingProductViewController.h"
+#import "CISlidingProductDetailViewController.h"
 #import "CIProductViewController.h"
 #import "config.h"
 #import "UIAlertViewDelegateWithBlock.h"
@@ -35,6 +35,12 @@
 #import "LineItem+Extensions.h"
 #import "CIFinalCustomerFormViewController.h"
 #import "CIApplication.h"
+#import "CIPanAnimationController.h"
+#import "CIAnimationControllerTransitioningDelegate.h"
+#import "CIProductDetailViewController.h"
+#import "CIButton.h"
+#import "CISelectPricingTierViewController.h"
+#import "CIAlertView.h"
 
 @interface CIProductViewController () {
     NSInteger initialVendor;
@@ -44,13 +50,18 @@
     NSDictionary *bulletins;
     CIProductViewControllerHelper *helper;
     CIFinalCustomerFormViewController *customerInfoViewController;
+
 }
+
+@property CISlidingProductDetailViewController *slidingProductDetailViewController;
 @property CINavViewManager *navViewManager;
 @property BOOL isLoadingProducts;
 
 @property (strong, nonatomic) UIBarButtonItem *filterBarButtonItem;
 @property (strong, nonatomic) JMStaticContentTableViewController *filterStaticController;
 @property (strong, nonatomic) UISwitch *filterCartSwitch;
+
+@property CIButton *changePriceTierButton;
 
 @end
 
@@ -77,7 +88,7 @@
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
+    // Return: YES for supported orientations
     return UIInterfaceOrientationIsLandscape(interfaceOrientation);
 }
 
@@ -102,6 +113,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    self.slidingProductDetailViewController = [[CISlidingProductDetailViewController alloc] initWithTopViewController:self];
+
     self.isLoadingProducts = NO;
     self.view.backgroundColor = [UIColor colorWithRed:0.133 green:0.129 blue:0.137 alpha:1];
 
@@ -116,11 +129,36 @@
     self.tableHeaderPrice1Label.text = [[ShowConfigurations instance] price1Label];
     self.tableHeaderPrice2Label.text = [[ShowConfigurations instance] price2Label];
     if (![ShowConfigurations instance].isOrderShipDatesType) self.btnSelectShipDates.hidden = YES;
+
+    if ([ShowConfigurations instance].isTieredPricing) {
+        [self initializePriceTierButton];
+    }
+}
+
+- (void)initializePriceTierButton {
+    self.changePriceTierButton = [[CIButton alloc] initWithOrigin:CGPointMake(8.0F, 5.0F)
+                                                                 title:@"Select Tier"
+                                                                  size:CIButtonSizeLarge
+                                                                 style:CIButtonStyleCancel];
+    [self.summaryView addSubview:self.changePriceTierButton];
+    [self.changePriceTierButton bk_whenTapped:^{
+        if (self.order) {
+            CISelectPricingTierViewController *changeTierVC = [[CISelectPricingTierViewController alloc] init];
+            changeTierVC.modalPresentationStyle = UIModalPresentationFormSheet;
+            changeTierVC.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+            [changeTierVC prepareForDisplay:self.order];
+            [self presentViewController:changeTierVC animated:YES completion:nil];
+        }
+    }];
+}
+
+- (void)updatePriceTierButtonTitle {
+    self.changePriceTierButton.title = [[ShowConfigurations instance] priceTierLabelAt:self.order.pricingTierIndex.intValue];
 }
 
 - (void)productsReloading:(NSNotification *)notification {
     [self.navViewManager clearSearch];
-    if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
+    [self reset];
     self.isLoadingProducts = YES;
 }
 
@@ -134,6 +172,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloading:) name:ProductsLoadRequestedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(productsReloadComplete:) name:ProductsLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updatePriceTierButtonTitle) name:OrderPriceTierChangedNotification object:nil];
 
     if (!self.viewInitialized) {
 
@@ -151,18 +190,11 @@
         [self loadBulletins];
         self.viewInitialized = YES;
     }
-
-    // if we're looking at a different vendor's order, show those products by default
-//    if (self.order && self.order.vendorId.intValue != currentVendor) {
-//        currentVendor = self.order.vendorId.intValue;
-//    }
-    // gonna just go with 0 for now
     
-    [self loadProductsForCurrentVendorAndBulletin];
     [self deserializeOrder];
+    [self updatePriceTierButtonTitle];
     
     self.vendorLabel.text = [[NSUserDefaults standardUserDefaults] objectForKey:kSettingsUsernameKey];
-
     [self.vendorTable reloadData];
     [self updateErrorsView];
 
@@ -174,7 +206,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onGrossTotalChangeUpdate:) name:LineQuantityChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onGrossTotalChangeUpdate:) name:LinePriceChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onLineDeselection:) name:LineDeselectionNotification object:nil];
-    
+
     CINavViewManager *navViewManager = self.navViewManager = [[CINavViewManager alloc] init:YES];
     navViewManager.delegate = self;
     [navViewManager setupNavBar];
@@ -254,7 +286,7 @@
 }
 
 - (void)loadProductsForCurrentVendorAndBulletin {
-    [self.productTableViewController filterToVendorId:currentVendor bulletinId:currentBulletin inCart:self.filterCartSwitch.on queryTerm:nil];
+    [self.productTableViewController filterToVendorId:currentVendor bulletinId:currentBulletin inCart:self.filterCartSwitch.on queryTerm:nil summarySearch:NO];
     [self updateNavigationTitle];
 }
 
@@ -326,24 +358,32 @@
     }
 }
 
-- (void)toggleLineSelection:(LineItem *)lineItem {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([self.selectedLineItems containsObject:lineItem]) {
-            [self.selectedLineItems removeObject:lineItem];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                @autoreleasepool {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:LineDeselectionNotification object:lineItem];
-                }
-            });
-        } else {
-            [self.selectedLineItems addObject:lineItem];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                @autoreleasepool {
-                    [[NSNotificationCenter defaultCenter] postNotificationName:LineSelectionNotification object:lineItem];
-                }
-            });
-        }
-    });
+-(void)reset {
+    [self deselectAllLines];
+    [self.view endEditing:YES];
+    [self.slidingProductDetailViewController close];
+}
+
+-(void)selectLine:(LineItem *)lineItem {
+    if (![self.selectedLineItems containsObject:lineItem]) {
+        [self.selectedLineItems addObject:lineItem];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            @autoreleasepool {
+                [[NSNotificationCenter defaultCenter] postNotificationName:LineSelectionNotification object:lineItem];
+//            }
+//        });
+    }
+}
+
+-(void)deselectAllLines {
+    [self.selectedLineItems enumerateObjectsUsingBlock:^(LineItem *lineItem, BOOL *stop) {
+        [self.selectedLineItems removeObject:lineItem];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            @autoreleasepool {
+                [[NSNotificationCenter defaultCenter] postNotificationName:LineDeselectionNotification object:lineItem];
+//            }
+//        });
+    }];
 }
 
 #pragma mark - VendorViewDelegate
@@ -414,21 +454,23 @@
                 cell.accessoryView = weakSelf.filterCartSwitch;
             }];
 
-            [section addCell:^(JMStaticContentTableViewCell *staticContentCell, UITableViewCell *cell, NSIndexPath *indexPath) {
-                staticContentCell.cellStyle = UITableViewCellStyleValue1;
-                staticContentCell.reuseIdentifier = @"DetailTextCell";
+            if (![ShowConfigurations instance].vendorMode) {
+                [section addCell:^(JMStaticContentTableViewCell *staticContentCell, UITableViewCell *cell, NSIndexPath *indexPath) {
+                    staticContentCell.cellStyle = UITableViewCellStyleValue1;
+                    staticContentCell.reuseIdentifier = @"DetailTextCell";
 
-                cell.textLabel.text = @"Vendor";
+                    cell.textLabel.text = @"Vendor";
 
-                
-            } whenSelected:^(NSIndexPath *indexPath) {
-                VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
-                vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
-                if (bulletins != nil) vendorViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
-                vendorViewController.delegate = self;
 
-                [self.filterStaticController.navigationController pushViewController:vendorViewController animated:YES];
-            }];
+                } whenSelected:^(NSIndexPath *indexPath) {
+                    VendorViewController *vendorViewController = [[VendorViewController alloc] initWithNibName:@"VendorViewController" bundle:nil];
+                    vendorViewController.vendors = [NSArray arrayWithArray:vendorsData];
+                    if (bulletins != nil) vendorViewController.bulletins = [NSDictionary dictionaryWithDictionary:bulletins];
+                    vendorViewController.delegate = self;
+
+                    [self.filterStaticController.navigationController pushViewController:vendorViewController animated:YES];
+                }];
+            }
 
             [section addCell:^(JMStaticContentTableViewCell *staticContentCell, UITableViewCell *cell, NSIndexPath *indexPath) {
                 staticContentCell.cellStyle = UITableViewCellStyleValue1;
@@ -446,11 +488,15 @@
             }];
         }];
 
+        NSIndexPath *vendorCellPath = [NSIndexPath indexPathForRow:1 inSection:0];
+        NSIndexPath *bulletinCellPath = [NSIndexPath indexPathForRow:2 inSection:0];
+        if ([ShowConfigurations instance].vendorMode) bulletinCellPath = vendorCellPath;
+
         [self.filterStaticController aspect_hookSelector:@selector(viewWillAppear:) withOptions:AspectPositionAfter usingBlock:^(id instance, NSArray *args) {
             self.filterStaticController.tableView.separatorColor = [UIColor colorWithRed:0.839 green:0.839 blue:0.851 alpha:1];
             self.filterStaticController.navigationController.navigationBarHidden = YES;
 
-            UITableViewCell *cell = [self.filterStaticController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
+            UITableViewCell *cell = [self.filterStaticController.tableView cellForRowAtIndexPath:vendorCellPath];
 
             if (currentVendor == 0) {
                 cell.detailTextLabel.text = @"All";
@@ -463,7 +509,7 @@
                 }
             }
 
-            cell = [self.filterStaticController.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
+            cell = [self.filterStaticController.tableView cellForRowAtIndexPath:bulletinCellPath];
             
             if (currentBulletin == 0) {
                 cell.detailTextLabel.text = @"All";
@@ -497,18 +543,6 @@
         [self.poController dismissPopoverAnimated:NO];
     } else {
         [self.poController presentPopoverFromBarButtonItem:self.filterBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
-    }
-}
-
-- (void)closeProductDetail {
-    if ([ShowConfigurations instance].isLineItemShipDatesType) {
-        // close calendar
-        if (self.selectedLineItems.count == 1) {
-            [self.selectedLineItems enumerateObjectsUsingBlock:^(LineItem *lineItem, BOOL *stop) {
-                [self toggleLineSelection:lineItem]; //disable selection
-            }];
-            [self.slidingProductViewControllerDelegate toggleShipDates:NO];
-        }
     }
 }
 
@@ -553,14 +587,14 @@
             NSString *action = [alert buttonTitleAtIndex:buttonIndex];
             if ([action isEqualToString:@"Delete Order"]) {
                 [OrderManager deleteOrder:weakSelf.order onSuccess:^{
-                    [self Return];
+                    [self Return:NO];
                 }               onFailure:^{
                     // do nothing
                 }];
             } else if ([action isEqualToString:@"Undo Changes Since Last Sync"]) {
                 [OrderManager fetchOrder:weakSelf.order.orderId attachHudTo:weakSelf.view onSuccess:^(Order *order) {
                     weakSelf.order = order;
-                    [weakSelf Return];
+                    [weakSelf Return:NO];
                 }              onFailure:^{
                     // do nothing
                 }];
@@ -568,18 +602,18 @@
                 [[CurrentSession mainQueueContext] performBlock:^{
                     if (weakSelf.order.isComplete) weakSelf.order.status = @"pending";
                     [OrderManager saveOrder:weakSelf.order inContext:[CurrentSession mainQueueContext]];
-                    [weakSelf Return];
+                    [weakSelf Return:NO];
                 }];
             } else if ([action isEqualToString:@"Submit This Order Now"]) {
                 [weakSelf reviewCart];
             } else if ([action isEqualToString:@"Continue Working"]) {
                 // do nothing
             } else {
-                [weakSelf Return];
+                [weakSelf Return:NO];
             }
         }];
     } else {
-        [self Return];
+        [self Return:YES];
     }
 }
 
@@ -611,9 +645,9 @@
     }
 
     if ([helper isOrderReadyForSubmission:self.order]) {
-        
-        if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
-        
+
+        [self reset];
+
         if (self.poController && self.poController.isPopoverVisible) {
             [self.poController dismissPopoverAnimated:NO];
         }
@@ -684,13 +718,13 @@
 }
 
 //Called from the authorization, notes etc. popup
-- (IBAction)submit:(id)sender {
+- (IBAction)submit:(NSString *)sendEmailTo {
     if ([helper isOrderReadyForSubmission:self.order]) {
         __weak CIProductViewController *weakSelf = self;
-        [OrderManager syncOrderDetails:self.order attachHudTo:self.view onSuccess:^{
+        [OrderManager syncOrderDetails:self.order sendEmailTo:sendEmailTo attachHudTo:self.view onSuccess:^{
             [weakSelf reloadTable];
             [weakSelf updateErrorsView];
-            [weakSelf Return];
+            [weakSelf Return:NO];
         } onFailure:nil];
     }
 }
@@ -746,7 +780,6 @@
             } else {
                 error();
             }
-            
         }];
     }
 }
@@ -755,38 +788,46 @@
     if (self.order) {
         NSLog(@"Triggering Autosave...");
         BOOL hasInserts = self.order.managedObjectContext.insertedObjects.count > 0;
-        [OrderManager saveOrder:self.order async:!hasInserts beforeSave:nil onSuccess:nil];
+        [OrderManager saveOrder:self.order async:NO beforeSave:nil onSuccess:nil];
     }
 }
 
-- (void)quantityWillBeginEditing:(NSNumber *)productId lineItem:(LineItem *)lineItem {
+- (void)toggleProductDetail:(NSNumber *)productId lineItem:(LineItem *)lineItem {
     if (self.isLoadingProducts) {
         [[[UIAlertView alloc] initWithTitle:@"Products Reloading" message:@"Products are currently being reloaded from the server in the background. Product searches cannot be conducted until complete." delegate:nil
                           cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
         return;
     }
 
-    if ([ShowConfigurations instance].isLineItemShipDatesType) {
-        if (!lineItem) {
-            lineItem = [self.order createLineForProductId:productId context:self.order.managedObjectContext];
-            [OrderManager saveOrder:self.order inContext:self.order.managedObjectContext];
-        }
-
-        if (self.selectedLineItems.count == 1) {
-            [self closeProductDetail];
-        } else {
-            [self toggleLineSelection:lineItem];
-            self.slidingProductViewControllerDelegate.shipDateController.workingLineItem = lineItem;
-            [self.slidingProductViewControllerDelegate toggleShipDates:YES];
-        }
-
-        [self.searchText resignFirstResponder];
+    if (!lineItem) {
+        lineItem = [self.order createLineForProductId:productId context:self.order.managedObjectContext];
+        [OrderManager saveOrder:self.order inContext:self.order.managedObjectContext];
     }
+
+    if (self.selectedLineItems.count == 1) {
+        [self deselectAllLines];
+        [self.slidingProductDetailViewController close];
+    } else {
+        [self selectLine:lineItem];
+    }
+
+    [self.slidingProductDetailViewController open:self.order lineItem:lineItem];
+    [self.searchText resignFirstResponder];
 }
 
 - (Order *)currentOrderForCell {
     return self.order;
 }
+
+- (BOOL)isLineSelected:(LineItem *)lineItem {
+    return [self.selectedLineItems containsObject:lineItem];
+}
+
+- (void)setEditingMode:(BOOL)isEditing {
+//    self.productTableViewController.isEditingQuantity = isEditing;
+    [self.productTableViewController.tableView setEditing:isEditing animated:NO];
+}
+
 
 - (void)showPriceChanged:(double)price productId:(NSNumber *)productId lineItem:(LineItem *)lineItem {
 //    if (!lineItem) {
@@ -801,7 +842,7 @@
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
     if ([[alertView buttonTitleAtIndex:buttonIndex] isEqualToString:@"OK"]) {
-        [self Return];
+        [self Return:NO];
     }
 }
 
@@ -812,18 +853,20 @@
     self.orderSubmitted = orderCompleted;
 }
 
-#pragma Return
-- (void)Return {
+#pragma Return:
 
-    if (self.slidingProductViewControllerDelegate) [self.slidingProductViewControllerDelegate reset];
-    
+- (void)Return:(BOOL)isCancel {
+
+    [self reset];
+
     if (self.poController && self.poController.isPopoverVisible) {
         [self.poController dismissPopoverAnimated:NO];
     }
     
     //@todo orders think about what we want to get out of this
     OrderUpdateStatus status = [self orderStatus];
-    
+    BOOL inSync = self.order.inSync;
+    NSString *orderStatus = self.order.status;
     if (PartialOrderCancelled == status || NewOrderCancelled == status) {
         [self.order.managedObjectContext deleteObject:self.order];
         self.order = nil;
@@ -837,6 +880,16 @@
     __weak CIProductViewController *weakSelf = self;
     [self dismissViewControllerAnimated:YES completion:^{
         if (weakSelf.delegate) {
+            if (isCancel || PartialOrderCancelled == status || NewOrderCancelled == status) {
+//                [CIAlertView alertWarningEvent:@"Order Cancelled"];
+            } else {
+                if (inSync && [orderStatus isEqualToString:@"complete"]) {
+                    [CIAlertView alertSyncEvent:weakSelf.newOrder ? @"Order Created and Synced" : @"Order Updated and Synced"];
+                } else {
+                    [CIAlertView alertSaveEvent:weakSelf.newOrder ? @"Pending, Unsynced Order Created" : @"Pending, Unsynced Order Updated"];
+                }
+            }
+
             [weakSelf.delegate returnOrder:orderObjectID updateStatus:status];
             [weakSelf reinit]; //clear up memory
         }
@@ -867,7 +920,7 @@
 }
 
 - (UINavigationItem *)navigationItemForNavViewManager {
-    return self.parentViewController.navigationItem;
+    return self.navigationItem;
 }
 
 - (NSArray *)leftActionItems {
@@ -901,7 +954,7 @@
 
 - (void)navViewDidSearch:(NSString *)searchTerm inputCompleted:(BOOL)inputCompleted {
     if (!self.isLoadingProducts) {
-        [self.productTableViewController filterToVendorId:currentVendor bulletinId:currentBulletin inCart:self.filterCartSwitch.on queryTerm:searchTerm];
+        [self.productTableViewController filterToVendorId:currentVendor bulletinId:currentBulletin inCart:self.filterCartSwitch.on queryTerm:searchTerm summarySearch:!inputCompleted];
     }
 }
 

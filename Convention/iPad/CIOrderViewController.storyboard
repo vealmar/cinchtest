@@ -135,22 +135,22 @@
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Cng-qZ-sWf">
-                                        <rect key="frame" x="354" y="651" width="100" height="40"/>
+                                        <rect key="frame" x="462" y="651" width="100" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <color key="backgroundColor" red="0.85490196078431369" green="0.66274509803921566" blue="0.40784313725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="17"/>
-                                        <state key="normal" title="Save">
+                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="16"/>
+                                        <state key="normal" title="Email ">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <action selector="orderDetailSaveButtonTapped:" destination="L2z-Wh-GlW" eventType="touchUpInside" id="U54-7c-Jl1"/>
+                                            <action selector="orderDetailEmailButtonTapped:" destination="L2z-Wh-GlW" eventType="touchUpInside" id="U54-7c-Jl1"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Lkc-Wc-nOa">
-                                        <rect key="frame" x="462" y="651" width="100" height="40"/>
+                                        <rect key="frame" x="570" y="651" width="100" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <color key="backgroundColor" red="0.85490196080000003" green="0.66274509800000003" blue="0.40784313729999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="17"/>
+                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="16"/>
                                         <state key="normal" title="Edit">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
@@ -159,10 +159,10 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Xke-LG-Y6x">
-                                        <rect key="frame" x="570" y="651" width="100" height="40"/>
+                                        <rect key="frame" x="0.0" y="651" width="100" height="40"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <color key="backgroundColor" red="0.85098039215686272" green="0.56470588235294117" blue="0.49803921568627452" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="17"/>
+                                        <fontDescription key="fontDescription" name="OpenSans" family="Open Sans" pointSize="16"/>
                                         <state key="normal" title="Delete">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
@@ -206,11 +206,11 @@
                         <outlet property="orderDetailCustomerView" destination="ut5-uZ-9Na" id="gkk-SK-xgI"/>
                         <outlet property="orderDetailDeleteButton" destination="Xke-LG-Y6x" id="CAt-Zh-eqx"/>
                         <outlet property="orderDetailEditButton" destination="Lkc-Wc-nOa" id="Oom-sz-XaE"/>
+                        <outlet property="orderDetailEmailButton" destination="Cng-qZ-sWf" id="Mow-wJ-efh"/>
                         <outlet property="orderDetailHeaderView" destination="iBx-05-iRh" id="qOV-dr-cNZ"/>
                         <outlet property="orderDetailNotesLabel" destination="ES7-qA-HWv" id="ugD-7d-dky"/>
                         <outlet property="orderDetailNotesView" destination="zg4-kn-PPz" id="SxC-sg-KFO"/>
                         <outlet property="orderDetailOrderNumberLabel" destination="I2n-wZ-9VN" id="O0T-Xf-tJO"/>
-                        <outlet property="orderDetailSaveButton" destination="Cng-qZ-sWf" id="Mow-wJ-efh"/>
                         <outlet property="orderDetailTableParentView" destination="edG-jd-O4g" id="fuJ-Ol-dop"/>
                         <outlet property="orderDetailTableView" destination="YnO-ye-7jz" id="uAp-I6-mDY"/>
                         <outlet property="orderDetailView" destination="89b-In-fVe" id="isr-9S-Bv9"/>

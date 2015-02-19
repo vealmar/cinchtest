@@ -8,8 +8,9 @@
 #import "CICoreDataTableViewController.h"
 #import "CurrentSession.h"
 #import "CITableViewCell.h"
+#import "MBProgressHUD.h"
 
-@interface CICoreDataTableViewController ()
+    @interface CICoreDataTableViewController ()
 
 @property BOOL pauseUpdates;
 @property NSMutableArray *pendingContextMerges;
@@ -28,7 +29,19 @@
     [super prepareForDisplay];
     // use our own separate context so we can control merges from other context
     self.managedObjectContext = [CurrentSession mainQueueContext];
-    self.fetchRequest = [self initialFetchRequest];
+
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+    hud.removeFromSuperViewOnHide = YES;
+    hud.labelText = @"Loading...";
+    [hud show:NO];
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[CurrentSession mainQueueContext] performBlock:^{
+            weakSelf.fetchRequest = [weakSelf initialFetchRequest];
+            [hud hide:NO];
+        }];
+    });
+
 }
 
 - (void)pauseContextUpdates {

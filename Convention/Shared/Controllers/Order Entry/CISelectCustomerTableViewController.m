@@ -61,6 +61,8 @@
         cell.detailTextLabel.text = customer.defaultShippingAddressSummary;
         cell.detailTextLabel.font = [UIFont regularFontOfSize:12];
         cell.detailTextLabel.textColor = [ThemeUtil noteColor];
+    } else {
+        cell.detailTextLabel.text = @"";
     }
     return cell;
 }

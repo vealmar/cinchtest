@@ -4,6 +4,7 @@
 //
 
 NSString *const CustomersLoadedNotification = @"CustomersLoadedNotification";
+NSString *const CustomerCreatedNotification = @"CustomerCreatedNotification";
 
 NSString *const ProductsLoadRequestedNotification = @"ProductsLoadRequestedNotification";
 NSString *const ProductsLoadedNotification = @"ProductsLoadedNotification";
@@ -16,6 +17,8 @@ NSString *const OrderReloadStartedNotification = @"OrderReloadStartedNotificatio
 NSString *const OrderSelectionNotification = @"OrderSelectionNotification";
 NSString *const OrderDeleteRequestedNotification = @"OrderDeleteRequestedNotification";
 NSString *const OrderReloadCompleteNotification = @"OrderReloadCompleteNotification";
+NSString *const OrderPriceTierChangedNotification = @"OrderPriceTierChangedNotification";
+NSString *const OrderDiscountPercentageChangedNotification = @"OrderDiscountPercentageChangedNotification";
 
 NSString *const LineQuantityChangedNotification = @"LineQuantityChangedNotification";
 NSString *const LinePriceChangedNotification = @"LinePriceChangedNotification";

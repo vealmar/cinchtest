@@ -9,12 +9,12 @@
 @class Order;
 @class LineItem;
 
-@interface CIShipDatesViewController : UITableViewController <CKCalendarDelegate, UITextFieldDelegate>
+@interface CIProductDetailTableViewController : UITableViewController <CKCalendarDelegate, UITextFieldDelegate>
 
 //Working copy of selected or new order
 @property Order *workingOrder;
-@property (assign) LineItem *workingLineItem;
+//@property LineItem *currentLineItem;
 
-- (id)initWithWorkingOrder:(Order *)order;
+- (void)prepareForDisplay:(Order *)workingOrder lineItem:(LineItem *)workingLineItem;
 
 @end

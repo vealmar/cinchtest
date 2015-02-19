@@ -39,6 +39,7 @@
     loader.retainedSelf = loader;
     loader.dataTypes = [NSMutableArray arrayWithArray:dataTypes];
     loader.onComplete = ^{
+        [[NSNotificationCenter defaultCenter] removeObserver:loader];
         onComplete();
         loader.retainedSelf = nil;
     };
@@ -72,8 +73,7 @@
 
 - (void)dealloc {
     // unregister for keyboard notifications while not visible.
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:ProductsLoadedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:CustomersLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)loadCustomers {

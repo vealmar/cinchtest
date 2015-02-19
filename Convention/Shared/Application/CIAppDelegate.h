@@ -28,9 +28,18 @@
 
 @property (nonatomic, strong) APLSlideMenuViewController *slideMenu;
 
++ (CIAppDelegate*)instance;
+
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
 
 -(BOOL)isNetworkReachable;
+
+- (void)showZoomedController:(UIViewController*)c;
+- (void)dismissZoomedController;
+
+@property (strong, nonatomic) UINavigationController *menuViewController;
+@property (strong, nonatomic) UIViewController *zoomedViewController;
+
 
 @end

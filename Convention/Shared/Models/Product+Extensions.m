@@ -10,6 +10,8 @@
 #import "CoreDataUtil.h"
 #import "NumberUtil.h"
 #import "StringManipulation.h"
+#import "Underscore.h"
+#import "APLNormalizedStringTransformer.h"
 
 
 @implementation Product (Extensions)
@@ -26,20 +28,17 @@
         self.descr2 = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDescr2]];
         self.partnbr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductPartNbr]];
         self.uom = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductUom]];
-        NSString *regPriceStr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductRegPrc]];
-        if (regPriceStr) {
-            NSNumber *decimalRegPrice = [NumberUtil convertStringToDollars:regPriceStr];
-            self.regprc = decimalRegPrice;
-        } else {
-            self.regprc = [NumberUtil zeroIntNSNumber];
+
+        NSArray *productPrices = [NilUtil objectOrEmptyArray:[productFromServer objectForKey:kProductPrices]];
+        NSMutableArray *pricesArrayMutable = [NSMutableArray arrayWithCapacity:productPrices.count];
+        for (NSString *obj in productPrices) {
+            [pricesArrayMutable addObject:[NumberUtil convertStringToDollars:obj]];
         }
-        NSString *showPriceStr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductShowPrice]];
-        if (showPriceStr) {
-            NSNumber *decimalShowPrice = [NumberUtil convertStringToDollars:showPriceStr];
-            self.showprc = decimalShowPrice;
-        } else {
-            self.showprc = [NumberUtil zeroIntNSNumber];
-        }
+        NSArray *pricesArray = [NSArray arrayWithArray:pricesArrayMutable];
+        self.prices = pricesArray;
+        self.showprc = pricesArray && pricesArray.count > 0 ? (NSNumber *) pricesArray[0] : [NumberUtil zeroIntNSNumber];
+        self.regprc = pricesArray && pricesArray.count > 1 ? (NSNumber *) pricesArray[1] : [NumberUtil zeroIntNSNumber];
+
         self.caseqty = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductCaseQty]];
         self.dirship = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDirShip]];
         self.sequence = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductSequence]];
@@ -72,13 +71,33 @@
 
         if ([self.tags contains:@"Write-In"]) {
             self.section = @1;
+        } else {
+            self.section = @0;
         }
+
+        NSString *value = [NSString stringWithFormat:@"%@ %@ %@ %@ %@",
+                        [NilUtil objectOrEmptyString:self.invtid],
+                        [NilUtil objectOrEmptyString:self.descr],
+                        [NilUtil objectOrEmptyString:self.descr2],
+                        [NilUtil objectOrEmptyString:self.tags],
+                        [NilUtil objectOrEmptyString:self.partnbr]];
+        self.normalizedSearchText = [APLNormalizedStringTransformer normalizeString:value];
     }
     return self;
 }
 
 - (BOOL)isWriteIn {
     return [self.tags contains:@"Write-In"];
+}
+
+- (NSNumber *)priceAtTier:(int)index {
+    if (self.prices.count == 0) {
+        return @(0);
+    } else if (index >= self.prices.count) {
+        return self.prices.lastObject;
+    } else {
+        return self.prices[(NSUInteger) index];
+    }
 }
 
 + (Product *)findProduct:(NSNumber *)productId {

@@ -39,5 +39,7 @@
 @dynamic vendor_id;
 @dynamic voucher;
 @dynamic editable;
+@dynamic lineItems;
+@dynamic normalizedSearchText;
 
 @end

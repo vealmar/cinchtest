@@ -65,6 +65,22 @@
     return [UIColor colorWithRed:27.0f/255.0f green:186.0f/255.0f blue:225.0f/255.0f alpha:1];
 }
 
++ (UIColor *)grayBackgroundColor {
+    return [UIColor colorWithRed:234.0f/255.0f green:237.0f/255.0f blue:241.0f/255.0f alpha:1.000];
+}
+
++ (UIColor *)redBackgroundColor {
+    return [UIColor colorWithRed:0.937 green:0.541 blue:0.502 alpha:1.000];
+}
+
++ (UIColor *)redBorderColor {
+    return [UIColor colorWithRed:0.906 green:0.298 blue:0.235 alpha:1.000];
+}
+
++ (UIColor *)themeBackgroundColor {
+    return [UIColor colorWithRed:0.290 green:0.224 blue:0.169 alpha:1];
+}
+
 + (NSDictionary *)navigationTitleTextAttributes:(int)size {
     NSShadow *shadow = [NSShadow new];
     shadow.shadowColor = [UIColor blackColor];
@@ -135,31 +151,6 @@ Generates a title label based on the format parameter.
         NSFontAttributeName: [UIFont iconFontOfSize:14],
         NSForegroundColorAttributeName: [UIColor whiteColor]
     };
-}
-
-+ (CGRect)fitTextWidthTo:(UILabel *)label {
-    NSRange range;
-    NSDictionary *attributes;
-    if (label.attributedText && label.attributedText.length > 0) {
-        NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[label.attributedText attributesAtIndex:0 effectiveRange:&range]];
-        // This seems like an iOS bug, but when you ask for the attributes, it gives you
-        // a literal representation of what was passed in when the attributed text was created.
-        // On labels, the font property still takes effect.
-        [dict setValue:label.font forKey:NSFontAttributeName];
-        attributes = [NSDictionary dictionaryWithDictionary:dict];
-    }
-    if (!attributes || attributes.count == 0) {
-        attributes = @{ NSFontAttributeName: label.font };
-    }
-
-    CGRect totalHeightRect = [label.text boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, label.frame.size.height)
-                                                      options:NSStringDrawingUsesLineFragmentOrigin
-                                                   attributes:attributes
-                                                      context:nil];
-
-    label.frame = CGRectMake(label.frame.origin.x, label.frame.origin.y, totalHeightRect.size.width, label.frame.size.height);
-
-    return label.frame;
 }
 
 + (UIColor *)lighten:(UIColor *)color by:(CGFloat)value {

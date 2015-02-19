@@ -22,6 +22,12 @@
 #import "OrderTotals.h"
 #import "LineItem+Extensions.h"
 #import "LineItem.h"
+#import "View+MASAdditions.h"
+#import "UIView+Boost.h"
+#import "CIButton.h"
+#import "CISelectOrderDiscountViewController.h"
+#import "NotificationConstants.h"
+#import "CIAlertView.h"
 
 
 @interface CICartViewController ()
@@ -92,10 +98,10 @@
             self.customer[kBillName] != nil &&
             ![self.customer[kBillName] isKindOfClass:[NSNull class]] ? self.customer[kBillName] : @"";
     self.vendorLabel.text = [helper displayNameForVendor:self.selectedVendorId];
-    self.tableHeaderPrice1Label.text = [[ShowConfigurations instance] price1Label];
-    self.tableHeaderPrice2Label.text = [[ShowConfigurations instance] price2Label];
 
-    self.productsUITableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.productsUITableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+
+    [self initActionsBar];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -108,6 +114,7 @@
         //so it is important to undo the frame resize at this point.
         [self keyboardDidHide];
     }
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orderDiscountPercentageChanged:) name:OrderDiscountPercentageChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:)
                                                  name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide)
@@ -126,6 +133,41 @@
     }
 }
 
+- (void)initActionsBar {
+    UIView *actionsBar = [UIView new];
+    actionsBar.backgroundColor = [ThemeUtil grayBackgroundColor];
+    [self.view addSubview:actionsBar];
+
+    [self.productsUITableView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.bottom.equalTo(actionsBar.mas_top);
+    }];
+    [actionsBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.productsUITableView.mas_bottom);
+        make.left.equalTo(self.view.mas_left);
+        make.width.equalTo(self.view.mas_width);
+        make.bottom.equalTo(self.view.mas_bottom);
+        make.height.equalTo(@50);
+    }];
+
+    if ([ShowConfigurations instance].vendorMode) {
+        CIButton *changePriceTierButton = [[CIButton alloc] initWithOrigin:CGPointMake(8.0F, 5.0F)
+                                                                     title:@"Discount"
+                                                                      size:CIButtonSizeLarge
+                                                                     style:CIButtonStyleCancel];
+        [actionsBar addSubview:changePriceTierButton];
+        [changePriceTierButton bk_whenTapped:^{
+            if (self.order) {
+                CISelectOrderDiscountViewController *selectOrderDiscountVC = [[CISelectOrderDiscountViewController alloc] init];
+                selectOrderDiscountVC.modalPresentationStyle = UIModalPresentationFormSheet;
+                selectOrderDiscountVC.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+                [selectOrderDiscountVC prepareForDisplay:self.order];
+                [self presentViewController:selectOrderDiscountVC animated:YES completion:nil];
+            }
+        }];
+    }
+
+}
+
 - (void)saveOrderOnFirstLoad {
     if ([helper isOrderReadyForSubmission:self.order]) {
         __weak CICartViewController *weakSelf = self;
@@ -133,8 +175,11 @@
         self.order.status = @"pending";
         [OrderManager syncOrder:self.order attachHudTo:self.view onSuccess:^{
             [weakSelf refreshView];
+            [CIAlertView alertSyncEvent:@"Order Synced"];
         }             onFailure:^{
             weakSelf.savingOrder = NO;
+
+            [weakSelf Cancel:nil];
         }];
     }
     self.initialized = YES;
@@ -342,10 +387,10 @@
         __weak CICartViewController *weakSelf = self;
         self.order.status = @"complete";
         self.savingOrder = YES;
-        [OrderManager syncOrderDetails:self.order attachHudTo:self.view onSuccess:^{
+        [OrderManager syncOrderDetails:self.order sendEmailTo:nil attachHudTo:self.view onSuccess:^{
             [weakSelf finishOrderSyncComplete:weakSelf.order];
             weakSelf.savingOrder = NO;
-        }             onFailure:^{
+        }                    onFailure:^{
             weakSelf.savingOrder = NO;
         }];
     }
@@ -408,6 +453,11 @@
 
 - (void)signatureViewDismissed {
     [self dismissSelf]; //@todo orders handle order signature
+}
+
+-(void)orderDiscountPercentageChanged:(NSNotification *)notification {
+    [self.productsUITableView reloadData];
+    [self saveOrderOnFirstLoad];
 }
 
 #pragma Keyboard

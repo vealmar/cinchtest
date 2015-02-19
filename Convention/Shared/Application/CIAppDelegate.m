@@ -11,6 +11,14 @@
 #import "LaunchViewController.h"
 #import "CurrentSession.h"
 
+static CIAppDelegate *appInstance;
+
+@interface CIAppDelegate()
+
+@property (strong, nonatomic) UIButton *zoomDismissButton;
+@property (strong, nonatomic) UIView *zoomedBackgroundView;
+
+@end
 
 @implementation CIAppDelegate
 
@@ -20,8 +28,12 @@
 @synthesize window = _window;
 @synthesize networkAvailable;
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
++ (CIAppDelegate*)instance {
+    return appInstance;
+}
 
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    appInstance = self;
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"LaunchViewController" bundle:nil];
     LaunchViewController *launchViewController = [storyboard instantiateInitialViewController];
@@ -33,6 +45,16 @@
     // withUrl:kBASEURL];
     self.networkAvailable = [reachDelegation isNetworkReachable]; //TODO: We may need actually prod it to check here.
     [application setStatusBarStyle:UIStatusBarStyleLightContent];
+
+    self.zoomedBackgroundView = [[UIView alloc] initWithFrame:self.window.bounds];
+    self.zoomedBackgroundView.backgroundColor = [UIColor clearColor];
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = self.zoomedBackgroundView.bounds;
+    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor colorWithRed:0.494 green:0.302 blue:0.647 alpha:1] CGColor], (id)[[UIColor colorWithRed:0.129 green:0.224 blue:0.353 alpha:1] CGColor], nil];
+    gradient.startPoint = CGPointMake(0.0, 0.5);
+    gradient.endPoint = CGPointMake(1.0, 0.5);
+    [self.zoomedBackgroundView.layer addSublayer:gradient];
+
     return YES;
 }
 
@@ -40,6 +62,81 @@
     DLog(@"Application received memory warning!!!");
 }
 
+- (void)showZoomedController:(UIViewController*)c {
+//    self.menuViewController = UIApplication.sharedApplication.keyWindow.rootViewController.navigationController;
+//
+//    [self.window insertSubview:self.zoomedBackgroundView atIndex:0];
+//
+//    c.view.frame = c.view.frame;
+//    self.zoomedViewController = c;
+//
+//    UIWindow *window = [CIAppDelegate instance].window;
+//    UIView *rootView = window.rootViewController.view;
+//    rootView.userInteractionEnabled = NO;
+//
+//    self.zoomDismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
+//    self.zoomDismissButton.frame = window.bounds;
+//    self.zoomDismissButton.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.2];
+//    self.zoomDismissButton.alpha = 0.0;
+//    [window addSubview:self.zoomDismissButton];
+//
+//    CGRect f = c.view.frame;
+//    f.origin.y = window.bounds.size.height;
+//    c.view.frame = f;
+//    [window addSubview:c.view];
+//
+//    [self.menuViewController viewWillDisappear:YES];
+//
+//    [self.zoomDismissButton bk_addEventHandler:^(id sender) {
+//        [self dismissZoomedController];
+//    } forControlEvents:UIControlEventTouchDown];
+//
+//    [NSObject pop_animate:^{
+//        rootView.pop_duration = 0.3;
+//        rootView.pop_easeOut.pop_scaleXY = CGPointMake(0.85, 0.85);
+//
+//        self.zoomDismissButton.pop_duration = 0.3;
+//        self.zoomDismissButton.pop_easeOut.alpha = 1.0;
+//
+//        self.zoomedViewController.view.pop_duration = 0.3;
+//        CGRect f = self.zoomedViewController.view.frame;
+//        f.origin.y = window.bounds.size.height - f.size.height;
+//        self.zoomedViewController.view.pop_easeOut.frame = f;
+//    } completion:^(BOOL finished) {
+//        [self.menuViewController viewDidDisappear:YES];
+//    }];
+}
+
+- (void)dismissZoomedController {
+//    UIWindow *window = [CIAppDelegate instance].window;
+//    UIView *rootView = window.rootViewController.view;
+//
+//    [self.zoomedViewController viewWillDisappear:YES];
+//    [self.menuViewController viewWillAppear:YES];
+//
+//    [NSObject pop_animate:^{
+//        rootView.pop_duration = 0.3;
+//        rootView.pop_easeOut.pop_scaleXY = CGPointMake(1.0, 1.0);
+//
+//        self.zoomDismissButton.pop_duration = 0.3;
+//        self.zoomDismissButton.pop_easeOut.alpha = 0.0;
+//
+//        self.zoomedViewController.view.pop_duration = 0.3;
+//        CGRect f = self.zoomedViewController.view.frame;
+//        f.origin.y = window.bounds.size.height;
+//        self.zoomedViewController.view.pop_easeOut.frame = f;
+//    } completion:^(BOOL finished) {
+//        [self.zoomedBackgroundView removeFromSuperview];
+//
+//        rootView.userInteractionEnabled = YES;
+//        [self.zoomedViewController.view removeFromSuperview];
+//        self.zoomedViewController = nil;
+//        self.zoomDismissButton = nil;
+//
+//        [self.zoomedViewController viewDidDisappear:YES];
+//        [self.menuViewController viewDidAppear:YES];
+//    }];
+}
 
 #pragma mark Reachability
 
@@ -115,6 +212,10 @@ static int persistentStoreCoordinatorInvocationAttempts = 0;
     }
 
     NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart9-3.sqlite"];
+    // remove old data before a login, takes too much time to delete individually
+    if (![CurrentSession instance].authToken) {
+        [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
+    }
 
     NSError *error = nil;
     _persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];

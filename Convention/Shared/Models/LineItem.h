@@ -35,4 +35,6 @@
 @property Order *order;
 @property Product *product;
 
+@property BOOL initializing; // transient
+
 @end
