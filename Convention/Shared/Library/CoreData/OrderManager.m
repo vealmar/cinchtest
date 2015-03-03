@@ -207,7 +207,7 @@
                 Order *contextOrder = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderObjectID error:nil];
                 if (contextOrder) {
                     [contextOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
-                    contextOrder.inSync = YES;
+                    contextOrder.inSync = YES;  //todo  sg I dont think this statement is needed. updateWithJsonFromServer already sets inSync to YES.
                     [[CurrentSession mainQueueContext] save:nil];
                 }
             }
@@ -227,8 +227,16 @@
     if (email) parameters[@"send_email_to"] = email;
     NSString *url = [order.orderId intValue] == 0 ? kDBORDER : kDBORDERDETAILEDITS([order.orderId intValue]);
 
+    NSManagedObjectID *orderObjectID = order.objectID;
     void(^saveBlock)(id) = ^(id JSON) {
         [[CurrentSession mainQueueContext] performBlock:^{
+            if (JSON) {
+                Order *contextOrder = (Order *) [[CurrentSession mainQueueContext] existingObjectWithID:orderObjectID error:nil];
+                if (contextOrder) {
+                    [contextOrder updateWithJsonFromServer:JSON withContext:[CurrentSession mainQueueContext]];
+                    [[CurrentSession mainQueueContext] save:nil];
+                }
+            }
             successBlock();
         }];
     };

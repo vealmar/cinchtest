@@ -50,7 +50,7 @@ DEPENDENCIES:
   - Masonry
   - MGSwipeTableCell
   - Underscore.m (~> 0.2.1)
-  - XLForm
+  - XLForm (~> 2.1.0)
 
 SPEC CHECKSUMS:
   AFNetworking: 0f54cb5d16ce38c1b76948faffb8d5fb705021c7
