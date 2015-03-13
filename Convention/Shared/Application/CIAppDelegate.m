@@ -10,6 +10,7 @@
 #import "SettingsManager.h"
 #import "LaunchViewController.h"
 #import "CurrentSession.h"
+#import "CinchJSONAPIClient.h"
 
 static CIAppDelegate *appInstance;
 
@@ -35,17 +36,9 @@ static CIAppDelegate *appInstance;
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     appInstance = self;
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"LaunchViewController" bundle:nil];
-    LaunchViewController *launchViewController = [storyboard instantiateInitialViewController];
-    launchViewController.managedObjectContext = [CurrentSession mainQueueContext];
-    self.window.rootViewController = launchViewController;
-    [self.window makeKeyAndVisible];
     [[SettingsManager sharedManager] initialize];
-    //reachDelegation = [[ReachabilityDelegation alloc] initWithDelegate:self
-    // withUrl:kBASEURL];
     self.networkAvailable = [reachDelegation isNetworkReachable]; //TODO: We may need actually prod it to check here.
     [application setStatusBarStyle:UIStatusBarStyleLightContent];
-
     self.zoomedBackgroundView = [[UIView alloc] initWithFrame:self.window.bounds];
     self.zoomedBackgroundView.backgroundColor = [UIColor clearColor];
     CAGradientLayer *gradient = [CAGradientLayer layer];
@@ -54,89 +47,37 @@ static CIAppDelegate *appInstance;
     gradient.startPoint = CGPointMake(0.0, 0.5);
     gradient.endPoint = CGPointMake(1.0, 0.5);
     [self.zoomedBackgroundView.layer addSublayer:gradient];
-
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged) name:NSUserDefaultsDidChangeNotification object:nil];
+    [self loadLaunchViewController];
     return YES;
+}
+
+- (void)loadLaunchViewController {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"LaunchViewController" bundle:nil];
+    LaunchViewController *launchViewController = [storyboard instantiateInitialViewController];
+    launchViewController.managedObjectContext = [CurrentSession mainQueueContext];
+    self.window.rootViewController = launchViewController;
+    [self.window makeKeyAndVisible];
+
+}
+
+- (void)defaultsChanged {
+    //todo swapna check if the current viewcontroller is launchviewconroller or civiewcontroller.
+    //todo If not prompt user so they can ok reloading of new configs. Not sure if we can should give them a choice to not-reload.
+    [[SettingsManager sharedManager] refresh];
+    [[CinchJSONAPIClient sharedInstance] reload];
+    [[CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization] reload];
+    [self loadLaunchViewController];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
     DLog(@"Application received memory warning!!!");
 }
 
-- (void)showZoomedController:(UIViewController*)c {
-//    self.menuViewController = UIApplication.sharedApplication.keyWindow.rootViewController.navigationController;
-//
-//    [self.window insertSubview:self.zoomedBackgroundView atIndex:0];
-//
-//    c.view.frame = c.view.frame;
-//    self.zoomedViewController = c;
-//
-//    UIWindow *window = [CIAppDelegate instance].window;
-//    UIView *rootView = window.rootViewController.view;
-//    rootView.userInteractionEnabled = NO;
-//
-//    self.zoomDismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
-//    self.zoomDismissButton.frame = window.bounds;
-//    self.zoomDismissButton.backgroundColor = [UIColor colorWithWhite:0.0 alpha:0.2];
-//    self.zoomDismissButton.alpha = 0.0;
-//    [window addSubview:self.zoomDismissButton];
-//
-//    CGRect f = c.view.frame;
-//    f.origin.y = window.bounds.size.height;
-//    c.view.frame = f;
-//    [window addSubview:c.view];
-//
-//    [self.menuViewController viewWillDisappear:YES];
-//
-//    [self.zoomDismissButton bk_addEventHandler:^(id sender) {
-//        [self dismissZoomedController];
-//    } forControlEvents:UIControlEventTouchDown];
-//
-//    [NSObject pop_animate:^{
-//        rootView.pop_duration = 0.3;
-//        rootView.pop_easeOut.pop_scaleXY = CGPointMake(0.85, 0.85);
-//
-//        self.zoomDismissButton.pop_duration = 0.3;
-//        self.zoomDismissButton.pop_easeOut.alpha = 1.0;
-//
-//        self.zoomedViewController.view.pop_duration = 0.3;
-//        CGRect f = self.zoomedViewController.view.frame;
-//        f.origin.y = window.bounds.size.height - f.size.height;
-//        self.zoomedViewController.view.pop_easeOut.frame = f;
-//    } completion:^(BOOL finished) {
-//        [self.menuViewController viewDidDisappear:YES];
-//    }];
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)dismissZoomedController {
-//    UIWindow *window = [CIAppDelegate instance].window;
-//    UIView *rootView = window.rootViewController.view;
-//
-//    [self.zoomedViewController viewWillDisappear:YES];
-//    [self.menuViewController viewWillAppear:YES];
-//
-//    [NSObject pop_animate:^{
-//        rootView.pop_duration = 0.3;
-//        rootView.pop_easeOut.pop_scaleXY = CGPointMake(1.0, 1.0);
-//
-//        self.zoomDismissButton.pop_duration = 0.3;
-//        self.zoomDismissButton.pop_easeOut.alpha = 0.0;
-//
-//        self.zoomedViewController.view.pop_duration = 0.3;
-//        CGRect f = self.zoomedViewController.view.frame;
-//        f.origin.y = window.bounds.size.height;
-//        self.zoomedViewController.view.pop_easeOut.frame = f;
-//    } completion:^(BOOL finished) {
-//        [self.zoomedBackgroundView removeFromSuperview];
-//
-//        rootView.userInteractionEnabled = YES;
-//        [self.zoomedViewController.view removeFromSuperview];
-//        self.zoomedViewController = nil;
-//        self.zoomDismissButton = nil;
-//
-//        [self.zoomedViewController viewDidDisappear:YES];
-//        [self.menuViewController viewDidAppear:YES];
-//    }];
-}
 
 #pragma mark Reachability
 
@@ -145,16 +86,12 @@ static CIAppDelegate *appInstance;
 }
 
 - (void)networkLost {
-
     DLog(@"Network Lost !");
-
     networkAvailable = NO;
 }
 
 - (void)networkRestored {
-
     DLog(@"Network Gained !");
-
     networkAvailable = YES;
 }
 
@@ -249,5 +186,6 @@ static int persistentStoreCoordinatorInvocationAttempts = 0;
 - (NSURL *)applicationDocumentsDirectory {
     return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
 }
+
 
 @end

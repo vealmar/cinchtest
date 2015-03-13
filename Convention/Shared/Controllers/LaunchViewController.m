@@ -21,6 +21,7 @@
 
 @implementation LaunchViewController
 
+
 - (UIStatusBarStyle)preferredStatusBarStyle {
     return UIStatusBarStyleLightContent;
 }
@@ -28,13 +29,25 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [[SettingsManager sharedManager] refresh]; //User might have left the app to update settings and come back, so we need to make sure we are using latest settings.
-    NSThread *settingsThread = [[NSThread alloc] initWithTarget:self
-                                                       selector:@selector(checkSettings)
-                                                         object:nil];
-    [settingsThread start];
-    self.label.text = @"Loading Ci settings";
+    [self startSettingsThread];
 }
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+}
+
+
+- (void)startSettingsThread {
+    self.label.text = @"Loading Configurations";
+    if ([self requiredSettingsArePresent]) {
+        [self obtainShowConfigurationAndPresentLoginView];
+    } else {
+        [self updateLabel:@"Some required settings are missing. Please make sure Server and Show are specified in Ci settings."];
+        [self stopActivityIndicator];
+    }
+
+}
+
 
 - (void)updateLabel:(NSString *)text {
     self.label.text = text;
@@ -50,11 +63,10 @@
     [self presentViewController:ciViewController animated:YES completion:nil];
 }
 
-- (void)checkSettings {
+- (BOOL)checkSettings {
     if (![self requiredSettingsArePresent]) {
-        [self performSelectorOnMainThread:@selector(updateLabel:) withObject:@"Some required settings are missing. Please make sure Server and Show are specified in Ci settings." waitUntilDone:NO];
-        [self performSelectorOnMainThread:@selector(stopActivityIndicator) withObject:nil waitUntilDone:NO];
-        return;
+
+        return NO;
     }
     [self performSelectorOnMainThread:@selector(updateLabel:) withObject:@"Loading show configurations" waitUntilDone:NO];
     [self obtainShowConfigurationAndPresentLoginView];
@@ -65,14 +77,19 @@
 }
 
 - (void)obtainShowConfigurationAndPresentLoginView {
-    [[CinchJSONAPIClient sharedInstance] GET:ConfigUrl parameters:@{ } success:^(NSURLSessionDataTask *task, id JSON) {
+    [[CinchJSONAPIClient sharedInstance] GET:ConfigUrl parameters:@{} success:^(NSURLSessionDataTask *task, id JSON) {
         NSLog(@"%@", JSON);
         [ShowConfigurations createInstanceFromJson:(NSDictionary *) JSON];
         [self performSelectorOnMainThread:@selector(presentLoginView) withObject:nil waitUntilDone:NO];
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+    }                                failure:^(NSURLSessionDataTask *task, NSError *error) {
         [self performSelectorOnMainThread:@selector(updateLabel:) withObject:@"Settings seem to be invalid. Please make sure Server and Show specified in Ci settings are correct." waitUntilDone:NO];
         NSLog([error localizedDescription]);
         [self performSelectorOnMainThread:@selector(stopActivityIndicator) withObject:nil waitUntilDone:NO];
     }];
 }
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 @end
