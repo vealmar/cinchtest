@@ -8,6 +8,9 @@
 #import "config.h"
 #import "CIAppDelegate.h"
 #import "NilUtil.h"
+#import "Show.h"
+#import "Show+Extensions.h"
+#import "Vendor.h"
 
 @interface CurrentSession ()
 
@@ -33,7 +36,7 @@ static CurrentSession *currentSession = nil;
 }
 
 - (NSNumber *)showId {
-    NSNumber *showId = (NSNumber *) [self.userInfo objectForKey:@"current_show"][kID];
+    NSNumber *showId = (NSNumber *) self.userInfo[@"current_show"][kShowId];
     return showId;
 }
 
@@ -42,17 +45,40 @@ static CurrentSession *currentSession = nil;
 }
 
 - (NSNumber *)vendorGroupId {
-    NSNumber *vendorgroupId = (NSNumber *) [self.userInfo objectForKey:kVendorGroupID];
+    NSNumber *vendorgroupId = (NSNumber *) self.userInfo[kVendorGroupID];
     return vendorgroupId;
 }
 
 - (NSNumber *)vendorId {
-    NSNumber *vendorId = (NSNumber *) [self.userInfo objectForKey:kID];
+    NSNumber *vendorId = (NSNumber *) self.userInfo[kID];
     return vendorId;
+}
+
+- (void)setVendor:(Vendor *) vendor {
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:self.userInfo];
+    userInfo[kID] = vendor.vendorId;
+    userInfo[kVendorGroupID] = vendor.vendorgroup_id;
+    userInfo[kName] = vendor.name;
+    self.userInfo = [NSDictionary dictionaryWithDictionary:userInfo];
 }
 
 - (NSString *)vendorName {
     return [NilUtil objectOrEmptyString:self.userInfo[@"name"]];
+}
+
+- (NSString *)showTitle {
+    return [NilUtil objectOrEmptyString:self.userInfo[@"current_show"][@"title"]];
+}
+
+
+- (void) setShow:(Show *)show{
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:[CurrentSession instance].userInfo];
+    if(show){
+        userInfo[@"current_show"] = [show asDictionary];
+    }else{
+        [userInfo setNilValueForKey:@"current_show"];
+    }
+    [CurrentSession instance].userInfo = [NSDictionary dictionaryWithDictionary:userInfo];
 }
 
 - (void)dispatchSessionDidChange {

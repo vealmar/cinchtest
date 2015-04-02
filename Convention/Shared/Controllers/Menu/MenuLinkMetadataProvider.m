@@ -6,17 +6,16 @@
 #import <Underscore.m/Underscore.h>
 #import "MenuLinkMetadataProvider.h"
 #import "ThemeUtil.h"
-#import "config.h"
 #import "SettingsManager.h"
 #import "CoreDataManager.h"
 #import "NotificationConstants.h"
 #import "CurrentSession.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 
 @implementation MenuLinkMetadata
 
 -(NSURL *)url {
-    NSString *baseUrl = kBASEURL;
+    NSString *baseUrl = [[SettingsManager sharedManager] getServerUrl];
     return [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", baseUrl, self.relativeUrl]];
 }
 
@@ -42,66 +41,72 @@ static MenuLinkMetadataProvider *provider = nil;
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkOrderWriter;
         m.iconCharacter = @"\ue145";
-        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s", @"Order Writer"];
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s", @"Order Writer", nil];
+        [builder addObject:m];
+
+        m = [MenuLinkMetadata new];
+        m.menuLink = MenuLinkChangeShow;
+        m.iconCharacter = @"\ue010"; //todo sg change icon?
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s", @"Change Sales Period", nil];
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkChangeVendor;
         m.iconCharacter = @"\ue010";
-        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s", @"Change Vendor"];
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s", @"Change Vendor", nil];
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkProducts;
         m.iconCharacter = @"\ue203";
-        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.productCount, @"Products"];
-        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Products"];
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.productCount, @"Products", nil];
+        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Products", nil];
         m.relativeUrl = @"/products";
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkCustomers;
         m.iconCharacter = @"\ue453";
-        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.customerCount, @"Customers"];
-        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Customers"];
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%s %l", self.customerCount, @"Customers", nil];
+        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Customers", nil];
         m.relativeUrl = @"/customers";
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkDiscountGuide;
         m.iconCharacter = @"\ue459";
-        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l", @"Discount Guide"];
-        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Discount Guide"];
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l", @"Discount Guide", nil];
+        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Discount Guide", nil];
         m.relativeUrl = [NSString stringWithFormat:@"/shows/%@/discount_descriptions", [CurrentSession instance].showId];
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkReportSalesByBrand;
         m.iconCharacter = @"\ue063";
-        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l %s", @"Sales by", @"Brand"];
-        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b", @"Sales by", @"Brand"];
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l %s", @"Sales by", @"Brand", nil];
+        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b", @"Sales by", @"Brand", nil];
         m.relativeUrl = @"/reports/bulletin_sales";
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkReportSalesByProduct;
         m.iconCharacter = @"\ue453";
-        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l %s", @"Sales by", @"Product"];
-        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b", @"Sales by", @"Product"];
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l %s", @"Sales by", @"Product", nil];
+        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b", @"Sales by", @"Product", nil];
         m.relativeUrl = @"/reports/product_sales";
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkReportSalesByCustomer;
         m.iconCharacter = @"\ue203";
-        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l %s", @"Sales by", @"Customer"];
-        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%l %s", @"Sales by", @"Customer"];
+        m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l %s", @"Sales by", @"Customer", nil];
+        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%l %s", @"Sales by", @"Customer", nil];
         m.relativeUrl = @"/reports/customer_sales";
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
         m.menuLink = MenuLinkHelp;
-        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b", @"Order Writer", @"Help"];
+        m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b", @"Order Writer", @"Help", nil];
         m.relativeUrl = [self helpUrl];
         [builder addObject:m];
 
@@ -167,7 +172,7 @@ static MenuLinkMetadataProvider *provider = nil;
 }
 
 - (NSString *)helpUrl {
-    return [ShowConfigurations instance].vendorMode ? @"/pages/help/vendor" : @"/pages/help/host";
+    return [Configurations instance].vendorMode ? @"/pages/help/vendor" : @"/pages/help/host";
 }
 
 @end

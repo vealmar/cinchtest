@@ -9,15 +9,13 @@
 #import "Order+Extensions.h"
 #import "LineItem.h"
 #import "Product.h"
-#import "Product+Extensions.h"
 #import "LineItem+Extensions.h"
 #import "OrderManager.h"
 #import "NilUtil.h"
 #import "config.h"
 #import "DateUtil.h"
-#import "OrderManager.h"
 #import "ShowCustomField.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "CurrentSession.h"
 #import "CoreDataUtil.h"
 #import "OrderTotals.h"
@@ -39,7 +37,7 @@
         newOrder.custId = customer[kCustID];
         newOrder.customerName = customer[kBillName];
         newOrder.vendorId = [CurrentSession instance].vendorId;
-        newOrder.pricingTierIndex = @([[ShowConfigurations instance] defaultPriceTierIndex]);
+        newOrder.pricingTierIndex = @([[Configurations instance] defaultPriceTierIndex]);
         [OrderManager saveOrder:newOrder inContext:[CurrentSession mainQueueContext]];
     }];
 
@@ -113,23 +111,23 @@
 
 - (OrderSubtotalsByDate *)calculateShipDateSubtotals {
     OrderSubtotalsByDate *subtotals = [[OrderSubtotalsByDate alloc] init];
-    if (![ShowConfigurations instance].shipDates) return subtotals;
+    if (![Configurations instance].shipDates) return subtotals;
 
-    if ([ShowConfigurations instance].isOrderShipDatesType) {
+    if ([Configurations instance].isOrderShipDatesType) {
         Underscore.array(self.shipDates).each(^(NSDate *date) {
             for (LineItem *lineItem in self.lineItems) {
                 [subtotals addTotal:[lineItem.price doubleValue] * [lineItem.quantity intValue] forDate:date];
             };
     });
-    } else if ([ShowConfigurations instance].isLineItemShipDatesType) {
-        NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
+    } else if ([Configurations instance].isLineItemShipDatesType) {
+        NSArray *fixedShipDates = [Configurations instance].orderShipDates.fixedDates;
 
         for (LineItem *lineItem in self.lineItems) {
             NSDictionary *quantities = [lineItem.quantity objectFromJSONString];
             Underscore.dict(quantities).each(^(NSString *date, NSNumber *quantity) {
                 NSDate *shipDate = [DateUtil convertApiDateTimeToNSDate:date];
                 NSNumber *price = lineItem.price;
-                if ([ShowConfigurations instance].isAtOncePricing && fixedShipDates.count > 0) {
+                if ([Configurations instance].isAtOncePricing && fixedShipDates.count > 0) {
                     if ([((NSDate *) fixedShipDates.firstObject) isEqualToDate:shipDate]) {
                         price = lineItem.product.showprc;
                     } else {
@@ -215,18 +213,18 @@
 
 - (NSString *)customFieldValueFor:(ShowCustomField *)showCustomField {
     NSDictionary *customField = Underscore.array(self.customFields).find(^BOOL(NSDictionary *dict) {
-        return [showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:[dict objectForKey:kCustomFieldFieldName]];
+        return [showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:dict[kCustomFieldFieldName]];
     });
     if (customField == nil) {
         return nil;
     } else {
-        return [customField objectForKey:kCustomFieldValue];
+        return customField[kCustomFieldValue];
     }
 }
 
 - (void)setCustomFieldValueFor:(ShowCustomField *)showCustomField value:(NSString *)value {
     NSDictionary *customField = Underscore.array(self.customFields).find(^BOOL(NSDictionary *dict) {
-        return [showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:[dict objectForKey:kCustomFieldFieldName]];
+        return [showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:dict[kCustomFieldFieldName]];
     });
     if (nil == customField) {
         customField = @{ kCustomFieldCustomFieldInfoId : showCustomField.id, kCustomFieldFieldName : showCustomField.fieldName, kCustomFieldValue : value };
@@ -238,7 +236,7 @@
 
     // remove existing field if it exists in collection
     self.customFields = Underscore.array(self.customFields).filter(^BOOL(NSDictionary *dict) {
-        return !([showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:[dict objectForKey:kCustomFieldFieldName]]);
+        return !([showCustomField.ownerType isEqualToString:@"Order"] && [showCustomField.fieldName isEqualToString:dict[kCustomFieldFieldName]]);
     }).unwrap;
     // add new one
     self.customFields = [self.customFields arrayByAddingObject:customField];
@@ -260,21 +258,21 @@
     self.discountTotal = nil;
     self.voucherTotal = nil;
 
-    self.customerId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"customer_id"]];
-    self.shippingAddressId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"shipping_address_id"]];
-    self.billingAddressId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"billing_address_id"]];
-    self.showId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"show_id"]];
-    self.vendorId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"vendor_id"]];
-    self.orderId = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"id"]];
-    self.notes = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"notes"]];
-    self.status = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"status"]];
-    self.authorizedBy = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"authorized"]];
-    NSNumber *shipFlagInt = (NSNumber *) [NilUtil nilOrObject:[JSON objectForKey:@"ship_flag"]];
+    self.customerId = (NSNumber *) [NilUtil nilOrObject:JSON[@"customer_id"]];
+    self.shippingAddressId = (NSNumber *) [NilUtil nilOrObject:JSON[@"shipping_address_id"]];
+    self.billingAddressId = (NSNumber *) [NilUtil nilOrObject:JSON[@"billing_address_id"]];
+    self.showId = (NSNumber *) [NilUtil nilOrObject:JSON[@"show_id"]];
+    self.vendorId = (NSNumber *) [NilUtil nilOrObject:JSON[@"vendor_id"]];
+    self.orderId = (NSNumber *) [NilUtil nilOrObject:JSON[@"id"]];
+    self.notes = (NSString *) [NilUtil nilOrObject:JSON[@"notes"]];
+    self.status = (NSString *) [NilUtil nilOrObject:JSON[@"status"]];
+    self.authorizedBy = (NSString *) [NilUtil nilOrObject:JSON[@"authorized"]];
+    NSNumber *shipFlagInt = (NSNumber *) [NilUtil nilOrObject:JSON[@"ship_flag"]];
     self.shipFlag = shipFlagInt && [shipFlagInt intValue] == 1;//boolean
-    self.purchaseOrderNumber = (NSString *) [NilUtil nilOrObject:[JSON objectForKey:@"po_number"]];
-    self.shipDates = [DateUtil convertApiDateArrayToNSDateArray:[NilUtil objectOrEmptyArray:[JSON objectForKey:@"ship_dates"]]];
-    self.customFields = [JSON objectForKey:@"custom_fields"];
-    self.pricingTierIndex = (NSNumber *) [NilUtil objectOrDefault:[JSON objectForKey:@"pricing_tier_index"] defaultObject:@(0)];
+    self.purchaseOrderNumber = (NSString *) [NilUtil nilOrObject:JSON[@"po_number"]];
+    self.shipDates = [DateUtil convertApiDateArrayToNSDateArray:[NilUtil objectOrEmptyArray:JSON[@"ship_dates"]]];
+    self.customFields = JSON[@"custom_fields"];
+    self.pricingTierIndex = (NSNumber *) [NilUtil objectOrDefault:JSON[@"pricing_tier_index"] defaultObject:@(0)];
 
     NSString *discountPercentageCopy = (NSString *) [[NilUtil objectOrDefault:JSON[@"discount_percentage"] defaultObject:@"0"] copy];
     self.discountPercentage = @(discountPercentageCopy.doubleValue);
@@ -287,11 +285,11 @@
         self.updatedAt = nil;
     }
 
-    NSDictionary *customerDictionary = (NSDictionary *) [NilUtil nilOrObject:[JSON objectForKey:@"customer"]];
+    NSDictionary *customerDictionary = (NSDictionary *) [NilUtil nilOrObject:JSON[@"customer"]];
     if (customerDictionary) {
-        self.customerId = ([customerDictionary objectForKey:kCustID] == nil? [NSNumber numberWithInt:0] : [customerDictionary objectForKey:kID]);
-        self.custId = ([customerDictionary objectForKey:kCustID] == nil? @"(Unknown)" : [customerDictionary objectForKey:kCustID]);
-        self.customerName = ([customerDictionary objectForKey:kBillName] == nil? @"(Unknown)" : [customerDictionary objectForKey:kBillName]);
+        self.customerId = (customerDictionary[kCustID] == nil? @0 : customerDictionary[kID]);
+        self.custId = (customerDictionary[kCustID] == nil? @"(Unknown)" : customerDictionary[kCustID]);
+        self.customerName = (customerDictionary[kBillName] == nil? @"(Unknown)" : customerDictionary[kBillName]);
     } else {
         self.customerId = (NSNumber *) [NilUtil nilOrObject:JSON[@"customer_id"]];
         self.custId = (NSString *) [NilUtil nilOrObject:JSON[kCustID]];

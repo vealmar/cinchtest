@@ -11,7 +11,7 @@
 #import "CIProductViewController.h"
 #import "config.h"
 #import "UIAlertViewDelegateWithBlock.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "CoreDataManager.h"
 #import "CIProductViewControllerHelper.h"
 #import "NilUtil.h"
@@ -35,9 +35,6 @@
 #import "LineItem+Extensions.h"
 #import "CIFinalCustomerFormViewController.h"
 #import "CIApplication.h"
-#import "CIPanAnimationController.h"
-#import "CIAnimationControllerTransitioningDelegate.h"
-#import "CIProductDetailViewController.h"
 #import "CIButton.h"
 #import "CISelectPricingTierViewController.h"
 #import "CIAlertView.h"
@@ -126,11 +123,11 @@
     currentVendor = initialVendor;
     self.tableHeader.hidden = NO;
     self.tableHeaderMinColumnLabel.hidden = YES; //Bill Hicks demo is using the Farris Header and we have decided to hide the Min column for now since they do not use it.
-    self.tableHeaderPrice1Label.text = [[ShowConfigurations instance] price1Label];
-    self.tableHeaderPrice2Label.text = [[ShowConfigurations instance] price2Label];
-    if (![ShowConfigurations instance].isOrderShipDatesType) self.btnSelectShipDates.hidden = YES;
+    self.tableHeaderPrice1Label.text = [[Configurations instance] price1Label];
+    self.tableHeaderPrice2Label.text = [[Configurations instance] price2Label];
+    if (![Configurations instance].isOrderShipDatesType) self.btnSelectShipDates.hidden = YES;
 
-    if ([ShowConfigurations instance].isTieredPricing) {
+    if ([Configurations instance].isTieredPricing) {
         [self initializePriceTierButton];
     }
 }
@@ -153,7 +150,7 @@
 }
 
 - (void)updatePriceTierButtonTitle {
-    self.changePriceTierButton.title = [[ShowConfigurations instance] priceTierLabelAt:self.order.pricingTierIndex.intValue];
+    self.changePriceTierButton.title = [[Configurations instance] priceTierLabelAt:self.order.pricingTierIndex.intValue];
 }
 
 - (void)productsReloading:(NSNotification *)notification {
@@ -194,11 +191,11 @@
     [self deserializeOrder];
     [self updatePriceTierButtonTitle];
     
-    self.vendorLabel.text = [[NSUserDefaults standardUserDefaults] objectForKey:kSettingsUsernameKey];
+    self.vendorLabel.text = [[NSUserDefaults standardUserDefaults] objectForKey:kUsernameSetting];
     [self.vendorTable reloadData];
     [self updateErrorsView];
 
-    if ([self.customer objectForKey:kBillName] != nil) self.customerLabel.text = [self.customer objectForKey:kBillName];
+    if (self.customer[kBillName] != nil) self.customerLabel.text = self.customer[kBillName];
 
     // notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
@@ -250,7 +247,7 @@
                 [vendorDataMutable addObject:[vendor asDictionary]];
             }
         }
-        [vendorDataMutable insertObject:[NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", @"0", @"id", nil] atIndex:0];
+        [vendorDataMutable insertObject:@{@"name" : @"Any", @"id" : @"0"} atIndex:0];
         vendorsData = vendorDataMutable;
     } else {
         [[[UIAlertView alloc] initWithTitle:@"Error!" message:@"Problem loading vendors! If this problem persists please notify Convention Innovations!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
@@ -297,33 +294,33 @@
 
 - (void)updateNavigationTitle {
     if (self.filterCartSwitch.on) {
-        self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b - %s", @"Products in", @"Cart", [self.customer objectForKey:kBillName], nil];
+        self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s %b - %s", @"Products in", @"Cart", self.customer[kBillName], nil];
     } else if (currentBulletin) {
         NSArray *currentBulletins;
         if (currentVendor) {
-            currentBulletins = [bulletins objectForKey:[NSNumber numberWithInt:currentVendor]];
+            currentBulletins = bulletins[@(currentVendor)];
         } else {
             currentBulletins = Underscore.array([bulletins allValues]).flatten.unwrap;
         }
-        NSDictionary *bulletin = Underscore.array(currentBulletins).find(^BOOL(NSDictionary *bulletin) {
-            NSNumber *bulletinId = (NSNumber *) [NilUtil nilOrObject:[bulletin objectForKey:kBulletinId]];
+        NSDictionary *bulletin = Underscore.array(currentBulletins).find(^BOOL(NSDictionary *bulletin_dictionary) {
+            NSNumber *bulletinId = (NSNumber *) [NilUtil nilOrObject:bulletin_dictionary[kBulletinId]];
             return bulletinId && [bulletinId integerValue] == currentBulletin;
         });
         if (bulletin) {
-            NSString *bulletinName = (NSString *) [NilUtil nilOrObject:[bulletin objectForKey:kBulletinName]];
-            self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%b %s - %s", bulletinName, @"Products", [self.customer objectForKey:kBillName], nil];
+            NSString *bulletinName = (NSString *) [NilUtil nilOrObject:bulletin[kBulletinName]];
+            self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%b %s - %s", bulletinName, @"Products", self.customer[kBillName], nil];
         } else {
-            self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s - %s", @"Products", [self.customer objectForKey:kBillName], nil];
+            self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s - %s", @"Products", self.customer[kBillName], nil];
         }
     } else if (currentVendor && vendorsData) {
         NSDictionary *vendorDict = Underscore.array(vendorsData).find(^BOOL(NSDictionary *vendor) {
-            NSNumber *vendorId = (NSNumber *) [NilUtil nilOrObject:[vendor objectForKey:kVendorID]];
-            return [NilUtil nilOrObject:[vendor objectForKey:kVendorID]] && [vendorId integerValue] == currentVendor;
+            NSNumber *vendorId = (NSNumber *) [NilUtil nilOrObject:vendor[kVendorID]];
+            return [NilUtil nilOrObject:vendor[kVendorID]] && [vendorId integerValue] == currentVendor;
         });
-        NSString *vendorName = (NSString *) [NilUtil nilOrObject:[vendorDict objectForKey:kVendorName]];
-        self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%b %s - %s", vendorName, @"Products", [self.customer objectForKey:kBillName], nil];
+        NSString *vendorName = (NSString *) [NilUtil nilOrObject:vendorDict[kVendorName]];
+        self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%b %s - %s", vendorName, @"Products", self.customer[kBillName], nil];
     } else {
-        self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%b %s - %s", @"All", @"Products", [self.customer objectForKey:kBillName], nil];
+        self.navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%b %s - %s", @"All", @"Products", self.customer[kBillName], nil];
     }
 }
 
@@ -334,13 +331,13 @@
         for (Bulletin *bulletin in coreDataBulletins) {
             NSDictionary *dict = [bulletin asDictionary];
             NSNumber *vendid = bulletin.vendor_id;
-            if ([bulls objectForKey:vendid] == nil) {
-                NSDictionary *any = [NSDictionary dictionaryWithObjectsAndKeys:@"Any", @"name", [NSNumber numberWithInt:0], @"id", nil];
+            if (bulls[vendid] == nil) {
+                NSDictionary *any = @{@"name" : @"Any", @"id" : @0};
                 NSMutableArray *arr = [[NSMutableArray alloc] init];
                 [arr addObject:any];
-                [bulls setObject:arr forKey:vendid];
+                bulls[vendid] = arr;
             }
-            [[bulls objectForKey:vendid] addObject:dict];
+            [bulls[vendid] addObject:dict];
         }
         bulletins = bulls;
     }
@@ -454,7 +451,7 @@
                 cell.accessoryView = weakSelf.filterCartSwitch;
             }];
 
-            if (![ShowConfigurations instance].vendorMode) {
+            if (![Configurations instance].vendorMode) {
                 [section addCell:^(JMStaticContentTableViewCell *staticContentCell, UITableViewCell *cell, NSIndexPath *indexPath) {
                     staticContentCell.cellStyle = UITableViewCellStyleValue1;
                     staticContentCell.reuseIdentifier = @"DetailTextCell";
@@ -490,7 +487,7 @@
 
         NSIndexPath *vendorCellPath = [NSIndexPath indexPathForRow:1 inSection:0];
         NSIndexPath *bulletinCellPath = [NSIndexPath indexPathForRow:2 inSection:0];
-        if ([ShowConfigurations instance].vendorMode) bulletinCellPath = vendorCellPath;
+        if ([Configurations instance].vendorMode) bulletinCellPath = vendorCellPath;
 
         [self.filterStaticController aspect_hookSelector:@selector(viewWillAppear:) withOptions:AspectPositionAfter usingBlock:^(id instance, NSArray *args) {
             self.filterStaticController.tableView.separatorColor = [UIColor colorWithRed:0.839 green:0.839 blue:0.851 alpha:1];
@@ -631,7 +628,7 @@
 }
 
 - (BOOL)hasOrderConfirmationFields {
-    ShowConfigurations *configurations = [ShowConfigurations instance];
+    Configurations *configurations = [Configurations instance];
     return configurations.enableOrderNotes ||
             configurations.enableOrderAuthorizedBy ||
             [configurations orderCustomFields].count > 0;
@@ -655,7 +652,7 @@
         CICartViewController *cart = [[CICartViewController alloc] initWithOrder:self.order
                                                                         customer:self.customer
                                                                        authToken:[CurrentSession instance].authToken
-                                                                selectedVendorId:[NSNumber numberWithInt:currentVendor]
+                                                                selectedVendorId:@(currentVendor)
                                                          andManagedObjectContext:[CurrentSession mainQueueContext]];
         cart.delegate = self;
         [self.navigationController pushViewController:cart animated:YES];
@@ -787,7 +784,6 @@
 - (void)onLineDeselection:(NSNotification *)notification {
     if (self.order) {
         NSLog(@"Triggering Autosave...");
-        BOOL hasInserts = self.order.managedObjectContext.insertedObjects.count > 0;
         [OrderManager saveOrder:self.order async:NO beforeSave:nil onSuccess:nil];
     }
 }

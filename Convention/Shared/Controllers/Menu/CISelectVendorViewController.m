@@ -8,7 +8,6 @@
 #import "Vendor.h"
 #import "CurrentSession.h"
 #import "VendorDataLoader.h"
-#import "config.h"
 
 
 @implementation CISelectVendorViewController
@@ -34,11 +33,7 @@
             [self dismissViewControllerAnimated:YES completion:self.onComplete];
         };
 
-        NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:[CurrentSession instance].userInfo];
-        userInfo[kID] = selectedVendor.vendorId;
-        userInfo[kVendorGroupID] = selectedVendor.vendorgroup_id;
-        userInfo[kName] = selectedVendor.name;
-        [CurrentSession instance].userInfo = [NSDictionary dictionaryWithDictionary:userInfo];
+        [[CurrentSession instance] setVendor:selectedVendor];
 
         [VendorDataLoader load:@[ @(VendorDataTypeProducts), @(VendorDataTypeBulletins) ] inView:self.view onComplete:complete];
     }

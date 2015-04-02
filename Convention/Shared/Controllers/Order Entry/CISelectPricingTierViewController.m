@@ -5,7 +5,7 @@
 
 #import "CISelectPricingTierViewController.h"
 #import "Order.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "LineItem+Extensions.h"
 #import "Product.h"
 #import "NotificationConstants.h"
@@ -41,7 +41,7 @@
                                                                  rowType:XLFormRowDescriptorTypeSelectorPickerViewInline
                                                                    title:@"Pricing Tier"];
 
-    ShowConfigurations *configurations = [ShowConfigurations instance];
+    Configurations *configurations = [Configurations instance];
     NSMutableArray *tiers = [NSMutableArray array];
     for (int i = 0; i < configurations.priceTiersAvailable; i++) {
         [tiers addObject:[XLFormOptionsObject formOptionsObjectWithValue:@(i) displayText:[configurations priceTierLabelAt:i]]];
@@ -56,7 +56,7 @@
     [super viewWillAppear:animated];
 
     if (self.order.pricingTierIndex) {
-        self.pricingTierSelectorRow.value = [XLFormOptionsObject formOptionsObjectWithValue:self.order.pricingTierIndex displayText:[[ShowConfigurations instance] priceTierLabelAt:self.order.pricingTierIndex.intValue]];
+        self.pricingTierSelectorRow.value = [XLFormOptionsObject formOptionsObjectWithValue:self.order.pricingTierIndex displayText:[[Configurations instance] priceTierLabelAt:self.order.pricingTierIndex.intValue]];
     } else {
         self.pricingTierSelectorRow.value = self.pricingTierSelectorRow.selectorOptions.firstObject;
     }

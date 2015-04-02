@@ -26,15 +26,15 @@
     }
 
     CinchJSONAPIClient *client = [CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization];
-    NSMutableURLRequest *request = [client.requestSerializer requestWithMethod:httpMethod URLString:[NSString stringWithFormat:@"%@%@", kBASEURL, url] parameters:parameters error:nil];
+    NSMutableURLRequest *request = [client.requestSerializer requestWithMethod:httpMethod URLString:[NSString stringWithFormat:@"%@%@", [[SettingsManager sharedManager] getServerUrl], url] parameters:parameters error:nil];
     __block NSURLSessionDataTask *task = [client dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id json, NSError *error) {
         if (error) {
             if (submit) [submit hide:NO];
             if (failureBlock) failureBlock(request, (NSHTTPURLResponse *)response, error, json);
-            NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+            NSInteger statusCode = [[error userInfo][AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
             NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
             if (statusCode == 422) {
-                NSArray *validationErrors = json ? [((NSDictionary *) json) objectForKey:kErrors] : nil;
+                NSArray *validationErrors = json ? ((NSDictionary *) json)[kErrors] : nil;
                 if (validationErrors && validationErrors.count > 0) {
                     alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
                 }

@@ -21,6 +21,4 @@
 */
 - (void)selectOrder:(NSManagedObjectID *)order;
 
-- (void)selectSibling:(BOOL)up;
-
 @end

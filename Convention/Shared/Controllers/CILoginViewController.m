@@ -1,38 +1,33 @@
 //
-//  CIViewController.m
+//  CILoginViewController.m
 //  Convention
 //
 //  Created by Matthew Clark on 10/31/11.
 //  Copyright (c) 2011 MotionMobs. All rights reserved.
 //
 
-#import "CIViewController.h"
+#import "CILoginViewController.h"
 #import "config.h"
 #import "CIOrderViewController.h"
 #import "MBProgressHUD.h"
 #import "SettingsManager.h"
-#import "ShowConfigurations.h"
-#import "Customer.h"
+#import "Configurations.h"
 #import "CoreDataUtil.h"
-#import "NilUtil.h"
-#import "Vendor.h"
-#import "Bulletin.h"
 #import "CoreDataManager.h"
 #import "CinchJSONAPIClient.h"
 #import "JSONResponseSerializerWithErrorData.h"
 #import "CIAppDelegate.h"
 #import "MenuViewController.h"
 #import "CurrentSession.h"
-#import "NotificationConstants.h"
 #import "VendorDataLoader.h"
-#import "ThemeUtil.h"
 #import "CISelectVendorViewController.h"
+#import "Show.h"
+#import "LaunchViewController.h"
 
 
-@implementation CIViewController {
+@implementation CILoginViewController {
     CGRect originalBounds;
     __weak IBOutlet UIImageView *loginBg;
-    NSArray *vendorsData;
     NSDictionary *bulletins;
 }
 @synthesize email;
@@ -46,7 +41,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    loginBg.image = [[ShowConfigurations instance] loginScreen];
+    loginBg.image = [[Configurations instance] loginScreen];
     originalBounds = self.view.bounds;
     authToken = nil;
     self.userInfo = nil;
@@ -57,25 +52,16 @@
     self.error.hidden = YES;
 }
 
-- (void)viewDidUnload {
-    [self setEmail:nil];
-    [self setPassword:nil];
-    [self setUserInfo:nil];
-    [self setError:nil];
-    [self setLblVersion:nil];
-    [super viewDidUnload];
-}
-
 - (void)viewWillAppear:(BOOL)animated {
     self.email.font = [UIFont fontWithName:kFontName size:14.f];
     self.password.font = [UIFont fontWithName:kFontName size:14.f];
     self.lblVersion.font = [UIFont fontWithName:kFontName size:14.f];
 
-    NSString *version = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
-    NSString *build = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    NSString *version = [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"];
+    NSString *build = [[NSBundle mainBundle] infoDictionary][@"CFBundleVersion"];
 
-    self.email.text = [[NSUserDefaults standardUserDefaults] objectForKey:kSettingsUsernameKey];
-    self.password.text = [[NSUserDefaults standardUserDefaults] objectForKey:kSettingsPasswordKey];
+    self.email.text = [[NSUserDefaults standardUserDefaults] objectForKey:kUsernameSetting];
+    self.password.text = [[NSUserDefaults standardUserDefaults] objectForKey:kPasswordSetting];
 
     self.lblVersion.text = [NSString stringWithFormat:@"CI %@.%@", version, build];
 
@@ -86,7 +72,7 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-    // unregister for keyboard notifications while not visible.
+    // un-register for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
@@ -117,7 +103,7 @@
     loginHud.removeFromSuperViewOnHide = YES;
     [loginHud show:NO];
 
-    [[CinchJSONAPIClient sharedInstance] POST:kDBLOGIN parameters:@{ kEmailKey: Email, kPasswordKey: Password } success:^(NSURLSessionDataTask *task, id JSON) {
+    [[CinchJSONAPIClient sharedInstance] POST:kDBLOGIN parameters:@{kEmailKey : Email, kPasswordKey : Password} success:^(NSURLSessionDataTask *task, id JSON) {
         [loginHud hide:NO];
         self.error.hidden = YES;
         if (JSON && [[JSON objectForKey:kResponse] isEqualToString:kOK]) {
@@ -126,26 +112,33 @@
             [CurrentSession instance].authToken = authToken;
             [CurrentSession instance].userInfo = userInfo;
 
-            __weak CIViewController *weakSelf = self;
-
-            [VendorDataLoader load:@[ @(VendorDataTypeCustomers), @(VendorDataTypeVendors) ] inView:self.view onComplete:^{
-                if ([CurrentSession instance].hasAdminAccess) {
-                    CISelectVendorViewController *ci = [[CISelectVendorViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
-                    ci.onComplete = ^{
-                        [weakSelf presentOrderViewController];
-                    };
-                    [weakSelf presentViewController:ci animated:YES completion:nil];
-                } else {
-                    [VendorDataLoader load:@[@(VendorDataTypeBulletins), @(VendorDataTypeProducts)] inView:self.view onComplete:^{
-                        [[CurrentSession mainQueueContext] performBlock:^{
-//                            [[CurrentSession instance] dispatchSessionDidChange]; 1
-                            [weakSelf presentOrderViewController];
-                        }];
+            __weak CILoginViewController *weakSelf = self;
+            [VendorDataLoader load:@[@(VendorDataTypeShows)] inView:self.view onComplete:^{
+                Show *show = [self determineCurrentShow];
+                if (show) {
+                    [[CurrentSession instance] setShow:show];
+                    [[SettingsManager sharedManager] setShowId:show.showId];
+                    [VendorDataLoader load:@[@(VendorDataTypeCustomers), @(VendorDataTypeVendors)] inView:self.view onComplete:^{
+                        if ([CurrentSession instance].hasAdminAccess) {
+                            CISelectVendorViewController *ci = [[CISelectVendorViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
+                            ci.onComplete = ^{
+                                [weakSelf presentOrderViewController];
+                            };
+                            [weakSelf presentViewController:ci animated:YES completion:nil];
+                        } else {
+                            [VendorDataLoader load:@[@(VendorDataTypeBulletins), @(VendorDataTypeProducts)] inView:self.view onComplete:^{
+                                [[CurrentSession mainQueueContext] performBlock:^{ //todo sg why are we performing this block via nsmanagedobjectcontext?
+                                    [weakSelf presentOrderViewController];
+                                }];
+                            }];
+                        }
                     }];
+                } else {
+                    [[[UIAlertView alloc] initWithTitle:@"Error" message:@"There are no active Sales Periods." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
                 }
             }];
         }
-    } failure:^(NSURLSessionDataTask *task, NSError *apiError) {
+    }                                 failure:^(NSURLSessionDataTask *task, NSError *apiError) {
         id JSON = apiError.userInfo[JSONResponseSerializerWithErrorDataKey];
         if (JSON) {
             self.error.text = [JSON objectForKey:@"error"];
@@ -169,7 +162,7 @@
 
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:masterViewController];
 
-    CIAppDelegate *appDelegate = (CIAppDelegate*)[UIApplication sharedApplication].delegate;
+    CIAppDelegate *appDelegate = (CIAppDelegate *) [UIApplication sharedApplication].delegate;
     appDelegate.slideMenu = [APLSlideMenuViewController new];
     appDelegate.slideMenu.view.frame = [UIApplication sharedApplication].keyWindow.bounds;
     appDelegate.slideMenu.menuWidth = 280;
@@ -187,22 +180,23 @@
 
     [self presentViewController:appDelegate.slideMenu animated:YES completion:nil];
 
-    [[NSUserDefaults standardUserDefaults] setObject:self.email.text forKey:kSettingsUsernameKey];
-    [[NSUserDefaults standardUserDefaults] setObject:self.password.text forKey:kSettingsPasswordKey];
+    [[NSUserDefaults standardUserDefaults] setObject:self.email.text forKey:kUsernameSetting];
+    [[NSUserDefaults standardUserDefaults] setObject:self.password.text forKey:kPasswordSetting];
     [[NSUserDefaults standardUserDefaults] synchronize];
+}
 
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        static UIViewController *c;
-//        //    c = [[CIFinalCustomerInfoViewController alloc] init];
-//        c = [[CIFinalCustomerFormViewController alloc] init];
-//
-//        c.modalPresentationStyle = UIModalPresentationFormSheet;
-//        c.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-////        [masterViewController presentViewController:c animated:YES completion:nil];
-////    c.view.superview.bounds = CGRectMake(0, 0, 200, 200);
-////    c.view.superview.center = CGPointMake(roundf(self.view.center.x), roundf(self.view.center.y));
-//        return;
-//    });
+- (Show *)determineCurrentShow {
+    NSInteger lastShowId = [[SettingsManager sharedManager] getShowIdInteger];
+    Show *show = (Show *) [[CoreDataUtil sharedManager] fetchObject:@"Show" withPredicate:[NSPredicate predicateWithFormat:@"showId = %d", lastShowId]];
+    return show ? show : [CoreDataManager getLatestShow:self.managedObjectContext];
+}
+
+- (IBAction)relaunchPressed:(id)sender {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"LaunchViewController" bundle:nil];
+    LaunchViewController *launchViewController = [storyboard instantiateInitialViewController];
+    launchViewController.managedObjectContext = [CurrentSession mainQueueContext];
+    [[UIApplication sharedApplication].keyWindow.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];//remove window's subviews before loading new rootviewcontroller.
+    [[UIApplication sharedApplication].keyWindow setRootViewController:launchViewController];
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification {
@@ -241,7 +235,7 @@
     if (movedUp) {
         // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
         // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += kOFFSET_FOR_KEYBOARD + 15;
+        rect.origin.y += 95;
         //rect.size.height -= keyboardOffset; // kOFFSET_FOR_KEYBOARD;
         self.view.bounds = rect;
     }

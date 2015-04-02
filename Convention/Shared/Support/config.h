@@ -9,45 +9,41 @@
 #ifndef Convention_config_h
 #define Convention_config_h
 
-#define SERVER @"server"
-#define kBASEURL [[SettingsManager sharedManager] lookupSettingByString:SERVER]
-#define ShowID [[SettingsManager sharedManager] lookupSettingByString:@"show"]
-#define kPigglyWiggly @"PigglyWiggly"
-#define kShowCorp [[SettingsManager sharedManager] lookupSettingByString:@"host"]
-#define ConfigUrl [NSString stringWithFormat:@"/shows/%@/configurations.json", ShowID]
+//Settings/Preferences/NSUserDefaults
+#define ServerSetting @"server"
+#define CodeSetting @"code"
+#define ShowIdSetting @"show"
+#define HostIdSetting @"host"
+#define kUsernameSetting @"UsernameSetting"
+#define kPasswordSetting @"PasswordSetting"
+
+//API End Points
+#define kConfigsByCodeUrl @"/configurations_by_code/%@.json"
 #define kDBLOGIN @"/vendors/sign_in.json"
 #define kDBLOGOUT @"/vendors/sign_out.json"
-#define kDBGETPRODUCTS [NSString stringWithFormat:@"/vendor/shows/%@/products.json",ShowID]
-#define kDBGETVENDORSWithVG [NSString stringWithFormat:@"/vendor/shows/%@/vendorgroups.json",ShowID]
-#define kDBGETCUSTOMERS [NSString stringWithFormat:@"/vendor/shows/%@/customers.json",ShowID]
-#define kDBGETCUSTOMER(customerId) [NSString stringWithFormat:@"/vendor/shows/%@/customers/%@.json?",ShowID, customerId]
-#define kDBCUSTOMER [NSString stringWithFormat:@"/vendor/shows/%@/customers.json",ShowID]
-#define kDBGETORDER(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%@.json",ShowID,ID]
-#define kDBORDER [NSString stringWithFormat:@"/vendor/shows/%@/orders.json",ShowID]
-#define kDBORDEREDITS(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%d.json",ShowID,ID]
-#define kDBORDERDETAILEDITS(ID) [NSString stringWithFormat:@"/vendor/shows/%@/orders/%d/details.json",ShowID,ID]
-#define kDBCAPTURESIG(ID)[NSString stringWithFormat:@"/vendor/orders/%d/signature.json",ID]
-
-#define kDBREPORTPRINTS [NSString stringWithFormat:@"/vendor/shows/%@/report_prints.json",ShowID]
-#define kDBGETPRINTERS [NSString stringWithFormat:@"/vendor/shows/%@/printers.json", ShowID]
-#define kDBGETBULLETINS [NSString stringWithFormat:@"/vendor/shows/%@/bulletins.json", ShowID]
+#define kDBGETPRODUCTS @"/vendor/shows/%d/products.json"
+#define kDBGETVENDORS @"/vendor/shows/%d/vendorgroups.json"
+#define kDBGETCUSTOMERS@"/vendor/shows/%d/customers.json"
+#define kDBGETCUSTOMER @"/vendor/shows/%d/customers/%d.json?"
+#define kDBGETORDER @"/vendor/shows/%d/orders/%d.json"
+#define kDBORDER @"/vendor/shows/%d/orders.json"
+#define kDBORDEREDITS @"/vendor/shows/%d/orders/%d.json"
+#define kDBORDERDETAILEDITS @"/vendor/shows/%d/orders/%d/details.json"
+#define kDBCAPTURESIG @"/vendor/orders/%d/signature.json"
+#define kDBGETBULLETINS @"/vendor/shows/%d/bulletins.json"
 
 //Auth keys
 #define kEmailKey @"user[login]"
 #define kPasswordKey @"user[password]"
-#define kEmailMasterKey @"host[login]"
-#define kPasswordMasterKey @"host[password]"
 #define kAuthToken @"auth_token"
 #define kResponse @"response"
 #define kOK @"ok"
 #define kName @"name"
 
-#define kVenderHidePrice @"hideshprice"
-
+//Vendor JSON Keys
 #define kVendorCommodity @"commodity"
 #define kVendorCompany @"company"
 #define kVendorComplete @"complete"
-#define kVendorCreatedAt @"created_at"
 #define kVendorDlybill @"dlybill"
 #define kVendorLines @"lines"
 #define kVendorEmail @"email"
@@ -63,7 +59,6 @@
 #define kVendorName @"name"
 #define kVendorOwner @"owner"
 #define kVendorSeason @"season"
-#define kVendorUpdatedAt @"updated_at"
 #define kVendorUsername @"username"
 #define kVendorVendID @"vendid"
 #define kVendorGroupName @"groupname"
@@ -72,32 +67,24 @@
 #define kVendorGroupID @"vendorgroup_id"
 
 #define kID @"id"
-#define kOrderId @"id"
 #define kProductId @"id"
-#define kLineItemId @"id"
 
 
-//Order keys:
+//Order JSON keys:
 #define kOrder @"order"
-#define kOrderPrint @"print"
-#define kOrderPrinter @"printer"
 #define kOrderPoNumber @"po_number"
-#define kOrderPaymentTerms @"payment_terms"
 #define kOrderShipDates @"ship_dates"
 
 
 //Customer Info keys:
 #define kCustID @"custid"
 #define kOrderCustomerID @"customer_id"
-#define kStores @"stores"
 
 #define kNotes @"notes"
 
 #define kBillName @"billname"
 
 #define kAuthorizedBy @"authorized"
-#define kShipFlag @"ship_flag"
-#define kCancelByDays @"cancel_by_days"
 
 //purchased Items keys:
 #define kCustomFieldFieldName @"field_name"
@@ -108,12 +95,10 @@
 #define kLineItemProductID @"product_id"
 #define kLineItemQuantity @"quantity"
 #define kLineItemPrice @"price"
-#define kLineItemVoucherPrice @"voucherPrice"
 #define kLineItemShipDates @"shipdates"
 #define kOrderStatus @"status"
 #define kOrderPricingTierIndex @"pricing_tier_index"
 #define kOrderDiscountPercentage @"discount_percentage"
-#define kPartialOrder @"partial"
 
 #define kProductIdx @"idx"
 #define kProductInvtid @"invtid"
@@ -144,21 +129,12 @@
 #define kProductPrices @"prices"
 #define kProductTags @"tags"
 
-#define kLineItemPRICE @"price"
-#define kLineItemVoucher @"voucherPrice"
-
-#define kReportPrintOrderId @"order_id"
-
-#define kOFFSET_FOR_KEYBOARD 80.0
-
 #define kFontName @"BEBAS"
 
 #define kCustomerId @"id"
 #define kCustomerCustId @"custid"
 #define kCustomerBillName @"billname"
 #define kCustomerEmail @"email"
-#define kCustomerInitialShow @"initial_show"
-#define kCustomerStores @"stores"
 #define kCustomerDefaultShippingAddressSummary @"default_shipping_address_summary"
 
 #define kBulletinId @"id"
@@ -174,7 +150,13 @@
 
 #define kErrors @"errors"
 
-#define kSettingsUsernameKey @"kSettingsUsernameKey"
-#define kSettingsPasswordKey @"kSettingsPasswordKey"
+//Show JSON Keys
+#define kShowId @"id"
+#define kShowTitle @"title"
+#define kShowDescription @"description"
+#define kShowHostId @"host_id"
+#define kShowBeginDate @"begin_date"
+#define kShowEndDate @"end_date"
+#define kShowStatus @"status"
 
 #endif

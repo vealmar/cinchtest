@@ -36,16 +36,31 @@
 - (id)init;
 -(void)initialize;
 
--(id)lookupSettingByString: (NSString *)setting;
- 
--(void)refresh;
+- (NSInteger)getShowIdInteger;
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedMethodInspection"
+- (NSNumber *)getShowIdNumber;
+#pragma clang diagnostic pop
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedMethodInspection"
+- (NSString *)getShowIdString;
+#pragma clang diagnostic pop
+
+- (NSString *)getServerUrl;
+
+- (NSString *)getCode;
+
 -(void)processDefaults;
--(void)updateSetting: (NSString *)setting value:(NSString*)value;
 
--(void)saveSetting: (NSString *)setting value:(id)value;
--(id)retrieveSetting: (NSString *)setting;
+- (void)setServerUrl:(NSString *)serverUrl;
 
--(bool)boolForKey: (NSString *)setting;
+- (void)setHostId:(NSString *)hostId;
 
- 
+- (void)setCode:(NSString *)code;
+
+- (void)setShowId:(NSNumber *)showId;
+
+
 @end

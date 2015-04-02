@@ -7,6 +7,7 @@
 #import "config.h"
 #import "SettingsManager.h"
 #import "JSONResponseSerializerWithErrorData.h"
+#import "CurrentSession.h"
 
 @interface CinchJSONAPIClient ()
 
@@ -50,7 +51,7 @@
 */
 - (void)reload {
     //If the manager instance had a serializer, make sure we maintain the serializer in the new manager instance.
-    self.sessionManager = [CinchJSONAPIClient createSessionManager:self.sessionManager.requestSerializer];
+    self.sessionManager = [CinchJSONAPIClient createSessionManager:(AFJSONRequestSerializer *) self.sessionManager.requestSerializer];
 }
 
 + (CinchJSONAPIClient *)newInstance:(AFJSONRequestSerializer *)requestSerializer {
@@ -60,7 +61,7 @@
 }
 
 + (AFHTTPSessionManager *)createSessionManager:(AFJSONRequestSerializer *)requestSerializer {
-    AFHTTPSessionManager *afManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:kBASEURL]];
+    AFHTTPSessionManager *afManager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:[[SettingsManager sharedManager] getServerUrl]]];
     [afManager setSecurityPolicy:[AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeNone]];
     [afManager setResponseSerializer:[JSONResponseSerializerWithErrorData serializer]];
     if (requestSerializer) {
@@ -125,4 +126,42 @@
 - (NSURLSessionDataTask *)dataTaskWithRequest:(NSMutableURLRequest *)request completionHandler:(void (^)(NSURLResponse *, id, NSError *))handler {
     return [self.sessionManager dataTaskWithRequest:request completionHandler:handler];
 }
+
+- (NSURLSessionDataTask *)getCustomersWithSession:(CurrentSession *)currentSession success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    NSString *url = [NSString stringWithFormat:kDBGETCUSTOMERS, [[currentSession showId] intValue]];
+    return [self GET:url parameters:@{kAuthToken : currentSession.authToken} success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)getCustomerWithCustomerID:(NSNumber *)customerId currentSession:(CurrentSession *)currentSession success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    NSString *url = [NSString stringWithFormat:kDBGETCUSTOMER,[[currentSession showId] intValue], [customerId intValue]];
+    return [self GET:url parameters:@{ kAuthToken:[CurrentSession instance].authToken } success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)getShowsWithSession:(CurrentSession *)currentSession success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    NSString *url = @"/vendor/shows";
+    return [self GET:url parameters:@{kAuthToken : currentSession.authToken} success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)getVendorsWithSession:(CurrentSession *)currentSession success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    NSDictionary *parameters = nil;
+    if (currentSession.hasAdminAccess) {
+        parameters = @{kAuthToken : currentSession.authToken};
+    } else {
+        parameters = @{kAuthToken : currentSession.authToken, kVendorGroupID : currentSession.vendorGroupId};
+    }
+    NSString *url = [NSString stringWithFormat:kDBGETVENDORS, [[currentSession showId] intValue]];
+    return [self GET:url parameters:parameters success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)getBulletinsWithSession:(CurrentSession *)currentSession success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    NSDictionary *parameters = @{kAuthToken : currentSession.authToken, kVendorGroupID : currentSession.vendorGroupId};
+    NSString *url = [NSString stringWithFormat:kDBGETBULLETINS, [[currentSession showId] intValue]]; //todo sg bulletins will soon be independent of shows
+    return [self GET:url parameters:parameters success:success failure:failure];
+}
+
+- (NSURLSessionDataTask *)getProductsWithSession:(CurrentSession *)currentSession success:(void (^)(NSURLSessionDataTask *task, id responseObject))success failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure {
+    NSString *url = [NSString stringWithFormat:kDBGETPRODUCTS, [[currentSession showId] intValue]]; //todo sg bulletins will soon be independent of shows
+    return [self GET:url parameters:@{ kAuthToken: currentSession.authToken, kVendorGroupID: [NSString stringWithFormat:@"%d", [[CurrentSession instance].vendorGroupId intValue]] } success:success failure:failure];
+}
+
 @end

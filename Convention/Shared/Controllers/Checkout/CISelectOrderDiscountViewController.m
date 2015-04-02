@@ -5,7 +5,6 @@
 
 #import "CISelectOrderDiscountViewController.h"
 #import "Order.h"
-#import "ShowConfigurations.h"
 #import "NotificationConstants.h"
 
 @interface CISelectOrderDiscountViewController ()

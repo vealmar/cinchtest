@@ -6,10 +6,9 @@
 #import "CIPriceOptionTableViewCell.h"
 #import "LineItem.h"
 #import "ThemeUtil.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "NumberUtil.h"
 #import "Product+Extensions.h"
-#import "Underscore.h"
 #import "LineItem+Extensions.h"
 #import "View+MASAdditions.h"
 
@@ -60,7 +59,7 @@
 -(void)prepareForDisplay:(LineItem *)lineItem at:(NSIndexPath *)indexPath {
     self.lineItem = lineItem;
     
-    ShowConfigurations *configurations = [ShowConfigurations instance];
+    Configurations *configurations = [Configurations instance];
     NSNumber *currentPrice = lineItem.price;
 
     if (lineItem.isWriteIn || indexPath.row >= configurations.priceTiersAvailable) {

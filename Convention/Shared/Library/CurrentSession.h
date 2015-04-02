@@ -5,18 +5,26 @@
 
 #import <Foundation/Foundation.h>
 
+@class Show;
+@class Vendor;
+
 @interface CurrentSession : NSObject
 
 @property NSString *authToken;
 @property NSDictionary *userInfo;
-@property (readonly) BOOL hasAdminAccess;
-@property (readonly) NSNumber* showId;
-@property (readonly) NSString* vendorGroupId;
-@property (readonly) NSNumber* vendorId;
-@property (readonly) NSString* vendorName;
-@property (strong, nonatomic) NSMutableDictionary *vendorNameCache;
+@property(readonly) BOOL hasAdminAccess;
+@property(readonly) NSNumber *showId;
+@property(readonly) NSNumber *vendorGroupId;
+@property(readonly) NSNumber *vendorId;
+@property(readonly) NSString *vendorName;
+@property(readonly) NSString *showTitle;
+@property(strong, nonatomic) NSMutableDictionary *vendorNameCache;
 
-+(CurrentSession *)instance;
++ (CurrentSession *)instance;
+
+- (void)setVendor:(Vendor *)vendor;
+
+- (void)setShow:(Show *)show;
 
 - (void)dispatchSessionDidChange;
 
@@ -32,6 +40,7 @@
 
 
 + (NSManagedObjectContext *)mainQueueContext;
+
 + (NSManagedObjectContext *)privateQueueContext;
 
 @end

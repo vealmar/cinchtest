@@ -8,8 +8,7 @@
 
 #import "CIOrderViewController.h"
 #import "config.h"
-#import "SettingsManager.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "CoreDataManager.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "Customer.h"
@@ -21,21 +20,14 @@
 #import "CIOrdersTableViewController.h"
 #import "OrderManager.h"
 #import "Order+Extensions.h"
-#import "LineItem+Extensions.h"
-#import "NumberUtil.h"
-#import "OrderTotals.h"
-#import "OrderSubtotalsByDate.h"
 #import "MBProgressHUD.h"
 #import "CoreDataUtil.h"
 #import "CurrentSession.h"
-#import "Product.h"
 #import "CIOrderDetailTableViewController.h"
 #import "CITableViewHeaderView.h"
 #import "CIAlertView.h"
 
-@interface CIOrderViewController () {
-    ShowConfigurations *showConfig;
-}
+@interface CIOrderViewController ()
 
 @property Order *currentOrder;
 @property (weak, nonatomic) CIOrdersTableViewController *ordersTableViewController;
@@ -84,7 +76,7 @@
     self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];
 
-    showConfig = [ShowConfigurations instance];
+    [Configurations instance];
     self.orderDetailView.hidden = YES;
     self.orderDetailNotesLabel.verticalAlignment = VerticalAlignmentMiddle;
 
@@ -206,7 +198,7 @@
     if (order) {
         self.orderDetailView.hidden = NO;
         
-        ShowConfigurations *config = [ShowConfigurations instance];
+        Configurations *config = [Configurations instance];
         
         self.orderDetailOrderNumberLabel.text = [NSString stringWithFormat:@"Order #%@", order.orderId];
         self.orderDetailCustomerLabel.text = order.customerName;
@@ -233,7 +225,7 @@
         self.customer.text = [self.currentOrder getCustomerDisplayName];
         self.authorizer.text = order.authorizedBy != nil? order.authorizedBy : @"";
         
-        if (order && ![order.notes isKindOfClass:[NSNull class]]) {
+        if (![order.notes isKindOfClass:[NSNull class]]) {
             self.notes.text = [order.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         } else {
             self.notes.text = @"";
@@ -305,7 +297,7 @@
 - (void)requestDelete:(Order *)order {
     if (order) {
         NSString *alertMessage = [NSString stringWithFormat:@"Are you sure you want to delete %@ order?",
-                        order.customerName ? [NSString stringWithFormat:@"%@'s", order.customerName] : @"this", nil];
+                        order.customerName ? [NSString stringWithFormat:@"%@'s", order.customerName] : @"this"];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"DELETE"
                                                         message:alertMessage
                                                        delegate:self 
@@ -402,7 +394,7 @@
                 hud.labelText = @"Loading customer";
                 [hud show:NO];
 
-                [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMER([customerId stringValue]) parameters:@{ kAuthToken:[CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+                [[CinchJSONAPIClient sharedInstance] getCustomerWithCustomerID:customerId currentSession:[CurrentSession instance] success:^(NSURLSessionDataTask *task, id JSON) {
                     [weakSelf launchCIProductViewController:NO order:orderObjectID customer:(NSDictionary *) JSON];
                     [hud hide:NO];
                 } failure:^(NSURLSessionDataTask *task, NSError *error) {

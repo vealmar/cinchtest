@@ -9,7 +9,7 @@
 #import "CISelectCustomerViewController.h"
 #import "Customer.h"
 #import "CISelectCustomerTableViewController.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "NotificationConstants.h"
 #import "CICustomerRecordViewController.h"
 
@@ -29,7 +29,7 @@
 }
 
 - (BOOL)allowAddAction {
-    return [ShowConfigurations instance].vendorMode;
+    return [Configurations instance].vendorMode;
 }
 
 - (IBAction)buttonAddTapped:(id)sender {

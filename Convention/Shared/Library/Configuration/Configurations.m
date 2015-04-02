@@ -7,16 +7,15 @@
 
 
 #import <Underscore.m/Underscore.h>
-#import "ShowConfigurations.h"
-#import "config.h"
+#import "Configurations.h"
 #import "SettingsManager.h"
 #import "NilUtil.h"
 #import "DateRange.h"
 #import "ShowCustomField.h"
 
-static ShowConfigurations *showConfigurations = nil;
+static Configurations *showConfigurations = nil;
 
-@interface ShowConfigurations()
+@interface Configurations ()
 
 @property NSString *pricingStrategy;
 @property NSArray *pricingTiers;
@@ -24,57 +23,61 @@ static ShowConfigurations *showConfigurations = nil;
 
 @end
 
-@implementation ShowConfigurations
+@implementation Configurations
 
-+ (ShowConfigurations *)instance {
++ (Configurations *)instance {
     if (nil == showConfigurations) [NSException raise:NSGenericException format:@"Configuration object has not been created."];
     return showConfigurations;
 }
 
 + (void)createInstanceFromJson:(NSDictionary *)json {
-    showConfigurations = [[[self class] alloc] init];
+    showConfigurations = (Configurations *) [[[self class] alloc] init];
     if (showConfigurations) {
-        showConfigurations.pricingTierDefault = json[@"pricingTierDefault"];
-        showConfigurations.pricingTiers = [json objectForKey:@"pricingTiers"];
-        showConfigurations.pricingStrategy = [json objectForKey:@"pricingStrategy"];
-        showConfigurations.enableOrderAuthorizedBy = [[json objectForKey:@"enableOrderAuthorizedBy"] boolValue];
-        showConfigurations.enableOrderNotes = [[json objectForKey:@"enableOrderNotes"] boolValue];
-        showConfigurations.productEnableManufacturerNo = [[json objectForKey:@"productEnableManufacturerNo"] boolValue];
-        showConfigurations.discounts = [[json objectForKey:@"discounts"] boolValue];
-        showConfigurations.discountsGuide = [[json objectForKey:@"discountsGuide"] boolValue];
-        NSString *shipDatesValue = [NilUtil objectOrEmptyString:[json objectForKey:@"shipDates"]];
-        showConfigurations.shipDates = [shipDatesValue isEqualToString:@"required"] || [shipDatesValue isEqualToString:@"optional"];
-        showConfigurations.shipDatesRequired = [shipDatesValue isEqualToString:@"required"];
-        showConfigurations.vouchers = [[json objectForKey:@"vouchers"] boolValue];
-        showConfigurations.contactBeforeShipping = [[json objectForKey:@"contactBeforeShipping"] boolValue];
-        showConfigurations.cancelOrder = [[json objectForKey:@"cancelOrder"] boolValue];
-        showConfigurations.captureSignature = [[json objectForKey:@"signatureCapture"] boolValue];
-        NSString *loginScreenUrl = ((NSString *) [json objectForKey:@"iosLoginScreen"]);
-        showConfigurations.loginScreen = [ShowConfigurations imageFromUrl:loginScreenUrl defaultImage:@"loginBG.png"];
-        NSString *logoUrl = ((NSString *) [json objectForKey:@"iosLogo"]);
-        showConfigurations.logo = [ShowConfigurations imageFromUrl:logoUrl defaultImage:@"background-brand"];
-        showConfigurations.poNumber = [[json objectForKey:@"poNumber"] boolValue];
-        showConfigurations.paymentTerms = [[json objectForKey:@"paymentTerms"] boolValue];
-        showConfigurations.shipDatesType = [NilUtil objectOrEmptyString:[json objectForKey:@"shipDatesType"]];
-
-        if (![[NSNull null] isEqual:[json objectForKey:@"orderShipDates"]]) {
-            showConfigurations.orderShipDates = [DateRange createInstanceFromJson:[NSArray arrayWithArray:[json mutableArrayValueForKey:@"orderShipDates"]]];
-        } else {
-            showConfigurations.orderShipDates = [DateRange createInstanceFromJson:@[]];
-        }
-
-        showConfigurations.customFields = Underscore.array([json objectForKey:@"customFieldInfos"]).map(^id(NSDictionary *json) {
-            return [[ShowCustomField alloc] init:json];
-        }).unwrap;
-        showConfigurations.vendorMode = [[NilUtil objectOrEmptyString:[json objectForKey:@"customerType"]] isEqualToString:@"vendor"];
+        [Configurations overrideWith:json];
     }
+}
+
++ (void) overrideWith:(NSDictionary *)json{
+    showConfigurations.pricingTierDefault = json[@"pricingTierDefault"];
+    showConfigurations.pricingTiers = json[@"pricingTiers"];
+    showConfigurations.pricingStrategy = json[@"pricingStrategy"];
+    showConfigurations.enableOrderAuthorizedBy = [json[@"enableOrderAuthorizedBy"] boolValue];
+    showConfigurations.enableOrderNotes = [json[@"enableOrderNotes"] boolValue];
+    showConfigurations.productEnableManufacturerNo = [json[@"productEnableManufacturerNo"] boolValue];
+    showConfigurations.discounts = [json[@"discounts"] boolValue];
+    showConfigurations.discountsGuide = [json[@"discountsGuide"] boolValue];
+    NSString *shipDatesValue = [NilUtil objectOrEmptyString:json[@"shipDates"]];
+    showConfigurations.shipDates = [shipDatesValue isEqualToString:@"required"] || [shipDatesValue isEqualToString:@"optional"];
+    showConfigurations.shipDatesRequired = [shipDatesValue isEqualToString:@"required"];
+    showConfigurations.vouchers = [json[@"vouchers"] boolValue];
+    showConfigurations.contactBeforeShipping = [json[@"contactBeforeShipping"] boolValue];
+    showConfigurations.cancelOrder = [json[@"cancelOrder"] boolValue];
+    showConfigurations.captureSignature = [json[@"signatureCapture"] boolValue];
+    NSString *loginScreenUrl = ((NSString *) json[@"iosLoginScreen"]);
+    showConfigurations.loginScreen = [Configurations imageFromUrl:loginScreenUrl defaultImage:@"launch_bg"];
+    NSString *logoUrl = ((NSString *) json[@"iosLogo"]);
+    showConfigurations.logo = [Configurations imageFromUrl:logoUrl defaultImage:@"cinch-c"];
+    showConfigurations.poNumber = [json[@"poNumber"] boolValue];
+    showConfigurations.paymentTerms = [json[@"paymentTerms"] boolValue];
+    showConfigurations.shipDatesType = [NilUtil objectOrEmptyString:json[@"shipDatesType"]];
+
+    if (![[NSNull null] isEqual:json[@"orderShipDates"]]) {
+        showConfigurations.orderShipDates = [DateRange createInstanceFromJson:[NSArray arrayWithArray:[json mutableArrayValueForKey:@"orderShipDates"]]];
+    } else {
+        showConfigurations.orderShipDates = [DateRange createInstanceFromJson:@[]];
+    }
+
+    showConfigurations.customFields = Underscore.array(json[@"customFieldInfos"]).map(^id(NSDictionary *dictionary) {
+        return [[ShowCustomField alloc] init:dictionary];
+    }).unwrap;
+    showConfigurations.vendorMode = [[NilUtil objectOrEmptyString:json[@"customerType"]] isEqualToString:@"vendor"];
 }
 
 + (UIImage *)imageFromUrl:(NSString *)url defaultImage:(NSString *)imageName {
     UIImage *image = nil;
     if (![url isKindOfClass:[NSNull class]] && [url length] > 0) {
         @try {
-            NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", kBASEURL, url]];
+            NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [[SettingsManager sharedManager] getServerUrl], url]];
             NSData *imageData = [NSData dataWithContentsOfURL:imageURL];
             image = [UIImage imageWithData:imageData];
         }
@@ -161,7 +164,7 @@ static ShowConfigurations *showConfigurations = nil;
             default: return nil;
         }
     } else if ([self isTieredPricing]) {
-        return self.pricingTiers[index];
+        return self.pricingTiers[(NSUInteger) index];
     } else {
         return nil;
     }

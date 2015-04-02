@@ -4,11 +4,10 @@
 //
 
 #import <MGSwipeTableCell/MGSwipeButton.h>
-#import <Underscore.m/Underscore.h>
 #import "CIProductTableViewController.h"
 #import "CITableViewColumns.h"
 #import "CITableViewCell.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "CITableViewColumn.h"
 #import "CIProductTableViewCell.h"
 #import "CIQuantityColumnView.h"
@@ -17,7 +16,6 @@
 #import "CIShowPriceColumnView.h"
 #import "CoreDataManager.h"
 #import "ProductSearch.h"
-#import "ProductSearchQueue.h"
 #import "MBProgressHUD.h"
 #import "Order.h"
 #import "CITagColumnView.h"
@@ -28,23 +26,14 @@
 #import "LineItem.h"
 #import "LineItem+Extensions.h"
 #import "CIProductDescriptionColumnView.h"
-#import "ThemeUtil.h"
 #import "OrderManager.h"
 #import "DateRange.h"
 
 @interface CIProductTableViewController()
 
 @property id<ProductCellDelegate> productCellDelegate;
-@property ProductSearchQueue *productSearchQueue;
 @property PullToRefreshView *pull;
-@property BOOL isLoadingProducts;
 @property NSArray *lastFilterOperationSortDescriptors;
-
-// contains a collection of lineitems/products in the form:
-//   lineitem - line written for product
-//   lineitem - keep adding new lines when they write
-//   product - lastly show a blank line
-@property NSMutableArray *writeInLines;
 
 @end
 
@@ -55,10 +44,9 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.writeInLines = [NSMutableArray array];
+    [NSMutableArray array];
     self.lastFilterOperationSortDescriptors = @[ ];
-    self.isLoadingProducts = NO;
-    
+
     self.pull = [[PullToRefreshView alloc] initWithScrollView:self.tableView];
     [self.pull setDelegate:self];
     [self.tableView addSubview:self.pull];
@@ -81,12 +69,10 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 }
 
 - (void)productsReloading:(NSNotification *)notification {
-    self.isLoadingProducts = YES;
     self.fetchRequest = nil;
 }
 
 - (void)productsReloadComplete:(NSNotification *)notification {
-    self.isLoadingProducts = NO;
     [self.tableView reloadData];
 }
 
@@ -162,7 +148,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 }
 
 - (CITableViewColumns *)createColumns {
-    ShowConfigurations *config = [ShowConfigurations instance];
+    Configurations *config = [Configurations instance];
     CITableViewColumns *columns = [CITableViewColumns new];
     [columns add:ColumnTypeString titled:@"Item #" using:@{
             ColumnOptionContentKey: @"invtid",
@@ -185,26 +171,26 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     if (config.discounts) {
         [columns add:ColumnTypeCustom titled:@"Tags" using:@{
                 ColumnOptionContentKey: @"tags",
-                ColumnOptionDesiredWidth: [NSNumber numberWithInt:180],
+                ColumnOptionDesiredWidth: @180,
                 ColumnOptionCustomTypeClass: [CITagColumnView class]
         }];
     }
     [columns add:ColumnTypeCustom titled:@"Quantity" using:@{
-            ColumnOptionDesiredWidth: [NSNumber numberWithInt:75],
-            ColumnOptionTextAlignment: [NSNumber numberWithInt:NSTextAlignmentRight],
+            ColumnOptionDesiredWidth: @75,
+            ColumnOptionTextAlignment: @(NSTextAlignmentRight),
             ColumnOptionCustomTypeClass: [CIQuantityColumnView class]
     }];
     [columns add:ColumnTypeCustom titled:config.price1Label using:@{
             ColumnOptionContentKey: @"showprc",
-            ColumnOptionTextAlignment: [NSNumber numberWithInt:NSTextAlignmentRight],
-            ColumnOptionDesiredWidth: [NSNumber numberWithInt:90],
+            ColumnOptionTextAlignment: @(NSTextAlignmentRight),
+            ColumnOptionDesiredWidth: @90,
             ColumnOptionCustomTypeClass: [CIShowPriceColumnView class],
             ColumnOptionSortableKey: @YES
     }];
     [columns add:ColumnTypeCurrency titled:config.price2Label using:@{
-            ColumnOptionContentKey: ([ShowConfigurations instance].isTieredPricing ? @"showprc" : @"regprc"),
-            ColumnOptionTextAlignment: [NSNumber numberWithInt:NSTextAlignmentRight],
-            ColumnOptionDesiredWidth: [NSNumber numberWithInt:90],
+            ColumnOptionContentKey: ([Configurations instance].isTieredPricing ? @"showprc" : @"regprc"),
+            ColumnOptionTextAlignment: @(NSTextAlignmentRight),
+            ColumnOptionDesiredWidth: @90,
             ColumnOptionSortableKey: @YES
     }];
     return columns;
@@ -226,12 +212,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
         [submit hide:NO];
     };
 
-    [CoreDataManager reloadProducts:[CurrentSession instance].authToken
-                      vendorGroupId:[NSNumber numberWithInt:[[CurrentSession instance].vendorGroupId intValue]]
-                              async:YES
-                  usingQueueContext:[CurrentSession privateQueueContext]
-                          onSuccess:successBlock
-                          onFailure:failureBlock];
+    [CoreDataManager reloadProductsAsync:YES usingQueueContext:[CurrentSession privateQueueContext] onSuccess:successBlock onFailure:failureBlock];
 }
 
 #pragma UITableViewDelegate
@@ -335,11 +316,11 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
     if (MGSwipeDirectionRightToLeft == direction) {
         if (0 == index) {
             if (productCell.lineItem) {
-                if ([ShowConfigurations instance].shipDates && [ShowConfigurations instance].orderShipDates.fixedDates.count > 0) {
+                if ([Configurations instance].shipDates && [Configurations instance].orderShipDates.fixedDates.count > 0) {
                     for (NSDate *shipDate in productCell.lineItem.shipDates) {
                         [productCell.lineItem setQuantity:0 forShipDate:shipDate];
                     }
-                } else if (![ShowConfigurations instance].shipDates) {
+                } else if (![Configurations instance].shipDates) {
                     [productCell.lineItem setQuantity:@"0"];
                 }
 
@@ -366,10 +347,10 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
             quantityIncrement = 100;
         }
 
-        if ([ShowConfigurations instance].shipDates && [ShowConfigurations instance].orderShipDates.fixedDates.count > 0) {
-            NSDate *shipDate = (NSDate *) [ShowConfigurations instance].orderShipDates.fixedDates.firstObject;
+        if ([Configurations instance].shipDates && [Configurations instance].orderShipDates.fixedDates.count > 0) {
+            NSDate *shipDate = (NSDate *) [Configurations instance].orderShipDates.fixedDates.firstObject;
             [lineItem setQuantity:( [lineItem getQuantityForShipDate:shipDate] + quantityIncrement ) forShipDate:shipDate];
-        } else if (![ShowConfigurations instance].shipDates) {
+        } else if (![Configurations instance].shipDates) {
             [lineItem setQuantity:@( lineItem.totalQuantity + quantityIncrement ).stringValue];
         }
 
@@ -391,7 +372,7 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 **/
 -(NSArray*) swipeTableCell:(MGSwipeTableCell*) cell swipeButtonsForDirection:(MGSwipeDirection)direction
              swipeSettings:(MGSwipeSettings*) swipeSettings expansionSettings:(MGSwipeExpansionSettings*) expansionSettings {
-    NSArray *buttons = @[ ];
+    NSArray *buttons;
     
     if (MGSwipeDirectionRightToLeft == direction) {
         expansionSettings.buttonIndex = 0;

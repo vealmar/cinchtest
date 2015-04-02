@@ -12,7 +12,7 @@
 #import "CIProductDetailTableViewController.h"
 #import "NilUtil.h"
 #import "DateRange.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "Order.h"
 #import "LineItem.h"
 #import "NotificationConstants.h"
@@ -24,7 +24,6 @@
 #import "CIProductInfoTableViewCell.h"
 #import "CIPriceOptionTableViewCell.h"
 #import "CIOrderTotalTableViewCell.h"
-#import "View+MASAdditions.h"
 
 @interface CIProductDetailTableViewController ()
 
@@ -58,7 +57,7 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
         self.first = NO;
         self.selectedLineItems = [NSMutableArray array];
         self.selectedShipDates = [NSMutableArray array];
-        self.orderShipDates = [ShowConfigurations instance].orderShipDates;
+        self.orderShipDates = [Configurations instance].orderShipDates;
 
         self.dateSelectedBackgroundColor = [UIColor colorWithRed:30/255.0f green:240/255.0f blue:0/255.0f alpha:1];
         self.dateSelectedTextColor = [UIColor whiteColor];
@@ -111,7 +110,7 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
     [super viewWillAppear:animated];
     self.view.hidden = NO;
 
-    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+    if ([Configurations instance].isLineItemShipDatesType) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             CIShipDateTableViewCell *nextCell = (CIShipDateTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:2]];
             if (nextCell) {
@@ -138,7 +137,7 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
         [self.selectedLineItems removeObject:lineItem];
     }
 
-    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+    if ([Configurations instance].isLineItemShipDatesType) {
         if (self.selectedLineItems.count == 0) {
             [self.selectedShipDates.copy enumerateObjectsUsingBlock:^(id date, NSUInteger idx, BOOL *stop) {
                 [self toggleDateSelection:date];
@@ -165,7 +164,7 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
 // selection manually through the delegate methods to allow this to happen.
 
 - (void)calendar:(CKCalendarView *)calendar didLayoutInRect:(CGRect)frame {
-    NSIndexPath *calendarPath = [NSIndexPath indexPathForItem:0 inSection:1];
+    [NSIndexPath indexPathForItem:0 inSection:1];
     if (self.calendarCell.frame.size.height != frame.size.height) {
         [self.tableView beginUpdates];
         [self.tableView endUpdates];
@@ -196,9 +195,9 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
             [self reloadSelectedDatesSection];
         }
         [self.calendarView reloadDates:@[date]];
-        if (nil != self.workingOrder && [ShowConfigurations instance].isOrderShipDatesType) {
+        if (nil != self.workingOrder && [Configurations instance].isOrderShipDatesType) {
             self.workingOrder.shipDates = [NSArray arrayWithArray:self.selectedShipDates];
-        } else if ([ShowConfigurations instance].isLineItemShipDatesType && ![self.selectedShipDates containsObject:date]) {
+        } else if ([Configurations instance].isLineItemShipDatesType && ![self.selectedShipDates containsObject:date]) {
             [self.selectedLineItems enumerateObjectsUsingBlock:^(LineItem *lineItem, NSUInteger idx, BOOL *stop) {
                 [lineItem setQuantity:0 forShipDate:date];
             }];
@@ -213,7 +212,7 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
 
 - (void)setWorkingOrder:(Order *)newWorkingOrder {
     _workingOrder = newWorkingOrder;
-    if (nil != _workingOrder && [ShowConfigurations instance].isLineItemShipDatesType) {
+    if (nil != _workingOrder && [Configurations instance].isLineItemShipDatesType) {
         self.selectedShipDates = [NSMutableArray array];
         if (_workingOrder.shipDates) [self.selectedShipDates addObjectsFromArray:_workingOrder.shipDates];
         [self.calendarView reloadDates:self.selectedShipDates];
@@ -260,7 +259,7 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 2 && editingStyle == UITableViewCellEditingStyleDelete) {
-        NSDate *date = [self.selectedShipDates objectAtIndex:indexPath.row];
+        NSDate *date = self.selectedShipDates[(NSUInteger) indexPath.row];
         [self toggleDateSelection:date];
         [self.calendarView selectDate:date makeVisible:false];
     }
@@ -325,7 +324,7 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
             return 0; // 1;
         }
         case 2: {
-            if ([ShowConfigurations instance].isLineItemShipDatesType) {
+            if ([Configurations instance].isLineItemShipDatesType) {
                 if ([self.selectedShipDates count] > 0) {
                     return [self.selectedShipDates count] + 1; // add 1 for order totals row
                 } else {
@@ -339,7 +338,7 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
             if (self.currentLineItem.isWriteIn) {
                 return 1;
             } else {
-                return [ShowConfigurations instance].priceTiersAvailable + 1;
+                return [Configurations instance].priceTiersAvailable + 1;
             }
         }
         default: {
@@ -408,10 +407,10 @@ static NSString *priceOptionCellIdentifier = @"CIPriceOptionTableViewCell";
             break;
         }
         case 2: {
-            if (![ShowConfigurations instance].isLineItemShipDatesType || indexPath.row < self.selectedShipDates.count) {
+            if (![Configurations instance].isLineItemShipDatesType || indexPath.row < self.selectedShipDates.count) {
                 CIShipDateTableViewCell *shipDateTableViewCell = (CIShipDateTableViewCell *) [self.tableView dequeueReusableCellWithIdentifier:dateCellIdentifier forIndexPath:indexPath];
                 cell = shipDateTableViewCell;
-                NSDate *selectedDate = [self.selectedShipDates count] == 0 ? nil : self.selectedShipDates[indexPath.row];
+                NSDate *selectedDate = [self.selectedShipDates count] == 0 ? nil : self.selectedShipDates[(NSUInteger) indexPath.row];
                 [shipDateTableViewCell prepareForDisplay:selectedDate selectedLineItems:self.selectedLineItems];
 
                 __weak typeof(shipDateTableViewCell) weakCell = shipDateTableViewCell;

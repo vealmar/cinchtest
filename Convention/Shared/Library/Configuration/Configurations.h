@@ -10,7 +10,7 @@
 
 @class DateRange;
 
-@interface ShowConfigurations : NSObject
+@interface Configurations : NSObject
 
 @property BOOL enableOrderNotes;
 @property BOOL enableOrderAuthorizedBy;
@@ -32,9 +32,11 @@
 @property BOOL vendorMode;
 @property NSArray *customFields; //Array<ShowCustomField>
 
-+ (ShowConfigurations *)instance;
++ (Configurations *)instance;
 
 + (void)createInstanceFromJson:(NSDictionary *)json;
+
++ (void)overrideWith:(NSDictionary *)json;
 
 - (bool)isOrderShipDatesType;
 

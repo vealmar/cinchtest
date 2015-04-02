@@ -20,11 +20,7 @@
                     onSuccess:(void (^)(Customer *))successBlock
                     onFailure:(void (^)())failureBlock {
 
-    NSString *url = kDBCUSTOMER;
-
-//    MBProgressHUD *submit = [MBProgressHUD showHUDAddedTo:view animated:NO];
-//    submit.removeFromSuperViewOnHide = YES;
-//    submit.labelText = @"Creating Customer";
+    NSString *url = [NSString stringWithFormat:kDBGETCUSTOMERS, [[[CurrentSession instance] showId] intValue] ];
 
     void(^saveBlock)(id) = ^(id JSON) {
         [[CurrentSession mainQueueContext] performBlock:^{

@@ -10,7 +10,7 @@
 #import "StringManipulation.h"
 #import "CITableViewColumn.h"
 #import "LineItem.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "Order.h"
 #import "Product+Extensions.h"
 #import "ProductCellDelegate.h"
@@ -27,7 +27,7 @@
 - (id)initColumn:(CITableViewColumn *)column frame:(CGRect)frame {
     self = [super initColumn:column frame:frame];
     if (self) {
-        self.editablePriceTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 8.0, frame.size.width, frame.size.height - 16.0)];
+        self.editablePriceTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 8.0, frame.size.width, (CGFloat) (frame.size.height - 16.0))];
         self.editablePriceTextField.textColor = [ThemeUtil blackColor];
         self.editablePriceTextField.autocorrectionType = UITextAutocorrectionTypeNo;
         self.editablePriceTextField.textAlignment = column.alignment;
@@ -79,7 +79,7 @@
         NSNumber *price = nil;
         if (lineItem) {
             price = lineItem.price;
-        } else if ([ShowConfigurations instance].isAtOncePricing) {
+        } else if ([Configurations instance].isAtOncePricing) {
             price = product.showprc;
         } else {
             price = [product priceAtTier:[self.productCellDelegate currentOrderForCell].pricingTierIndex.intValue];
@@ -96,12 +96,12 @@
 }
 
 -(void)highlight:(NSDictionary *)attributes {
-    UIFont *font = (UIFont *) [attributes objectForKey:NSFontAttributeName];
+    UIFont *font = (UIFont *) attributes[NSFontAttributeName];
     if (font) {
         self.editablePriceTextField.font = font;
         self.priceLabel.font = font;
     }
-    UIColor *color = (UIColor *) [attributes objectForKey:NSForegroundColorAttributeName];
+    UIColor *color = (UIColor *) attributes[NSForegroundColorAttributeName];
     if (color) {
         self.priceLabel.textColor = color;
     }

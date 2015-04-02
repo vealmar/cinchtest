@@ -7,12 +7,10 @@
 
 #import "CICartViewController.h"
 #import "config.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "CIProductViewControllerHelper.h"
 #import "NumberUtil.h"
 #import "FarrisCartViewCell.h"
-#import "SettingsManager.h"
-#import "CoreDataUtil.h"
 #import "ThemeUtil.h"
 #import "CIBarButton.h"
 #import "Order+Extensions.h"
@@ -21,9 +19,7 @@
 #import "OrderSubtotalsByDate.h"
 #import "OrderTotals.h"
 #import "LineItem+Extensions.h"
-#import "LineItem.h"
 #import "View+MASAdditions.h"
-#import "UIView+Boost.h"
 #import "CIButton.h"
 #import "CISelectOrderDiscountViewController.h"
 #import "NotificationConstants.h"
@@ -39,9 +35,15 @@
 @property(nonatomic, strong) NSArray *discountLines;
 @property(nonatomic) BOOL initialized;
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedPropertyInspection"
 @property (assign) float totalGross;
+#pragma clang diagnostic pop
 @property (assign) float totalDiscounts;
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedPropertyInspection"
 @property (assign) float totalFinal;
+#pragma clang diagnostic pop
 
 @property BOOL savingOrder;
 
@@ -84,12 +86,12 @@
     [super viewDidLoad];
     [self.indicator startAnimating];
     self.navBar.topItem.title = self.title;
-    self.allowSignature = [ShowConfigurations instance].captureSignature;
-    logo.image = [ShowConfigurations instance].logo;
-    self.discountTotal.hidden = self.discountTotalLabel.hidden = ![ShowConfigurations instance].discounts;
-    self.netTotal.hidden = self.netTotalLabel.hidden = ![ShowConfigurations instance].discounts;
-    self.voucherTotal.hidden = self.voucherTotalLabel.hidden = ![ShowConfigurations instance].vouchers;
-    self.grossTotalLabel.text = [ShowConfigurations instance].discounts ? @"Gross Total" : @"Total";
+    self.allowSignature = [Configurations instance].captureSignature;
+    logo.image = [Configurations instance].logo;
+    self.discountTotal.hidden = self.discountTotalLabel.hidden = ![Configurations instance].discounts;
+    self.netTotal.hidden = self.netTotalLabel.hidden = ![Configurations instance].discounts;
+    self.voucherTotal.hidden = self.voucherTotalLabel.hidden = ![Configurations instance].vouchers;
+    self.grossTotalLabel.text = [Configurations instance].discounts ? @"Gross Total" : @"Total";
     self.tableHeaderPigglyWiggly.hidden = YES;
     self.tableHeaderFarris.hidden = NO;
     self.zeroVouchers.hidden = YES;
@@ -123,7 +125,7 @@
     CINavViewManager *navViewManager = [[CINavViewManager alloc] init:NO];
     navViewManager.delegate = self;
     [navViewManager setupNavBar];
-    navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s - %b", @"Order Summary", [self.customer objectForKey:kBillName], nil];
+    navViewManager.title = [ThemeUtil titleTextWithFontSize:18 format:@"%s - %b", @"Order Summary", self.customer[kBillName], nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -149,7 +151,7 @@
         make.height.equalTo(@50);
     }];
 
-    if ([ShowConfigurations instance].vendorMode) {
+    if ([Configurations instance].vendorMode) {
         CIButton *changePriceTierButton = [[CIButton alloc] initWithOrigin:CGPointMake(8.0F, 5.0F)
                                                                      title:@"Discount"
                                                                       size:CIButtonSizeLarge
@@ -273,6 +275,7 @@
         case 2: {
             return self.subtotalLines.count + 1;
         }
+        default:break;
     }
     return 0;
 }
@@ -328,7 +331,7 @@
             }
 
             if (index >= 0) {
-                NSArray *subtotalLine = self.subtotalLines[index];
+                NSArray *subtotalLine = self.subtotalLines[(NSUInteger) index];
                 cleftLabel.text = subtotalLine[0];
                 crightLabel.text = subtotalLine[1];
             } else {
@@ -338,6 +341,7 @@
 
             return cell;
         }
+        default:break;
     }
 
     return nil;
@@ -421,14 +425,6 @@
 //    }
 }
 
-- (void)showPriceChange:(double)price productId:(NSNumber *)productId lineItem:(LineItem *)lineItem {
-    //deprecated
-}
-
-- (void)QtyTouchForIndex:(NSNumber *)productId {
-
-}
-
 - (Order *)currentOrderForCell {
     return self.order;
 }
@@ -447,7 +443,7 @@
         signatureViewController.modalPresentationStyle = UIModalPresentationFullScreen;
     });
 
-    [signatureViewController reinitWithTotal:[NSNumber numberWithDouble:netTotal] authToken:self.authToken orderId:self.order.orderId andDelegate:(id <SignatureDelegate>) self];
+    [signatureViewController reinitWithTotal:@(netTotal) authToken:self.authToken orderId:self.order.orderId andDelegate:(id <SignatureDelegate>) self];
     [self presentViewController:signatureViewController animated:YES completion:nil];
 }
 
@@ -466,15 +462,7 @@
     // Reducing the frame height by 300 causes it to end above the keyboard, so the keyboard cannot overlap any content. 300 is the height occupied by the keyboard.
     // In addition scroll the selected row into view.
     NSDictionary *info = [note userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
-//    CGRect frame = self.productsUITableView.frame;
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationBeginsFromCurrentState:YES];
-//    [UIView setAnimationDuration:0.3f];
-//    frame.size.height -= (kbSize.width - 95); //width because landscape. 95 is height of the view that contains totals at the end of the table.
-//    self.productsUITableView.frame = frame;
-//    [self.productsUITableView scrollToRowAtIndexPath:selectedItemRowIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-//    [UIView commitAnimations];
+    CGSize kbSize = [info[UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
 //todo: can be moved to helper method and reused
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationBeginsFromCurrentState:YES];

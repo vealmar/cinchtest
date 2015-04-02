@@ -16,13 +16,7 @@
 
 // Reloads all orders from the server, overwriting any local changes. By default, this will only
 // request changes since the last reload.
-+ (void)reloadOrders:(BOOL)partialReturn
-           onSuccess:(void (^)())successBlock
-           onFailure:(void (^)())failureBlock;
-
-+ (void)headOrder:(NSNumber *)orderId
-        updatedAt:(NSDate *)updatedAt
-        onSuccess:(void (^)())successBlock;
++ (void)reloadOrdersOnSuccess:(void (^)())successBlock onFailure:(void (^)())failureBlock;
 
 // Retrieves an order from the server. If it exists locally, it is overwritten. Otherwise, it is inserted.
 + (void)fetchOrder:(NSNumber *)orderId

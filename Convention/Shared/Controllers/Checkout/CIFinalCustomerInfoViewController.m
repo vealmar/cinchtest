@@ -9,11 +9,9 @@
 #import <Underscore.m/Underscore.h>
 #import "CIFinalCustomerInfoViewController.h"
 #import "Macros.h"
-#import "config.h"
 #import "CoreDataUtil.h"
-#import "CIAppDelegate.h"
 #import "SetupInfo.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "UIColor+Boost.h"
 #import "NilUtil.h"
 #import "CoreDataManager.h"
@@ -48,7 +46,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        ShowConfigurations *configurations = [ShowConfigurations instance];
+        Configurations *configurations = [Configurations instance];
         self.contactBeforeShippingConfig = configurations.contactBeforeShipping;
         self.poNumberConfig = configurations.poNumber;
     }
@@ -120,7 +118,7 @@
     [self.view addSubview:self.notesTextView];
     currentY = CGRectGetMaxY(self.notesTextView.frame);
 
-    self.customFieldViews = Underscore.array([[ShowConfigurations instance] orderCustomFields]).map(^id(ShowCustomField *showCustomField) {
+    self.customFieldViews = Underscore.array([[Configurations instance] orderCustomFields]).map(^id(ShowCustomField *showCustomField) {
         UIView<OrderCustomFieldView> *fieldView;
         if (showCustomField.isStringValueType) {
             fieldView = [[StringOrderCustomFieldView alloc] init:showCustomField at:CGPointMake(leftX, currentY + verticalMargin) withElementWidth:elementWidth];
@@ -247,7 +245,7 @@
     if (movedUp) {
         // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
         // 2. increase the size of the view so that the area behind the keyboard is covered up.
-        rect.origin.y += kOFFSET_FOR_KEYBOARD + 70;
+        rect.origin.y += 150;
         self.view.bounds = rect;
     }
     else {

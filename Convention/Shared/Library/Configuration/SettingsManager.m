@@ -8,6 +8,7 @@
 
 #import "SettingsManager.h"
 #import "config.h"
+#import "CinchJSONAPIClient.h"
 
 static SettingsManager *sharedInstance;
 
@@ -29,7 +30,7 @@ static SettingsManager *sharedInstance;
 + (id)allocWithZone:(NSZone *)zone {
     @synchronized (self) {
         if (sharedInstance == nil) {
-            sharedInstance = [super allocWithZone:zone];
+            sharedInstance = (SettingsManager *) [super allocWithZone:zone];
             return sharedInstance;
         }
     }
@@ -49,7 +50,6 @@ static SettingsManager *sharedInstance;
 }
 
 
-
 #pragma mark -
 #pragma mark Description Override
 
@@ -59,26 +59,18 @@ static SettingsManager *sharedInstance;
 
 
 - (void)processDefaults {
-
     NSString *mainBundlePath = [[NSBundle mainBundle] bundlePath];
-    NSString *settingsPropertyListPath = [mainBundlePath
-            stringByAppendingPathComponent:@"Settings.bundle/Root.plist"];
-
-    NSDictionary *settingsPropertyList = [NSDictionary
-            dictionaryWithContentsOfFile:settingsPropertyListPath];
-
-    NSMutableArray *preferenceArray = [settingsPropertyList objectForKey:@"PreferenceSpecifiers"];
+    NSString *settingsPropertyListPath = [mainBundlePath stringByAppendingPathComponent:@"Settings.bundle/Root.plist"];
+    NSDictionary *settingsPropertyList = [NSDictionary dictionaryWithContentsOfFile:settingsPropertyListPath];
+    NSMutableArray *preferenceArray = settingsPropertyList[@"PreferenceSpecifiers"];
     NSMutableDictionary *registerableDictionary = [NSMutableDictionary dictionary];
-
     for (int i = 0; i < [preferenceArray count]; i++) {
-        NSString *key = [[preferenceArray objectAtIndex:i] objectForKey:@"Key"];
-
+        NSString *key = [preferenceArray[(NSUInteger) i] objectForKey:@"Key"];
         if (key) {
-            id value = [[preferenceArray objectAtIndex:i] objectForKey:@"DefaultValue"];
-            [registerableDictionary setObject:value forKey:key];
+            id value = [preferenceArray[(NSUInteger) i] objectForKey:@"DefaultValue"];
+            registerableDictionary[key] = value;
         }
     }
-
     [[NSUserDefaults standardUserDefaults] registerDefaults:registerableDictionary];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -86,78 +78,70 @@ static SettingsManager *sharedInstance;
 
 //This is Necessary if you want Settings to be initialized on First launch of the app
 - (void)initialize {
-    if (![[NSUserDefaults standardUserDefaults] objectForKey:@"username"]
-            || ![[NSUserDefaults standardUserDefaults] objectForKey:SERVER]
-            || ![[NSUserDefaults standardUserDefaults] objectForKey:@"show"]
-            || ![[NSUserDefaults standardUserDefaults] objectForKey:@"host"])
+    if (![[NSUserDefaults standardUserDefaults] objectForKey:ServerSetting])
         [self processDefaults];
-
-
 }
 
 
-- (id)lookupSettingByString:(NSString *)setting {
-
-
+- (void)setServerUrl:(NSString *)serverUrl{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults objectForKey:setting];
-
-
+    NSString *beforeValue = [defaults stringForKey:ServerSetting];
+    [defaults setValue:serverUrl forKey:ServerSetting];
+    [defaults synchronize]; //todo sg do we really need to call it?
+    if(![beforeValue isEqualToString:serverUrl]){
+        [[CinchJSONAPIClient sharedInstance] reload];
+        [[CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization] reload];
+    }
 }
 
-- (bool)boolForKey:(NSString *)setting {
-
-
+- (void)setHostId:(NSString *)hostId{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults boolForKey:setting];
-
-
-}
-
-
-- (void)updateSetting:(NSString *)setting value:(NSString *)value {
-
-
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    [defaults setValue:value forKey:setting];
-
-    [self refresh];
-
-
-}
-
-
-- (void)saveSetting:(NSString *)setting value:(id)value {
-
-
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-
-    [defaults setValue:value forKey:setting];
+    [defaults setValue:hostId forKey:HostIdSetting];
     [defaults synchronize];
-
-
 }
 
-
-- (id)retrieveSetting:(NSString *)setting {
-
-
+- (void)setCode:(NSString *)code{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    return [defaults objectForKey:setting];
-
-
-}
-
-
-- (void)refresh {
-
-
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setValue:code forKey:CodeSetting];
     [defaults synchronize];
-
-
 }
 
+- (void)setShowId:(NSNumber *)showId{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setValue:[showId stringValue] forKey:ShowIdSetting];
+    [defaults synchronize];
+}
+
+- (NSInteger)getShowIdInteger{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults integerForKey:ShowIdSetting];
+}
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedMethodInspection"
+- (NSNumber *)getShowIdNumber{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *string = [defaults stringForKey:ShowIdSetting];
+    if([string length] > 0){
+     return @([self getShowIdInteger]);
+    }
+    return nil;
+}
+#pragma clang diagnostic pop
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedMethodInspection"
+- (NSString *)getShowIdString{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults stringForKey:ShowIdSetting];
+}
+#pragma clang diagnostic pop
+- (NSString *)getServerUrl{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults stringForKey:ServerSetting];
+}
+
+- (NSString *)getCode{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    return [defaults stringForKey:CodeSetting];
+}
 
 @end

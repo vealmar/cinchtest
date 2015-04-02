@@ -62,8 +62,6 @@
 
 - (id)initWithOrder:(Order *)coreDataOrder customer:(NSDictionary *)customerDictionary authToken:(NSString *)token selectedVendorId:(NSNumber *)selectedVendorId andManagedObjectContext:(NSManagedObjectContext *)managedObjectContext;
 
-- (void)showPriceChange:(double)price productId:(NSNumber *)idx lineItem:(LineItem *)lineItem;
-
 - (IBAction)Cancel:(id)sender;
 
 - (IBAction)handleTap:(UITapGestureRecognizer *)sender;

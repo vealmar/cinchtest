@@ -47,7 +47,6 @@ static CIAppDelegate *appInstance;
     gradient.startPoint = CGPointMake(0.0, 0.5);
     gradient.endPoint = CGPointMake(1.0, 0.5);
     [self.zoomedBackgroundView.layer addSublayer:gradient];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(defaultsChanged) name:NSUserDefaultsDidChangeNotification object:nil];
     [self loadLaunchViewController];
     return YES;
 }
@@ -58,16 +57,6 @@ static CIAppDelegate *appInstance;
     launchViewController.managedObjectContext = [CurrentSession mainQueueContext];
     self.window.rootViewController = launchViewController;
     [self.window makeKeyAndVisible];
-
-}
-
-- (void)defaultsChanged {
-    //todo swapna check if the current viewcontroller is launchviewconroller or civiewcontroller.
-    //todo If not prompt user so they can ok reloading of new configs. Not sure if we can should give them a choice to not-reload.
-    [[SettingsManager sharedManager] refresh];
-    [[CinchJSONAPIClient sharedInstance] reload];
-    [[CinchJSONAPIClient sharedInstanceWithJSONRequestSerialization] reload];
-    [self loadLaunchViewController];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application {
@@ -78,12 +67,14 @@ static CIAppDelegate *appInstance;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-
 #pragma mark Reachability
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedMethodInspection"
 - (BOOL)isNetworkReachable {
     return networkAvailable;
 }
+#pragma clang diagnostic pop
 
 - (void)networkLost {
     DLog(@"Network Lost !");
@@ -148,7 +139,7 @@ static int persistentStoreCoordinatorInvocationAttempts = 0;
         return _persistentStoreCoordinator;
     }
 
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart9-3.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart10-3.sqlite"];
     // remove old data before a login, takes too much time to delete individually
     if (![CurrentSession instance].authToken) {
         [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];
