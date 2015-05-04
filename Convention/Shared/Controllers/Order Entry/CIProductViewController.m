@@ -243,7 +243,7 @@
     if (vendors && vendors.count > 0) {//todo use AVendor objects
         NSMutableArray *vendorDataMutable = [[NSMutableArray alloc] init];
         for (Vendor *vendor in vendors) {
-            if ([vendor.vendorgroup_id isEqualToNumber:@([CurrentSession instance].vendorGroupId.intValue)]) {
+            if ([vendor.broker_id isEqualToNumber:@([CurrentSession instance].brokerId.intValue)]) {
                 [vendorDataMutable addObject:[vendor asDictionary]];
             }
         }

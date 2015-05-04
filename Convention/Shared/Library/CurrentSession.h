@@ -15,6 +15,7 @@
 @property(readonly) BOOL hasAdminAccess;
 @property(readonly) NSNumber *showId;
 @property(readonly) NSNumber *vendorGroupId;
+@property(readonly) NSNumber *brokerId;
 @property(readonly) NSNumber *vendorId;
 @property(readonly) NSString *vendorName;
 @property(readonly) NSString *showTitle;

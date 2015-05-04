@@ -53,13 +53,13 @@ DEPENDENCIES:
   - XLForm (~> 2.1.0)
 
 SPEC CHECKSUMS:
-  AFNetworking: 0f54cb5d16ce38c1b76948faffb8d5fb705021c7
-  AWPercentDrivenInteractiveTransition: a0a896bf0ffcb127e5d29d5969bf05ece2baf58b
-  BlocksKit: 4439e7f30a9f90743462ca63545a15c1f4304cef
-  JSONKit: efef3bbd3372ff33f96b9c6f34cf4fe18e74ab69
-  Masonry: 2cb49fd14d203d2db5ca6bb017135b235dde9980
-  MGSwipeTableCell: fe0d8896b57db2498d81bccf18a8ff98c72539aa
-  Underscore.m: f99c166a9fdccfb5069085b6b4263c04b817fc9f
-  XLForm: 7d6855fe88df37b44ea00da80cc0cf3a945cfb1b
+  AFNetworking: 96ac9bf3eda33582701cb1fcc5b896aa1e20311e
+  AWPercentDrivenInteractiveTransition: 26f1c1f11777e2f6171819a13b458dda021db3ad
+  BlocksKit: 7f422b971407001178d181a43b99014ea2591fe6
+  JSONKit: bae313ce6a6c444f40489a6c0b023f399888871f
+  Masonry: 4972309f2f134de9dd312f4dc4a21359b50e6caa
+  MGSwipeTableCell: 2799fb67e8a74ea89eeb33eafbffaf3fef7b4e4e
+  Underscore.m: b86ca364d60509a39eb9c7886443c063b793aaba
+  XLForm: ba9e657a360a810ab1f64cc2cd6307fd99a86866
 
 COCOAPODS: 0.35.0
