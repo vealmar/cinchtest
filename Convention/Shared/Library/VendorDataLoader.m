@@ -39,7 +39,7 @@
     loader.dataTypes = [NSMutableArray arrayWithArray:dataTypes];
     loader.onComplete = ^{
         [[NSNotificationCenter defaultCenter] removeObserver:loader];
-        if(onComplete){
+        if (onComplete) {
             onComplete();
         }
         loader.retainedSelf = nil;
@@ -68,10 +68,11 @@
             case (VendorDataTypeShows):
                 [self loadShows];
                 break;
-            default:break;
+            default:
+                break;
         }
     } else {
-        if(self.onComplete){
+        if (self.onComplete) {
             self.onComplete();
         }
     }
@@ -197,12 +198,9 @@
                                                                [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Vendor" withContext:[CurrentSession mainQueueContext]];
 
                                                                if (JSON) {
-                                                                   NSArray *vendorgroups = [NSArray arrayWithArray:JSON];
-                                                                   for (NSDictionary *vendorgroup in vendorgroups) {
-                                                                       NSArray *vendors = [NilUtil objectOrEmptyArray:vendorgroup[@"vendors"]];
-                                                                       for (NSDictionary *vendor in vendors) {
-                                                                           [[CurrentSession mainQueueContext] insertObject:[[Vendor alloc] initWithVendorFromServer:vendor context:[CurrentSession mainQueueContext]]];
-                                                                       }
+                                                                   NSArray *vendors = [NSArray arrayWithArray:JSON];
+                                                                   for (NSDictionary *vendor in vendors) {
+                                                                       [[CurrentSession mainQueueContext] insertObject:[[Vendor alloc] initWithVendorFromServer:vendor context:[CurrentSession mainQueueContext]]];
                                                                    }
                                                                    [[CurrentSession mainQueueContext] save:nil];
                                                                    [hud hide:NO];
