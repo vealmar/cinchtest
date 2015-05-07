@@ -8,6 +8,6 @@
 
 @interface CIMenuWebViewController : UIViewController <UIWebViewDelegate>
 
--(void)navigateTo:(NSURL *)url titled:(NSAttributedString *)title;
+- (void)navigateTo:(NSURL *)url titled:(NSAttributedString *)title parameters:(NSDictionary *)parameters;
 
 @end

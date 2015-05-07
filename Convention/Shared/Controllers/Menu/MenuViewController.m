@@ -295,7 +295,11 @@
         NSURL *url = metadata.url;
 
         if (MenuLinkOrderWriter != menuLink && url) {
-            [self.menuWebViewController navigateTo:url titled:metadata.viewTitle];
+            if(MenuLinkReportSalesByBrand == menuLink || MenuLinkReportSalesByProduct == menuLink || MenuLinkReportSalesByCustomer == menuLink || MenuLinkProducts == menuLink || MenuLinkDiscountGuide == menuLink){
+                [self.menuWebViewController navigateTo:metadata.url titled:metadata.viewTitle parameters:@{@"show_id":[[CurrentSession instance] showId]}];
+            }else{
+                [self.menuWebViewController navigateTo:url titled:metadata.viewTitle parameters:nil];
+            }
         }
         if (MenuLinkOrderWriter == menuLink && MenuLinkOrderWriter != self.activeMenuLink) {
             self.menuWebViewController.navigationController.viewControllers = @[self.orderViewController];
