@@ -901,6 +901,7 @@
 		D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIFinalCustomerFormViewController.m; sourceTree = "<group>"; };
 		EB5BBD10188851810004ABB6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		EB5BBD121888518E0004ABB6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		EBD59B621AFC79940007C667 /* ProductCart11.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart11.xcdatamodel; sourceTree = "<group>"; };
 		EBED2E171AC5AD8E006F22FC /* ProductCart10.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart10.xcdatamodel; sourceTree = "<group>"; };
 		EBED2E181AC5B107006F22FC /* Show.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Show.h; sourceTree = "<group>"; };
 		EBED2E191AC5B107006F22FC /* Show.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Show.m; sourceTree = "<group>"; };
@@ -2635,6 +2636,7 @@
 		6DDC9C257E1F421C5B8AB6BB /* ProductCart.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				EBD59B621AFC79940007C667 /* ProductCart11.xcdatamodel */,
 				69282473198963B90020FC1E /* ProductCart9.xcdatamodel */,
 				EBED2E171AC5AD8E006F22FC /* ProductCart10.xcdatamodel */,
 				6DDC9163F03F2EED361C0528 /* ProductCart.xcdatamodel */,
@@ -2646,7 +2648,7 @@
 				6DDC95F51767C17D59E9EF0F /* ProductCart7.xcdatamodel */,
 				6DDC9C3AD129D324297DE989 /* ProductCart8.xcdatamodel */,
 			);
-			currentVersion = EBED2E171AC5AD8E006F22FC /* ProductCart10.xcdatamodel */;
+			currentVersion = EBD59B621AFC79940007C667 /* ProductCart11.xcdatamodel */;
 			name = ProductCart.xcdatamodeld;
 			path = ../../ProductCart.xcdatamodeld;
 			sourceTree = "<group>";

@@ -22,7 +22,6 @@
 @property(nonatomic, retain) NSNumber *dirship;
 @property(nonatomic, retain) NSString *discount;
 @property(nonatomic, retain) NSNumber *idx;
-@property(nonatomic, retain) NSNumber *initial_show;
 @property(nonatomic, retain) NSString *invtid;
 @property(nonatomic, retain) NSNumber *sequence;
 @property(nonatomic, retain) NSNumber *min;

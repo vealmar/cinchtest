@@ -45,7 +45,6 @@
         self.adv = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductAdv]];
         self.discount = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductDiscount]];
         self.vendor_id = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductVendorID]];
-        self.initial_show = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductInitialShow]];
         self.bulletin = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductBulletin]];
         self.bulletin_id = (NSNumber *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductBulletinId]];
         NSString *voucherStr = (NSString *) [NilUtil nilOrObject:[productFromServer objectForKey:kProductVoucher]];
