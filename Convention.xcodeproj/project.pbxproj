@@ -12,16 +12,10 @@
 		35F52185B818EE7CCC4EDE74 /* launch-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52EC51B1E46D464E1A721 /* launch-bg.png */; };
 		35F5235265B8ED684166F7FF /* rounded-grey-rectangle.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F528680534167FE1D7B3B4 /* rounded-grey-rectangle.png */; };
 		35F5241DDFC1C1889DBFA6EA /* cinch-c.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F523FA459A8DBC51A8270B /* cinch-c.png */; };
-		35F5243BFBC3C80424F34682 /* Icon-Small.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5277274BB604C60C2F196 /* Icon-Small.png */; };
 		35F52864941A7CFD5A6C0D76 /* CISelectShowViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F529D2FF59A0447FD39BE2 /* CISelectShowViewController.m */; };
-		35F5297AA94C7B709BC452C6 /* Icon-Small-40.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F521E2EEFD3989221A4504 /* Icon-Small-40.png */; };
-		35F52A3CF3F8789413821C10 /* Icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52CC4269698A34B5E141D /* Icon-Small@2x.png */; };
-		35F52A96ED9A946CC8EDF906 /* Icon-76.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5202E4EC543C552290257 /* Icon-76.png */; };
 		35F52AAF0D5C5EE4A28726C2 /* CISelectShowTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F52B80E64A85A28F098BC6 /* CISelectShowTableViewController.m */; };
-		35F52B0E652CD89C6BCA9504 /* Icon-Small-40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52410E970BB59E79D59CA /* Icon-Small-40@2x.png */; };
 		35F52B70CC9D2EFC74F63AD5 /* Show+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F525760E9AFA668A095834 /* Show+Extensions.m */; };
 		35F52D9766EE4830991660D8 /* white-triangle.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52130ADAEAC093E4A8474 /* white-triangle.png */; };
-		35F52EA66E9D0B0B1BBA9E3A /* Icon-76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F525DC20B75582A110920D /* Icon-76@2x.png */; };
 		35F52F0B9506785F1B699836 /* cinch-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5277D7A49E6EA418E4407 /* cinch-white.png */; };
 		692824761989930C0020FC1E /* EditableEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 692824751989930C0020FC1E /* EditableEntity.m */; };
 		69C9815A1A3E5EBB00C7E47A /* sidemenu-cinch-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C981581A3E5EBB00C7E47A /* sidemenu-cinch-logo.png */; };
@@ -368,22 +362,16 @@
 /* Begin PBXFileReference section */
 		335A42F2164D7306007B872A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		335A4306164D7529007B872A /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
-		35F5202E4EC543C552290257 /* Icon-76.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-76.png"; sourceTree = "<group>"; };
 		35F520836345BAA90560B6EF /* Show+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Show+Extensions.h"; sourceTree = "<group>"; };
 		35F52130ADAEAC093E4A8474 /* white-triangle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "white-triangle.png"; sourceTree = "<group>"; };
-		35F521E2EEFD3989221A4504 /* Icon-Small-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-40.png"; sourceTree = "<group>"; };
 		35F523FA459A8DBC51A8270B /* cinch-c.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cinch-c.png"; sourceTree = "<group>"; };
-		35F52410E970BB59E79D59CA /* Icon-Small-40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small-40@2x.png"; sourceTree = "<group>"; };
 		35F524447348186F8F7B5C8B /* CISelectShowTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISelectShowTableViewController.h; sourceTree = "<group>"; };
 		35F525760E9AFA668A095834 /* Show+Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Show+Extensions.m"; sourceTree = "<group>"; };
-		35F525DC20B75582A110920D /* Icon-76@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-76@2x.png"; sourceTree = "<group>"; };
 		35F5274063E48BD39A3D7715 /* CISelectShowViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CISelectShowViewController.h; sourceTree = "<group>"; };
-		35F5277274BB604C60C2F196 /* Icon-Small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small.png"; sourceTree = "<group>"; };
 		35F5277D7A49E6EA418E4407 /* cinch-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cinch-white.png"; sourceTree = "<group>"; };
 		35F528680534167FE1D7B3B4 /* rounded-grey-rectangle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rounded-grey-rectangle.png"; sourceTree = "<group>"; };
 		35F529D2FF59A0447FD39BE2 /* CISelectShowViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectShowViewController.m; sourceTree = "<group>"; };
 		35F52B80E64A85A28F098BC6 /* CISelectShowTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectShowTableViewController.m; sourceTree = "<group>"; };
-		35F52CC4269698A34B5E141D /* Icon-Small@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-Small@2x.png"; sourceTree = "<group>"; };
 		35F52EC51B1E46D464E1A721 /* launch-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "launch-bg.png"; sourceTree = "<group>"; };
 		445E84492698473B9EA7AEBF /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		69282473198963B90020FC1E /* ProductCart9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart9.xcdatamodel; sourceTree = "<group>"; };
@@ -931,19 +919,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		35F527F13CE5B81F0A837403 /* AppIcons */ = {
-			isa = PBXGroup;
-			children = (
-				35F5202E4EC543C552290257 /* Icon-76.png */,
-				35F525DC20B75582A110920D /* Icon-76@2x.png */,
-				35F5277274BB604C60C2F196 /* Icon-Small.png */,
-				35F521E2EEFD3989221A4504 /* Icon-Small-40.png */,
-				35F52410E970BB59E79D59CA /* Icon-Small-40@2x.png */,
-				35F52CC4269698A34B5E141D /* Icon-Small@2x.png */,
-			);
-			path = AppIcons;
-			sourceTree = "<group>";
-		};
 		6DDC9003242D5E48F90929FE /* Login */ = {
 			isa = PBXGroup;
 			children = (
@@ -1254,7 +1229,6 @@
 				6DDC99F311414996036C863E /* CKCalendar */,
 				6DDC9CBDC9B3E570C4F3BC2E /* Images */,
 				6DDC90835A1090B2332405A4 /* GoogleWearAlertr */,
-				35F527F13CE5B81F0A837403 /* AppIcons */,
 			);
 			path = "Supporting Files";
 			sourceTree = "<group>";
@@ -2218,12 +2192,6 @@
 				35F52D9766EE4830991660D8 /* white-triangle.png in Resources */,
 				35F5235265B8ED684166F7FF /* rounded-grey-rectangle.png in Resources */,
 				35F5241DDFC1C1889DBFA6EA /* cinch-c.png in Resources */,
-				35F52A96ED9A946CC8EDF906 /* Icon-76.png in Resources */,
-				35F52EA66E9D0B0B1BBA9E3A /* Icon-76@2x.png in Resources */,
-				35F5243BFBC3C80424F34682 /* Icon-Small.png in Resources */,
-				35F5297AA94C7B709BC452C6 /* Icon-Small-40.png in Resources */,
-				35F52B0E652CD89C6BCA9504 /* Icon-Small-40@2x.png in Resources */,
-				35F52A3CF3F8789413821C10 /* Icon-Small@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
