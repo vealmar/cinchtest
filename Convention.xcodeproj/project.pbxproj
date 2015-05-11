@@ -353,6 +353,7 @@
 		D8B385271A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D8B385231A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.m */; };
 		D8B3852A1A3E02FF007FA957 /* Aspects.m in Sources */ = {isa = PBXBuildFile; fileRef = D8B385291A3E02FE007FA957 /* Aspects.m */; };
 		D8C7055A1A037E6A00D395AE /* CIFinalCustomerFormViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */; };
+		EB02B8C21B0128D200ABF8A8 /* AppIcon.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB02B8C11B0128D200ABF8A8 /* AppIcon.xcassets */; };
 		EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD10188851810004ABB6 /* GLKit.framework */; };
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
 		EBED2E1A1AC5B107006F22FC /* Show.m in Sources */ = {isa = PBXBuildFile; fileRef = EBED2E191AC5B107006F22FC /* Show.m */; };
@@ -887,6 +888,7 @@
 		D8B385291A3E02FE007FA957 /* Aspects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Aspects.m; sourceTree = "<group>"; };
 		D8C705571A037E6A00D395AE /* CIFinalCustomerFormViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIFinalCustomerFormViewController.h; sourceTree = "<group>"; };
 		D8C705581A037E6A00D395AE /* CIFinalCustomerFormViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIFinalCustomerFormViewController.m; sourceTree = "<group>"; };
+		EB02B8C11B0128D200ABF8A8 /* AppIcon.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = AppIcon.xcassets; sourceTree = "<group>"; };
 		EB5BBD10188851810004ABB6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		EB5BBD121888518E0004ABB6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		EBD59B621AFC79940007C667 /* ProductCart11.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart11.xcdatamodel; sourceTree = "<group>"; };
@@ -1217,6 +1219,7 @@
 		6DDC94B86463E7827BFC472C /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EB02B8C11B0128D200ABF8A8 /* AppIcon.xcassets */,
 				D832D5491A24BE1000A0EBBF /* New Images */,
 				6DDC9400F435899471BE7F2F /* tools */,
 				6DDC941FC09DA0437F3DBF58 /* Reachability */,
@@ -2077,6 +2080,7 @@
 				6DDC9F878B55071FFC2F54E8 /* FarrisOrderDetail.png in Resources */,
 				6DDC945C37AB09644727ADD6 /* FarrisBG.png in Resources */,
 				6DDC9885AAF58C5656CD05B9 /* left-arrow.png in Resources */,
+				EB02B8C21B0128D200ABF8A8 /* AppIcon.xcassets in Resources */,
 				6DDC9C052CCB2755347FDD33 /* left-arrow@2x.png in Resources */,
 				D824847C1A2465880016932A /* OPENSANS-SEMIBOLD_1.TTF in Resources */,
 				D824847B1A2465880016932A /* OPENSANS-REGULAR_1.TTF in Resources */,
@@ -2512,6 +2516,7 @@
 			baseConfigurationReference = 840E6E4E6A54AF653F49031A /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -2548,6 +2553,7 @@
 			baseConfigurationReference = B8DB35D00377269B92AEA423 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
