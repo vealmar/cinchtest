@@ -76,6 +76,9 @@
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
     [self handleSessionDidChange:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleSessionDidChange:) name:SessionDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleProductsLoaded:) name:ProductsLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleCustomersLoaded:) name:CustomersLoadedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleCustomersLoaded:) name:CustomerCreatedNotification object:nil];
     [self.helpButton bk_addEventHandler:^(id sender){
         [self navigateTo:MenuLinkHelp];
     } forControlEvents:UIControlEventTouchUpInside];
@@ -157,6 +160,16 @@
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
     [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionTop];
     [self tableView:self.tableView didSelectRowAtIndexPath:indexPath];
+    [self.tableView reloadData];
+}
+
+-(void)handleProductsLoaded:(NSNotification *)notification {
+    [[MenuLinkMetadataProvider instance] updateProductMetadata:nil];
+    [self.tableView reloadData];
+}
+
+-(void)handleCustomersLoaded:(NSNotification *)notification {
+    [[MenuLinkMetadataProvider instance] updateCustomerMetadata:nil];
     [self.tableView reloadData];
 }
 
@@ -295,11 +308,14 @@
         NSURL *url = metadata.url;
 
         if (MenuLinkOrderWriter != menuLink && url) {
-            if(MenuLinkReportSalesByBrand == menuLink || MenuLinkReportSalesByProduct == menuLink || MenuLinkReportSalesByCustomer == menuLink || MenuLinkProducts == menuLink || MenuLinkDiscountGuide == menuLink){
-                [self.menuWebViewController navigateTo:metadata.url titled:metadata.viewTitle parameters:@{@"show_id":[[CurrentSession instance] showId]}];
-            }else{
-                [self.menuWebViewController navigateTo:url titled:metadata.viewTitle parameters:nil];
+            NSDictionary *parameters = nil;
+            if(MenuLinkProducts == menuLink ){
+                parameters = @{@"show_id":[[CurrentSession instance] showId], kVendorBrokerId:[NSString stringWithFormat:@"%d", [[CurrentSession instance].brokerId intValue]]};
             }
+            else if(MenuLinkReportSalesByBrand == menuLink || MenuLinkReportSalesByProduct == menuLink || MenuLinkReportSalesByCustomer == menuLink ||  MenuLinkDiscountGuide == menuLink){
+                parameters = @{@"show_id":[[CurrentSession instance] showId]};
+            }
+            [self.menuWebViewController navigateTo:metadata.url titled:metadata.viewTitle parameters:parameters];
         }
         if (MenuLinkOrderWriter == menuLink && MenuLinkOrderWriter != self.activeMenuLink) {
             self.menuWebViewController.navigationController.viewControllers = @[self.orderViewController];
