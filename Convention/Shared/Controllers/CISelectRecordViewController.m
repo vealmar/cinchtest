@@ -62,9 +62,6 @@
         CGPoint l = [sender locationInView:self.view];
 
         if (![self.view pointInside:l withEvent:nil]) {
-            [self.view.window removeGestureRecognizer:self.outsideTapRecognizer];
-            self.outsideTapRecognizer = nil;
-
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 [self dismissViewControllerAnimated:YES completion:nil];
             });
@@ -119,7 +116,12 @@
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+    [self.view.window removeGestureRecognizer:self.outsideTapRecognizer];
+    self.outsideTapRecognizer = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -137,6 +139,7 @@
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    if ([self presentedViewController]) return NO;
     return YES;
 }
 

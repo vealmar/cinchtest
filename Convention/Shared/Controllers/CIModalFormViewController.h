@@ -6,7 +6,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface CIModalFormViewController : UIViewController
+@interface CIModalFormViewController : UIViewController <UIGestureRecognizerDelegate>
 
 @property (strong, nonatomic) XLFormViewController *formController;
 

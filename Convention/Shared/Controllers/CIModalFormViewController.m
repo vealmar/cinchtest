@@ -25,6 +25,7 @@
 
 @property NSString *title;
 @property CIFinalCustomerFormNavigationViewController *formNavigationController;
+@property (strong, nonatomic) UITapGestureRecognizer *outsideTapRecognizer;
 
 @end
 
@@ -82,6 +83,35 @@
     [buttonsView addSubview:submitButton];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    [self.view.window removeGestureRecognizer:self.outsideTapRecognizer];
+    self.outsideTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapBehind:)];
+    [self.outsideTapRecognizer setNumberOfTapsRequired:1];
+    self.outsideTapRecognizer.cancelsTouchesInView = NO;
+    self.outsideTapRecognizer.delegate = self;
+    [self.view.window addGestureRecognizer:self.outsideTapRecognizer];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.view.window removeGestureRecognizer:self.outsideTapRecognizer];
+    self.outsideTapRecognizer = nil;
+}
+
+- (void)handleTapBehind:(UITapGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateEnded) {
+        CGPoint l = [sender locationInView:self.view];
+
+        if (![self.view pointInside:l withEvent:nil]) {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self dismissViewControllerAnimated:YES completion:nil];
+            });
+        }
+    }
+}
+
 - (void)addSections:(XLFormDescriptor *)formDescriptor {
 
 }
@@ -105,6 +135,20 @@
 
 - (void)submit:(id)sender {
     [self back:sender];
+}
+
+#pragma mark - UIGestureRecognizer Delegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
+    return YES;
 }
 
 @end

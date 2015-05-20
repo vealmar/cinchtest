@@ -20,6 +20,8 @@
 #import "NISignatureView.h"
 #import "CIAlertView.h"
 #import "ApiDataService.h"
+#import "NSManagedObjectDeepCopier.h"
+#import "Product+Extensions.h"
 
         @implementation OrderManager
 
@@ -362,6 +364,34 @@
             if (successBlock) successBlock();
         }
     }
+}
+
++ (Order *)copyOrder:(Order *)order {
+    Order *newOrder = (Order *) [NSManagedObjectDeepCopier copyEntity:order
+                                               excludingRelationships:@[ @[@"LineItem", @"Product"] ]
+                                                            toContext:order.managedObjectContext];
+    newOrder.status = @"partial";
+    newOrder.inSync = NO;
+    newOrder.orderId = nil;
+    newOrder.updatedAt = nil;
+    // remove lineitems orderid
+    for (LineItem *line in newOrder.lineItems) {
+        line.orderId = nil;
+        line.lineItemId = nil;
+        line.product = [Product findProduct:line.productId];
+    }
+    for (NSDictionary *dict in newOrder.customFields) {
+
+    }
+    newOrder.customFields = Underscore.array(newOrder.customFields).map(^id(NSDictionary *dictionary) {
+        NSMutableDictionary *mutable = [NSMutableDictionary dictionaryWithDictionary:dictionary];
+        [mutable removeObjectForKey:@"id"];
+        return [NSDictionary dictionaryWithDictionary:mutable];
+    }).unwrap;
+
+    [newOrder.managedObjectContext save:nil];
+
+    return newOrder;
 }
 
 #pragma mark - Private

@@ -64,4 +64,7 @@
           onSuccess:(void (^)())successBlock
           onFailure:(void (^)())failureBlock;
 
+// Creates a new, unsaved order.
++ (Order *)copyOrder:(Order *)order;
+
 @end

@@ -132,12 +132,20 @@
                 }
                 // scroll to new order
                 if (!(cell && cell.visible)) {
-                    [self.tableView scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:YES];
+                    [self.tableView scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:NO];
                 }
             }
+        } else {
+//            [self.tableView scrollToNearestSelectedRowAtScrollPosition:UITableViewScrollPositionTop animated:NO];
+            [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] atScrollPosition:UITableViewScrollPositionTop animated:NO];
         }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:OrderSelectionNotification object:order];
+    } else if (self.currentOrder) {
+        NSIndexPath *path = [self.fetchedResultsController indexPathForObject:self.currentOrder];
+        // This branch is if they copy an order. Even though it was technically already selected, copied orders do not have an updatedAt
+        // which is how the table is sorted. Thus, after they get synced with the server, their position in the table may have changed.
+        if (path) [self.tableView scrollToRowAtIndexPath:path atScrollPosition:UITableViewScrollPositionTop animated:NO];
     }
 }
 

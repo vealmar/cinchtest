@@ -223,6 +223,7 @@
 		6DDC9CADDBCB38A73E59C145 /* FBLogin.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC970ED4830957C837AB3B /* FBLogin.png */; };
 		6DDC9CAE496398D4969E464F /* continuein.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9BDD2CD78920CC5BB96E /* continuein.png */; };
 		6DDC9CD68EF532609FF2BB37 /* CoreDataUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC99CB78E2602CB2050028 /* CoreDataUtil.m */; };
+		6DDC9CDEA12DDD5761CBF599 /* NSManagedObjectDeepCopier.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC96EB69EECEC9C1E4E1E6 /* NSManagedObjectDeepCopier.m */; };
 		6DDC9CF95DFCD625021CE467 /* checkbox_not_ticked.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9F915101F719BB5D6017 /* checkbox_not_ticked.png */; };
 		6DDC9D163A7D5AE74327C3C0 /* cancelbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DDC9745B3C6476264A8FA7C /* cancelbutton.png */; };
 		6DDC9D1ED36CF90E14CF839C /* UIAlertViewDelegateWithBlock.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDC93F0A65ECF017DC327CF /* UIAlertViewDelegateWithBlock.m */; };
@@ -397,6 +398,7 @@
 		6DDC9180EB2BBC3D9E39F46A /* submitorderout.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = submitorderout.png; sourceTree = "<group>"; };
 		6DDC918D0777239D3FD5B8A9 /* Product+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Product+Extensions.h"; sourceTree = "<group>"; };
 		6DDC919CF73E411F6A0A10E1 /* cart-cancelin.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cart-cancelin.png"; sourceTree = "<group>"; };
+		6DDC91A8C2560D41286093F6 /* NSManagedObjectDeepCopier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSManagedObjectDeepCopier.h; sourceTree = "<group>"; };
 		6DDC91B0DA4F52DCF2A5302F /* CITableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CITableViewController.m; sourceTree = "<group>"; };
 		6DDC91BC49FBF08AE6BF71CB /* NSDate+Boost.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+Boost.h"; sourceTree = "<group>"; };
 		6DDC91E4CBCE10A80C9B66D6 /* CISelectCustomerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectCustomerViewController.m; sourceTree = "<group>"; };
@@ -542,6 +544,7 @@
 		6DDC96B33EF8AAE0D30595A5 /* Order+Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Order+Extensions.h"; sourceTree = "<group>"; };
 		6DDC96B4ABB43947A612A7EB /* MICheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MICheckBox.h; sourceTree = "<group>"; };
 		6DDC96EA219EC9BC7946EA39 /* EditButton-in.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "EditButton-in.png"; sourceTree = "<group>"; };
+		6DDC96EB69EECEC9C1E4E1E6 /* NSManagedObjectDeepCopier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSManagedObjectDeepCopier.m; sourceTree = "<group>"; };
 		6DDC96FCF61547ADD1D2FB9C /* CITableViewStandardColumnView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CITableViewStandardColumnView.h; sourceTree = "<group>"; };
 		6DDC97046E10CDB76D7654F5 /* JSONResponseSerializerWithErrorData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONResponseSerializerWithErrorData.m; sourceTree = "<group>"; };
 		6DDC97084F9D1037443F6B33 /* ShowConfigurations.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowConfigurations.m; sourceTree = "<group>"; };
@@ -1641,6 +1644,8 @@
 				6DDC992B09CA85F477517620 /* ApiDataService.h */,
 				6DDC93BBE26799E55DF57771 /* APLNormalizedStringTransformer.m */,
 				6DDC964E3B1D0E011249AFA0 /* APLNormalizedStringTransformer.h */,
+				6DDC96EB69EECEC9C1E4E1E6 /* NSManagedObjectDeepCopier.m */,
+				6DDC91A8C2560D41286093F6 /* NSManagedObjectDeepCopier.h */,
 			);
 			path = CoreData;
 			sourceTree = "<group>";
@@ -2359,6 +2364,7 @@
 				6DDC91BC23E605A9C5EC4E51 /* CustomerManager.m in Sources */,
 				6DDC93863E6E8922FE609518 /* ApiDataService.m in Sources */,
 				6DDC99D1A3912C6F0491C8A0 /* APLNormalizedStringTransformer.m in Sources */,
+				6DDC9CDEA12DDD5761CBF599 /* NSManagedObjectDeepCopier.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

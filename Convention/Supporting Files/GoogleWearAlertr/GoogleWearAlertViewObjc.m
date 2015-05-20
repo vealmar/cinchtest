@@ -14,7 +14,7 @@
 const CGFloat alertViewSize = 0.4; // 40% of presenting viewcontrollers width
 const CGFloat imageViewSize = 0.4; //4 0% of AlertViews width
 const CGFloat imageViewOffsetFromCentre = 0.25; // Offset of image along Y axis
-const CGFloat titleLabelWidth = 0.7 ;// 70% of AlertViews width
+const CGFloat titleLabelWidth = 0.8 ;// 70% of AlertViews width
 const CGFloat titleLabelHeight = 30;
 const CGFloat navControllerHeight = 44;
 @implementation GoogleWearAlertViewObjc{
@@ -102,12 +102,11 @@ const CGFloat navControllerHeight = 44;
     // Setup Text Label
     self.titleLabel=[[UILabel alloc]initWithFrame:CGRectMake(self.center.x - (self.frame.size.width * titleLabelWidth) / 2, self.iconImageView.frame.origin.y + self.iconImageView.frame.size.height - 5, self.frame.size.width * titleLabelWidth, titleLabelHeight)];
     self.titleLabel.text = title;
-
-    
+    self.titleLabel.numberOfLines = 3;
+    self.titleLabel.adjustsFontSizeToFitWidth = YES;
     self.titleLabel.textColor = [UIColor whiteColor];
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.titleLabel.font = [UIFont systemFontOfSize:18];
-    NSLog(@"%f height %f width",self.titleLabel.frame.size.height,self.titleLabel.frame.size.width);
 
     [self addSubview:self.titleLabel];
     //Position the alert

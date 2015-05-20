@@ -23,6 +23,8 @@ typedef enum {
 
 @property (assign) NSString *title;
 
+- (void)setTitle:(NSString *)title subtitle:(NSString *)subtitle;
+
 - (instancetype)initWithOrigin:(CGPoint)origin title:(NSString *)title size:(CIButtonSize)size style:(CIButtonStyle)style;
 
 @end

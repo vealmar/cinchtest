@@ -41,6 +41,8 @@
 #import "CIButton.h"
 #import "CISelectPricingTierViewController.h"
 #import "CIAlertView.h"
+#import "MASConstraintMaker.h"
+#import "View+MASAdditions.h"
 
 @interface CIProductViewController () {
     NSInteger initialVendor;
@@ -62,6 +64,7 @@
 @property (strong, nonatomic) UISwitch *filterCartSwitch;
 
 @property CIButton *changePriceTierButton;
+@property CIButton *changeCustomerButton;
 
 @end
 
@@ -130,26 +133,68 @@
     self.tableHeaderPrice2Label.text = [[ShowConfigurations instance] price2Label];
     if (![ShowConfigurations instance].isOrderShipDatesType) self.btnSelectShipDates.hidden = YES;
 
+    [self initializeOrderActions];
+}
+
+- (void)initializeOrderActions {
+    self.changeCustomerButton = [[CIButton alloc] initWithOrigin:CGPointMake(8.0F, 5.0F)
+                                                            title:@"Change Customer"
+                                                             size:CIButtonSizeLarge
+                                                            style:CIButtonStyleCancel];
+    [self.changeCustomerButton setTitle:@"Change" subtitle:@"Customer"];
+    [self.summaryView addSubview:self.changeCustomerButton];
+    [self.changeCustomerButton bk_whenTapped:^{
+        if (self.order) {
+            CISelectCustomerViewController *ci = [[CISelectCustomerViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
+            ci.delegate = self;
+            [self presentViewController:ci animated:YES completion:nil];
+            ci.selectTitle.text = @"Change Customer";
+        }
+    }];
+
     if ([ShowConfigurations instance].isTieredPricing) {
-        [self initializePriceTierButton];
+        self.changePriceTierButton = [[CIButton alloc] initWithOrigin:CGPointZero
+                                                                title:@"Select Tier"
+                                                                 size:CIButtonSizeLarge
+                                                                style:CIButtonStyleCancel];
+        [self.summaryView addSubview:self.changePriceTierButton];
+        [self.changePriceTierButton bk_whenTapped:^{
+            if (self.order) {
+                CISelectPricingTierViewController *changeTierVC = [[CISelectPricingTierViewController alloc] init];
+                changeTierVC.modalPresentationStyle = UIModalPresentationFormSheet;
+                changeTierVC.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+                [changeTierVC prepareForDisplay:self.order];
+                [self presentViewController:changeTierVC animated:YES completion:nil];
+            }
+        }];
+        [self.changePriceTierButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.left.equalTo(self.changeCustomerButton.mas_right).offset(8);
+            make.bottom.equalTo(self.summaryView).offset(-5);
+            make.height.equalTo(@(self.changePriceTierButton.frame.size.height));
+            make.width.equalTo(@(self.changePriceTierButton.frame.size.width));
+        }];
     }
 }
 
-- (void)initializePriceTierButton {
-    self.changePriceTierButton = [[CIButton alloc] initWithOrigin:CGPointMake(8.0F, 5.0F)
-                                                                 title:@"Select Tier"
-                                                                  size:CIButtonSizeLarge
-                                                                 style:CIButtonStyleCancel];
-    [self.summaryView addSubview:self.changePriceTierButton];
-    [self.changePriceTierButton bk_whenTapped:^{
-        if (self.order) {
-            CISelectPricingTierViewController *changeTierVC = [[CISelectPricingTierViewController alloc] init];
-            changeTierVC.modalPresentationStyle = UIModalPresentationFormSheet;
-            changeTierVC.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-            [changeTierVC prepareForDisplay:self.order];
-            [self presentViewController:changeTierVC animated:YES completion:nil];
+- (void)customerSelected:(NSDictionary *)customer {
+    NSString *customerName = customer[kBillName];
+    if (customerName) {
+        if (customerName.length > 17) {
+            customerName = [customerName stringByReplacingCharactersInRange:NSMakeRange(14, customerName.length - 14) withString:@""];
+            customerName = [NSString stringWithFormat:@"%@...", customerName];
         }
-    }];
+        [self.changeCustomerButton setTitle:@"Customer" subtitle:customerName];
+
+    } else {
+        [self.changeCustomerButton setTitle:@"Change Customer"];
+
+    }
+    self.customer = customer;
+    self.order.customerId = customer[kID];
+    self.order.custId = customer[kCustID];
+    self.order.customerName = customer[kBillName];
+    [self updateNavigationTitle];
+    [CIAlertView alertSaveEvent:[NSString stringWithFormat:@"Customer changed to \n%@", customer[kBillName]]];
 }
 
 - (void)updatePriceTierButtonTitle {
@@ -868,7 +913,7 @@
     BOOL inSync = self.order.inSync;
     NSString *orderStatus = self.order.status;
     if (PartialOrderCancelled == status || NewOrderCancelled == status) {
-        [self.order.managedObjectContext deleteObject:self.order];
+        if (self.order) [self.order.managedObjectContext deleteObject:self.order];
         self.order = nil;
     } else {
         [self.order removeZeroQuantityLines];
@@ -898,11 +943,11 @@
 }
 
 - (OrderUpdateStatus)orderStatus {
-    if (self.newOrder && [self.order.orderId intValue] == 0) {
+    if (!self.order || (self.newOrder && [self.order.orderId intValue] == 0)) {
         return NewOrderCancelled;
     } else if (self.newOrder) {
         return NewOrderCreated;
-    } else if (self.order.isPartial && [self.order.orderId intValue] == 0) {
+    } else if (self.order.isFault || (self.order.isPartial && [self.order.orderId intValue] == 0)) {
         return PartialOrderCancelled;
     } else if (self.order.isPartial && [self.order.orderId intValue] != 0) {
         return PartialOrderSaved;

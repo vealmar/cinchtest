@@ -32,6 +32,8 @@
 #import "CIOrderDetailTableViewController.h"
 #import "CITableViewHeaderView.h"
 #import "CIAlertView.h"
+#import "CIButton.h"
+#import "View+MASAdditions.h"
 
 @interface CIOrderViewController () {
     ShowConfigurations *showConfig;
@@ -51,10 +53,10 @@
 @property (weak, nonatomic) IBOutlet UIView *orderDetailNotesView;
 @property (weak, nonatomic) IBOutlet VALabel *orderDetailNotesLabel;
 
-
-@property (weak, nonatomic) IBOutlet UIButton *orderDetailEmailButton;
-@property (weak, nonatomic) IBOutlet UIButton *orderDetailEditButton;
-@property (weak, nonatomic) IBOutlet UIButton *orderDetailDeleteButton;
+@property UIButton *orderDetailEmailButton;
+@property UIButton *orderDetailCopyButton;
+@property UIButton *orderDetailEditButton;
+@property UIButton *orderDetailDeleteButton;
 
 @property CIOrderDetailTableViewController *orderDetailTableViewController;
 @property (weak, nonatomic) IBOutlet UIView *orderDetailTableParentView;
@@ -88,15 +90,6 @@
     self.orderDetailView.hidden = YES;
     self.orderDetailNotesLabel.verticalAlignment = VerticalAlignmentMiddle;
 
-    self.orderDetailEditButton.layer.borderWidth = 1.0f;
-    self.orderDetailEditButton.layer.cornerRadius = 3.0f;
-    self.orderDetailEmailButton.layer.borderWidth = 1.0f;
-    self.orderDetailEmailButton.layer.cornerRadius = 3.0f;
-    self.orderDetailDeleteButton.layer.cornerRadius = 3.0f;
-    self.orderDetailDeleteButton.layer.borderWidth = 1.0f;
-    self.orderDetailDeleteButton.layer.borderColor = [UIColor colorWithRed:0.906 green:0.298 blue:0.235 alpha:1.000].CGColor;
-    self.orderDetailDeleteButton.backgroundColor = [UIColor colorWithRed:0.937 green:0.541 blue:0.502 alpha:1.000];
-
     [self.ordersTableViewController prepareForDisplay];
 
     self.navViewManager = [[CINavViewManager alloc] init:YES];
@@ -111,6 +104,8 @@
     self.orderDetailTableView.delegate = self.orderDetailTableViewController;
     [self.orderDetailTableViewController prepareForDisplay];
 
+    [self initializeOrderDetailActions];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ordersReloading:) name:OrderReloadStartedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ordersReloadComplete:) name:OrderReloadCompleteNotification object:nil];
 }
@@ -118,6 +113,50 @@
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:OrderReloadStartedNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:OrderReloadCompleteNotification object:nil];
+}
+
+- (void)initializeOrderDetailActions {
+    self.orderDetailView;
+
+    self.orderDetailEditButton = [[CIButton alloc] initWithOrigin:CGPointZero title:@"Edit" size:CIButtonSizeLarge style:CIButtonStyleNeutral];
+    [self.orderDetailEditButton addTarget:self action:@selector(orderDetailEditButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    [self.orderDetailView addSubview:self.orderDetailEditButton];
+    [self.orderDetailEditButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(@0);
+        make.bottom.equalTo(self.orderDetailView).offset(-15);
+        make.height.equalTo(@(self.orderDetailEditButton.frame.size.height));
+        make.width.equalTo(@(self.orderDetailEditButton.frame.size.width));
+    }];
+
+    self.orderDetailCopyButton = [[CIButton alloc] initWithOrigin:CGPointZero title:@"Copy" size:CIButtonSizeLarge style:CIButtonStyleNeutral];
+    [self.orderDetailCopyButton addTarget:self action:@selector(orderDetailCopyButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    [self.orderDetailView addSubview:self.orderDetailCopyButton];
+    [self.orderDetailCopyButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.orderDetailEditButton.mas_left).offset(-8);
+        make.bottom.equalTo(self.orderDetailView).offset(-15);
+        make.height.equalTo(@(self.orderDetailCopyButton.frame.size.height));
+        make.width.equalTo(@(self.orderDetailCopyButton.frame.size.width));
+    }];
+
+    self.orderDetailEmailButton = [[CIButton alloc] initWithOrigin:CGPointZero title:@"Email" size:CIButtonSizeLarge style:CIButtonStyleNeutral];
+    [self.orderDetailEmailButton addTarget:self action:@selector(orderDetailEmailButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    [self.orderDetailView addSubview:self.orderDetailEmailButton];
+    [self.orderDetailEmailButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.orderDetailCopyButton.mas_left).offset(-8);
+        make.bottom.equalTo(self.orderDetailView).offset(-15);
+        make.height.equalTo(@(self.orderDetailEmailButton.frame.size.height));
+        make.width.equalTo(@(self.orderDetailEmailButton.frame.size.width));
+    }];
+
+    self.orderDetailDeleteButton = [[CIButton alloc] initWithOrigin:CGPointZero title:@"Delete" size:CIButtonSizeLarge style:CIButtonStyleDestroy];
+    [self.orderDetailDeleteButton addTarget:self action:@selector(orderDetailDeleteButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+    [self.orderDetailView addSubview:self.orderDetailDeleteButton];
+    [self.orderDetailDeleteButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(@0);
+        make.bottom.equalTo(self.orderDetailView).offset(-15);
+        make.height.equalTo(@(self.orderDetailDeleteButton.frame.size.height));
+        make.width.equalTo(@(self.orderDetailDeleteButton.frame.size.width));
+    }];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -141,7 +180,32 @@
 
 #pragma mark - Order detail display
 
-- (IBAction)orderDetailEmailButtonTapped:(id)sender {
+- (void)orderDetailEditButtonTapped {
+    [self openOrder:self.currentOrder];
+}
+
+- (void)orderDetailDeleteButtonTapped {
+    [self requestDelete:self.currentOrder];
+}
+
+- (void)orderDetailCopyButtonTapped {
+    NSString *alertMessage = [NSString stringWithFormat:@"Create a copy of %@ order?",
+                                                        self.currentOrder.customerName ? [NSString stringWithFormat:@"%@'s", self.currentOrder.customerName] : @"this", nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Order %@", self.currentOrder.orderId]
+                                                    message:alertMessage
+                                                   delegate:self
+                                          cancelButtonTitle:@"Cancel"
+                                          otherButtonTitles:@"Copy", nil];
+    [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) {
+        if (buttonIndex == 1) {
+            Order *newOrder = [OrderManager copyOrder:self.currentOrder];
+            [self persistentOrderUpdated:newOrder];
+            [self openOrder:newOrder];
+        }
+    }];
+}
+
+- (void)orderDetailEmailButtonTapped {
     if (self.currentOrder && [self.currentOrder.status isEqualToString:@"complete"]) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Email Invoice"
                                                         message:@"Please provide the recipient's email address."
@@ -173,14 +237,6 @@
                                               otherButtonTitles:nil];
         [UIAlertViewDelegateWithBlock showAlertView:alert withCallBack:^(NSInteger buttonIndex) { }];
     }
-}
-
-- (IBAction)orderDetailEditButtonTapped:(id)sender {
-    [self openOrder:self.currentOrder];
-}
-
-- (IBAction)orderDetailDeleteButtonTapped:(id)sender {
-    [self requestDelete:self.currentOrder];
 }
 
 - (void)ordersReloading:(NSNotification *)notification {
@@ -286,6 +342,8 @@
             Order *contextReadyOrder = (Order *) [context existingObjectWithID:orderObjectID error:nil];
             [weakSelf persistentOrderUpdated:contextReadyOrder];
         }];
+    } else if (updateStatus == PartialOrderCancelled) {
+        [self persistentOrderUpdated:nil];
     }
 }
 
@@ -306,7 +364,7 @@
     if (order) {
         NSString *alertMessage = [NSString stringWithFormat:@"Are you sure you want to delete %@ order?",
                         order.customerName ? [NSString stringWithFormat:@"%@'s", order.customerName] : @"this", nil];
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"DELETE"
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Order %@", self.currentOrder.orderId]
                                                         message:alertMessage
                                                        delegate:self 
                                               cancelButtonTitle:@"Cancel" 
@@ -387,33 +445,31 @@
 }
 
 - (void)openOrder:(Order *)order {
-    if (self.currentOrder) {
-        NSNumber *customerId = self.currentOrder.customerId;
-        NSManagedObjectID *orderObjectID = order.objectID;
+    NSNumber *customerId = order.customerId;
+    NSManagedObjectID *orderObjectID = order.objectID;
 
-        __weak CIOrderViewController *weakSelf = self;
-        [[CurrentSession mainQueueContext] performBlock:^{
-            Customer *customer = [CoreDataManager getCustomer:customerId managedObjectContext:[CurrentSession mainQueueContext]];
-            if (customer) {
-                [weakSelf launchCIProductViewController:NO order:orderObjectID customer:[customer asDictionary]];
-            } else {
-                MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
-                hud.removeFromSuperViewOnHide = YES;
-                hud.labelText = @"Loading customer";
-                [hud show:NO];
+    __weak CIOrderViewController *weakSelf = self;
+    [[CurrentSession mainQueueContext] performBlock:^{
+        Customer *customer = [CoreDataManager getCustomer:customerId managedObjectContext:[CurrentSession mainQueueContext]];
+        if (customer) {
+            [weakSelf launchCIProductViewController:NO order:orderObjectID customer:[customer asDictionary]];
+        } else {
+            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+            hud.removeFromSuperViewOnHide = YES;
+            hud.labelText = @"Loading customer";
+            [hud show:NO];
 
-                [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMER([customerId stringValue]) parameters:@{ kAuthToken:[CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-                    [weakSelf launchCIProductViewController:NO order:orderObjectID customer:(NSDictionary *) JSON];
-                    [hud hide:NO];
-                } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                    [hud hide:NO];
-                    [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
-                                      cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                    NSLog(@"%@", [error localizedDescription]);
-                }];
-            }
-        }];
-    }
+            [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMER([customerId stringValue]) parameters:@{ kAuthToken:[CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
+                [weakSelf launchCIProductViewController:NO order:orderObjectID customer:(NSDictionary *) JSON];
+                [hud hide:NO];
+            } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                [hud hide:NO];
+                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
+                                  cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                NSLog(@"%@", [error localizedDescription]);
+            }];
+        }
+    }];
 }
 
 - (void)launchCIProductViewController:(bool)newOrder order:(NSManagedObjectID *)orderID customer:(NSDictionary *)customer {
