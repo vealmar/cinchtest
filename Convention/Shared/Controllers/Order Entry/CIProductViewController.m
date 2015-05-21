@@ -11,7 +11,7 @@
 #import "CIProductViewController.h"
 #import "config.h"
 #import "UIAlertViewDelegateWithBlock.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "CoreDataManager.h"
 #import "CIProductViewControllerHelper.h"
 #import "NilUtil.h"
@@ -38,6 +38,8 @@
 #import "CIButton.h"
 #import "CISelectPricingTierViewController.h"
 #import "CIAlertView.h"
+#import "MASConstraintMaker.h"
+#import "View+MASAdditions.h"
 
 @interface CIProductViewController () {
     NSInteger initialVendor;
@@ -128,9 +130,6 @@
     self.tableHeaderPrice2Label.text = [[Configurations instance] price2Label];
     if (![Configurations instance].isOrderShipDatesType) self.btnSelectShipDates.hidden = YES;
 
-    if ([Configurations instance].isTieredPricing) {
-        [self initializePriceTierButton];
-    }
     [self initializeOrderActions];
 }
 
@@ -150,7 +149,7 @@
         }
     }];
 
-    if ([ShowConfigurations instance].isTieredPricing) {
+    if ([Configurations instance].isTieredPricing) {
         self.changePriceTierButton = [[CIButton alloc] initWithOrigin:CGPointZero
                                                                 title:@"Select Tier"
                                                                  size:CIButtonSizeLarge

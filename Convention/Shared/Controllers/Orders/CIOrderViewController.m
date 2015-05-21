@@ -451,15 +451,18 @@
             hud.labelText = @"Loading customer";
             [hud show:NO];
 
-            [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMER([customerId stringValue]) parameters:@{ kAuthToken:[CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-                [weakSelf launchCIProductViewController:NO order:orderObjectID customer:(NSDictionary *) JSON];
-                [hud hide:NO];
-            } failure:^(NSURLSessionDataTask *task, NSError *error) {
-                [hud hide:NO];
-                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
-                                  cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                NSLog(@"%@", [error localizedDescription]);
-            }];
+
+            [[CinchJSONAPIClient sharedInstance] GET:[NSString stringWithFormat:kDBGETCUSTOMER, [[[CurrentSession instance] showId] intValue], [customerId intValue]]
+                                          parameters:@{kAuthToken : [CurrentSession instance].authToken}
+                                             success:^(NSURLSessionDataTask *task, id JSON) {
+                                                 [weakSelf launchCIProductViewController:NO order:orderObjectID customer:(NSDictionary *) JSON];
+                                                 [hud hide:NO];
+                                           } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                                [hud hide:NO];
+                                                [[[UIAlertView alloc] initWithTitle:@"Error!" message:[NSString stringWithFormat:@"There was an error loading customers%@", [error localizedDescription]] delegate:nil
+                                                                  cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                                                NSLog(@"%@", [error localizedDescription]);
+                                           }];
         }
     }];
 }

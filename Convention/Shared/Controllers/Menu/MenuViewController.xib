@@ -54,7 +54,7 @@
                         <constraint firstAttribute="height" constant="44" id="Prx-Yo-q6k"/>
                         <constraint firstAttribute="width" constant="280" id="TIr-Eo-crY"/>
                         <constraint firstItem="mXr-NE-dXm" firstAttribute="top" secondItem="ZiY-1R-NCF" secondAttribute="top" constant="12" id="mEH-hl-Zf4"/>
-                        <constraint firstItem="mXr-NE-dXm" firstAttribute="leading" secondItem="ZiY-1R-NCF" secondAttribute="leading" constant="5" id="nAQ-G0-bcD"/>
+                        <constraint firstItem="mXr-NE-dXm" firstAttribute="leading" secondItem="ZiY-1R-NCF" secondAttribute="leading" constant="105" id="nAQ-G0-bcD"/>
                     </constraints>
                 </view>
                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6GG-wm-3Ns" userLabel="Top Pane Container">

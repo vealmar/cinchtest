@@ -20,6 +20,7 @@
 #import "CISelectVendorViewController.h"
 #import "LaunchViewController.h"
 #import "CISelectShowViewController.h"
+#import "UIView+Boost.h"
 
 
 @interface MenuViewController ()
@@ -49,7 +50,11 @@
     self.topContentView.backgroundColor = [UIColor clearColor];
     self.logoImageView.image = [Configurations instance].logo;
     self.backgroundImageView.clipsToBounds = YES;
-    self.backgroundImageView.image = [[Configurations instance].loginScreen blurredImageWithRadius:2.5f iterations:1 tintColor:[UIColor blackColor]];
+
+    //@todo there is a bug in the FXBlur library in the latest iOS release, temporarily disabling this effect
+    self.backgroundImageView.image = [Configurations instance].loginScreen;
+    //self.backgroundImageView.image = [[Configurations instance].loginScreen blurredImageWithRadius:2.5f iterations:1 tintColor:[UIColor blackColor]];
+
     CAGradientLayer *gradientLayerBottom = [CAGradientLayer layer];
     gradientLayerBottom.frame = CGRectMake(
             self.backgroundImageView.bounds.origin.x,
@@ -86,6 +91,7 @@
         [self closeMenu];
         [self logout];
     } forControlEvents:UIControlEventTouchUpInside];
+    self.relaunchButton.visible = NO; //dont show here for now
     [self.relaunchButton bk_addEventHandler:^(id sender) {
         [self closeMenu];
         [self logout];

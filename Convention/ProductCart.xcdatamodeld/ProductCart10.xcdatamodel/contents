@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="10" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6751" systemVersion="14C1514" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="10" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="14C109" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Bulletin" representedClassName="Bulletin" syncable="YES">
         <attribute name="bulletinId" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -168,7 +168,7 @@
         <element name="Order" positionX="-263" positionY="99" width="128" height="420"/>
         <element name="Product" positionX="-119" positionY="18" width="128" height="538"/>
         <element name="SetupInfo" positionX="18" positionY="-90" width="128" height="75"/>
-        <element name="Vendor" positionX="196" positionY="-99" width="128" height="373"/>
         <element name="Show" positionX="-396" positionY="-36" width="128" height="148"/>
+        <element name="Vendor" positionX="196" positionY="-99" width="128" height="373"/>
     </elements>
 </model>

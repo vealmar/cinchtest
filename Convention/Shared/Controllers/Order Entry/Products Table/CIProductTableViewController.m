@@ -241,7 +241,9 @@ static NSString *PRODUCT_VIEW_CELL_KEY = @"PRODUCT_VIEW_CELL_KEY";
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     CIProductTableViewCell *cell = (CIProductTableViewCell *) [self tableView:tableView cellForRowAtIndexPath:indexPath];
-    [self.productCellDelegate toggleProductDetail:((Product *) cell.rowData).productId lineItem:cell.lineItem];
+    if ([Configurations instance].shipDates) {
+        [self.productCellDelegate toggleProductDetail:((Product *) cell.rowData).productId lineItem:cell.lineItem];
+    }
 
     return nil;
 }
