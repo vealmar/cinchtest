@@ -8,7 +8,7 @@
 #import "Order.h"
 #import "Order+Extensions.h"
 #import "NumberUtil.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "OrderTotals.h"
 #import "CurrentSession.h"
 #import "CoreDataUtil.h"
@@ -56,7 +56,7 @@
     self.activeOrder = activeOrder;
 }
 
-- (void)prepareForDisplay:(Order *)order isLoading:(BOOL)isLoading setActive:(BOOL)activeOrder {
+- (void)prepareForDisplay:(Order *)order setActive:(BOOL)activeOrder {
     
     if (!self.initialized) {
         self.initialized = YES;
@@ -196,7 +196,7 @@
     else
         self.orderId.text = @"";
     
-    if (![ShowConfigurations instance].vouchers) {
+    if (![Configurations instance].vouchers) {
         self.vouchersLabel.hidden = YES;
         self.vouchers.hidden = YES;
     }

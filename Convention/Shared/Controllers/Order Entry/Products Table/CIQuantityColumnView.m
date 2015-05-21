@@ -4,13 +4,12 @@
 //
 
 #import "CIQuantityColumnView.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "ThemeUtil.h"
 #import "StringManipulation.h"
 #import "CITableViewColumn.h"
 #import "LineItem.h"
 #import "LineItem+Extensions.h"
-#import "CurrentSession.h"
 
 @interface CIQuantityColumnView ()
 
@@ -23,7 +22,7 @@
 - (id)initColumn:(CITableViewColumn *)column frame:(CGRect)frame {
     self = [super initColumn:column frame:frame];
     if (self) {
-        self.quantityTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 8.0, frame.size.width, frame.size.height - 16.0)];
+        self.quantityTextField = [[UITextField alloc] initWithFrame:CGRectMake(0, 8.0, frame.size.width, (CGFloat) (frame.size.height - 16.0))];
         self.quantityTextField.textColor = [ThemeUtil blackColor];
         self.quantityTextField.autocorrectionType = UITextAutocorrectionTypeNo;
         self.quantityTextField.borderStyle = UITextBorderStyleRoundedRect;
@@ -60,7 +59,7 @@
 }
 
 -(void)highlight:(NSDictionary *)attributes {
-    UIFont *font = (UIFont *) [attributes objectForKey:NSFontAttributeName];
+    UIFont *font = (UIFont *) attributes[NSFontAttributeName];
     if (font) {
         self.quantityTextField.font = font;
     }
@@ -74,7 +73,7 @@
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    return ![ShowConfigurations instance].isLineItemShipDatesType;
+    return ![Configurations instance].isLineItemShipDatesType;
 }
 
 - (BOOL)textFieldShouldClear:(UITextField *)textField {
@@ -94,7 +93,7 @@
         NSError *error;
         NSRegularExpression *numbersOnly = [NSRegularExpression regularExpressionWithPattern:@"[0-9]+" options:NSRegularExpressionCaseInsensitive error:&error];
         NSInteger numberOfMatches = [numbersOnly numberOfMatchesInString:string options:0 range:NSMakeRange(0, string.length)];
-        return numberOfMatches != 1 ? NO : YES;
+        return numberOfMatches == 1;
     }
     return YES;
 }

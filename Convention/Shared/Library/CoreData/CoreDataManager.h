@@ -11,6 +11,7 @@
 @class Customer;
 @class SetupInfo;
 @class ProductSearch;
+@class Show;
 
 @interface CoreDataManager : NSObject
 
@@ -24,7 +25,7 @@
 
 + (NSArray *)getBulletins:(NSManagedObjectContext *)managedObjectContext;
 
-+ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSNumber *)vendorGroupId async:(BOOL)async usingQueueContext:(NSManagedObjectContext *)queueContext onSuccess:(void (^)())successBlock onFailure:(void (^)())failureBlock;
++ (void)reloadProductsAsync:(BOOL)async usingQueueContext:(NSManagedObjectContext *)queueContext onSuccess:(void (^)())successBlock onFailure:(void (^)())failureBlock;
 
 + (NSUInteger)getProductCount;
 
@@ -36,4 +37,5 @@
 
 + (SetupInfo *)getSetupInfo:(NSString *)itemName;
 
++ (Show *)getLatestShow:(NSManagedObjectContext *)managedObjectContext;
 @end

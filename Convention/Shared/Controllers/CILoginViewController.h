@@ -1,5 +1,5 @@
 //
-//  CIViewController.h
+//  CILoginViewController.h
 //  Convention
 //
 //  Created by Matthew Clark on 10/31/11.
@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "CIProductViewController.h"
 
-@interface CIViewController : UIViewController <UITextFieldDelegate>
+@interface CILoginViewController : UIViewController <UITextFieldDelegate>
 @property(unsafe_unretained, nonatomic) IBOutlet UITextField *email;
 @property(unsafe_unretained, nonatomic) IBOutlet UITextField *password;
 @property(unsafe_unretained, nonatomic) IBOutlet UITextView *error;

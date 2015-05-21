@@ -11,14 +11,12 @@
 #import "DateUtil.h"
 #import "NSDate+Boost.h"
 #import "config.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "NotificationConstants.h"
 #import "NumberUtil.h"
 #import "DateRange.h"
 #import "CoreDataUtil.h"
 #import "Error+Extensions.h"
-#import "Error.h"
-#import "StringManipulation.h"
 #import "Order.h"
 #import "Product+Extensions.h"
 
@@ -36,7 +34,7 @@
         self.price = product.showprc;
         self.quantity = @"0";
         self.shipDates = [NSOrderedSet orderedSet];
-        if ([ShowConfigurations instance].isTieredPricing) {
+        if ([Configurations instance].isTieredPricing) {
             self.price = [product priceAtTier:order.pricingTierIndex.intValue];
         } else {
             self.price = product.showprc;
@@ -91,8 +89,8 @@
     } else if ([quantities isKindOfClass:[NSString class]]) {
         return [quantities intValue];
     } else if ([quantities isKindOfClass:[NSDictionary class]]) {
-        NSNumber *total = Underscore.array([((NSDictionary *) quantities) allValues]).reduce([NSNumber numberWithInt:0], ^(NSNumber *memo, NSNumber *obj) {
-            return [NSNumber numberWithInt:([obj intValue] + [memo intValue])];
+        NSNumber *total = Underscore.array([((NSDictionary *) quantities) allValues]).reduce(@0, ^(NSNumber *memo, NSNumber *obj) {
+            return @([obj intValue] + [memo intValue]);
         });
         return [total intValue];
     }
@@ -116,7 +114,7 @@
 }
 
 - (double)subtotalUsing:(NSString *)quantityValue shipDatesCount:(int)shipDatesCount {
-    ShowConfigurations *configurations = [ShowConfigurations instance];
+    Configurations *configurations = [Configurations instance];
 
     if (self.isDiscount) {
         return [self.price doubleValue] * [LineItem totalQuantity:quantityValue];
@@ -124,7 +122,7 @@
         return shipDatesCount * [self.price doubleValue] * [LineItem totalQuantity:quantityValue];
     } else if (configurations.isLineItemShipDatesType && configurations.isAtOncePricing) {
         if (shipDatesCount > 0) {
-            NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
+            NSArray *fixedShipDates = [Configurations instance].orderShipDates.fixedDates;
             NSDate *atOnceDate = fixedShipDates ? fixedShipDates.firstObject : nil;
 
             NSMutableDictionary *quantities = [quantityValue objectFromJSONString];
@@ -177,7 +175,7 @@
         }
 
         NSString *key = [date formattedDatePattern:@"yyyy-MM-dd'T'HH:mm:ss'.000Z'"];
-        [quantities setValue:[NSNumber numberWithInt:quantity] forKey:key];
+        [quantities setValue:@(quantity) forKey:key];
         if (quantity <= 0) {
             [quantities removeObjectForKey:key];
         }
@@ -219,10 +217,10 @@
 }
 
 - (NSNumber *)priceOn:(NSDate *)shipDate {
-    NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
+    NSArray *fixedShipDates = [Configurations instance].orderShipDates.fixedDates;
     NSNumber *price = self.price;
 
-    if ([ShowConfigurations instance].isAtOncePricing && fixedShipDates.count > 0) {
+    if ([Configurations instance].isAtOncePricing && fixedShipDates.count > 0) {
         if ([((NSDate *) fixedShipDates.firstObject) isEqualToDate:shipDate]) {
             price = self.product.showprc;
         } else {
@@ -312,15 +310,14 @@
 
 - (NSDictionary *)asJsonReqParameter {
     if (self.totalQuantity > 0) { //only include items that have non-zero quantity specified
-        return [NSDictionary dictionaryWithObjectsAndKeys:[self.lineItemId intValue] == 0 ? [NSNull null] : self.lineItemId, kID,
-                                                          self.productId, kLineItemProductID,
-                                                          self.description1, @"desc",
-                                                          [NilUtil objectOrNSNull:self.quantity], kLineItemQuantity,
-                                                          [NumberUtil formatDollarAmountWithoutSymbol:self.price], kLineItemPrice,
-                                                          [ShowConfigurations instance].shipDates ? self.shipDatesAsStringArray : @[], kLineItemShipDates,
-                        nil];
+        return @{kID : [self.lineItemId intValue] == 0 ? [NSNull null] : self.lineItemId,
+                kLineItemProductID : self.productId,
+                @"desc" : self.description1,
+                kLineItemQuantity : [NilUtil objectOrNSNull:self.quantity],
+                kLineItemPrice : [NumberUtil formatDollarAmountWithoutSymbol:self.price],
+                kLineItemShipDates : [Configurations instance].shipDates ? self.shipDatesAsStringArray : @[]};
     } else if ([self.lineItemId intValue] != 0) { //if quantity is 0 and item exists on server, tell server to destroy it. if it does not exist on server, don't include it.
-        return [NSDictionary dictionaryWithObjectsAndKeys:self.lineItemId, kID, @(1), @"_destroy", nil];
+        return @{kID : self.lineItemId, @"_destroy" : @(1)};
     }
     return nil;
 }

@@ -16,9 +16,8 @@
 #import "CISlidingProductDetailViewController.h"
 #import "CINavViewManager.h"
 
-@class CIViewController;
+@class CILoginViewController;
 @class CIProductTableViewController;
-@protocol CISlidingProductViewControllerDelegate;
 @class Order;
 
 typedef NS_ENUM(NSInteger, OrderUpdateStatus) {

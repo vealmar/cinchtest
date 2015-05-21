@@ -7,7 +7,7 @@
 //
 
 #import "BulletinViewController.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "Underscore.h"
 
 @interface BulletinViewController ()
@@ -41,16 +41,16 @@
 }
 
 - (NSArray *)currentBulletins {
-    if ([ShowConfigurations instance].vendorMode || 0 == currentVendId) {
+    if ([Configurations instance].vendorMode || 0 == currentVendId) {
         NSMutableArray *combinedBulletins = [Underscore.array([bulletins allValues]).flatten.filter(^BOOL(NSDictionary *dictionary) {
             return ![[dictionary valueForKey:@"id"] isEqual:@(0)];
         }).sort(^NSComparisonResult(NSDictionary *a, NSDictionary *b) {
-            return [[a objectForKey:@"name"] compare:[b objectForKey:@"name"]];
+            return [a[@"name"] compare:b[@"name"]];
         }).unwrap mutableCopy];
         [combinedBulletins insertObject:@{ @"id" : @(0), @"name" : @"Any" } atIndex:0];
         return [NSArray arrayWithArray:combinedBulletins];
     } else {
-        return [bulletins objectForKey:[NSNumber numberWithInt:currentVendId]];
+        return bulletins[@(currentVendId)];
     }
 }
 
@@ -77,12 +77,12 @@
 
     cell.textLabel.adjustsFontSizeToFitWidth = YES;
     
-    NSDictionary *details = [[self currentBulletins] objectAtIndex:[indexPath row]];
-    if ([details objectForKey:@"name"] != nil)
-        cell.textLabel.text = [details objectForKey:@"name"];
+    NSDictionary *details = [self currentBulletins][(NSUInteger) [indexPath row]];
+    if (details[@"name"] != nil)
+        cell.textLabel.text = details[@"name"];
     else
-        cell.textLabel.text = [details objectForKey:@"id"];
-    cell.tag = [[details objectForKey:@"id"] intValue];
+        cell.textLabel.text = details[@"id"];
+    cell.tag = [details[@"id"] intValue];
 //    cell.textLabel.textColor = [UIColor whiteColor];
     cell.selectionStyle = UITableViewCellSelectionStyleGray;
     cell.accessoryType = UITableViewCellAccessoryNone;

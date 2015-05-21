@@ -12,7 +12,6 @@
 #import "NilUtil.h"
 #import "Product.h"
 #import "Product+Extensions.h"
-#import "ShowConfigurations.h"
 #import "LineItem.h"
 #import "LineItem+Extensions.h"
 #import "Order.h"
@@ -162,7 +161,7 @@
         NSError *error;
         NSRegularExpression *numbersOnly = [NSRegularExpression regularExpressionWithPattern:@"[0-9]+" options:NSRegularExpressionCaseInsensitive error:&error];
         numberOfMatches = [numbersOnly numberOfMatchesInString:string options:0 range:NSMakeRange(0, string.length)];
-        return numberOfMatches != 1 ? NO : YES;
+        return numberOfMatches == 1;
     } else
         return YES;
 }

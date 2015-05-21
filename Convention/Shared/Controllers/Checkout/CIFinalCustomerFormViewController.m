@@ -8,7 +8,7 @@
 
 #import <Underscore.m/Underscore.h>
 #import "CIFinalCustomerFormViewController.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "SetupInfo.h"
 #import "CoreDataManager.h"
 #import "Order.h"
@@ -50,13 +50,13 @@
     [self setDefaultStyle:self.authorizedByRow];
     [section addFormRow:self.authorizedByRow];
     
-    if ([ShowConfigurations instance].isOrderShipDatesType) {
+    if ([Configurations instance].isOrderShipDatesType) {
         self.orderShipDateRow = [XLFormRowDescriptor formRowDescriptorWithTag:section.title rowType:XLFormRowDescriptorTypeDateInline title:@"Ship Date"];
         [self setDefaultStyle:self.orderShipDateRow];
         [section addFormRow:self.orderShipDateRow];
     }
 
-    Underscore.array([[ShowConfigurations instance] orderCustomFields]).each(^(ShowCustomField *showCustomField) {
+    Underscore.array([[Configurations instance] orderCustomFields]).each(^(ShowCustomField *showCustomField) {
         XLFormRowDescriptor *descriptor = nil;
         if (showCustomField.isStringValueType) {
             descriptor = [XLFormRowDescriptor formRowDescriptorWithTag:showCustomField.fieldKey
@@ -93,7 +93,7 @@
     [formDescriptor addFormSection:section];
     self.notesRow = [XLFormRowDescriptor formRowDescriptorWithTag:section.title
                                                           rowType:XLFormRowDescriptorTypeTextView];
-    [self.notesRow.cellConfig setObject:@"Order Notes" forKey:@"textView.placeholder"];
+    self.notesRow.cellConfig[@"textView.placeholder"] = @"Order Notes";
     [section addFormRow:self.notesRow];
 
     section = [XLFormSectionDescriptor formSection];
@@ -119,7 +119,7 @@
 
     if (nil == authorizedBy) {
         authorizedBy = [CoreDataManager getSetupInfo:@"authorizedBy"];
-        if ([ShowConfigurations instance].vendorMode) {
+        if ([Configurations instance].vendorMode) {
             [self updateSetting:@"authorizedBy" newValue:[CurrentSession instance].vendorName setupInfo:authorizedBy];
         }
     }
@@ -127,7 +127,7 @@
     self.notesRow.value = self.order && self.order.notes ? self.order.notes : @"";
     self.sendEmailRow.value = @(NO);
 
-    if ([ShowConfigurations instance].isOrderShipDatesType) {
+    if ([Configurations instance].isOrderShipDatesType) {
         id shipDate = self.order.shipDates.firstObject;
         if (shipDate) {
             self.orderShipDateRow.value = shipDate;
@@ -143,7 +143,7 @@
         self.sendEmailToRow.value = @"";
     }
 
-    Underscore.array([[ShowConfigurations instance] orderCustomFields]).each(^(ShowCustomField *showCustomField) {
+    Underscore.array([[Configurations instance] orderCustomFields]).each(^(ShowCustomField *showCustomField) {
         XLFormRowDescriptor *descriptor = [self.formController.form formRowWithTag:showCustomField.fieldKey];
         NSString *value = [self.order customFieldValueFor:showCustomField];
         if (showCustomField.isEnumValueType) {
@@ -163,11 +163,11 @@
 
     self.order.notes = self.notesRow.value;
     self.order.authorizedBy = self.authorizedByRow.value;
-    if ([ShowConfigurations instance].isOrderShipDatesType) {
+    if ([Configurations instance].isOrderShipDatesType) {
         self.order.shipDates = @[self.orderShipDateRow.value];
     }
 
-    Underscore.array([[ShowConfigurations instance] orderCustomFields]).each(^(ShowCustomField *showCustomField) {
+    Underscore.array([[Configurations instance] orderCustomFields]).each(^(ShowCustomField *showCustomField) {
         id value = self.formController.form.formValues[showCustomField.fieldKey];
         if (showCustomField.isEnumValueType) {
             value = [(XLFormOptionsObject*)value displayText];

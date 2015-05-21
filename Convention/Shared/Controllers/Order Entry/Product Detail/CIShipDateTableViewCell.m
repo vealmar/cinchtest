@@ -6,7 +6,7 @@
 #import "CIShipDateTableViewCell.h"
 #import "DateUtil.h"
 #import "NotificationConstants.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "ThemeUtil.h"
 #import "LineItem.h"
 #import "LineItem+Extensions.h"
@@ -129,14 +129,14 @@
     self.shipDate = shipDate;
     self.selectedLines = selectedLineItems;
 
-    if ([ShowConfigurations instance].isLineItemShipDatesType && shipDate != nil) {
+    if ([Configurations instance].isLineItemShipDatesType && shipDate != nil) {
         self.textLabel.text = [DateUtil convertNSDateToApiDate:shipDate];
     } else {
         self.textLabel.text = @"";
     }
 
     if (self.selectedLines.count == 1) {
-        LineItem *newLineItem = [self.selectedLines objectAtIndex:0];
+        LineItem *newLineItem = self.selectedLines[0];
         self.quantityField.text = [NSString stringWithFormat:@"%i", [newLineItem getQuantityForShipDate:shipDate]];
     } else {
         self.quantityField.text = @"";
@@ -168,10 +168,10 @@
 }
 
 - (void)calculateLineTotal {
-    NSArray *fixedShipDates = [ShowConfigurations instance].orderShipDates.fixedDates;
+    NSArray *fixedShipDates = [Configurations instance].orderShipDates.fixedDates;
     LineItem *currentLineItem = self.selectedLines.firstObject;
     NSNumber *price = currentLineItem.price;
-    if ([ShowConfigurations instance].isAtOncePricing && fixedShipDates.count > 0) {
+    if ([Configurations instance].isAtOncePricing && fixedShipDates.count > 0) {
         if ([((NSDate *) fixedShipDates.firstObject) isEqualToDate:self.shipDate]) {
             price = currentLineItem.product.showprc;
         } else {
@@ -181,7 +181,7 @@
 
     int quantity = [self.quantityField.text intValue];
     double total = quantity * [price doubleValue];
-    self.lineTotalLabel.text = [NumberUtil formatDollarAmount:[NSNumber numberWithDouble:total]];
+    self.lineTotalLabel.text = [NumberUtil formatDollarAmount:@(total)];
 
     if (quantity > 0) {
         self.lineTotalBackgroundView.layer.borderColor = [UIColor clearColor].CGColor;

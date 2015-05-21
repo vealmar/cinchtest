@@ -5,7 +5,7 @@
 
 #import "CIOrderDetailTableViewController.h"
 #import "CITableViewColumns.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "CITableViewColumn.h"
 #import "LineItem.h"
 #import "LineItem+Extensions.h"
@@ -118,7 +118,7 @@ static NSString *SUBTOTAL_CELL_REUSE_KEY = @"SUBTOTAL_CELL_REUSE_KEY";
             ColumnOptionTitleTextAttributes: @{ NSForegroundColorAttributeName: [UIColor whiteColor] }
     }];
 
-    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+    if ([Configurations instance].isLineItemShipDatesType) {
         [columns add:ColumnTypeInt titled:@"SD" using:@{
                 ColumnOptionContentKey : @"shipDatesCount",
                 ColumnOptionTextAlignment : @(NSTextAlignmentRight),
@@ -159,9 +159,9 @@ static NSString *SUBTOTAL_CELL_REUSE_KEY = @"SUBTOTAL_CELL_REUSE_KEY";
 - (id)objectAtIndexPath:(NSIndexPath *)indexPath {
     int subtotalIndex = indexPath.row - self.currentLineItems.count - 1;
     if (indexPath.row < self.currentLineItems.count) {
-        return self.currentLineItems[indexPath.row];
+        return self.currentLineItems[(NSUInteger) indexPath.row];
     } else if (subtotalIndex > 0 && subtotalIndex < self.subtotalLines.count) {
-        return self.subtotalLines[subtotalIndex];
+        return self.subtotalLines[(NSUInteger) subtotalIndex];
     } else {
         return nil;
     }
@@ -219,7 +219,7 @@ static NSString *SUBTOTAL_CELL_REUSE_KEY = @"SUBTOTAL_CELL_REUSE_KEY";
         }
 
         if (index >= 0) {
-            NSArray *subtotalLine = self.subtotalLines[index];
+            NSArray *subtotalLine = self.subtotalLines[(NSUInteger) index];
             cleftLabel.text = subtotalLine[0];
             crightLabel.text = subtotalLine[1];
         } else {
@@ -239,7 +239,7 @@ static NSString *SUBTOTAL_CELL_REUSE_KEY = @"SUBTOTAL_CELL_REUSE_KEY";
     int rowCount = self.currentOrder && self.currentLineItems ? self.currentLineItems.count : 0;
     if (indexPath.row > rowCount) {
         cell.backgroundColor = [UIColor colorWithRed:0.976 green:0.976 blue:0.976 alpha:1];
-    } else if (self.currentLineItems && indexPath.row < self.currentLineItems.count && ((LineItem *) self.currentLineItems[indexPath.row]).isDiscount) {
+    } else if (self.currentLineItems && indexPath.row < self.currentLineItems.count && ((LineItem *) self.currentLineItems[(NSUInteger) indexPath.row]).isDiscount) {
         cell.backgroundColor = [UIColor colorWithRed:255.0f/255.0f green:255.0f/255.0f blue:224.0f/255.0f alpha:1];
     } else {
         cell.backgroundColor = [UIColor whiteColor];

@@ -6,20 +6,14 @@
 //
 
 #import "CIProductViewControllerHelper.h"
-#import "config.h"
-#import "JSONKit.h"
 #import "StringManipulation.h"
-#import "ShowConfigurations.h"
-#import "SettingsManager.h"
-#import "MBProgressHUD.h"
+#import "Configurations.h"
 #import "Product.h"
 #import "Product+Extensions.h"
 #import "LineItem.h"
 #import "NilUtil.h"
 #import "CoreDataUtil.h"
 #import "Vendor.h"
-#import "AFURLConnectionOperation.h"
-#import "CinchJSONAPIClient.h"
 #import "Order.h"
 #import "LineItem+Extensions.h"
 
@@ -36,15 +30,15 @@
 - (void)updateCellBackground:(UITableViewCell *)cell order:(Order *)order lineItem:(LineItem *)lineItem {
     UIColor *green = [UIColor colorWithRed:0.722 green:0.871 blue:0.765 alpha:0.75];
     UIColor *red = [UIColor colorWithRed:0.839 green:0.655 blue:0.655 alpha:0.75];
-    if ([ShowConfigurations instance].shipDatesRequired) {
-        if ([ShowConfigurations instance].isOrderShipDatesType) {
+    if ([Configurations instance].shipDatesRequired) {
+        if ([Configurations instance].isOrderShipDatesType) {
             if (lineItem.totalQuantity > 0) {
                 if (order && order.shipDates.count > 0) cell.backgroundColor = green;
                 else cell.backgroundColor = red;
             } else {
                 cell.backgroundColor = [UIColor whiteColor];
             }
-        } else if ([ShowConfigurations instance].isLineItemShipDatesType) {
+        } else if ([Configurations instance].isLineItemShipDatesType) {
             BOOL hasQty = lineItem.totalQuantity > 0;
             BOOL hasShipDates = lineItem.shipDates && lineItem.shipDates.count > 0;
             BOOL isVoucher = [CIProductViewControllerHelper itemIsVoucher:lineItem.product];
@@ -77,11 +71,11 @@
 }
 
 - (UITableViewCell *)dequeueReusableCartViewCell:(UITableView *)table {
-    NSString *CellIdentifier = [kShowCorp isEqualToString:kPigglyWiggly] ? @"PWCartViewCell" : @"FarrisCartViewCell";
+    NSString *CellIdentifier = @"FarrisCartViewCell";
     UITableViewCell *cell = [table dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:CellIdentifier owner:nil options:nil];
-        cell = [topLevelObjects objectAtIndex:0];
+        cell = topLevelObjects[0];
     }
     return cell;
 }
@@ -107,13 +101,13 @@
     }
 
     //if using ship dates, all items with non-zero quantity (except vouchers) should have ship date(s)
-    if ([ShowConfigurations instance].shipDatesRequired) {
-        if ([[ShowConfigurations instance] isOrderShipDatesType]) {
+    if ([Configurations instance].shipDatesRequired) {
+        if ([[Configurations instance] isOrderShipDatesType]) {
             if (order.shipDates.count == 0) {
                 [[[UIAlertView alloc] initWithTitle:@"Missing Data" message:@"You must select at least one ship date for this order before submitting." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil] show];
                 return NO;
             }
-        } else if ([[ShowConfigurations instance] isLineItemShipDatesType]) {
+        } else if ([[Configurations instance] isLineItemShipDatesType]) {
             for (LineItem *lineItem in order.lineItems) {
                 Product *product = [Product findProduct:lineItem.productId];
                 BOOL hasQty = lineItem.totalQuantity > 0;

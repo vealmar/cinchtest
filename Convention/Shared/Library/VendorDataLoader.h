@@ -11,7 +11,8 @@ typedef enum  {
     VendorDataTypeCustomers,
     VendorDataTypeBulletins,
     VendorDataTypeVendors,
-    VendorDataTypeProducts
+    VendorDataTypeProducts,
+    VendorDataTypeShows
 } VendorDataType;
 
 @interface VendorDataLoader : NSObject

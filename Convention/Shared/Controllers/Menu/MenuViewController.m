@@ -7,7 +7,7 @@
 //
 
 #import "MenuViewController.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "CIAppDelegate.h"
 #import "FXBlurView.h"
 #import "MenuViewCell.h"
@@ -18,6 +18,8 @@
 #import "config.h"
 #import "CinchJSONAPIClient.h"
 #import "CISelectVendorViewController.h"
+#import "LaunchViewController.h"
+#import "CISelectShowViewController.h"
 
 
 @interface MenuViewController ()
@@ -33,6 +35,7 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *helpButton;
 @property (weak, nonatomic) IBOutlet UIButton *logoutButton;
+@property (weak, nonatomic) IBOutlet UIButton *relaunchButton;
 
 @property CIMenuWebViewController *menuWebViewController;
 @property MenuLink activeMenuLink;
@@ -43,18 +46,10 @@
 
 - (void)viewDidLoad {
     self.view.backgroundColor = [UIColor colorWithRed:0.235 green:0.247 blue:0.251 alpha:1];
-
     self.topContentView.backgroundColor = [UIColor clearColor];
-
-    self.logoImageView.image = [ShowConfigurations instance].logo;
+    self.logoImageView.image = [Configurations instance].logo;
     self.backgroundImageView.clipsToBounds = YES;
-//    self.backgroundImageView.contentMode = UIViewContentModeTopLeft;
-//    CGImageRef imageRef = CGImageCreateWithImageInRect([[ShowConfigurations instance].loginScreen CGImage], CGRectMake(0, 0, self.vendorBackgroundImageView.frame.size.width, self.vendorBackgroundImageView.frame.size.height));
-//    UIImage *croppedLoginImage = [UIImage imageWithCGImage:imageRef];
-//    self.backgroundImageView.image = [croppedLoginImage blurredImageWithRadius:2.5f iterations:1 tintColor:[UIColor blackColor]];
-    self.backgroundImageView.image = [[ShowConfigurations instance].loginScreen blurredImageWithRadius:2.5f iterations:1 tintColor:[UIColor blackColor]];
-//    CGImageRelease(imageRef);
-
+    self.backgroundImageView.image = [[Configurations instance].loginScreen blurredImageWithRadius:2.5f iterations:1 tintColor:[UIColor blackColor]];
     CAGradientLayer *gradientLayerBottom = [CAGradientLayer layer];
     gradientLayerBottom.frame = CGRectMake(
             self.backgroundImageView.bounds.origin.x,
@@ -62,11 +57,9 @@
             self.backgroundImageView.bounds.size.width,
             10.0f
     );
-    gradientLayerBottom.colors = [NSArray arrayWithObjects:
-            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.15f] CGColor],
-            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.5f] CGColor], nil];
+    gradientLayerBottom.colors = @[(id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.15f] CGColor],
+            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.5f] CGColor]];
     [self.vendorBackgroundImageView.layer addSublayer:gradientLayerBottom];
-
     CAGradientLayer *gradientLayerTop = [CAGradientLayer layer];
     gradientLayerTop.frame = CGRectMake(
             self.backgroundImageView.bounds.origin.x,
@@ -74,28 +67,27 @@
             self.backgroundImageView.bounds.size.width,
             10.0f
     );
-    gradientLayerTop.colors = [NSArray arrayWithObjects:
-            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.35f] CGColor],
-            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.05f] CGColor], nil];
+    gradientLayerTop.colors = @[(id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.35f] CGColor],
+            (id) [[UIColor colorWithRed:0.0f green:0.0f blue:0.0f alpha:0.05f] CGColor]];
     [self.vendorBackgroundImageView.layer addSublayer:gradientLayerTop];
-
     self.tableView.backgroundColor = [UIColor clearColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.tableHeaderView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"cell"];
-
     [self handleSessionDidChange:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleSessionDidChange:) name:SessionDidChangeNotification object:nil];
-
     [self.helpButton bk_addEventHandler:^(id sender){
         [self navigateTo:MenuLinkHelp];
     } forControlEvents:UIControlEventTouchUpInside];
-
     [self.logoutButton bk_addEventHandler:^(id sender) {
         [self closeMenu];
         [self logout];
     } forControlEvents:UIControlEventTouchUpInside];
-
+    [self.relaunchButton bk_addEventHandler:^(id sender) {
+        [self closeMenu];
+        [self logout];
+        [self loadLaunchViewController];
+    } forControlEvents:UIControlEventTouchUpInside];
     self.activeMenuLink = MenuLinkOrderWriter;
     self.menuWebViewController = [[CIMenuWebViewController alloc] init];
 }
@@ -113,8 +105,8 @@
 
 - (void)logout {
     void (^clearSettings)(void) = ^{
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSettingsUsernameKey];
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSettingsPasswordKey];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUsernameSetting];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kPasswordSetting];
         [[NSUserDefaults standardUserDefaults] synchronize];
     };
 
@@ -134,13 +126,21 @@
     }];
 }
 
+- (void)loadLaunchViewController {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"LaunchViewController" bundle:nil];
+    LaunchViewController *launchViewController = [storyboard instantiateInitialViewController];
+    launchViewController.managedObjectContext = [CurrentSession mainQueueContext];
+    [[UIApplication sharedApplication].keyWindow.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];//remove window's subviews before loading new rootviewcontroller.
+    [[UIApplication sharedApplication].keyWindow setRootViewController:launchViewController];
+}
+
 -(void)handleSessionDidChange:(NSNotification *)notification {
     CurrentSession *session = [CurrentSession instance];
     NSShadow *shadow = [NSShadow new];
     shadow.shadowColor = [UIColor blackColor];
     shadow.shadowBlurRadius = 5.0f;
-    NSString *vendorName = [NilUtil objectOrEmptyString:session.userInfo[@"name"]];
-    NSString *showName = [NilUtil objectOrEmptyString:session.userInfo[@"current_show"][@"title"]];
+    NSString *vendorName = session.vendorName;
+    NSString *showName = session.showTitle;
     self.titleLabel.attributedText = [[NSAttributedString alloc] initWithString:vendorName attributes:@{
             NSFontAttributeName: [UIFont semiboldFontOfSize:20],
             NSForegroundColorAttributeName: [UIColor whiteColor],
@@ -168,9 +168,9 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     switch (section) {
         case 0:
-            return [CurrentSession instance].hasAdminAccess ? 2 : 1;
+            return [CurrentSession instance].hasAdminAccess ? 3 : 2;
         case 1:
-            return [ShowConfigurations instance].discountsGuide ? 3 : 2;
+            return [Configurations instance].discountsGuide ? 3 : 2;
         case 2:
             return 3;
         default:
@@ -201,7 +201,10 @@
                     return MenuLinkOrderWriter;
                 }
                 case 1: {
-                    return MenuLinkChangeVendor;
+                    return MenuLinkChangeShow;
+                }
+                case 2: {
+                    return  MenuLinkChangeVendor;
                 }
             }
             break;
@@ -284,6 +287,9 @@
 
     if (MenuLinkChangeVendor == menuLink) {
         CISelectVendorViewController *ci = [[CISelectVendorViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
+        [self presentViewController:ci animated:YES completion:nil];
+    }else if (MenuLinkChangeShow == menuLink) {
+        CISelectShowViewController *ci = [[CISelectShowViewController alloc] initWithNibName:@"CICustomerInfoViewController" bundle:nil];
         [self presentViewController:ci animated:YES completion:nil];
     } else {
         NSURL *url = metadata.url;

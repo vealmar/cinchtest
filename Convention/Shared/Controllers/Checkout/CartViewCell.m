@@ -7,7 +7,7 @@
 
 
 #import "CartViewCell.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "EditableEntity+Extensions.h"
 #import "LineItem.h"
 
@@ -17,12 +17,11 @@
 @synthesize InvtID;
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
-    if ([ShowConfigurations instance].isLineItemShipDatesType) {
+    if ([Configurations instance].isLineItemShipDatesType) {
         return NO;
     } else {
         UITableView *tableView = (UITableView *) self.superview.superview;
-        NSIndexPath *indexPath = [tableView indexPathForCell:self];
-        //[self.delegate setSelectedRow:indexPath];
+        [tableView indexPathForCell:self];
         return YES;
     }
 }

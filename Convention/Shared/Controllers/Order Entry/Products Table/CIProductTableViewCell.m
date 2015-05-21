@@ -13,7 +13,7 @@
 #import "ProductCellDelegate.h"
 #import "CurrentSession.h"
 #import "CIShowPriceColumnView.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "NotificationConstants.h"
 #import "ThemeUtil.h"
 #import "LineItem.h"
@@ -85,11 +85,11 @@
 -(CITableViewColumnView *)viewForColumn:(CITableViewColumn *)column frame:(CGRect)frame {
     __weak CIProductTableViewCell *weakSelf = self;
 
-    if (ColumnTypeCustom == column.columnType && [CIQuantityColumnView class] == [column.options objectForKey:ColumnOptionCustomTypeClass]) {
+    if (ColumnTypeCustom == column.columnType && [CIQuantityColumnView class] == column.options[ColumnOptionCustomTypeClass]) {
         CIQuantityColumnView *view = [[CIQuantityColumnView alloc] initColumn:column frame:frame];
 
         [view.quantityTextField setBk_shouldBeginEditingBlock:^BOOL(UITextField *field) {
-            BOOL allowDirectEditing = ![ShowConfigurations instance].isLineItemShipDatesType;
+            BOOL allowDirectEditing = ![Configurations instance].isLineItemShipDatesType;
 
             if (allowDirectEditing) {
 //                [weakSelf setEditing:YES animated:NO];
@@ -117,7 +117,7 @@
         }];
 
         return view;
-    } else if (ColumnTypeCustom == column.columnType && [CIShowPriceColumnView class] == [column.options objectForKey:ColumnOptionCustomTypeClass]) {
+    } else if (ColumnTypeCustom == column.columnType && [CIShowPriceColumnView class] == column.options[ColumnOptionCustomTypeClass]) {
         CIShowPriceColumnView *view = [[CIShowPriceColumnView alloc] initColumn:column frame:frame];
         view.productCellDelegate = self.productCellDelegate;
 
@@ -135,7 +135,7 @@
         }];
 
         return view;
-    } else if (ColumnTypeCustom == column.columnType && [CIProductDescriptionColumnView class] == [column.options objectForKey:ColumnOptionCustomTypeClass]) {
+    } else if (ColumnTypeCustom == column.columnType && [CIProductDescriptionColumnView class] == column.options[ColumnOptionCustomTypeClass]) {
         CIProductDescriptionColumnView *view = [[CIProductDescriptionColumnView alloc] initColumn:column frame:frame];
 
         [view.editableDescriptionTextField setBk_didEndEditingBlock:^(UITextField *field) {

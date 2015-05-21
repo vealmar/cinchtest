@@ -6,19 +6,15 @@
 #import "CIOrdersTableViewController.h"
 #import "CurrentSession.h"
 #import "CIOrderCell.h"
-#import "ThemeUtil.h"
 #import "MBProgressHUD.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "Order.h"
 #import "OrderManager.h"
-#import "ShowConfigurations.h"
 #import "Order+Extensions.h"
-#import "LineItem+Extensions.h"
 #import "NotificationConstants.h"
-#import "NumberUtil.h"
-#import "OrderTotals.h"
 #import "CoreDataUtil.h"
 #import "UIView+Boost.h"
+#import "VendorDataLoader.h"
 
 @interface CIOrdersTableViewController ()
 
@@ -63,7 +59,10 @@
 }
 
 - (void)handleSessionDidChange:(NSNotification *)notification {
-    [self loadOrders:YES selectOrder:nil];
+    //reload customers since the session change notification might have been discharged as a result of selecting a different show. This will require reloading customers, vendors, bulletins and products. todo sg once vendors, bulletins and products are no longer show specific we won't need to reload them.
+    [VendorDataLoader load:@[@(VendorDataTypeCustomers), @(VendorDataTypeVendors), @(VendorDataTypeBulletins), @(VendorDataTypeProducts)] inView:self.view onComplete:^{
+        [self loadOrders:YES selectOrder:nil];
+    }];
 }
 
 - (void)ordersReloading:(NSNotification *)notification {
@@ -119,10 +118,7 @@
 
         if (order && !self.isLoadingOrders) {
             NSIndexPath *path = nil;
-            if (order) {
-                // if we dont have a path, it's possible that coredata hasn't saved it yet thus it's not in the table
-                path = [self.fetchedResultsController indexPathForObject:order];
-            }
+            path = [self.fetchedResultsController indexPathForObject:order];
             
             if (path) {
                 CIOrderCell *cell = (CIOrderCell *) [self.tableView cellForRowAtIndexPath:path];
@@ -149,24 +145,6 @@
     }
 }
 
-- (void)selectSibling:(BOOL)up {
-    NSIndexPath *path = [self.fetchedResultsController indexPathForObject:self.currentOrder];
-    if (!path) {
-        path = [NSIndexPath indexPathForRow:0 inSection:0];
-    } else {
-        if (up && path.row > 0) {
-            path = [NSIndexPath indexPathForRow:path.row - 1 inSection:path.section];
-        } else if (!up && path.row > [self.tableView numberOfRowsInSection:path.section] - 1) {
-            path = [NSIndexPath indexPathForRow:path.row + 1 inSection:path.section];
-        }
-
-    }
-    Order *orderAtPath = (Order *) [self.fetchedResultsController objectAtIndexPath:path];
-    if (orderAtPath) {
-        [self selectOrder:orderAtPath.objectID];
-    }
-}
-
 - (void)controller:(NSFetchedResultsController *)controller
    didChangeObject:(id)anObject
        atIndexPath:(NSIndexPath *)indexPath
@@ -178,20 +156,20 @@
     switch(type)
     {
         case NSFetchedResultsChangeInsert:
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
             break;
 
         case NSFetchedResultsChangeDelete:
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
             break;
 
         case NSFetchedResultsChangeUpdate:
-            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationNone];
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
             break;
 
         case NSFetchedResultsChangeMove:
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+            [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationFade];
             break;
     }
 
@@ -234,7 +212,7 @@
             [weakSelf.pull finishedLoading];
         };
 
-        [OrderManager reloadOrders:NO onSuccess:^{
+        [OrderManager reloadOrdersOnSuccess:^{
             cleanup();
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (weakSelf && !weakSelf.fetchRequest) weakSelf.fetchRequest = [OrderManager buildOrderFetch:nil inManagedObjectContext:weakSelf.managedObjectContext];
@@ -247,7 +225,7 @@
                     if (reloadedOrderWithId) [weakSelf selectOrder:reloadedOrderWithId.objectID];
                 }
             }];
-        }                onFailure:^{
+        }                         onFailure:^{
             cleanup();
         }];
     } else {
@@ -329,12 +307,12 @@
     CIOrderCell *cell = [self.tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         NSArray *topLevelObjects = [[NSBundle mainBundle] loadNibNamed:@"CIOrderCell" owner:nil options:nil];
-        cell = [topLevelObjects objectAtIndex:0];
+        cell = topLevelObjects[0];
     }
 
     Order *order = [self.fetchedResultsController objectAtIndexPath:indexPath];
 
-    [cell prepareForDisplay:order isLoading:self.isLoadingOrders setActive:self.currentOrder && [order.orderId isEqual:self.currentOrder.orderId]];
+    [cell prepareForDisplay:order setActive:self.currentOrder && [order.orderId isEqual:self.currentOrder.orderId]];
 
     return cell;
 }

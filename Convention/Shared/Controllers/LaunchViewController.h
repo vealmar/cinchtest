@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LaunchViewController : UIViewController
+@interface LaunchViewController : UIViewController <UITextFieldDelegate>
 @property (nonatomic, strong) NSManagedObjectContext* managedObjectContext;
+@property(weak, nonatomic) IBOutlet UITextField *codeTextField;
+
+- (IBAction)launchPressed:(UIButton *)sender;
 @end

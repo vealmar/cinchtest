@@ -8,8 +8,7 @@
 
 #import "CIOrderViewController.h"
 #import "config.h"
-#import "SettingsManager.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "CoreDataManager.h"
 #import "UIAlertViewDelegateWithBlock.h"
 #import "Customer.h"
@@ -21,23 +20,16 @@
 #import "CIOrdersTableViewController.h"
 #import "OrderManager.h"
 #import "Order+Extensions.h"
-#import "LineItem+Extensions.h"
-#import "NumberUtil.h"
-#import "OrderTotals.h"
-#import "OrderSubtotalsByDate.h"
 #import "MBProgressHUD.h"
 #import "CoreDataUtil.h"
 #import "CurrentSession.h"
-#import "Product.h"
 #import "CIOrderDetailTableViewController.h"
 #import "CITableViewHeaderView.h"
 #import "CIAlertView.h"
 #import "CIButton.h"
 #import "View+MASAdditions.h"
 
-@interface CIOrderViewController () {
-    ShowConfigurations *showConfig;
-}
+@interface CIOrderViewController ()
 
 @property Order *currentOrder;
 @property (weak, nonatomic) CIOrdersTableViewController *ordersTableViewController;
@@ -86,7 +78,7 @@
     self.NoOrdersLabel.font = [UIFont fontWithName:kFontName size:25.f];
     self.customer.font = [UIFont fontWithName:kFontName size:14.f];
 
-    showConfig = [ShowConfigurations instance];
+    [Configurations instance];
     self.orderDetailView.hidden = YES;
     self.orderDetailNotesLabel.verticalAlignment = VerticalAlignmentMiddle;
 
@@ -262,7 +254,7 @@
     if (order) {
         self.orderDetailView.hidden = NO;
         
-        ShowConfigurations *config = [ShowConfigurations instance];
+        Configurations *config = [Configurations instance];
         
         self.orderDetailOrderNumberLabel.text = [NSString stringWithFormat:@"Order #%@", order.orderId];
         self.orderDetailCustomerLabel.text = order.customerName;
@@ -289,7 +281,7 @@
         self.customer.text = [self.currentOrder getCustomerDisplayName];
         self.authorizer.text = order.authorizedBy != nil? order.authorizedBy : @"";
         
-        if (order && ![order.notes isKindOfClass:[NSNull class]]) {
+        if (![order.notes isKindOfClass:[NSNull class]]) {
             self.notes.text = [order.notes stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         } else {
             self.notes.text = @"";

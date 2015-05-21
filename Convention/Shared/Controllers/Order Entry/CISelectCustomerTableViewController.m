@@ -4,13 +4,11 @@
 //
 
 #import "CISelectCustomerTableViewController.h"
-#import "config.h"
 #import "Customer.h"
 #import "CoreDataUtil.h"
 #import "CurrentSession.h"
 #import "MBProgressHUD.h"
 #import "CinchJSONAPIClient.h"
-#import "SettingsManager.h"
 #import "NotificationConstants.h"
 #import "ThemeUtil.h"
 
@@ -86,31 +84,32 @@
     }
 
     __weak CISelectCustomerTableViewController *weakSelf = self;
-    [[CinchJSONAPIClient sharedInstance] GET:kDBGETCUSTOMERS parameters:@{ kAuthToken: [CurrentSession instance].authToken } success:^(NSURLSessionDataTask *task, id JSON) {
-        [[CurrentSession privateQueueContext] performBlock:^{
-            if (JSON && ([(NSArray *) JSON count] > 0)) {
-                NSArray *customers = (NSArray *) JSON;
-                for (NSDictionary *customer in customers) {
-                    [[CurrentSession privateQueueContext] insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:[CurrentSession privateQueueContext]]];
-                }
-                [[CurrentSession privateQueueContext] save:nil];
-            }
-            [[CurrentSession mainQueueContext] performBlock:^{
-                if (triggeredByPullToRefresh) {
+    [[CinchJSONAPIClient sharedInstance] getCustomersWithSession:[CurrentSession instance]
+                                                          success:^(NSURLSessionDataTask *task, id JSON) {
+                                                              [[CurrentSession privateQueueContext] performBlock:^{
+                                                                  if (JSON && ([(NSArray *) JSON count] > 0)) {
+                                                                      NSArray *customers = (NSArray *) JSON;
+                                                                      for (NSDictionary *customer in customers) {
+                                                                          [[CurrentSession privateQueueContext] insertObject:[[Customer alloc] initWithCustomerFromServer:customer context:[CurrentSession privateQueueContext]]];
+                                                                      }
+                                                                      [[CurrentSession privateQueueContext] save:nil];
+                                                                  }
+                                                                  [[CurrentSession mainQueueContext] performBlock:^{
+                                                                      if (triggeredByPullToRefresh) {
+                                                                          [weakSelf.pull finishedLoading];
+                                                                      } else {
+                                                                          [hud hide:NO];
+                                                                      }
+                                                                      [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
+                                                                      [weakSelf.tableView reloadData];
+                                                                  }];
+                                                              }];
+                                                          } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                if (triggeredByPullToRefresh)
                     [weakSelf.pull finishedLoading];
-                } else {
+                else
                     [hud hide:NO];
-                }
-                [[NSNotificationCenter defaultCenter] postNotificationName:CustomersLoadedNotification object:nil];
-                [weakSelf.tableView reloadData];
             }];
-        }];
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        if (triggeredByPullToRefresh)
-            [weakSelf.pull finishedLoading];
-        else
-            [hud hide:NO];
-    }];
 }
 
 

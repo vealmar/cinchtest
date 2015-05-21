@@ -11,7 +11,6 @@
 #import "APLSlideMenuViewController.h"
 
 
-@class CIViewController;
 
 @interface CIAppDelegate : UIResponder <UIApplicationDelegate, ReachabilityDelegate> {
 
@@ -33,13 +32,9 @@
 - (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedMethodInspection"
 -(BOOL)isNetworkReachable;
-
-- (void)showZoomedController:(UIViewController*)c;
-- (void)dismissZoomedController;
-
-@property (strong, nonatomic) UINavigationController *menuViewController;
-@property (strong, nonatomic) UIViewController *zoomedViewController;
-
+#pragma clang diagnostic pop
 
 @end

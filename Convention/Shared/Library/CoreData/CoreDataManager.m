@@ -6,11 +6,9 @@
 //
 
 
-#import <Underscore.m/Underscore.h>
 #import "CoreDataManager.h"
 #import "Customer.h"
 #import "config.h"
-#import "SettingsManager.h"
 #import "Product.h"
 #import "Product+Extensions.h"
 #import "CoreDataUtil.h"
@@ -22,10 +20,10 @@
 #import "JSONResponseSerializerWithErrorData.h"
 #import "CinchJSONAPIClient.h"
 #import "NotificationConstants.h"
-#import "ShowConfigurations.h"
 #import "CurrentSession.h"
 #import "ResponseStatus.h"
 #import "APLNormalizedStringTransformer.h"
+#import "Show.h"
 
 static NSPredicate *productSearchPredicate = nil;
 
@@ -40,7 +38,7 @@ static NSPredicate *productSearchPredicate = nil;
     NSError *error = nil;
     NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
     if (error == nil && fetchedObjects != nil && [fetchedObjects count] > 0) {
-        customer = [fetchedObjects objectAtIndex:0];
+        customer = fetchedObjects[0];
     }
     return customer;
 }
@@ -48,7 +46,7 @@ static NSPredicate *productSearchPredicate = nil;
 + (NSArray *)getCustomers:(NSManagedObjectContext *)managedObjectContext {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Customer" inManagedObjectContext:managedObjectContext]];
-    NSArray *sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"billname" ascending:YES]];
+    NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"billname" ascending:YES]];
     [fetchRequest setSortDescriptors:sortDescriptors];
     NSError *error = nil;
     NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
@@ -62,7 +60,7 @@ static NSPredicate *productSearchPredicate = nil;
 + (NSArray *)getProducts:(NSManagedObjectContext *)managedObjectContext {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:managedObjectContext]];
-    NSArray *sortDescriptors = [NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]];
+    NSArray *sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"invtid" ascending:YES]];
     [fetchRequest setSortDescriptors:sortDescriptors];
     NSError *error = nil;
     NSArray *fetchedObjects = [managedObjectContext executeFetchRequest:fetchRequest error:&error];
@@ -99,111 +97,109 @@ static NSPredicate *productSearchPredicate = nil;
         return fetchedObjects;
 }
 
-+ (void)reloadProducts:(NSString *)authToken vendorGroupId:(NSNumber *)vendorGroupId async:(BOOL)async usingQueueContext:(NSManagedObjectContext *)queueContext onSuccess:(void (^)())successBlock onFailure:(void (^)())failureBlock {
++ (void)reloadProductsAsync:(BOOL)async usingQueueContext:(NSManagedObjectContext *)queueContext onSuccess:(void (^)())successBlock onFailure:(void (^)())failureBlock {
     [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadRequestedNotification object:nil];
-    
+
     void (^completeWithSuccess)() = ^() {
         [[NSNotificationCenter defaultCenter] postNotificationName:ProductsLoadedNotification object:nil];
         if (successBlock) successBlock();
     };
-    
-    [[CinchJSONAPIClient sharedInstance] GET:kDBGETPRODUCTS parameters:@{ kAuthToken: authToken, kVendorGroupID: [NSString stringWithFormat:@"%@", vendorGroupId] } success:^(NSURLSessionDataTask *task, id JSON) {
-        if (JSON && ([(NSArray *) JSON count] > 0)) {
 
-            if (ResponseStatusTypeNotModified != [ResponseStatus statusOfTask:task]) {
-                //always perform the delete synchronously so we dont delete stuff we pull from the server later
-                [queueContext performBlockAndWait:^{
-                    [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Product" withContext:queueContext];
-                }];
-            }
+    [[CinchJSONAPIClient sharedInstance] getProductsWithSession:[CurrentSession instance]
+                                                         success:^(NSURLSessionDataTask *task, id JSON) {
+                                                             if (JSON && ([(NSArray *) JSON count] > 0)) {
 
-            NSArray *products = (NSArray *) JSON;
-            int batchSize = 1000;
-            int productsCount = [products count];
-            NSRange range = NSMakeRange(0, productsCount > batchSize ? batchSize : productsCount);
+                                                                 if (ResponseStatusTypeNotModified != [ResponseStatus statusOfTask:task]) {
+                                                                     //always perform the delete synchronously so we dont delete stuff we pull from the server later
+                                                                     [queueContext performBlockAndWait:^{
+                                                                         [[CoreDataUtil sharedManager] deleteAllObjectsAndSave:@"Product" withContext:queueContext];
+                                                                     }];
+                                                                 }
 
-            NSDate *start = [NSDate date];
-            NSMutableArray *remainingBatches = [NSMutableArray array];
-            while (range.length > 0) {
-                NSArray *productsBatch = [products subarrayWithRange:range];
-                // always wait for the first iteration, we can return from this method with data to display immediately
-                @autoreleasepool {
-                    [queueContext performBlockAndWait:^{
-                        for (NSDictionary *productJson in productsBatch) {
+                                                                 NSArray *products = (NSArray *) JSON;
+                                                                 int batchSize = 1000;
+                                                                 int productsCount = [products count];
+                                                                 NSRange range = NSMakeRange(0, (NSUInteger) (productsCount > batchSize ? batchSize : productsCount));
+
+                                                                 NSDate *start = [NSDate date];
+                                                                 NSMutableArray *remainingBatches = [NSMutableArray array];
+                                                                 while (range.length > 0) {
+                                                                     NSArray *productsBatch = [products subarrayWithRange:range];
+                                                                     // always wait for the first iteration, we can return from this method with data to display immediately
+                                                                     @autoreleasepool {
+                                                                         [queueContext performBlockAndWait:^{
+                                                                             for (NSDictionary *productJson in productsBatch) {
 //                            [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
-                            [[Product alloc] initWithProductFromServer:productJson context:queueContext];
-                        }
-                        [queueContext save:nil];
-                    }];
-                }
-                int newStartLocation = range.location + range.length;
-                range = NSMakeRange(newStartLocation, productsCount - newStartLocation > batchSize ? batchSize : productsCount - newStartLocation);
-            }
+                                                                                 [[Product alloc] initWithProductFromServer:productJson context:queueContext];
+                                                                             }
+                                                                             [queueContext save:nil];
+                                                                         }];
+                                                                     }
+                                                                     int newStartLocation = range.location + range.length;
+                                                                     range = NSMakeRange((NSUInteger) newStartLocation, (NSUInteger) (productsCount - newStartLocation > batchSize ? batchSize : productsCount - newStartLocation));
+                                                                 }
 
-            //release unneeded data for memory
-            JSON = nil;
-            products = nil;
 
-            __block int remainingBatchCount = 0;
-            int totalRemainingBatchCount = remainingBatches.count;
+                                                                 __block int remainingBatchCount = 0;
+                                                                 int totalRemainingBatchCount = remainingBatches.count;
 
-            if (totalRemainingBatchCount == 0) {
-                completeWithSuccess();
-            }
+                                                                 if (totalRemainingBatchCount == 0) {
+                                                                     completeWithSuccess();
+                                                                 }
 
-            for (NSArray *productsBatch in remainingBatches) {
-                if (async) {
-                    [queueContext performBlock:^{
-                        for (NSDictionary *productJson in productsBatch) {
-                            [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
-                        }
-                        [queueContext save:nil];
+                                                                 for (NSArray *productsBatch in remainingBatches) {
+                                                                     if (async) {
+                                                                         [queueContext performBlock:^{
+                                                                             for (NSDictionary *productJson in productsBatch) {
+                                                                                 [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
+                                                                             }
+                                                                             [queueContext save:nil];
 
-                        remainingBatchCount += 1;
-                        if (remainingBatchCount >= totalRemainingBatchCount) {
-                            completeWithSuccess();
-                        }
-                    }];
+                                                                             remainingBatchCount += 1;
+                                                                             if (remainingBatchCount >= totalRemainingBatchCount) {
+                                                                                 completeWithSuccess();
+                                                                             }
+                                                                         }];
+                                                                     } else {
+                                                                         [queueContext performBlockAndWait:^{
+                                                                             for (NSDictionary *productJson in productsBatch) {
+                                                                                 [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
+                                                                             }
+                                                                             [queueContext save:nil];
+
+                                                                             remainingBatchCount += 1;
+                                                                             if (remainingBatchCount >= totalRemainingBatchCount) {
+                                                                                 completeWithSuccess();
+                                                                             }
+                                                                         }];
+                                                                     }
+                                                                 }
+
+                                                                 NSDate *methodFinish = [NSDate date];
+                                                                 NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:start];
+
+                                                                 NSLog(@"Execution Time: %f", executionTime);
+                                                             } else {
+                                                                 completeWithSuccess();
+                                                             }
+                                                         } failure:^(NSURLSessionDataTask *task, NSError *error) {
+                id JSON = error.userInfo[JSONResponseSerializerWithErrorDataKey];
+                if (failureBlock) failureBlock();
+                NSInteger statusCode = [[error userInfo][AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
+                NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
+                if (statusCode == 422) {
+                    NSArray *validationErrors = JSON ? ((NSDictionary *) JSON)[kErrors] : nil;
+                    if (validationErrors && validationErrors.count > 0) {
+                        alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
+                    }
+                } else if (statusCode == 0) {
+                    alertMessage = @"Request timed out.";
                 } else {
-                    [queueContext performBlockAndWait:^{
-                        for (NSDictionary *productJson in productsBatch) {
-                            [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
-                        }
-                        [queueContext save:nil];
-
-                        remainingBatchCount += 1;
-                        if (remainingBatchCount >= totalRemainingBatchCount) {
-                            completeWithSuccess();
-                        }
-                    }];
+                    alertMessage = [error localizedDescription];
                 }
-            }
-
-            NSDate *methodFinish = [NSDate date];
-            NSTimeInterval executionTime = [methodFinish timeIntervalSinceDate:start];
-
-            NSLog(@"Execution Time: %f", executionTime);
-        } else {
-            completeWithSuccess();
-        }
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
-        id JSON = error.userInfo[JSONResponseSerializerWithErrorDataKey];
-        if (failureBlock) failureBlock();
-        NSInteger statusCode = [[[error userInfo] objectForKey:AFNetworkingOperationFailingURLResponseErrorKey] statusCode];
-        NSString *alertMessage = [NSString stringWithFormat:@"There was an error processing this request. Status Code: %d", statusCode];
-        if (statusCode == 422) {
-            NSArray *validationErrors = JSON ? [((NSDictionary *) JSON) objectForKey:kErrors] : nil;
-            if (validationErrors && validationErrors.count > 0) {
-                alertMessage = validationErrors.count > 1 ? [NSString stringWithFormat:@"%@ ...", validationErrors[0]] : validationErrors[0];
-            }
-        } else if (statusCode == 0) {
-            alertMessage = @"Request timed out.";
-        } else {
-            alertMessage = [error localizedDescription];
-        }
-        [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-        NSLog(@"%@ Error Loading Products: %@", [self class], [error localizedDescription]);
-    }];
+                [[[UIAlertView alloc] initWithTitle:@"Error!" message:alertMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                NSLog(@"%@ Error Loading Products: %@", [self class], [error localizedDescription]);
+            }];
 }
 
 + (NSUInteger)getProductCount {
@@ -214,7 +210,7 @@ static NSPredicate *productSearchPredicate = nil;
     NSError *err;
     NSUInteger count = [context countForFetchRequest:request error:&err];
     if (count == NSNotFound) {
-        NSLog([NSString stringWithFormat:@"An error occurred when fetching product count. %@", err == nil? @"" : [err localizedDescription]]);
+        NSLog(@"An error occurred when fetching product count. %@", err == nil ? @"" : [err localizedDescription]);
         return 0;
     }
     return count;
@@ -228,7 +224,7 @@ static NSPredicate *productSearchPredicate = nil;
     NSError *err;
     NSUInteger count = [context countForFetchRequest:request error:&err];
     if (count == NSNotFound) {
-        NSLog([NSString stringWithFormat:@"An error occurred when fetching product count. %@", err == nil? @"" : [err localizedDescription]]);
+        NSLog(@"An error occurred when fetching product count. %@", err == nil ? @"" : [err localizedDescription]);
         return 0;
     }
     return count;
@@ -254,7 +250,7 @@ static NSPredicate *productSearchPredicate = nil;
     [fetchRequest setIncludesPendingChanges:NO];
     [fetchRequest setFetchBatchSize:200];
     if (search.limit > 0) {
-        [fetchRequest setFetchLimit:search.limit];
+        [fetchRequest setFetchLimit:(NSUInteger) search.limit];
     }
     if (search.sortDescriptors) {
         fetchRequest.sortDescriptors = search.sortDescriptors;
@@ -270,7 +266,7 @@ static NSPredicate *productSearchPredicate = nil;
         if (nil == productSearchPredicate) {
             productSearchPredicate = [NSPredicate predicateWithFormat:@"normalizedSearchText CONTAINS[CD] $lowBound"];
         }
-        NSPredicate *searchQuery = [productSearchPredicate predicateWithSubstitutionVariables:@{ @"lowBound" : [APLNormalizedStringTransformer normalizeString:search.queryString] }];
+        NSPredicate *searchQuery = [productSearchPredicate predicateWithSubstitutionVariables:@{@"lowBound" : [APLNormalizedStringTransformer normalizeString:search.queryString]}];
         [predicates addObject:searchQuery];
     }
     if (predicates.count > 0) {
@@ -294,11 +290,11 @@ static NSPredicate *productSearchPredicate = nil;
         //if it is an unlimited search, just query the ids and return them.
         NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
         [fetchRequest setEntity:[NSEntityDescription entityForName:@"Product" inManagedObjectContext:search.context]];
-        [fetchRequest setPropertiesToFetch:[NSArray arrayWithObjects:@"productId", nil]];
+        [fetchRequest setPropertiesToFetch:@[@"productId"]];
         [fetchRequest setResultType:NSDictionaryResultType];
         [fetchRequest setIncludesSubentities:NO];
         if (search.limit > 0) {
-            [fetchRequest setFetchLimit:search.limit];
+            [fetchRequest setFetchLimit:(NSUInteger) search.limit];
         }
         if (search.sortDescriptors) {
             fetchRequest.sortDescriptors = search.sortDescriptors;
@@ -320,7 +316,7 @@ static NSPredicate *productSearchPredicate = nil;
         } else {
             NSMutableArray *productIds = [NSMutableArray array];
             [fetchedObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {  //todo this iterating over the results should be avoided. there is an NSResultType of ObjectId, if we can modify product view to work off of object id, we can avoid this iteration.
-                [productIds addObject:[((NSDictionary *) obj) objectForKey:@"productId"]];
+                [productIds addObject:((NSDictionary *) obj)[@"productId"]];
             }];
             return productIds;
         }
@@ -328,13 +324,21 @@ static NSPredicate *productSearchPredicate = nil;
 }
 
 + (SetupInfo *)getSetupInfo:(NSString *)itemName {
-    NSDictionary *subs = [NSDictionary dictionaryWithObject:itemName forKey:@"ITEMNAME"];
+    NSDictionary *subs = @{@"ITEMNAME" : itemName};
     CIAppDelegate *appDelegate = (CIAppDelegate *) [[UIApplication sharedApplication] delegate];
     NSManagedObjectModel *model = appDelegate.managedObjectModel;
     NSFetchRequest *req = [model fetchRequestFromTemplateWithName:@"getSetupItem" substitutionVariables:subs]; //todo: this code looks nasty
     NSError *error = nil;
     NSArray *results = [[CurrentSession mainQueueContext] executeFetchRequest:req error:&error];
-    return (!error && results != nil && [results count] > 0) ? [results objectAtIndex:0] : nil;
+    return (!error && results != nil && [results count] > 0) ? results[0] : nil;
+}
+
++ (Show *)getLatestShow:(NSManagedObjectContext *)managedObjectContext {
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"Show"];
+    fetchRequest.fetchLimit = 1;
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"begin_date" ascending:NO]];
+    NSError *error = nil;
+    return [managedObjectContext executeFetchRequest:fetchRequest error:&error].lastObject;
 }
 
 

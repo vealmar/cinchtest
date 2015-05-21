@@ -4,7 +4,7 @@
 //
 
 #import "CISignatureViewController.h"
-#import "ShowConfigurations.h"
+#import "Configurations.h"
 #import "NISignatureView.h"
 #import "CIProductViewControllerHelper.h"
 #import "NumberUtil.h"
@@ -36,7 +36,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.backgroundImageView.image = [[ShowConfigurations instance] loginScreen];
+    self.backgroundImageView.image = [[Configurations instance] loginScreen];
     self.totalLabel.text = [NumberUtil formatDollarAmount:self.total];
 }
 

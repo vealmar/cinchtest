@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Ci</string>
+	<string>Cinch</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
@@ -19,8 +19,12 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
-				<string>CI_144logo.png</string>
-				<string>CI_72logo.png</string>
+				<string>Icon-76.png</string>
+				<string>Icon-76@2x.png</string>
+                <string>Icon-Small-40.png</string>
+                <string>Icon-Small-40@2x.png</string>
+                <string>Icon-Small.png</string>
+                <string>Icon-Small@2x.png</string>
 			</array>
 		</dict>
 	</dict>
