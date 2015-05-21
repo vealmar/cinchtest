@@ -28,7 +28,6 @@
 @dynamic lines;
 @dynamic username;
 @dynamic vendorgroup_id;
-@dynamic initial_show;
 @dynamic isle;
 @dynamic booth;
 @dynamic dept;
@@ -54,7 +53,6 @@
         self.lines = (NSNumber *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorLines]];
         self.username = (NSString *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorUsername]];
         self.vendorgroup_id = (NSNumber *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorVendorGroupId]];
-        self.initial_show = (NSNumber *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorInitialShow]];
         self.isle = (NSString *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorIsle]];
         self.booth = (NSString *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorBooth]];
         self.dept = (NSString *) [NilUtil nilOrObject:[vendorFromServer objectForKey:kVendorDept]];
@@ -96,8 +94,6 @@
         [dictionary setObject:self.username forKey:kVendorUsername];
     if (self.vendorgroup_id)
         [dictionary setObject:self.vendorgroup_id forKey:kVendorVendorGroupId];
-    if (self.initial_show)
-        [dictionary setObject:self.initial_show forKey:kVendorInitialShow];
     if (self.isle)
         [dictionary setObject:self.isle forKey:kVendorIsle];
     if (self.booth)

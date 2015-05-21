@@ -35,4 +35,7 @@ typedef enum {
 + (MenuLinkMetadataProvider *)instance;
 - (MenuLinkMetadata *)metadataFor:(MenuLink)menuLink;
 
+- (void)updateCustomerMetadata:(NSNotification *)notification;
+
+- (void)updateProductMetadata:(NSNotification *)notification;
 @end

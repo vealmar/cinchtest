@@ -139,7 +139,7 @@ static int persistentStoreCoordinatorInvocationAttempts = 0;
         return _persistentStoreCoordinator;
     }
 
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart10-3.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"ProductCart11-3.sqlite"];
     // remove old data before a login, takes too much time to delete individually
     if (![CurrentSession instance].authToken) {
         [[NSFileManager defaultManager] removeItemAtURL:storeURL error:nil];

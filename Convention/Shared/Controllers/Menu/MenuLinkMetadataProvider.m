@@ -77,7 +77,7 @@ static MenuLinkMetadataProvider *provider = nil;
         m.iconCharacter = @"\ue459";
         m.menuTitle = [ThemeUtil titleTextWithFontSize:16 format:@"%l", @"Discount Guide", nil];
         m.viewTitle = [ThemeUtil titleTextWithFontSize:18 format:@"%s", @"Discount Guide", nil];
-        m.relativeUrl = [NSString stringWithFormat:@"/shows/%@/discount_descriptions", [CurrentSession instance].showId];
+        m.relativeUrl = @"/discount_descriptions";
         [builder addObject:m];
 
         m = [MenuLinkMetadata new];
@@ -113,9 +113,6 @@ static MenuLinkMetadataProvider *provider = nil;
         self.metadatas = [NSArray arrayWithArray:builder];
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleSessionDidChange:) name:SessionDidChangeNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateProductMetadata:) name:ProductsLoadedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCustomerMetadata:) name:CustomersLoadedNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateCustomerMetadata:) name:CustomerCreatedNotification object:nil];
     }
     return self;
 }
@@ -164,9 +161,6 @@ static MenuLinkMetadataProvider *provider = nil;
 }
 
 - (void)handleSessionDidChange:(NSNotification *)notification {
-    MenuLinkMetadata *m1 = [self metadataFor:MenuLinkDiscountGuide];
-    m1.relativeUrl = [NSString stringWithFormat:@"/shows/%@/discount_descriptions", [CurrentSession instance].showId];
-
     MenuLinkMetadata *m2 = [self metadataFor:MenuLinkHelp];
     m2.relativeUrl = [self helpUrl];
 }

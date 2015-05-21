@@ -22,7 +22,6 @@
 @dynamic dirship;
 @dynamic discount;
 @dynamic idx;
-@dynamic initial_show;
 @dynamic invtid;
 @dynamic sequence;
 @dynamic min;

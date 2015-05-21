@@ -28,7 +28,6 @@
 @property(nonatomic, retain) NSNumber *lines;
 @property(nonatomic, retain) NSString *username;
 @property(nonatomic, retain) NSNumber *vendorgroup_id;
-@property(nonatomic, retain) NSNumber *initial_show;
 @property(nonatomic, retain) NSString *isle;
 @property(nonatomic, retain) NSString *booth;
 @property(nonatomic, retain) NSString *dept;

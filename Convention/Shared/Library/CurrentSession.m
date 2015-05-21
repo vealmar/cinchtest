@@ -49,6 +49,11 @@ static CurrentSession *currentSession = nil;
     return vendorgroupId;
 }
 
+- (NSNumber *)brokerId {
+    NSNumber *brokerId = (NSNumber *) self.userInfo[kVendorBrokerId];
+    return brokerId;
+}
+
 - (NSNumber *)vendorId {
     NSNumber *vendorId = (NSNumber *) self.userInfo[kID];
     return vendorId;
@@ -59,6 +64,7 @@ static CurrentSession *currentSession = nil;
     userInfo[kID] = vendor.vendorId;
     userInfo[kVendorGroupID] = vendor.vendorgroup_id;
     userInfo[kName] = vendor.name;
+    userInfo[kVendorBrokerId] = vendor.broker_id;
     self.userInfo = [NSDictionary dictionaryWithDictionary:userInfo];
 }
 

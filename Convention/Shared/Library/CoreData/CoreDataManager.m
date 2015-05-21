@@ -107,7 +107,7 @@ static NSPredicate *productSearchPredicate = nil;
 
     [[CinchJSONAPIClient sharedInstance] getProductsWithSession:[CurrentSession instance]
                                                          success:^(NSURLSessionDataTask *task, id JSON) {
-                                                             if (JSON && ([(NSArray *) JSON count] > 0)) {
+                                                             if (JSON) {
 
                                                                  if (ResponseStatusTypeNotModified != [ResponseStatus statusOfTask:task]) {
                                                                      //always perform the delete synchronously so we dont delete stuff we pull from the server later
@@ -116,63 +116,68 @@ static NSPredicate *productSearchPredicate = nil;
                                                                      }];
                                                                  }
 
-                                                                 NSArray *products = (NSArray *) JSON;
-                                                                 int batchSize = 1000;
-                                                                 int productsCount = [products count];
-                                                                 NSRange range = NSMakeRange(0, (NSUInteger) (productsCount > batchSize ? batchSize : productsCount));
+                                                                 NSDate *start=nil;
+                                                                 if (([(NSArray *) JSON count] > 0)) {
+                                                                     NSArray *products = (NSArray *) JSON;
+                                                                     int batchSize = 1000;
+                                                                     int productsCount = [products count];
+                                                                     NSRange range = NSMakeRange(0, (NSUInteger) (productsCount > batchSize ? batchSize : productsCount));
 
-                                                                 NSDate *start = [NSDate date];
-                                                                 NSMutableArray *remainingBatches = [NSMutableArray array];
-                                                                 while (range.length > 0) {
-                                                                     NSArray *productsBatch = [products subarrayWithRange:range];
-                                                                     // always wait for the first iteration, we can return from this method with data to display immediately
-                                                                     @autoreleasepool {
-                                                                         [queueContext performBlockAndWait:^{
-                                                                             for (NSDictionary *productJson in productsBatch) {
-//                            [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
-                                                                                 [[Product alloc] initWithProductFromServer:productJson context:queueContext];
-                                                                             }
-                                                                             [queueContext save:nil];
-                                                                         }];
+                                                                     start = [NSDate date];
+                                                                     NSMutableArray *remainingBatches = [NSMutableArray array];
+                                                                     while (range.length > 0) {
+                                                                         NSArray *productsBatch = [products subarrayWithRange:range];
+                                                                         // always wait for the first iteration, we can return from this method with data to display immediately
+                                                                         @autoreleasepool {
+                                                                             [queueContext performBlockAndWait:^{
+                                                                                 for (NSDictionary *productJson in productsBatch) {
+                                                                                     //                            [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
+                                                                                     [[Product alloc] initWithProductFromServer:productJson context:queueContext];
+                                                                                 }
+                                                                                 [queueContext save:nil];
+                                                                             }];
+                                                                         }
+                                                                         int newStartLocation = range.location + range.length;
+                                                                         range = NSMakeRange((NSUInteger) newStartLocation, (NSUInteger) (productsCount - newStartLocation > batchSize ? batchSize : productsCount - newStartLocation));
                                                                      }
-                                                                     int newStartLocation = range.location + range.length;
-                                                                     range = NSMakeRange((NSUInteger) newStartLocation, (NSUInteger) (productsCount - newStartLocation > batchSize ? batchSize : productsCount - newStartLocation));
-                                                                 }
 
 
-                                                                 __block int remainingBatchCount = 0;
-                                                                 int totalRemainingBatchCount = remainingBatches.count;
+                                                                     __block int remainingBatchCount = 0;
+                                                                     int totalRemainingBatchCount = remainingBatches.count;
 
-                                                                 if (totalRemainingBatchCount == 0) {
+                                                                     if (totalRemainingBatchCount == 0) {
+                                                                         completeWithSuccess();
+                                                                     }
+
+                                                                     for (NSArray *productsBatch in remainingBatches) {
+                                                                         if (async) {
+                                                                             [queueContext performBlock:^{
+                                                                                 for (NSDictionary *productJson in productsBatch) {
+                                                                                     [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
+                                                                                 }
+                                                                                 [queueContext save:nil];
+
+                                                                                 remainingBatchCount += 1;
+                                                                                 if (remainingBatchCount >= totalRemainingBatchCount) {
+                                                                                     completeWithSuccess();
+                                                                                 }
+                                                                             }];
+                                                                         } else {
+                                                                             [queueContext performBlockAndWait:^{
+                                                                                 for (NSDictionary *productJson in productsBatch) {
+                                                                                     [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
+                                                                                 }
+                                                                                 [queueContext save:nil];
+
+                                                                                 remainingBatchCount += 1;
+                                                                                 if (remainingBatchCount >= totalRemainingBatchCount) {
+                                                                                     completeWithSuccess();
+                                                                                 }
+                                                                             }];
+                                                                         }
+                                                                     }
+                                                                 } else {
                                                                      completeWithSuccess();
-                                                                 }
-
-                                                                 for (NSArray *productsBatch in remainingBatches) {
-                                                                     if (async) {
-                                                                         [queueContext performBlock:^{
-                                                                             for (NSDictionary *productJson in productsBatch) {
-                                                                                 [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
-                                                                             }
-                                                                             [queueContext save:nil];
-
-                                                                             remainingBatchCount += 1;
-                                                                             if (remainingBatchCount >= totalRemainingBatchCount) {
-                                                                                 completeWithSuccess();
-                                                                             }
-                                                                         }];
-                                                                     } else {
-                                                                         [queueContext performBlockAndWait:^{
-                                                                             for (NSDictionary *productJson in productsBatch) {
-                                                                                 [queueContext insertObject:[[Product alloc] initWithProductFromServer:productJson context:queueContext]];
-                                                                             }
-                                                                             [queueContext save:nil];
-
-                                                                             remainingBatchCount += 1;
-                                                                             if (remainingBatchCount >= totalRemainingBatchCount) {
-                                                                                 completeWithSuccess();
-                                                                             }
-                                                                         }];
-                                                                     }
                                                                  }
 
                                                                  NSDate *methodFinish = [NSDate date];

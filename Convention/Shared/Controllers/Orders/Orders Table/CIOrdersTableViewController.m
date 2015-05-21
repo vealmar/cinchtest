@@ -59,7 +59,7 @@
 }
 
 - (void)handleSessionDidChange:(NSNotification *)notification {
-    //reload customers since the session change notification might have been discharged as a result of selecting a different show. This will require reloading customers, vendors, bulletins and products. todo sg once vendors, bulletins and products are no longer show specific we won't need to reload them.
+    //reload customers since the session change notification might have been discharged as a result of selecting a different show. This will require reloading customers, vendors, bulletins and products. todo sg vendors are no longer show specific, so we don't need to reload them.
     [VendorDataLoader load:@[@(VendorDataTypeCustomers), @(VendorDataTypeVendors), @(VendorDataTypeBulletins), @(VendorDataTypeProducts)] inView:self.view onComplete:^{
         [self loadOrders:YES selectOrder:nil];
     }];

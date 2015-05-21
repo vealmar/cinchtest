@@ -49,11 +49,11 @@
     }
 }
 
--(void)navigateTo:(NSURL *)url titled:(NSAttributedString *)title {
+- (void)navigateTo:(NSURL *)url titled:(NSAttributedString *)title parameters:(NSDictionary *)parameters {
     self.navViewManager.title = title;
-    NSURL *urlWithSearchQuery = [NSURL URLWithString:[self addQueryStringToUrlString:url.absoluteString withDictionary:@{
-            kAuthToken: [CurrentSession instance].authToken
-    }]];
+    NSMutableDictionary *params = parameters == nil? [NSMutableDictionary dictionary] : [NSMutableDictionary dictionaryWithDictionary:parameters];
+    params[kAuthToken] = [CurrentSession instance].authToken;
+    NSURL *urlWithSearchQuery = [NSURL URLWithString:[self addQueryStringToUrlString:url.absoluteString withDictionary:params]];
     NSURLRequest *request = [NSURLRequest requestWithURL:urlWithSearchQuery];
     self.currentUrl = url;
     [self.uiWebView loadRequest:request];
@@ -142,7 +142,7 @@
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-
+    NSLog(@"fail");
 }
 
 

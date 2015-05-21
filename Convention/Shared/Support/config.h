@@ -22,15 +22,15 @@
 #define kDBLOGIN @"/vendors/sign_in.json"
 #define kDBLOGOUT @"/vendors/sign_out.json"
 #define kDBGETPRODUCTS @"/vendor/shows/%d/products.json"
-#define kDBGETVENDORS @"/vendor/shows/%d/vendorgroups.json"
-#define kDBGETCUSTOMERS@"/vendor/shows/%d/customers.json"
+#define kDBGETVENDORS @"/vendor/vendors.json"
+#define kDBGETCUSTOMERS@"/vendor/customers.json"
 #define kDBGETCUSTOMER @"/vendor/shows/%d/customers/%d.json?"
 #define kDBGETORDER @"/vendor/shows/%d/orders/%d.json"
 #define kDBORDER @"/vendor/shows/%d/orders.json"
 #define kDBORDEREDITS @"/vendor/shows/%d/orders/%d.json"
 #define kDBORDERDETAILEDITS @"/vendor/shows/%d/orders/%d/details.json"
 #define kDBCAPTURESIG @"/vendor/orders/%d/signature.json"
-#define kDBGETBULLETINS @"/vendor/shows/%d/bulletins.json"
+#define kDBGETBULLETINS @"/vendor/bulletins.json"
 
 //Auth keys
 #define kEmailKey @"user[login]"
