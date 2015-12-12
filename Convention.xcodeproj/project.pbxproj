@@ -17,6 +17,10 @@
 		35F52B70CC9D2EFC74F63AD5 /* Show+Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 35F525760E9AFA668A095834 /* Show+Extensions.m */; };
 		35F52D9766EE4830991660D8 /* white-triangle.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F52130ADAEAC093E4A8474 /* white-triangle.png */; };
 		35F52F0B9506785F1B699836 /* cinch-white.png in Resources */ = {isa = PBXBuildFile; fileRef = 35F5277D7A49E6EA418E4407 /* cinch-white.png */; };
+		4D7A0AD51B6BF23A001B7577 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 4D7A0AD41B6BF23A001B7577 /* Podfile */; };
+		4D7A0AD71B6BF247001B7577 /* Podfile.lock in Resources */ = {isa = PBXBuildFile; fileRef = 4D7A0AD61B6BF247001B7577 /* Podfile.lock */; };
+		4DD19DDA1C13BDF400C337A5 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD19DD91C13BDF400C337A5 /* LaunchViewController.swift */; };
+		4DD67AB11B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 4DD67AB01B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision */; };
 		692824761989930C0020FC1E /* EditableEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 692824751989930C0020FC1E /* EditableEntity.m */; };
 		69C9815A1A3E5EBB00C7E47A /* sidemenu-cinch-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C981581A3E5EBB00C7E47A /* sidemenu-cinch-logo.png */; };
 		69C9815B1A3E5EBB00C7E47A /* sidemenu-cinch-logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C981591A3E5EBB00C7E47A /* sidemenu-cinch-logo@2x.png */; };
@@ -358,8 +362,20 @@
 		EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD10188851810004ABB6 /* GLKit.framework */; };
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
 		EBED2E1A1AC5B107006F22FC /* Show.m in Sources */ = {isa = PBXBuildFile; fileRef = EBED2E191AC5B107006F22FC /* Show.m */; };
-		F44DAB9AAD374FFC8AEDB9B9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 445E84492698473B9EA7AEBF /* libPods.a */; };
+		F44DAB9AAD374FFC8AEDB9B9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 445E84492698473B9EA7AEBF /* libPods.a */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildRule section */
+		4DCAFC081B28E38100D2EC30 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			fileType = file.bplist;
+			isEditable = 1;
+			outputFiles = (
+			);
+			script = "# builtin-copyPlist\n";
+		};
+/* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
 		335A42F2164D7306007B872A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -376,6 +392,11 @@
 		35F52B80E64A85A28F098BC6 /* CISelectShowTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CISelectShowTableViewController.m; sourceTree = "<group>"; };
 		35F52EC51B1E46D464E1A721 /* launch-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "launch-bg.png"; sourceTree = "<group>"; };
 		445E84492698473B9EA7AEBF /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D7A0AD41B6BF23A001B7577 /* Podfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile; sourceTree = "<group>"; };
+		4D7A0AD61B6BF247001B7577 /* Podfile.lock */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile.lock; sourceTree = "<group>"; };
+		4DD19DD81C13BDF300C337A5 /* Convention-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Convention-Bridging-Header.h"; sourceTree = "<group>"; };
+		4DD19DD91C13BDF400C337A5 /* LaunchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LaunchViewController.swift; path = Checkout/LaunchViewController.swift; sourceTree = "<group>"; };
+		4DD67AB01B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Convention_Innovations_Distribution (2).mobileprovision"; path = "../../Downloads/Convention_Innovations_Distribution (2).mobileprovision"; sourceTree = "<group>"; };
 		69282473198963B90020FC1E /* ProductCart9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart9.xcdatamodel; sourceTree = "<group>"; };
 		692824741989930C0020FC1E /* EditableEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableEntity.h; sourceTree = "<group>"; };
 		692824751989930C0020FC1E /* EditableEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableEntity.m; sourceTree = "<group>"; };
@@ -1022,6 +1043,7 @@
 				6DDC9248DDC10775F0460D4B /* FarrisCartViewCell.h */,
 				6DDC9029F0E755DABC51914F /* CISelectOrderDiscountViewController.m */,
 				6DDC931EAA9C3DAB38B399FF /* CISelectOrderDiscountViewController.h */,
+				4DD19DD81C13BDF300C337A5 /* Convention-Bridging-Header.h */,
 			);
 			path = Checkout;
 			sourceTree = "<group>";
@@ -1383,6 +1405,7 @@
 				6DDC900E5C0DE5DC0D45681D /* Order Entry */,
 				6DDC916BBE0F6C9CEA426F21 /* Checkout */,
 				6DDC9159677E2822C1C7D93A /* LaunchViewController.m */,
+				4DD19DD91C13BDF400C337A5 /* LaunchViewController.swift */,
 				6DDC945FDA920CAA48BA33B6 /* LaunchViewController.h */,
 				6DDC963F141FE4EE00B2C933 /* LaunchViewController.storyboard */,
 				6DDC97198745230BCA317033 /* Menu */,
@@ -1822,6 +1845,7 @@
 		6E118556145F2F2100568ED1 = {
 			isa = PBXGroup;
 			children = (
+				4DD67AB01B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision */,
 				335A4306164D7529007B872A /* Settings.bundle */,
 				6E11856B145F2F2200568ED1 /* Convention */,
 				6E118564145F2F2200568ED1 /* Frameworks */,
@@ -1881,6 +1905,8 @@
 		BA06506F2A2BFD14E4547B53 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				4D7A0AD61B6BF247001B7577 /* Podfile.lock */,
+				4D7A0AD41B6BF23A001B7577 /* Podfile */,
 				840E6E4E6A54AF653F49031A /* Pods.debug.xcconfig */,
 				B8DB35D00377269B92AEA423 /* Pods.release.xcconfig */,
 			);
@@ -1951,11 +1977,11 @@
 				D8B3851C1A3E0022007FA957 /* JMStaticContentTableViewCell.h */,
 				D8B3851D1A3E0022007FA957 /* JMStaticContentTableViewCell.m */,
 				D8B3851E1A3E0022007FA957 /* JMStaticContentTableViewController.h */,
-				D8B3851F1A3E0022007FA957 /* JMStaticContentTableViewController.m */,
 				D8B385201A3E0022007FA957 /* JMStaticContentTableViewSection.h */,
 				D8B385211A3E0022007FA957 /* JMStaticContentTableViewSection.m */,
 				D8B385221A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.h */,
 				D8B385231A3E0022007FA957 /* JMStaticContentTextFieldTableViewCell.m */,
+				D8B3851F1A3E0022007FA957 /* JMStaticContentTableViewController.m */,
 			);
 			path = JMStaticContentTableViewController;
 			sourceTree = "<group>";
@@ -1975,6 +2001,7 @@
 				C6CFDF48403240A4BC44A8E5 /* Copy Pods Resources */,
 			);
 			buildRules = (
+				4DCAFC081B28E38100D2EC30 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -1989,8 +2016,9 @@
 		6E118558145F2F2100568ED1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
-				ORGANIZATIONNAME = "Urban Coding";
+				LastSwiftUpdateCheck = 0710;
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = Ci;
 				TargetAttributes = {
 					6E118560145F2F2200568ED1 = {
 						DevelopmentTeam = 4K832UXYM3;
@@ -2019,6 +2047,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D7A0AD71B6BF247001B7577 /* Podfile.lock in Resources */,
 				335A4307164D7529007B872A /* Settings.bundle in Resources */,
 				6DDC9E498E93ADA136846FC1 /* bump_build_on_archive.sh in Resources */,
 				D811F7ED1A352613003536C6 /* ico-bar-add@2x.png in Resources */,
@@ -2140,6 +2169,7 @@
 				D811F7FB1A355506003536C6 /* ico-authorized@2x.png in Resources */,
 				69C9815B1A3E5EBB00C7E47A /* sidemenu-cinch-logo@2x.png in Resources */,
 				6DDC9B867BF9913441FE0C12 /* CI-Logo.png in Resources */,
+				4DD67AB11B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision in Resources */,
 				6DDC9D163A7D5AE74327C3C0 /* cancelbutton.png in Resources */,
 				6DDC9F7661E91B066394EA7D /* blue-textbox.png in Resources */,
 				6DDC9D83EDF05B6814DDA4D5 /* EditButton.png in Resources */,
@@ -2171,6 +2201,7 @@
 				6DDC97DD5698A183E12FAD11 /* mainpage_back.jpg in Resources */,
 				6DDC9DE8616CBF3A03488E60 /* signature-area.png in Resources */,
 				6DDC906FD8C1951566A59ECC /* zero_vouchers_button.png in Resources */,
+				4D7A0AD51B6BF23A001B7577 /* Podfile in Resources */,
 				D85502A41A3B360F002CE84F /* ico-cell-header-icon.png in Resources */,
 				6DDC9965CC129DFCFDBB4618 /* refresh.png in Resources */,
 				D832D55E1A24BF1700A0EBBF /* background-logout.png in Resources */,
@@ -2353,6 +2384,7 @@
 				6DDC94969448350F637FD21F /* CITableViewColumn.m in Sources */,
 				6DDC989D6EBE8755B9DDA7E2 /* CITableViewHeaderView.m in Sources */,
 				6DDC9DC379688BF9D7D0742E /* CICoreDataTableViewController.m in Sources */,
+				4DD19DDA1C13BDF400C337A5 /* LaunchViewController.swift in Sources */,
 				6DDC9082EABA8EB79955F8C7 /* CITableViewColumns.m in Sources */,
 				6DDC94946A0892B0683A76B9 /* CITableViewColumnView.m in Sources */,
 				6DDC9F1DEB36C330A93668C0 /* CITableViewStandardColumnView.m in Sources */,
@@ -2451,12 +2483,18 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Mark  Veal (7JN56J2NT7)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_RESOURCE_RULES_PATH[sdk=*]" = "";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -2471,13 +2509,17 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				"INFOPLIST_FILE[sdk=*]" = "";
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "";
+				INFOPLIST_PREPROCESS = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDEBUG=1";
-				PROVISIONING_PROFILE = "b2cc5445-f001-4c46-b589-1d234dec8b71";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "b2cc5445-f001-4c46-b589-1d234dec8b71";
+				PROVISIONING_PROFILE = "202e7f5e-2533-4977-8ef8-88406b169389";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "202e7f5e-2533-4977-8ef8-88406b169389";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				"USER_HEADER_SEARCH_PATHS[arch=*]" = "";
 			};
 			name = Debug;
 		};
@@ -2492,11 +2534,14 @@
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Convention Innovation, LLC";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Convention Innovation, LLC";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -2505,11 +2550,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				"INFOPLIST_FILE[sdk=iphoneos*]" = "";
+				INFOPLIST_PREPROCESS = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
-				PROVISIONING_PROFILE = "9A9387AE-A9A8-49C6-8D6A-CAEDB0BFF689";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9A9387AE-A9A8-49C6-8D6A-CAEDB0BFF689";
+				PROVISIONING_PROFILE = "202e7f5e-2533-4977-8ef8-88406b169389";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "202e7f5e-2533-4977-8ef8-88406b169389";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
@@ -2520,9 +2567,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 840E6E4E6A54AF653F49031A /* Pods.debug.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2539,12 +2586,16 @@
 				);
 				INFOPLIST_FILE = "Convention/Convention-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DDEBUG=1";
+				PRODUCT_BUNDLE_IDENTIFIER = com.conventioninnovations.conventioninnovations;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "b2cc5445-f001-4c46-b589-1d234dec8b71";
+				SWIFT_OBJC_BRIDGING_HEADER = "Convention/Shared/Controllers/Checkout/Convention-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 2;
 				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				VALID_ARCHS = "armv7 armv7s";
@@ -2557,9 +2608,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B8DB35D00377269B92AEA423 /* Pods.release.xcconfig */;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2576,11 +2627,14 @@
 				);
 				INFOPLIST_FILE = "Convention/Convention-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				ONLY_ACTIVE_ARCH = NO;
+				PRODUCT_BUNDLE_IDENTIFIER = com.conventioninnovations.conventioninnovations;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5823EBA4-BB5C-4188-A329-49B9ABC7E349";
+				SWIFT_OBJC_BRIDGING_HEADER = "Convention/Shared/Controllers/Checkout/Convention-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = 2;
 				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
 				VALID_ARCHS = "armv7 armv7s";
