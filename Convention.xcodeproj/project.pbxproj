@@ -20,7 +20,6 @@
 		4D7A0AD51B6BF23A001B7577 /* Podfile in Resources */ = {isa = PBXBuildFile; fileRef = 4D7A0AD41B6BF23A001B7577 /* Podfile */; };
 		4D7A0AD71B6BF247001B7577 /* Podfile.lock in Resources */ = {isa = PBXBuildFile; fileRef = 4D7A0AD61B6BF247001B7577 /* Podfile.lock */; };
 		4DD19DDA1C13BDF400C337A5 /* LaunchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DD19DD91C13BDF400C337A5 /* LaunchViewController.swift */; };
-		4DD67AB11B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 4DD67AB01B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision */; };
 		692824761989930C0020FC1E /* EditableEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = 692824751989930C0020FC1E /* EditableEntity.m */; };
 		69C9815A1A3E5EBB00C7E47A /* sidemenu-cinch-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C981581A3E5EBB00C7E47A /* sidemenu-cinch-logo.png */; };
 		69C9815B1A3E5EBB00C7E47A /* sidemenu-cinch-logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69C981591A3E5EBB00C7E47A /* sidemenu-cinch-logo@2x.png */; };
@@ -362,7 +361,7 @@
 		EB5BBD11188851810004ABB6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD10188851810004ABB6 /* GLKit.framework */; };
 		EB5BBD131888518E0004ABB6 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB5BBD121888518E0004ABB6 /* OpenGLES.framework */; };
 		EBED2E1A1AC5B107006F22FC /* Show.m in Sources */ = {isa = PBXBuildFile; fileRef = EBED2E191AC5B107006F22FC /* Show.m */; };
-		F44DAB9AAD374FFC8AEDB9B9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 445E84492698473B9EA7AEBF /* libPods.a */; settings = {ATTRIBUTES = (Weak, ); }; };
+		F44DAB9AAD374FFC8AEDB9B9 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 445E84492698473B9EA7AEBF /* libPods.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -396,7 +395,6 @@
 		4D7A0AD61B6BF247001B7577 /* Podfile.lock */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Podfile.lock; sourceTree = "<group>"; };
 		4DD19DD81C13BDF300C337A5 /* Convention-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Convention-Bridging-Header.h"; sourceTree = "<group>"; };
 		4DD19DD91C13BDF400C337A5 /* LaunchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LaunchViewController.swift; path = Checkout/LaunchViewController.swift; sourceTree = "<group>"; };
-		4DD67AB01B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Convention_Innovations_Distribution (2).mobileprovision"; path = "../../Downloads/Convention_Innovations_Distribution (2).mobileprovision"; sourceTree = "<group>"; };
 		69282473198963B90020FC1E /* ProductCart9.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ProductCart9.xcdatamodel; sourceTree = "<group>"; };
 		692824741989930C0020FC1E /* EditableEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditableEntity.h; sourceTree = "<group>"; };
 		692824751989930C0020FC1E /* EditableEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditableEntity.m; sourceTree = "<group>"; };
@@ -1845,7 +1843,6 @@
 		6E118556145F2F2100568ED1 = {
 			isa = PBXGroup;
 			children = (
-				4DD67AB01B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision */,
 				335A4306164D7529007B872A /* Settings.bundle */,
 				6E11856B145F2F2200568ED1 /* Convention */,
 				6E118564145F2F2200568ED1 /* Frameworks */,
@@ -1999,6 +1996,7 @@
 				6E11855E145F2F2200568ED1 /* Frameworks */,
 				6E11855F145F2F2200568ED1 /* Resources */,
 				C6CFDF48403240A4BC44A8E5 /* Copy Pods Resources */,
+				F7B7CAB2537843DDA5371B0C /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 				4DCAFC081B28E38100D2EC30 /* PBXBuildRule */,
@@ -2169,7 +2167,6 @@
 				D811F7FB1A355506003536C6 /* ico-authorized@2x.png in Resources */,
 				69C9815B1A3E5EBB00C7E47A /* sidemenu-cinch-logo@2x.png in Resources */,
 				6DDC9B867BF9913441FE0C12 /* CI-Logo.png in Resources */,
-				4DD67AB11B726FA50018D7DF /* Convention_Innovations_Distribution (2).mobileprovision in Resources */,
 				6DDC9D163A7D5AE74327C3C0 /* cancelbutton.png in Resources */,
 				6DDC9F7661E91B066394EA7D /* blue-textbox.png in Resources */,
 				6DDC9D83EDF05B6814DDA4D5 /* EditButton.png in Resources */,
@@ -2278,6 +2275,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		F7B7CAB2537843DDA5371B0C /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2593,7 +2605,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.conventioninnovations.conventioninnovations;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "b2cc5445-f001-4c46-b589-1d234dec8b71";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Convention/Shared/Controllers/Checkout/Convention-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = 2;
@@ -2633,7 +2645,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.conventioninnovations.conventioninnovations;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "5823EBA4-BB5C-4188-A329-49B9ABC7E349";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Convention/Shared/Controllers/Checkout/Convention-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = 2;
 				USER_HEADER_SEARCH_PATHS = "\"${PROJECT_DIR}/Pods\"/**";
